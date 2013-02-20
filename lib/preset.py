@@ -6,6 +6,7 @@ class Preset:
 
     def __init__(self, mixer):
         self._mixer = mixer
+        self._cmd = []
 
     def setup(self):
         """Override this method to run any init code your preset needs."""
@@ -17,3 +18,6 @@ class Preset:
 
     def tick_rate(self):
         return self._mixer.tick_rate
+
+    def set_all(self, color):
+        self._cmd = [-1, -1, -1, color[0], color[1], color[2]]
