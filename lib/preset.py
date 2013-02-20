@@ -21,3 +21,6 @@ class Preset:
 
     def set_all(self, color):
         self._cmd = [-1, -1, -1, color[0], color[1], color[2]]
+
+    def get_cmd(self):
+        return self._cmd
