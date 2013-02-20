@@ -5,7 +5,11 @@ from lib.preset import Preset
 
 
 class SeparateStrandRGB(Preset):
-    """Simple RGB fade using separate strands"""
+    """Simple RGB fade using separate groups of fixtures.
+
+    In this example, fixtures are stored as groups of (strand, fixture) tuples.
+    This makes it easy to assign certain colors to groups.
+    """
 
     h = 0.0
 
@@ -56,7 +60,7 @@ class SeparateStrandRGB(Preset):
 
     def tick(self):
         for i, group in enumerate(self.groups):
-            rgb_color = [int(255.0 * c) for c in colorsys.hsv_to_rgb(math.fmod(self.h + (i / 8.0), 1.0), 1.0, 1.0)]
+            rgb_color = [int(255.0 * c) for c in colorsys.hsv_to_rgb(math.fmod(self.h + (i / 7.0), 1.0), 1.0, 1.0)]
             for sf in group:
                 strand, fixture = sf
                 self.set_fixture(strand, fixture, rgb_color)
