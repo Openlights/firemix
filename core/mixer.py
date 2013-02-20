@@ -1,9 +1,10 @@
 from presets.rgb_fade import RGBFade
+from presets.separate_strand_rgb import SeparateStrandRGB
 
 
 class Mixer:
 
-    def __init__(self, net=None, tick_rate=60.0):
+    def __init__(self, net=None, tick_rate=30.0):
         self.presets = []
         self.net = net
         self.tick_rate = tick_rate
@@ -11,9 +12,9 @@ class Mixer:
         self.demo_preset()
 
     def demo_preset(self):
-        self.presets.append(RGBFade(self))
+        self.presets.append(SeparateStrandRGB(self))
 
     def tick(self):
         self.presets[0].tick()
-        if self.net is not None:
-            self.net.write(self.presets[0].get_cmd())
+        #if self.net is not None:
+        #    self.net.write(self.presets[0].get_cmd())
