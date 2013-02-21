@@ -14,6 +14,5 @@ class Networking:
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def write(self, data):
-        #packed = msgpack.packb(data)
-        for packet in data:
-            self._socket.sendto(array.array('B', packet), (self._ip, self._port))
+        data = [item for sublist in data for item in sublist]
+        self._socket.sendto(array.array('B', data), (self._ip, self._port))
