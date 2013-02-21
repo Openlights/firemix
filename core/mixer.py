@@ -15,6 +15,7 @@ class Mixer:
         self.presets.append(SeparateStrandRGB(self))
 
     def tick(self):
+        self.presets[0].clr_cmd()
         self.presets[0].tick()
-        #if self.net is not None:
-        #    self.net.write(self.presets[0].get_cmd())
+        if self.net is not None:
+            self.net.write(self.presets[0].get_cmd())
