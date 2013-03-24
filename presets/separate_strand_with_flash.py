@@ -4,9 +4,9 @@ import math
 from lib.preset import Preset
 
 from lib.color_fade import Rainbow
-from lib.basic_tickers import fade, offset
+from lib.basic_tickers import fade, offset, flash
 
-class SeparateStrandRGB(Preset):
+class SeparateStrandWithFlash(Preset):
     outside = [(0, 0),
                (0, 1),
                (0, 2),
@@ -48,6 +48,8 @@ class SeparateStrandRGB(Preset):
               (3, 9)]
 
     def setup(self):
+        self.add_ticker(flash((), [1.0, 1.0, 1.0], 0.2, 0.8), 1)
+
         self.add_ticker(fade(self.outside, Rainbow))
         self.add_ticker(offset(fade(self.spokes, Rainbow), 0.05))
         self.add_ticker(offset(fade(self.star, Rainbow), 0.1))
