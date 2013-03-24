@@ -1,6 +1,6 @@
 from presets.rgb_fade import RGBFade
 from presets.separate_strand_rgb import SeparateStrandRGB
-
+from presets.separate_strand_with_flash import SeparateStrandWithFlash
 
 class Mixer:
 
@@ -12,7 +12,7 @@ class Mixer:
         self.demo_preset()
 
     def demo_preset(self):
-        self.presets.append(SeparateStrandRGB(self))
+        self.presets.append(SeparateStrandWithFlash(self))
 
     def tick(self):
         self.presets[0].clr_cmd()

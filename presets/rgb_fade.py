@@ -1,7 +1,8 @@
 import colorsys
 
 from lib.preset import Preset
-
+from lib.basic_tickers import fade, speed
+from lib.color_fade import Rainbow
 
 class RGBFade(Preset):
     """Simple RGB fade"""
@@ -9,11 +10,5 @@ class RGBFade(Preset):
     h = 0.0
 
     def setup(self):
-        pass
+        self.add_ticker( speed(fade((), Rainbow), 0.2) )
 
-    def tick(self):
-        rgb_color = [int(255.0 * c) for c in colorsys.hsv_to_rgb(self.h, 1.0, 1.0)]
-        self.set_all(rgb_color)
-        self.h += 0.00002 * self.tick_rate()
-        if self.h > 1.0:
-            self.h = 0.0
