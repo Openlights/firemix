@@ -1,9 +1,15 @@
 from lib.preset import Preset
 from lib.color_fade import Rainbow
-from lib.basic_tickers import fade, offset
+from lib.basic_tickers import fade, offset, speed, callback
 
 
-class SeparateStrandRGB(Preset):
+
+class FixtureStepFade(Preset):
+    """
+    demonstrates the callback ticker by stepping through a list of fixtures
+    and adding fade tickers for a new one every second
+    """
+
     outside = [(0, 0),
                (0, 1),
                (0, 2),
@@ -44,9 +50,15 @@ class SeparateStrandRGB(Preset):
               (3, 8),
               (3, 9)]
 
+    groups = [spikes, pentagon, star, spokes, outside]
+    all_fixtures = [f for group in groups for f in group]
+    idx = 0
+
     def setup(self):
-        self.add_ticker(fade(self.outside, Rainbow))
-        self.add_ticker(offset(fade(self.spokes, Rainbow), 0.05))
-        self.add_ticker(offset(fade(self.star, Rainbow), 0.1))
-        self.add_ticker(offset(fade(self.pentagon, Rainbow), 0.15))
-        self.add_ticker(offset(fade(self.spikes, Rainbow), 0.2))
+        self.add_ticker(speed(fade(self.all_fixtures[self.idx], Rainbow), 0.25))
+        self.add_ticker(callback(self.advance, 1.0))
+
+    def advance(self):
+        if self.idx < len(self.all_fixtures):
+            self.idx += 1
+            self.add_ticker(speed(fade(self.all_fixtures[self.idx], Rainbow), 0.25))

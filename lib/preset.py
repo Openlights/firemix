@@ -31,7 +31,7 @@ class Preset:
             integers between 0 and 255
             floats between 0 and 1
 
-        Tickers get a two arguments: the number of tickes that have
+        Tickers get a two arguments: the number of ticks that have
         passed since this preset started, and the approximate amount of time
         this preset has been running for, in seconds.
 
@@ -46,20 +46,21 @@ class Preset:
         for ticker, priority in sorted(self._tickers, key=lambda x: x[1]):
             for lights, color in ticker(self._ticks, time):
 
-                color = self._convert_color(color)
+                if lights is not None:
+                    color = self._convert_color(color)
 
-                if type(lights) == tuple:
-                    lights = [lights]
+                    if type(lights) == tuple:
+                        lights = [lights]
 
-                for light in lights:
-                    if len(light) == 0:
-                        self.set_all(color)
-                    elif len(light) == 1:
-                        self.set_strand(light[0], color)
-                    elif len(light) == 2:
-                        self.set_fixture(light[0], light[1], color)
-                    elif len(light) == 3:
-                        self.set(light[0], light[1], light[2], color)
+                    for light in lights:
+                        if len(light) == 0:
+                            self.set_all(color)
+                        elif len(light) == 1:
+                            self.set_strand(light[0], color)
+                        elif len(light) == 2:
+                            self.set_fixture(light[0], light[1], color)
+                        elif len(light) == 3:
+                            self.set(light[0], light[1], light[2], color)
 
         self._ticks += 1
 

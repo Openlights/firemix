@@ -53,3 +53,15 @@ def speed(ticker, multiple):
             yield(output)
 
     return ret
+
+def callback(fn, interval):
+    """
+    Registers a callback in your preset to be called at a given rate (in seconds).
+    This can be useful for presets that change behaviors over time.
+    """
+    def ret(ticks, time):
+        if (time % interval == 0):
+            fn()
+        yield(None, None)
+
+    return ret
