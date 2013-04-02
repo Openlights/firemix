@@ -52,6 +52,12 @@ class Mixer:
         """
         return self._presets[self._active_preset].__class__.__name__
 
+    def advance(self, dir=1):
+        """
+        Transitions to the next preset in the playlist (or previous, if dir == -1)
+        """
+        self._active_preset = (self._active_preset + dir) % len(self._presets)
+
     def tick(self):
         if len(self._presets) > 0:
             self._presets[0].clr_cmd()
