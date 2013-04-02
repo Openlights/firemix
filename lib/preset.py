@@ -65,7 +65,7 @@ class Preset:
         self._ticks += 1
 
     def tick_rate(self):
-        return self._mixer.tick_rate
+        return self._mixer.get_tick_rate()
 
     def clr_cmd(self):
         self._cmd = []

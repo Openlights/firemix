@@ -1,1 +1,4 @@
-__author__ = 'jonathan.evans'
+from fixture_step_fade import FixtureStepFade
+from rgb_fade import RGBFade
+from separate_strand_rgb import SeparateStrandRGB
+from separate_strand_with_flash import SeparateStrandWithFlash
