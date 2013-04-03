@@ -9,13 +9,12 @@ log = logging.getLogger("FireMix.core.SceneLoader")
 
 class SceneLoader:
     """
-    Returns a Scene object constructed from a JSON file
+    Constructs a Scene object from a JSON file
     """
 
     def __init__(self, filename):
         self._filename = filename
         self._data = None
-        return self.load()
 
     def load(self):
         """
@@ -29,4 +28,5 @@ class SceneLoader:
                 log.error("Error loading scene data from %s" % self._filename)
                 self._data = None
                 return None
+        self._data["filepath"] = self._filename
         return Scene(self._data)

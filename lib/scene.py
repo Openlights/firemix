@@ -4,5 +4,5 @@ import unittest
 
 class Scene:
 
-    def __init__(self):
-        pass
+    def __init__(self, data):
+        self._data = data
