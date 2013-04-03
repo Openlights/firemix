@@ -60,8 +60,11 @@ def callback(fn, interval):
     This can be useful for presets that change behaviors over time.
     """
     def ret(ticks, time):
-        if (time % interval == 0):
+        if (time > 0 and (time - ret.last_time > interval)):
             fn()
+            ret.last_time = time
         yield(None, None)
+
+    ret.last_time = 0.0
 
     return ret

@@ -40,6 +40,12 @@ class Preset:
         them to override the lower-priority tickers.
         """
         self._tickers.append((ticker, priority))
+        return ticker
+
+    def remove_ticker(self, ticker):
+        for (t, p) in self._tickers:
+            if t == ticker:
+                self._tickers.remove((t, p))
 
     def tick(self):
         time = self._ticks * (1.0 / self.tick_rate())
