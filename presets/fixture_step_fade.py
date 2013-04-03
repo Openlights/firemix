@@ -61,6 +61,9 @@ class FixtureStepFade(Preset):
         self.active_ticker = self.add_ticker(speed(fade(self.all_fixtures[self.idx], Rainbow), 0.25), 1)
         self.add_ticker(callback(self.advance, 0.1), 1)
 
+    def can_transition(self):
+        return (self.idx == 0)
+
     def advance(self):
         if self.idx < len(self.all_fixtures) - 1:
             self.remove_ticker(self.constant_ticker)

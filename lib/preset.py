@@ -12,8 +12,18 @@ class Preset:
         self.setup()
 
     def setup(self):
-        """Override this method to initialize your tickers."""
+        """
+        Override this method to initialize your tickers.
+        """
         pass
+
+    def can_transition(self):
+        """
+        Override this method to define clear points at which the mixer can
+        transition to or from the preset.  By default, the mixer can
+        transition at any time.
+        """
+        return True
 
     def add_ticker(self, ticker, priority=0):
         """

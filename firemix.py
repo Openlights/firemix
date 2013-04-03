@@ -1,4 +1,4 @@
-import logging as log
+import logging
 import inspect
 
 import presets
@@ -7,7 +7,9 @@ from core.networking import Networking
 
 
 if __name__ == "__main__":
-    log.basicConfig(level=log.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
+    log = logging.getLogger("FireMix")
+
     log.info("Booting FireMix...")
 
     net = Networking()

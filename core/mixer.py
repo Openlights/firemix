@@ -1,4 +1,7 @@
 import threading
+import logging
+
+log = logging.getLogger("FireMix.Mixer")
 
 
 class Mixer:
@@ -8,29 +11,31 @@ class Mixer:
     device(s).
     """
 
-    def __init__(self, net=None, tick_rate=30.0):
+    def __init__(self, net=None, tick_rate=30.0, preset_duration=5.0):
         self._presets = []
         self._net = net
         self._tick_rate = tick_rate
         self._active_preset = 0
         self._tick_timer = None
-        self._duration = 0.0
+        self._duration = preset_duration
         self._elapsed = 0.0
         self._running = False
 
     def run(self):
         if not self._running:
-            self._tick_timer = threading.Timer(1 / self.get_tick_rate(), self.on_tick_timer)
+            self._tick_timer = threading.Timer(1.0 / self._tick_rate, self.on_tick_timer)
             self._tick_timer.start()
             self._running = True
+            self._elapsed = 0.0
 
     def stop(self):
         self._running = False
 
     def on_tick_timer(self):
         self.tick()
+        self._elapsed += (1.0 / self._tick_rate)
         if self._running:
-            self._tick_timer = threading.Timer(1 / self.get_tick_rate(), self.on_tick_timer)
+            self._tick_timer = threading.Timer(1.0 / self._tick_rate, self.on_tick_timer)
             self._tick_timer.start()
 
     def add_preset(self, preset):
@@ -78,10 +83,15 @@ class Mixer:
         Transitions to the next preset in the playlist (or previous, if dir == -1)
         """
         self._active_preset = (self._active_preset + dir) % len(self._presets)
+        log.info("Advanced to %s" % self.get_active_preset_name())
 
     def tick(self):
         if len(self._presets) > 0:
-            self._presets[0].clr_cmd()
-            self._presets[0].tick()
+            self._presets[self._active_preset].clr_cmd()
+            self._presets[self._active_preset].tick()
             if self._net is not None:
-                self._net.write(self._presets[0].get_cmd())
+                self._net.write(self._presets[self._active_preset].get_cmd())
+
+            if (self._elapsed >= self._duration) and self._presets[self._active_preset].can_transition():
+                self.advance()
+                self._elapsed = 0.0
