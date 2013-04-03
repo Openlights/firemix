@@ -1,4 +1,4 @@
-import math
+import unittest
 import colorsys
 
 _color_sys_converters = {
@@ -52,3 +52,19 @@ class ColorFade:
 Rainbow = ColorFade("hsv", [(0, 1, 1), (1, 1, 1)])
 RedGreen = ColorFade("rgb", [(1, 0, 0), (0, 1, 0), (1, 0, 0)])
 RGB = ColorFade("rgb", [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 0, 0)])
+
+
+class TestColorFade(unittest.TestCase):
+
+    def test_two_color_hsv(self):
+        uut = ColorFade("hsv", [(0, 1, 1), (1, 1, 1)])
+        self.assertEqual(uut.get_color(0), (1.0, 0, 0))
+        self.assertEqual(uut.get_color(0.5), (0, 1.0, 1.0))
+        self.assertEqual(uut.get_color(1.0), (1.0, 0, 0))
+
+    def test_three_color_rgb(self):
+        uut = ColorFade("rgb", [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 0, 0)])
+        self.assertEqual(uut.get_color(0), (1.0, 0, 0))
+        self.assertEqual(uut.get_color(0.5), (0, 0.5, 0.5))
+        self.assertEqual(uut.get_color(0.75), (0.25, 0, 0.75))
+        self.assertEqual(uut.get_color(1.0), (1.0, 0, 0))
