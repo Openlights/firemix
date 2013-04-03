@@ -1,4 +1,4 @@
-
+import unittest
 
 
 class Preset:
@@ -91,22 +91,23 @@ class Preset:
 
     def set_all(self, color):
         self._cmd.append([0x21, 0x00, 0x03, color[0], color[1], color[2]])
-        #self._mixer.net.write([-1, -1, -1, color[0], color[1], color[2]])
 
     def set_strand(self, strand, color):
         self._cmd.append([0x22, 0x00, 0x04, strand, color[0], color[1], color[2]])
-        #self._mixer.net.write([strand, -1, -1, color[0], color[1], color[2]])
 
     def set_fixture(self, strand, address, color):
         self._cmd.append([0x23, 0x00, 0x05, strand, address, color[0], color[1], color[2]])
-        #self._mixer.net.write([strand, address, -1, color[0], color[1], color[2]])
 
     def set(self, strand, address, pixel, color):
         self._cmd.append([0x24, 0x00, 0x06, strand, address, pixel, color[0], color[1], color[2]])
-        #self._mixer.net.write([strand, address, pixel, color[0], color[1], color[2]])
 
     def _convert_color(self, color):
         if (type(color[0]) == float) or (type(color[1]) == float) or (type(color[2]) == float):
             return tuple([int(c*255) for c in color])
         else:
             return color
+
+
+class TestPreset(unittest.TestCase):
+
+    pass
