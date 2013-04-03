@@ -1,3 +1,5 @@
+import threading
+
 
 class Mixer:
     """
@@ -11,6 +13,25 @@ class Mixer:
         self._net = net
         self._tick_rate = tick_rate
         self._active_preset = 0
+        self._tick_timer = None
+        self._duration = 0.0
+        self._elapsed = 0.0
+        self._running = False
+
+    def run(self):
+        if not self._running:
+            self._tick_timer = threading.Timer(1 / self.get_tick_rate(), self.on_tick_timer)
+            self._tick_timer.start()
+            self._running = True
+
+    def stop(self):
+        self._running = False
+
+    def on_tick_timer(self):
+        self.tick()
+        if self._running:
+            self._tick_timer = threading.Timer(1 / self.get_tick_rate(), self.on_tick_timer)
+            self._tick_timer.start()
 
     def add_preset(self, preset):
         """

@@ -1,17 +1,10 @@
 import logging as log
-import threading
-import sys
 import inspect
 
 import presets
 from core.mixer import Mixer
 from core.networking import Networking
 
-
-def on_timer():
-    global mixer
-    mixer.tick()
-    threading.Timer(1 / mixer.get_tick_rate(), on_timer).start()
 
 if __name__ == "__main__":
     log.basicConfig(level=log.DEBUG)
@@ -27,7 +20,7 @@ if __name__ == "__main__":
 
     log.info("The current preset is %s" % mixer.get_active_preset_name())
 
-    threading.Timer(1 / mixer.get_tick_rate(), on_timer).start()
+    mixer.run()
 
     while True:
         pass
