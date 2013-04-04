@@ -18,7 +18,7 @@ if __name__ == "__main__":
     scene = SceneLoader("data/scenes/demo.json").load()
     log.info("Loaded scene from %s", scene._data["filepath"])
 
-    mixer = Mixer(net=net)
+    mixer = Mixer(net=net, scene=scene)
 
 
     log.info("Loading presets...")

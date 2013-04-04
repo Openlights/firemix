@@ -11,9 +11,10 @@ class Mixer:
     device(s).
     """
 
-    def __init__(self, net=None, tick_rate=30.0, preset_duration=5.0):
+    def __init__(self, net=None, scene=None, tick_rate=30.0, preset_duration=10.0):
         self._presets = []
         self._net = net
+        self._scene = scene
         self._tick_rate = tick_rate
         self._active_preset = 0
         self._tick_timer = None
@@ -95,3 +96,6 @@ class Mixer:
             if (self._elapsed >= self._duration) and self._presets[self._active_preset].can_transition():
                 self.advance()
                 self._elapsed = 0.0
+
+    def scene(self):
+        return self._scene

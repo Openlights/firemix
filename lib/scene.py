@@ -10,6 +10,7 @@ class Scene:
 
     def __init__(self, data):
         self._data = data
+        self._fixtures = None
 
     def extents(self):
         return tuple(self._data.get("extents", (0, 0)))
@@ -18,4 +19,12 @@ class Scene:
         return self._data.get("name", "")
 
     def fixtures(self):
-        fl = [Fixture(fd) for fd in self._data["fixtures"]]
+        if self._fixtures is None:
+            self._fixtures = [Fixture(fd) for fd in self._data["fixtures"]]
+        return self._fixtures
+
+    def fixture(self, strand, address):
+        for f in self.fixtures():
+            if f.strand() == strand and f.address() == address:
+                return f
+        return None

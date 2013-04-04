@@ -107,6 +107,9 @@ class Preset:
         else:
             return color
 
+    def scene(self):
+        return self._mixer.scene()
+
 
 class TestPreset(unittest.TestCase):
 
