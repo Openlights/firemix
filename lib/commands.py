@@ -27,7 +27,7 @@ class SetAll(Command):
     """
 
     def __init__(self, color):
-        Command.__init__()
+        Command.__init__(self)
         if not isinstance(color, tuple):
             raise ValueError("SetAll() expects a 3-tuple for color")
         self._color = color
@@ -50,7 +50,7 @@ class SetStrand(Command):
     """
 
     def __init__(self, strand, color):
-        Command.__init__()
+        Command.__init__(self)
         if not isinstance(color, tuple):
             raise ValueError("SetStrand() expects a 3-tuple for color")
         self._strand = strand
@@ -75,7 +75,7 @@ class SetFixture(Command):
     """
 
     def __init__(self, strand, address, color):
-        Command.__init__()
+        Command.__init__(self)
         if not isinstance(color, tuple):
             raise ValueError("SetFixture() expects a 3-tuple for color")
         self._strand = strand
@@ -102,7 +102,7 @@ class SetPixel(Command):
     """
 
     def __init__(self, strand, address, pixel, color):
-        Command.__init__()
+        Command.__init__(self)
         if not isinstance(color, tuple):
             raise ValueError("SetPixel() expects a 3-tuple for color")
         self._strand = strand

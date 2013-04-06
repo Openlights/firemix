@@ -115,7 +115,7 @@ class Mixer:
                     self._next_preset = (self._next_preset + 1) % len(self._presets)
 
             if self._net is not None:
-                self._net.write(self._presets[self._active_preset].get_cmd())
+                self._net.write(self._presets[self._active_preset].get_cmd_packed())
 
             if (self._elapsed >= self._duration) and self._presets[self._active_preset].can_transition():
                 self.advance()

@@ -88,8 +88,8 @@ class Preset:
     def clr_cmd(self):
         self._cmd = []
 
-    def get_cmd(self):
-        return self._cmd
+    def get_cmd_packed(self):
+        return [cmd.pack() for cmd in self._cmd]
 
     def add_cmd(self, cmd):
         self._cmd.append(cmd)
