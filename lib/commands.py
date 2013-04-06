@@ -6,7 +6,7 @@ class Command:
     Base class for all commands
     """
     def __init__(self):
-        pass
+        self._color = (0, 0, 0)
 
     def pack(self):
         """
@@ -19,6 +19,9 @@ class Command:
         Pass in a serialized bytestream to decode it into a command object
         """
         pass
+
+    def get_color(self):
+        return self._color
 
 
 class SetAll(Command):

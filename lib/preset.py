@@ -8,7 +8,7 @@ class Preset:
 
     def __init__(self, mixer):
         self._mixer = mixer
-        self._cmd = []
+        self._commands = []
         self._tickers = []
         self._ticks = 0
         self.setup()
@@ -72,27 +72,30 @@ class Preset:
 
                     for light in lights:
                         if len(light) == 0:
-                            self.add_cmd(SetAll(color))
+                            self.add_command(SetAll(color))
                         elif len(light) == 1:
-                            self.add_cmd(SetStrand(light[0], color))
+                            self.add_command(SetStrand(light[0], color))
                         elif len(light) == 2:
-                            self.add_cmd(SetFixture(light[0], light[1], color))
+                            self.add_command(SetFixture(light[0], light[1], color))
                         elif len(light) == 3:
-                            self.add_cmd(SetPixel(light[0], light[1], light[2], color))
+                            self.add_command(SetPixel(light[0], light[1], light[2], color))
 
         self._ticks += 1
 
     def tick_rate(self):
         return self._mixer.get_tick_rate()
 
-    def clr_cmd(self):
-        self._cmd = []
+    def clear_commands(self):
+        self._commands = []
 
-    def get_cmd_packed(self):
-        return [cmd.pack() for cmd in self._cmd]
+    def get_commands(self):
+        return self._commands
 
-    def add_cmd(self, cmd):
-        self._cmd.append(cmd)
+    def get_commands_packed(self):
+        return [cmd.pack() for cmd in self._commands]
+
+    def add_command(self, cmd):
+        self._commands.append(cmd)
 
     def _convert_color(self, color):
         if (type(color[0]) == float) or (type(color[1]) == float) or (type(color[2]) == float):
