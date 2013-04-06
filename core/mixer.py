@@ -17,6 +17,10 @@ class Mixer:
         self._scene = scene
         self._tick_rate = tick_rate
         self._active_preset = 0
+        self._next_preset = 1
+        self._in_transition = False
+        self._transition_duration = 2.0
+        self._transition_start_time = 0.0
         self._tick_timer = None
         self._duration = preset_duration
         self._elapsed = 0.0
@@ -86,10 +90,30 @@ class Mixer:
         self._active_preset = (self._active_preset + dir) % len(self._presets)
         log.info("Advanced to %s" % self.get_active_preset_name())
 
+    def start_transition(self, next=None):
+        if next is None:
+            next = self._next_preset
+        self._transition_start_time = self._elapsed
+        self._in_transition = True
+
+
     def tick(self):
         if len(self._presets) > 0:
             self._presets[self._active_preset].clr_cmd()
             self._presets[self._active_preset].tick()
+
+            # Handle transition by rendering both the active and the next preset, and blending them together
+            if self._in_transition:
+                transition_progress = (self._elapsed - self._transition_start_time) / self._transition_duration
+                self._presets[self._next_preset].clr_cmd()
+                self._presets[self._next_preset].tick()
+
+                # Exit from transition state after the duration has elapsed
+                if transition_progress >= 1.0:
+                    self._in_transition = False
+                    self._active_preset = self._next_preset
+                    self._next_preset = (self._next_preset + 1) % len(self._presets)
+
             if self._net is not None:
                 self._net.write(self._presets[self._active_preset].get_cmd())
 

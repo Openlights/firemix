@@ -1,5 +1,7 @@
 import unittest
 
+from lib.commands import SetAll, SetStrand, SetFixture, SetPixel
+
 
 class Preset:
     """Base Preset.  Does nothing."""
@@ -70,13 +72,13 @@ class Preset:
 
                     for light in lights:
                         if len(light) == 0:
-                            self.set_all(color)
+                            self.add_cmd(SetAll(color))
                         elif len(light) == 1:
-                            self.set_strand(light[0], color)
+                            self.add_cmd(SetStrand(light[0], color))
                         elif len(light) == 2:
-                            self.set_fixture(light[0], light[1], color)
+                            self.add_cmd(SetFixture(light[0], light[1], color))
                         elif len(light) == 3:
-                            self.set(light[0], light[1], light[2], color)
+                            self.add_cmd(SetPixel(light[0], light[1], light[2], color))
 
         self._ticks += 1
 
@@ -89,17 +91,8 @@ class Preset:
     def get_cmd(self):
         return self._cmd
 
-    def set_all(self, color):
-        self._cmd.append([0x21, 0x00, 0x03, color[0], color[1], color[2]])
-
-    def set_strand(self, strand, color):
-        self._cmd.append([0x22, 0x00, 0x04, strand, color[0], color[1], color[2]])
-
-    def set_fixture(self, strand, address, color):
-        self._cmd.append([0x23, 0x00, 0x05, strand, address, color[0], color[1], color[2]])
-
-    def set(self, strand, address, pixel, color):
-        self._cmd.append([0x24, 0x00, 0x06, strand, address, pixel, color[0], color[1], color[2]])
+    def add_cmd(self, cmd):
+        self._cmd.append(cmd)
 
     def _convert_color(self, color):
         if (type(color[0]) == float) or (type(color[1]) == float) or (type(color[2]) == float):
