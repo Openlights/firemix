@@ -134,3 +134,30 @@ class SetPixel(Command):
         self._pixel = data[5]
         self._color = (data[6], data[7], data[8])
         return (self._strand, self._address, self._pixel, self._color)
+
+
+def commands_overlap(first, second):
+    """
+    Returns True if the two given commands overlap in their output targets (regardless of color)
+    """
+    if isinstance(first, SetAll) or isinstance(second, SetAll):
+        # SetAll will conflict with whatever
+        return True
+
+    if isinstance(first, SetStrand) or isinstance(second, SetStrand):
+        # By short-circuit above, we know that second will have a _strand attribute
+        return (first._strand == second._strand)
+
+    if isinstance(first, SetFixture) or isinstance(second, SetFixture):
+        # ditto
+        return (first._strand == second._strand and first._address == second._address)
+
+    if isinstance(first, SetPixel) or isinstance(second, SetPixel):
+        # ditto
+        return (first._strand == second._strand
+                and first._address == second._address
+                and first._pixel == second._pixel)
+
+    # Oops.  Never should get here unless we add other commands that don't affect output
+    return False
+

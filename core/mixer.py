@@ -1,7 +1,7 @@
 import threading
 import logging
 
-from lib.commands import SetAll, SetStrand, SetFixture, SetPixel
+from lib.commands import commands_overlap
 
 log = logging.getLogger("FireMix.Mixer")
 
@@ -161,18 +161,30 @@ class Mixer:
             if blend_state < 0.0 or blend_state > 1.0:
                 raise ValueError("blend_state %f out of range: must be between 0.0 and 1.0" % blend_state)
 
-        commands = self._presets[first].get_commands()
+        commands = self.filter_and_sort_commands(self._presets[first].get_commands())
 
         if second is not None:
-            second_commands = self._presets[second].get_commands()
+            second_commands = self.filter_and_sort_commands(self._presets[second].get_commands())
             commands = self.blend_commands(commands, second_commands)
 
         if self._net is not None:
             self._net.write([cmd.pack() for cmd in commands])
 
+    def filter_and_sort_commands(self, command_list):
+        """
+        Given an input command list, returns an output that has all conflicting
+        commands removed by priority.  The resulting list will be sorted with
+        highest-priority commands last (i.e. ready for transmission)
+        """
+        # TODO: Implement me
+        return command_list
+
     def blend_commands(self, first, second):
         """
         Blends the output of two command lists
         """
-        for first_command in first:
+        for fc in first:
+            sc = [cmd for cmd in second if commands_overlap(fc, cmd)]
 
+        # TODO: Implement me
+        return first
