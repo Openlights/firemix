@@ -164,10 +164,15 @@ class Mixer:
         commands = self._presets[first].get_commands()
 
         if second is not None:
-            pass
+            second_commands = self._presets[second].get_commands()
+            commands = self.blend_commands(commands, second_commands)
 
         if self._net is not None:
             self._net.write([cmd.pack() for cmd in commands])
 
-    def additive_blend(self, cmd1, cmd2):
-        pass
+    def blend_commands(self, first, second):
+        """
+        Blends the output of two command lists
+        """
+        for first_command in first:
+

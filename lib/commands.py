@@ -7,6 +7,7 @@ class Command:
     """
     def __init__(self):
         self._color = (0, 0, 0)
+        self._priority = 0
 
     def pack(self):
         """
@@ -23,17 +24,21 @@ class Command:
     def get_color(self):
         return self._color
 
+    def get_priority(self):
+        return self._priority
+
 
 class SetAll(Command):
     """
     Sets all pixels to the same color
     """
 
-    def __init__(self, color):
+    def __init__(self, color, priority):
         Command.__init__(self)
         if not isinstance(color, tuple):
             raise ValueError("SetAll() expects a 3-tuple for color")
         self._color = color
+        self._priority = priority
 
     def pack(self):
         return [0x21, 0x00, 0x03, self._color[0], self._color[1], self._color[2]]
@@ -52,12 +57,13 @@ class SetStrand(Command):
     Sets all pixels in a strand to the same color
     """
 
-    def __init__(self, strand, color):
+    def __init__(self, strand, color, priority):
         Command.__init__(self)
         if not isinstance(color, tuple):
             raise ValueError("SetStrand() expects a 3-tuple for color")
         self._strand = strand
         self._color = color
+        self._priority = priority
 
     def pack(self):
         return [0x22, 0x00, 0x04, self._strand, self._color[0], self._color[1], self._color[2]]
@@ -77,13 +83,14 @@ class SetFixture(Command):
     Sets all pixels in a fixture to the same color
     """
 
-    def __init__(self, strand, address, color):
+    def __init__(self, strand, address, color, priority):
         Command.__init__(self)
         if not isinstance(color, tuple):
             raise ValueError("SetFixture() expects a 3-tuple for color")
         self._strand = strand
         self._address = address
         self._color = color
+        self._priority = priority
 
     def pack(self):
         return [0x23, 0x00, 0x05, self._strand, self._address, self._color[0], self._color[1], self._color[2]]
@@ -104,7 +111,7 @@ class SetPixel(Command):
     Sets all pixels in a fixture to the same color
     """
 
-    def __init__(self, strand, address, pixel, color):
+    def __init__(self, strand, address, pixel, color, priority):
         Command.__init__(self)
         if not isinstance(color, tuple):
             raise ValueError("SetPixel() expects a 3-tuple for color")
@@ -112,6 +119,7 @@ class SetPixel(Command):
         self._address = address
         self._pixel = pixel
         self._color = color
+        self._priority = priority
 
     def pack(self):
         return [0x24, 0x00, 0x06, self._strand, self._address, self._pixel, self._color[0], self._color[1], self._color[2]]

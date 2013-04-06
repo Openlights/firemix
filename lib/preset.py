@@ -72,13 +72,13 @@ class Preset:
 
                     for light in lights:
                         if len(light) == 0:
-                            self.add_command(SetAll(color))
+                            self.add_command(SetAll(color, priority))
                         elif len(light) == 1:
-                            self.add_command(SetStrand(light[0], color))
+                            self.add_command(SetStrand(light[0], color, priority))
                         elif len(light) == 2:
-                            self.add_command(SetFixture(light[0], light[1], color))
+                            self.add_command(SetFixture(light[0], light[1], color, priority))
                         elif len(light) == 3:
-                            self.add_command(SetPixel(light[0], light[1], light[2], color))
+                            self.add_command(SetPixel(light[0], light[1], light[2], color, priority))
 
         self._ticks += 1
 
