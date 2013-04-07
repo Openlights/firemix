@@ -22,7 +22,11 @@ def sigint_handler(signum, frame):
         print "\n------ PROFILING STATS ------"
         for s in stats:
             print "%s\t[%0.3f]" % (s[0], s[1])
-        print "-----------------------------"
+        print   "------ TICK TIME HISTOGRAM ------"
+        print "Total frames: ", mixer._num_frames
+        print "Elapsed time: %0.2f seconds" % (mixer._stop_time - mixer._start_time)
+        for _, c in enumerate(mixer._tick_time_data):
+            print "[%d fps]:\t%4d\t%0.2f%%" % (c, mixer._tick_time_data[c], (float(mixer._tick_time_data[c]) / mixer._num_frames) * 100.0)
     sys.exit(0)
 
 

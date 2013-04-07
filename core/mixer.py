@@ -1,5 +1,6 @@
 import threading
 import logging
+import time
 
 from lib.commands import commands_overlap
 
@@ -28,6 +29,11 @@ class Mixer:
         self._running = False
         self._enable_rendering = True
         self._output_buffer = None
+        self._tick_time_data = dict()
+        self._num_frames = 0
+        self._last_frame_time = 0.0
+        self._start_time = 0.0
+        self._stop_time = 0.0
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -48,9 +54,13 @@ class Mixer:
             self._tick_timer.start()
             self._running = True
             self._elapsed = 0.0
+            self._num_frames = 0
+            self._start_time = time.time()
+            self._last_frame_time = time.time()
 
     def stop(self):
         self._running = False
+        self._stop_time = time.time()
 
     def on_tick_timer(self):
         self.tick()
@@ -106,6 +116,7 @@ class Mixer:
 
 
     def tick(self):
+        self._num_frames += 1
         if len(self._presets) > 0:
             self._presets[self._active_preset].clear_commands()
             self._presets[self._active_preset].tick()
@@ -143,6 +154,12 @@ class Mixer:
             if (self._elapsed >= self._duration) and self._presets[self._active_preset].can_transition():
                 self.start_transition()
                 self._elapsed = 0.0
+
+        tick_time = (time.time() - self._last_frame_time)
+        self._last_frame_time = time.time()
+        if tick_time > 0.0:
+            index = int((1.0 / tick_time))
+            self._tick_time_data[index] = self._tick_time_data.get(index, 0) + 1
 
     def scene(self):
         return self._scene
