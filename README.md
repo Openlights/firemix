@@ -10,3 +10,10 @@ Installation / Development
 
     pip install -r requirements.txt
     python firemix.py
+
+
+Preset Development
+------------------
+
+Add your preset to `presets/__init__.py` to include it in the playlist.
+Send pull requests with presets!

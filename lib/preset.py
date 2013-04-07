@@ -1,4 +1,6 @@
+import unittest
 
+from lib.commands import SetAll, SetStrand, SetFixture, SetPixel
 
 
 class Preset:
@@ -6,7 +8,7 @@ class Preset:
 
     def __init__(self, mixer):
         self._mixer = mixer
-        self._cmd = []
+        self._commands = []
         self._tickers = []
         self._ticks = 0
         self.setup()
@@ -70,43 +72,41 @@ class Preset:
 
                     for light in lights:
                         if len(light) == 0:
-                            self.set_all(color)
+                            self.add_command(SetAll(color, priority))
                         elif len(light) == 1:
-                            self.set_strand(light[0], color)
+                            self.add_command(SetStrand(light[0], color, priority))
                         elif len(light) == 2:
-                            self.set_fixture(light[0], light[1], color)
+                            self.add_command(SetFixture(light[0], light[1], color, priority))
                         elif len(light) == 3:
-                            self.set(light[0], light[1], light[2], color)
+                            self.add_command(SetPixel(light[0], light[1], light[2], color, priority))
 
         self._ticks += 1
 
     def tick_rate(self):
         return self._mixer.get_tick_rate()
 
-    def clr_cmd(self):
-        self._cmd = []
+    def clear_commands(self):
+        self._commands = []
 
-    def get_cmd(self):
-        return self._cmd
+    def get_commands(self):
+        return self._commands
 
-    def set_all(self, color):
-        self._cmd.append([0x21, 0x00, 0x03, color[0], color[1], color[2]])
-        #self._mixer.net.write([-1, -1, -1, color[0], color[1], color[2]])
+    def get_commands_packed(self):
+        return [cmd.pack() for cmd in self._commands]
 
-    def set_strand(self, strand, color):
-        self._cmd.append([0x22, 0x00, 0x04, strand, color[0], color[1], color[2]])
-        #self._mixer.net.write([strand, -1, -1, color[0], color[1], color[2]])
-
-    def set_fixture(self, strand, address, color):
-        self._cmd.append([0x23, 0x00, 0x05, strand, address, color[0], color[1], color[2]])
-        #self._mixer.net.write([strand, address, -1, color[0], color[1], color[2]])
-
-    def set(self, strand, address, pixel, color):
-        self._cmd.append([0x24, 0x00, 0x06, strand, address, pixel, color[0], color[1], color[2]])
-        #self._mixer.net.write([strand, address, pixel, color[0], color[1], color[2]])
+    def add_command(self, cmd):
+        self._commands.append(cmd)
 
     def _convert_color(self, color):
         if (type(color[0]) == float) or (type(color[1]) == float) or (type(color[2]) == float):
             return tuple([int(c*255) for c in color])
         else:
             return color
+
+    def scene(self):
+        return self._mixer.scene()
+
+
+class TestPreset(unittest.TestCase):
+
+    pass
