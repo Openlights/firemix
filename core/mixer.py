@@ -23,7 +23,7 @@ class Mixer:
         self._active_preset = 0
         self._next_preset = 1
         self._in_transition = False
-        self._transition_duration = 2.0
+        self._transition_duration = 1.25
         self._tick_timer = None
         self._duration = preset_duration
         self._elapsed = 0.0
