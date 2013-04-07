@@ -8,20 +8,14 @@ class Command:
     def __init__(self):
         self._color = (0, 0, 0)
         self._priority = 0
+        self._strand = -1
+        self._address = -1
+        self._pixel = -1
 
     def __repr__(self):
-        try:
-            strand = self._strand
-        except:
-            strand = -1
-        try:
-            address = self._address
-        except:
-            address = -1
-        try:
-            pixel = self._pixel
-        except:
-            pixel = -1
+        strand = self._strand
+        address = self._address
+        pixel = self._pixel
 
         return "%s: P%d [%d:%d:%d] (%d, %d, %d)" % (self.__class__, self._priority,
                                                     strand, address, pixel,
@@ -44,6 +38,15 @@ class Command:
 
     def get_priority(self):
         return self._priority
+
+    def get_strand(self):
+        return self._strand
+
+    def get_address(self):
+        return self._address
+
+    def get_pixel(self):
+        return self._pixel
 
 
 class SetAll(Command):

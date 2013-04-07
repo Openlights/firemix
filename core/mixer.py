@@ -1,8 +1,9 @@
 import threading
 import logging
 import time
+import operator
 
-from lib.commands import commands_overlap, blend_commands
+from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
 
 log = logging.getLogger("FireMix.Mixer")
 
@@ -178,14 +179,17 @@ class Mixer:
             if blend_state < 0.0 or blend_state > 1.0:
                 raise ValueError("blend_state %f out of range: must be between 0.0 and 1.0" % blend_state)
 
+        #self.reset_output_buffer()
         commands = self.filter_and_sort_commands(self._presets[first].get_commands())
+        self.render_command_list(commands)
 
         if second is not None:
             second_commands = self.filter_and_sort_commands(self._presets[second].get_commands())
-            commands = self.merge_command_lists(commands, second_commands)
+            self.render_command_list(second_commands, blend_state)
 
         if self._net is not None:
-            self._net.write([cmd.pack() for cmd in commands])
+            self._net.write_output_buffer(self._output_buffer)
+            #self._net.write([cmd.pack() for cmd in commands])
 
     def filter_and_sort_commands(self, command_list):
         """
@@ -193,21 +197,65 @@ class Mixer:
         commands removed by priority.  The resulting list will be sorted with
         highest-priority commands last (i.e. ready for transmission)
         """
+        # TODO: Implement filtering if needed
         return sorted(command_list, key=lambda x: x._priority)
 
-    def merge_command_lists(self, first, second):
+    def reset_output_buffer(self):
         """
-        Merges the output of two command lists
+        Clears the output buffer
         """
-        out = []
-        for fc in first:
-            scl = [cmd for cmd in second if commands_overlap(fc, cmd)]
-            if len(scl) == 0:
-                out.append(fc)
-            else:
-                for sc in scl:
-                    out.append(blend_commands(fc, sc))
+        # TODO: Is this output buffer design slow enough that switching to NumPy would be useful?
+        for strand in self._output_buffer:
+            for address in self._output_buffer[strand]:
+                for i, _ in enumerate(self._output_buffer[strand][address]):
+                    self._output_buffer[strand][address][i] = (0, 0, 0)
 
+    def render_command_list(self, list, blend_state=1.0):
+        """
+        Renders the output of a command list to the output buffer.
+        Commands are rendered in FIFO overlap style.  Run the list through
+        filter_and_sort_commands() beforehand.
+        If the output buffer is not zero (black) at a command's target,
+        the output will be additively blended according to the blend_state
+        (0.0 = 100% original, 1.0 = 100% new)
+        """
+        for command in list:
+            color = command.get_color()
+            if isinstance(command, SetAll):
+                for strand in self._output_buffer:
+                    for address in self._output_buffer[strand]:
+                        for pixel, _ in enumerate(self._output_buffer[strand][address]):
+                            self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
 
-        # TODO: Implement me
-        return first
+            elif isinstance(command, SetStrand):
+                strand = command.get_strand()
+                for address in self._output_buffer[strand]:
+                    for pixel, _ in enumerate(self._output_buffer[strand][address]):
+                        self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
+
+            elif isinstance(command, SetFixture):
+                strand = command.get_strand()
+                address = command.get_address()
+                for pixel, _ in enumerate(self._output_buffer[strand][address]):
+                    self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
+
+            elif isinstance(command, SetPixel):
+                strand = command.get_strand()
+                address = command.get_address()
+                pixel = command.get_pixel()
+                self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
+
+    def blend(self, color1, color2, blend_state):
+        """
+        Returns a 3-tuple (R, G, B) of the equal-weighted blend between the two input colors.
+        """
+        if blend_state == 0.0:
+            return color1
+        elif blend_state == 1.0:
+            return color2
+        else:
+            # TODO: This blending operation desaturates the output during transition.  Switch to HSV blending on Hue
+            r1, g1, b1 = [int(el * (1.0 - blend_state)) for el in color1]
+            r2, g2, b2 = [int(el * (blend_state)) for el in color2]
+            return (r1 + r2, g1 + g2, b1 + b2)
+
