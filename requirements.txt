@@ -1,2 +1,3 @@
 yappi>=0.62
 msgpack-python>=0.3.0
+numpy>=1.6.2

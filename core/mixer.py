@@ -1,7 +1,7 @@
 import threading
 import logging
 import time
-import operator
+import numpy as np
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
 
@@ -15,7 +15,7 @@ class Mixer:
     device(s).
     """
 
-    def __init__(self, net=None, scene=None, tick_rate=30.0, preset_duration=5.0):
+    def __init__(self, net=None, scene=None, tick_rate=25.0, preset_duration=5.0):
         self._presets = []
         self._net = net
         self._scene = scene
@@ -30,11 +30,14 @@ class Mixer:
         self._running = False
         self._enable_rendering = True
         self._output_buffer = None
+        self._max_fixtures = 0
+        self._max_pixels = 0
         self._tick_time_data = dict()
         self._num_frames = 0
         self._last_frame_time = 0.0
         self._start_time = 0.0
         self._stop_time = 0.0
+        self._strand_keys = list()
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -43,11 +46,16 @@ class Mixer:
         else:
             log.info("Initializing preset rendering buffer")
             fh = self._scene.fixture_hierarchy()
-            self._output_buffer = dict()
             for strand in fh:
-                self._output_buffer[strand] = dict()
-                for address in fh[strand]:
-                    self._output_buffer[strand][address] = [(0, 0, 0)] * fh[strand][address].pixels()
+                self._strand_keys.append(strand)
+                if len(fh[strand]) > self._max_fixtures:
+                    self._max_fixtures = len(fh[strand])
+                for fixture in fh[strand]:
+                    if fh[strand][fixture].pixels() > self._max_pixels:
+                        self._max_pixels = fh[strand][fixture].pixels()
+            log.info("Loaded scene with %d strands, will create array of %d fixtures by %d pixels." % (len(self._strand_keys), self._max_fixtures, self._max_pixels))
+            self._output_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+
 
     def run(self):
         if not self._running:
@@ -58,6 +66,7 @@ class Mixer:
             self._num_frames = 0
             self._start_time = time.time()
             self._last_frame_time = time.time()
+            self.reset_output_buffer()
 
     def stop(self):
         self._running = False
@@ -188,8 +197,10 @@ class Mixer:
             self.render_command_list(second_commands, blend_state)
 
         if self._net is not None:
-            self._net.write_output_buffer(self._output_buffer)
-            #self._net.write([cmd.pack() for cmd in commands])
+            data = dict()
+            for k, v in enumerate(self._strand_keys):
+                data[v] = self._output_buffer[k].tolist()
+            self._net.write_strand(data)
 
     def filter_and_sort_commands(self, command_list):
         """
@@ -204,11 +215,7 @@ class Mixer:
         """
         Clears the output buffer
         """
-        # TODO: Is this output buffer design slow enough that switching to NumPy would be useful?
-        for strand in self._output_buffer:
-            for address in self._output_buffer[strand]:
-                for i, _ in enumerate(self._output_buffer[strand][address]):
-                    self._output_buffer[strand][address][i] = (0, 0, 0)
+        self._output_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
 
     def render_command_list(self, list, blend_state=1.0):
         """
@@ -222,28 +229,30 @@ class Mixer:
         for command in list:
             color = command.get_color()
             if isinstance(command, SetAll):
-                for strand in self._output_buffer:
-                    for address in self._output_buffer[strand]:
-                        for pixel, _ in enumerate(self._output_buffer[strand][address]):
-                            self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
+                for el, _ in np.ndenumerate(self._output_buffer):
+                    existing_color = tuple(map(int, self._output_buffer[el[0]][el[1]][el[2]]))
+                    self._output_buffer[el[0]][el[1]][el[2]] = self.blend(existing_color, color, blend_state)
 
             elif isinstance(command, SetStrand):
                 strand = command.get_strand()
-                for address in self._output_buffer[strand]:
-                    for pixel, _ in enumerate(self._output_buffer[strand][address]):
-                        self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
+                for el in self._output_buffer[strand]:
+                    print el
+                    existing_color = tuple(map(int, el))
+                    self._output_buffer[strand][el[0]][el[1]] = self.blend(existing_color, color, blend_state)
 
             elif isinstance(command, SetFixture):
                 strand = command.get_strand()
                 address = command.get_address()
-                for pixel, _ in enumerate(self._output_buffer[strand][address]):
-                    self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
+                for el in self._output_buffer[strand, address]:
+                    existing_color = tuple(map(int, el))
+                    self._output_buffer[strand][address][:] = self.blend(existing_color, color, blend_state)
 
             elif isinstance(command, SetPixel):
                 strand = command.get_strand()
                 address = command.get_address()
                 pixel = command.get_pixel()
-                self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
+                existing_color = tuple(map(int, self._output_buffer[strand][address][pixel]))
+                self._output_buffer[strand][address][pixel] = self.blend(existing_color, color, blend_state)
 
     def blend(self, color1, color2, blend_state):
         """
