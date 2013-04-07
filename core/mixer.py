@@ -2,7 +2,7 @@ import threading
 import logging
 import time
 
-from lib.commands import commands_overlap
+from lib.commands import commands_overlap, blend_commands
 
 log = logging.getLogger("FireMix.Mixer")
 
@@ -182,7 +182,7 @@ class Mixer:
 
         if second is not None:
             second_commands = self.filter_and_sort_commands(self._presets[second].get_commands())
-            commands = self.blend_commands(commands, second_commands)
+            commands = self.merge_command_lists(commands, second_commands)
 
         if self._net is not None:
             self._net.write([cmd.pack() for cmd in commands])
@@ -193,15 +193,21 @@ class Mixer:
         commands removed by priority.  The resulting list will be sorted with
         highest-priority commands last (i.e. ready for transmission)
         """
-        # TODO: Implement me
-        return command_list
+        return sorted(command_list, key=lambda x: x._priority)
 
-    def blend_commands(self, first, second):
+    def merge_command_lists(self, first, second):
         """
-        Blends the output of two command lists
+        Merges the output of two command lists
         """
+        out = []
         for fc in first:
-            sc = [cmd for cmd in second if commands_overlap(fc, cmd)]
+            scl = [cmd for cmd in second if commands_overlap(fc, cmd)]
+            if len(scl) == 0:
+                out.append(fc)
+            else:
+                for sc in scl:
+                    out.append(blend_commands(fc, sc))
+
 
         # TODO: Implement me
         return first
