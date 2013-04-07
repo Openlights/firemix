@@ -5,7 +5,7 @@ import numpy as np
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
 
-log = logging.getLogger("FireMix.Mixer")
+log = logging.getLogger("firemix.core.mixer")
 
 
 class Mixer:
@@ -55,6 +55,7 @@ class Mixer:
                         self._max_pixels = fh[strand][fixture].pixels()
             log.info("Loaded scene with %d strands, will create array of %d fixtures by %d pixels." % (len(self._strand_keys), self._max_fixtures, self._max_pixels))
             self._output_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+            self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
 
 
     def run(self):
@@ -189,12 +190,20 @@ class Mixer:
                 raise ValueError("blend_state %f out of range: must be between 0.0 and 1.0" % blend_state)
 
         #self.reset_output_buffer()
-        commands = self.filter_and_sort_commands(self._presets[first].get_commands())
-        self.render_command_list(commands)
+        start = time.time()
+        commands = self._presets[first].get_commands()
+        self.render_command_list(commands, self._output_buffer)
+        dt = 1000.0 * (time.time() - start)
+        if dt > 10.0:
+            log.info("rendered first preset in %0.2f ms (%d commands)" % (dt, len(commands)))
 
         if second is not None:
-            second_commands = self.filter_and_sort_commands(self._presets[second].get_commands())
-            self.render_command_list(second_commands, blend_state)
+            start = time.time()
+            second_commands = self._presets[second].get_commands()
+            self.render_command_list(second_commands, self._output_back_buffer)
+            dt = 1000.0 * (time.time() - start)
+            if dt > 10.0:
+                log.info("rendered second preset in %0.2f ms (%d commands)" % (dt, len(second_commands)))
 
         if self._net is not None:
             data = dict()
@@ -202,22 +211,14 @@ class Mixer:
                 data[v] = self._output_buffer[k].tolist()
             self._net.write_strand(data)
 
-    def filter_and_sort_commands(self, command_list):
-        """
-        Given an input command list, returns an output that has all conflicting
-        commands removed by priority.  The resulting list will be sorted with
-        highest-priority commands last (i.e. ready for transmission)
-        """
-        # TODO: Implement filtering if needed
-        return sorted(command_list, key=lambda x: x._priority)
-
     def reset_output_buffer(self):
         """
         Clears the output buffer
         """
         self._output_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+        self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
 
-    def render_command_list(self, list, blend_state=1.0):
+    def render_command_list(self, list, buffer):
         """
         Renders the output of a command list to the output buffer.
         Commands are rendered in FIFO overlap style.  Run the list through
@@ -229,30 +230,22 @@ class Mixer:
         for command in list:
             color = command.get_color()
             if isinstance(command, SetAll):
-                for el, _ in np.ndenumerate(self._output_buffer):
-                    existing_color = tuple(map(int, self._output_buffer[el[0]][el[1]][el[2]]))
-                    self._output_buffer[el[0]][el[1]][el[2]] = self.blend(existing_color, color, blend_state)
+                buffer[:,:,:] = color
 
             elif isinstance(command, SetStrand):
                 strand = command.get_strand()
-                for el in self._output_buffer[strand]:
-                    print el
-                    existing_color = tuple(map(int, el))
-                    self._output_buffer[strand][el[0]][el[1]] = self.blend(existing_color, color, blend_state)
+                buffer[strand,:,:] = color
 
             elif isinstance(command, SetFixture):
                 strand = command.get_strand()
                 address = command.get_address()
-                for el in self._output_buffer[strand, address]:
-                    existing_color = tuple(map(int, el))
-                    self._output_buffer[strand][address][:] = self.blend(existing_color, color, blend_state)
+                buffer[strand,address,:] = color
 
             elif isinstance(command, SetPixel):
                 strand = command.get_strand()
                 address = command.get_address()
                 pixel = command.get_pixel()
-                existing_color = tuple(map(int, self._output_buffer[strand][address][pixel]))
-                self._output_buffer[strand][address][pixel] = self.blend(existing_color, color, blend_state)
+                buffer[strand][address][pixel] = color
 
     def blend(self, color1, color2, blend_state):
         """
@@ -264,7 +257,7 @@ class Mixer:
             return color2
         else:
             # TODO: This blending operation desaturates the output during transition.  Switch to HSV blending on Hue
-            r1, g1, b1 = [int(el * (1.0 - blend_state)) for el in color1]
-            r2, g2, b2 = [int(el * (blend_state)) for el in color2]
-            return (r1 + r2, g1 + g2, b1 + b2)
-
+            inv_state = 1.0 - blend_state
+            return (int((color1[0] * inv_state) + (color2[0] * blend_state)),
+                    int((color1[1] * inv_state) + (color2[1] * blend_state)),
+                    int((color1[2] * inv_state) + (color2[2] * blend_state)))

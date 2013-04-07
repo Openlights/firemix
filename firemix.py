@@ -17,7 +17,7 @@ def sigint_handler(signum, frame):
     global mixer
     mixer.stop()
     if ENABLE_PROFILING:
-        stats = yappi.get_stats(yappi.SORTTYPE_TTOT, yappi.SORTORDER_DESC, 10)
+        stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)
         stats = [(s.name, s.ttot) for s in stats.func_stats]
         print "\n------ PROFILING STATS ------"
         for s in stats:
@@ -32,7 +32,7 @@ def sigint_handler(signum, frame):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    log = logging.getLogger("FireMix")
+    log = logging.getLogger("firemix")
 
     signal.signal(signal.SIGINT, sigint_handler)
 

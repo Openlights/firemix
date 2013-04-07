@@ -1,6 +1,10 @@
 import unittest
+import time
+import logging
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel
+
+log = logging.getLogger("firemix.lib.preset")
 
 
 class Preset:
@@ -60,9 +64,10 @@ class Preset:
                 self._tickers.remove((t, p))
 
     def tick(self):
-        time = self._ticks * (1.0 / self.tick_rate())
+        start = time.time()
+        dt = self._ticks * (1.0 / self.tick_rate())
         for ticker, priority in sorted(self._tickers, key=lambda x: x[1]):
-            for lights, color in ticker(self._ticks, time):
+            for lights, color in ticker(self._ticks, dt):
 
                 if lights is not None:
                     color = self._convert_color(color)
@@ -81,6 +86,9 @@ class Preset:
                             self.add_command(SetPixel(light[0], light[1], light[2], color, priority))
 
         self._ticks += 1
+        dt = 1000.0 * (time.time() - start)
+        if dt > 15.0:
+            log.warn("%s took a while to tick: %0.2f ms" % (self.__class__, dt))
 
     def tick_rate(self):
         return self._mixer.get_tick_rate()
