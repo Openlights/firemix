@@ -9,6 +9,24 @@ class Command:
         self._color = (0, 0, 0)
         self._priority = 0
 
+    def __repr__(self):
+        try:
+            strand = self._strand
+        except:
+            strand = -1
+        try:
+            address = self._address
+        except:
+            address = -1
+        try:
+            pixel = self._pixel
+        except:
+            pixel = -1
+
+        return "%s: P%d [%d:%d:%d] (%d, %d, %d)" % (self.__class__, self._priority,
+                                                    strand, address, pixel,
+                                                    self._color[0], self._color[1], self._color[2])
+
     def pack(self):
         """
         Returns a serialized version of the command
@@ -161,3 +179,16 @@ def commands_overlap(first, second):
     # Oops.  Never should get here unless we add other commands that don't affect output
     return False
 
+
+def blend_commands(first, second, amount):
+    """
+    Returns a new command (or list of commands) that is the proportional blend of two inputs.
+    Amount is the blend proportion, from 0.0 (100% first) to 1.0 (100% second).
+
+    Example 1: Two SetAll commands would yield a single SetAll with the colors blended
+    additively.
+
+    Example 2: A SetAll command and a SetFixture command would yield two commands: The original
+    SetAll command with its original priority, and a SetFixture command with a higher priority
+    containing the blended color.
+    """
