@@ -60,5 +60,5 @@ if __name__ == "__main__":
         print   "------ TICK TIME HISTOGRAM ------"
         elapsed = (mixer._stop_time - mixer._start_time)
         print "%d frames in %0.2f seconds (%0.2f FPS) " %  (mixer._num_frames, elapsed, mixer._num_frames / elapsed)
-        for _, c in enumerate(mixer._tick_time_data):
+        for c in sorted(mixer._tick_time_data.iterkeys()):
             print "[%d fps]:\t%4d\t%0.2f%%" % (c, mixer._tick_time_data[c], (float(mixer._tick_time_data[c]) / mixer._num_frames) * 100.0)

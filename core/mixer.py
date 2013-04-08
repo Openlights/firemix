@@ -15,7 +15,7 @@ class Mixer:
     device(s).
     """
 
-    def __init__(self, net=None, scene=None, tick_rate=30.0, preset_duration=5.0):
+    def __init__(self, net=None, scene=None, tick_rate=32.0, preset_duration=5.0):
         self._presets = []
         self._net = net
         self._scene = scene
@@ -75,7 +75,7 @@ class Mixer:
     def on_tick_timer(self):
         start = time.clock()
         self.tick()
-        dt = time.clock() - start
+        dt = (time.clock() - start)
         delay = max(0, (1.0 / self._tick_rate) - dt)
         self._elapsed += (1.0 / self._tick_rate)
         if self._running:
