@@ -16,18 +16,6 @@ ENABLE_PROFILING = True
 def sigint_handler(signum, frame):
     global mixer
     mixer.stop()
-    if ENABLE_PROFILING:
-        stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)
-        stats = [(s.name, s.ttot) for s in stats.func_stats]
-        print "\n------ PROFILING STATS ------"
-        for s in stats:
-            print "%s\t[%0.3f]" % (s[0], s[1])
-        print   "------ TICK TIME HISTOGRAM ------"
-        elapsed = (mixer._stop_time - mixer._start_time)
-        print "%d frames in %0.2f seconds (%0.2f FPS) " %  (mixer._num_frames, elapsed, mixer._num_frames / elapsed)
-        for _, c in enumerate(mixer._tick_time_data):
-            print "[%d fps]:\t%4d\t%0.2f%%" % (c, mixer._tick_time_data[c], (float(mixer._tick_time_data[c]) / mixer._num_frames) * 100.0)
-    sys.exit(0)
 
 
 if __name__ == "__main__":
@@ -35,6 +23,8 @@ if __name__ == "__main__":
     log = logging.getLogger("firemix")
 
     signal.signal(signal.SIGINT, sigint_handler)
+    signal.signal(signal.SIGABRT, sigint_handler)
+    signal.signal(signal.SIGTERM, sigint_handler)
 
     log.info("Booting FireMix...")
 
@@ -58,5 +48,17 @@ if __name__ == "__main__":
         yappi.start()
     mixer.run()
 
-    while True:
+    while mixer._running:
         pass
+
+    if ENABLE_PROFILING:
+        stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)
+        stats = [(s.name, s.ttot) for s in stats.func_stats]
+        print "\n------ PROFILING STATS ------"
+        for s in stats:
+            print "%s\t[%0.3f]" % (s[0], s[1])
+        print   "------ TICK TIME HISTOGRAM ------"
+        elapsed = (mixer._stop_time - mixer._start_time)
+        print "%d frames in %0.2f seconds (%0.2f FPS) " %  (mixer._num_frames, elapsed, mixer._num_frames / elapsed)
+        for _, c in enumerate(mixer._tick_time_data):
+            print "[%d fps]:\t%4d\t%0.2f%%" % (c, mixer._tick_time_data[c], (float(mixer._tick_time_data[c]) / mixer._num_frames) * 100.0)

@@ -15,7 +15,7 @@ class Mixer:
     device(s).
     """
 
-    def __init__(self, net=None, scene=None, tick_rate=25.0, preset_duration=5.0):
+    def __init__(self, net=None, scene=None, tick_rate=30.0, preset_duration=5.0):
         self._presets = []
         self._net = net
         self._scene = scene
@@ -65,8 +65,7 @@ class Mixer:
             self._running = True
             self._elapsed = 0.0
             self._num_frames = 0
-            self._start_time = time.time()
-            self._last_frame_time = time.time()
+            self._start_time = self._last_frame_time = time.time()
             self.reset_output_buffer()
 
     def stop(self):
@@ -74,10 +73,13 @@ class Mixer:
         self._stop_time = time.time()
 
     def on_tick_timer(self):
+        start = time.clock()
         self.tick()
+        dt = time.clock() - start
+        delay = max(0, (1.0 / self._tick_rate) - dt)
         self._elapsed += (1.0 / self._tick_rate)
         if self._running:
-            self._tick_timer = threading.Timer(1.0 / self._tick_rate, self.on_tick_timer)
+            self._tick_timer = threading.Timer(delay, self.on_tick_timer)
             self._tick_timer.start()
 
     def add_preset(self, preset):
