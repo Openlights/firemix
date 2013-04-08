@@ -45,7 +45,7 @@ class SeparateStrandRGB(Preset):
               (3, 9)]
 
     def setup(self):
-        self.add_ticker(fade(self.outside, Rainbow))
+        self.add_ticker(fade((0,), Rainbow))  # The outside is the entirety of strand zero.
         self.add_ticker(offset(fade(self.spokes, Rainbow), 0.05))
         self.add_ticker(offset(fade(self.star, Rainbow), 0.1))
         self.add_ticker(offset(fade(self.pentagon, Rainbow), 0.15))
