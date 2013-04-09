@@ -1,16 +1,13 @@
 import logging
 import inspect
 import signal
-import sys
+import argparse
 import yappi
 
 import presets
 from core.mixer import Mixer
 from core.networking import Networking
 from core.scene_loader import SceneLoader
-
-
-ENABLE_PROFILING = True
 
 
 def sigint_handler(signum, frame):
@@ -26,14 +23,20 @@ if __name__ == "__main__":
     signal.signal(signal.SIGABRT, sigint_handler)
     signal.signal(signal.SIGTERM, sigint_handler)
 
+    parser = argparse.ArgumentParser(description="Firelight mixer and preset host")
+    parser.add_argument("scene", type=str, help="Scene file to load (create scenes with FireSim)")
+    parser.add_argument("--profile", action='store_const', const=True, default=False, help="Enable profiling")
+
+    args = parser.parse_args()
+
     log.info("Booting FireMix...")
 
     net = Networking()
 
-    scene = SceneLoader("data/scenes/demo.json").load()
+    scene = SceneLoader("data/scenes/%s" % args.scene).load()
     log.info("Loaded scene from %s", scene._data["filepath"])
 
-    mixer = Mixer(net=net, scene=scene)
+    mixer = Mixer(net=net, scene=scene, enable_profiling=args.profile)
 
 
     log.info("Loading presets...")
@@ -43,7 +46,7 @@ if __name__ == "__main__":
 
     log.info("The current preset is %s" % mixer.get_active_preset_name())
 
-    if ENABLE_PROFILING:
+    if args.profile:
         log.info("Starting profiler")
         yappi.start()
     mixer.run()
@@ -51,7 +54,7 @@ if __name__ == "__main__":
     while mixer._running:
         pass
 
-    if ENABLE_PROFILING:
+    if args.profile:
         stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)
         stats = [(s.name, s.ttot) for s in stats.func_stats]
         print "\n------ PROFILING STATS ------"
