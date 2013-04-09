@@ -169,11 +169,12 @@ class Mixer:
                 self.start_transition()
                 self._elapsed = 0.0
 
-        tick_time = (time.time() - self._last_frame_time)
-        self._last_frame_time = time.time()
-        if tick_time > 0.0:
-            index = int((1.0 / tick_time))
-            self._tick_time_data[index] = self._tick_time_data.get(index, 0) + 1
+        if self._enable_profiling:
+            tick_time = (time.time() - self._last_frame_time)
+            self._last_frame_time = time.time()
+            if tick_time > 0.0:
+                index = int((1.0 / tick_time))
+                self._tick_time_data[index] = self._tick_time_data.get(index, 0) + 1
 
     def scene(self):
         return self._scene
@@ -193,20 +194,28 @@ class Mixer:
                 raise ValueError("blend_state %f out of range: must be between 0.0 and 1.0" % blend_state)
 
         #self.reset_output_buffer()
-        start = time.time()
+        if self._enable_profiling:
+            start = time.time()
+
         commands = self._presets[first].get_commands()
         self.render_command_list(commands, self._output_buffer)
-        dt = 1000.0 * (time.time() - start)
-        if dt > 10.0:
-            log.info("rendered first preset in %0.2f ms (%d commands)" % (dt, len(commands)))
 
-        if second is not None:
-            start = time.time()
-            second_commands = self._presets[second].get_commands()
-            self.render_command_list(second_commands, self._output_back_buffer)
+        if self._enable_profiling:
             dt = 1000.0 * (time.time() - start)
             if dt > 10.0:
-                log.info("rendered second preset in %0.2f ms (%d commands)" % (dt, len(second_commands)))
+                log.info("rendered first preset in %0.2f ms (%d commands)" % (dt, len(commands)))
+
+        if second is not None:
+            if self._enable_profiling:
+                start = time.time()
+
+            second_commands = self._presets[second].get_commands()
+            self.render_command_list(second_commands, self._output_back_buffer)
+
+            if self._enable_profiling:
+                dt = 1000.0 * (time.time() - start)
+                if dt > 10.0:
+                    log.info("rendered second preset in %0.2f ms (%d commands)" % (dt, len(second_commands)))
 
         if self._net is not None:
             data = dict()

@@ -66,7 +66,8 @@ class Preset:
                 self._tickers.remove((t, p))
 
     def tick(self):
-        #start = time.time()
+        if self._mixer._enable_profiling:
+            start = time.time()
         dt = self._ticks * (1.0 / self.tick_rate())
         # Assume that self._tickers is already sorted via add_ticker()
         for ticker, priority in self._tickers:
@@ -97,9 +98,10 @@ class Preset:
             #    print lights, color
 
         self._ticks += 1
-        #tick_time = 1000.0 * (time.time() - start)
-        #if tick_time > 12.0:
-        #    log.warn("%s took a while to tick: %0.2f ms" % (self.__class__, tick_time))
+        if self._mixer._enable_profiling:
+            tick_time = 1000.0 * (time.time() - start)
+            if tick_time > 12.0:
+                log.warn("%s took a while to tick: %0.2f ms" % (self.__class__, tick_time))
 
     def tick_rate(self):
         return self._mixer.get_tick_rate()
