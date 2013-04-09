@@ -1,5 +1,6 @@
 import socket
 import array
+import struct
 import msgpack
 
 
@@ -18,13 +19,17 @@ class Networking:
         data = [item for sublist in data for item in sublist]
         self._socket.sendto(array.array('B', data), (self._ip, self._port))
 
-    def write_output_buffer(self, output_buffer):
+    def write_strand(self, strand_data):
         """
-        Performs a bulk write packed with msgpack
+        Performs a bulk strand write.
+        The expected input format is a dictionary of strand addresses and strand data.
+        The input strand data is a flat list of pixel values for all fixtures in the strand.
+        Example: {0: [255, 127, 50, 255, 100, 70, ...]}
         """
-        data = msgpack.packb(output_buffer)
-        datalen = len(data)
-        packet = '\x27' + chr((datalen & 0xFF00) >> 8) + chr(datalen & 0xFF) + data
-        self._socket.sendto(packet, (self._ip, self._port))
+        # TODO: Would compression help here?
+        data = msgpack.packb(strand_data)
+        length = len(data)
+        packet = struct.pack('BBB', 0x27, ((length & 0xFF00) >> 8), (length & 0xFF)) + data
+        self._socket.sendto(array.array('B', packet), (self._ip, self._port))
 
 

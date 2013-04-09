@@ -4,7 +4,7 @@ import logging
 
 from lib.scene import Scene
 
-log = logging.getLogger("FireMix.core.SceneLoader")
+log = logging.getLogger("firemix.core.scene_loader")
 
 
 class SceneLoader:
