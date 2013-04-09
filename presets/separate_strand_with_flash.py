@@ -48,9 +48,9 @@ class SeparateStrandWithFlash(Preset):
               (3, 9)]
 
     def setup(self):
-        self.add_ticker(flash((), [1.0, 1.0, 1.0], 0.2, 0.8), 1)
+        self.add_ticker(flash((), (255, 255, 255), 0.2, 0.8), 1)
 
-        self.add_ticker(fade(self.outside, Rainbow))
+        self.add_ticker(fade((0,), Rainbow))
         self.add_ticker(offset(fade(self.spokes, Rainbow), 0.05))
         self.add_ticker(offset(fade(self.star, Rainbow), 0.1))
         self.add_ticker(offset(fade(self.pentagon, Rainbow), 0.15))

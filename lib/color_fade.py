@@ -41,8 +41,8 @@ class ColorFade:
         frame2 = self.keyframes[stage + 1]
         frame2_weight = stage_progress
 
-        color = tuple([c1 * frame1_weight + c2 * frame2_weight for c1, c2 in zip(frame1, frame2)])
-        return self._convert_to_rgb(color)
+        color = self._convert_to_rgb(tuple([c1 * frame1_weight + c2 * frame2_weight for c1, c2 in zip(frame1, frame2)]))
+        return tuple([int(255.0 * el) for el in color])
 
     def _convert_to_rgb(self, triplet):
         """converts a triplet in this ColorFade's color system to an rgb triplet"""

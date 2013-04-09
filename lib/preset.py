@@ -1,6 +1,10 @@
 import unittest
+import time
+import logging
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel
+
+log = logging.getLogger("firemix.lib.preset")
 
 
 class Preset:
@@ -52,6 +56,8 @@ class Preset:
         them to override the lower-priority tickers.
         """
         self._tickers.append((ticker, priority))
+        # Resort the list here rather than at each tick
+        self._tickers = sorted(self._tickers, key=lambda x: x[1])
         return ticker
 
     def remove_ticker(self, ticker):
@@ -60,12 +66,19 @@ class Preset:
                 self._tickers.remove((t, p))
 
     def tick(self):
-        time = self._ticks * (1.0 / self.tick_rate())
-        for ticker, priority in sorted(self._tickers, key=lambda x: x[1]):
-            for lights, color in ticker(self._ticks, time):
+        if self._mixer._enable_profiling:
+            start = time.time()
+        dt = self._ticks * (1.0 / self.tick_rate())
+        # Assume that self._tickers is already sorted via add_ticker()
+        for ticker, priority in self._tickers:
+            #b = time.clock()
+            for lights, color in ticker(self._ticks, dt):
 
                 if lights is not None:
-                    color = self._convert_color(color)
+                    # Made unnecessary by automatic conversion in ColorFade
+                    #color = self._convert_color(color)
+                    if not isinstance(color, tuple):
+                        log.error("Color is not a tuple: %s" % repr(color))
 
                     if type(lights) == tuple:
                         lights = [lights]
@@ -79,8 +92,16 @@ class Preset:
                             self.add_command(SetFixture(light[0], light[1], color, priority))
                         elif len(light) == 3:
                             self.add_command(SetPixel(light[0], light[1], light[2], color, priority))
+            #d = 1000.0 * (time.clock() - b)
+            #if d > 1:
+            #    log.info("took %0.3f ms to render ticker for %s" % (d, self.__class__))
+            #    print lights, color
 
         self._ticks += 1
+        if self._mixer._enable_profiling:
+            tick_time = 1000.0 * (time.time() - start)
+            if tick_time > 12.0:
+                log.warn("%s took a while to tick: %0.2f ms" % (self.__class__, tick_time))
 
     def tick_rate(self):
         return self._mixer.get_tick_rate()

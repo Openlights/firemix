@@ -1,11 +1,11 @@
 import threading
 import logging
 import time
-import operator
+import numpy as np
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
 
-log = logging.getLogger("FireMix.Mixer")
+log = logging.getLogger("firemix.core.mixer")
 
 
 class Mixer:
@@ -15,7 +15,7 @@ class Mixer:
     device(s).
     """
 
-    def __init__(self, net=None, scene=None, tick_rate=30.0, preset_duration=5.0):
+    def __init__(self, net=None, scene=None, tick_rate=32.0, preset_duration=5.0, enable_profiling=False):
         self._presets = []
         self._net = net
         self._scene = scene
@@ -30,11 +30,15 @@ class Mixer:
         self._running = False
         self._enable_rendering = True
         self._output_buffer = None
+        self._max_fixtures = 0
+        self._max_pixels = 0
         self._tick_time_data = dict()
         self._num_frames = 0
         self._last_frame_time = 0.0
         self._start_time = 0.0
         self._stop_time = 0.0
+        self._strand_keys = list()
+        self._enable_profiling = enable_profiling
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -43,11 +47,17 @@ class Mixer:
         else:
             log.info("Initializing preset rendering buffer")
             fh = self._scene.fixture_hierarchy()
-            self._output_buffer = dict()
             for strand in fh:
-                self._output_buffer[strand] = dict()
-                for address in fh[strand]:
-                    self._output_buffer[strand][address] = [(0, 0, 0)] * fh[strand][address].pixels()
+                self._strand_keys.append(strand)
+                if len(fh[strand]) > self._max_fixtures:
+                    self._max_fixtures = len(fh[strand])
+                for fixture in fh[strand]:
+                    if fh[strand][fixture].pixels() > self._max_pixels:
+                        self._max_pixels = fh[strand][fixture].pixels()
+            log.info("Loaded scene with %d strands, will create array of %d fixtures by %d pixels." % (len(self._strand_keys), self._max_fixtures, self._max_pixels))
+            self._output_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+            self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+
 
     def run(self):
         if not self._running:
@@ -56,18 +66,21 @@ class Mixer:
             self._running = True
             self._elapsed = 0.0
             self._num_frames = 0
-            self._start_time = time.time()
-            self._last_frame_time = time.time()
+            self._start_time = self._last_frame_time = time.time()
+            self.reset_output_buffer()
 
     def stop(self):
         self._running = False
         self._stop_time = time.time()
 
     def on_tick_timer(self):
+        start = time.clock()
         self.tick()
+        dt = (time.clock() - start)
+        delay = max(0, (1.0 / self._tick_rate) - dt)
         self._elapsed += (1.0 / self._tick_rate)
         if self._running:
-            self._tick_timer = threading.Timer(1.0 / self._tick_rate, self.on_tick_timer)
+            self._tick_timer = threading.Timer(delay, self.on_tick_timer)
             self._tick_timer.start()
 
     def add_preset(self, preset):
@@ -156,11 +169,12 @@ class Mixer:
                 self.start_transition()
                 self._elapsed = 0.0
 
-        tick_time = (time.time() - self._last_frame_time)
-        self._last_frame_time = time.time()
-        if tick_time > 0.0:
-            index = int((1.0 / tick_time))
-            self._tick_time_data[index] = self._tick_time_data.get(index, 0) + 1
+        if self._enable_profiling:
+            tick_time = (time.time() - self._last_frame_time)
+            self._last_frame_time = time.time()
+            if tick_time > 0.0:
+                index = int((1.0 / tick_time))
+                self._tick_time_data[index] = self._tick_time_data.get(index, 0) + 1
 
     def scene(self):
         return self._scene
@@ -180,37 +194,43 @@ class Mixer:
                 raise ValueError("blend_state %f out of range: must be between 0.0 and 1.0" % blend_state)
 
         #self.reset_output_buffer()
-        commands = self.filter_and_sort_commands(self._presets[first].get_commands())
-        self.render_command_list(commands)
+        if self._enable_profiling:
+            start = time.time()
+
+        commands = self._presets[first].get_commands()
+        self.render_command_list(commands, self._output_buffer)
+
+        if self._enable_profiling:
+            dt = 1000.0 * (time.time() - start)
+            if dt > 10.0:
+                log.info("rendered first preset in %0.2f ms (%d commands)" % (dt, len(commands)))
 
         if second is not None:
-            second_commands = self.filter_and_sort_commands(self._presets[second].get_commands())
-            self.render_command_list(second_commands, blend_state)
+            if self._enable_profiling:
+                start = time.time()
+
+            second_commands = self._presets[second].get_commands()
+            self.render_command_list(second_commands, self._output_back_buffer)
+
+            if self._enable_profiling:
+                dt = 1000.0 * (time.time() - start)
+                if dt > 10.0:
+                    log.info("rendered second preset in %0.2f ms (%d commands)" % (dt, len(second_commands)))
 
         if self._net is not None:
-            self._net.write_output_buffer(self._output_buffer)
-            #self._net.write([cmd.pack() for cmd in commands])
-
-    def filter_and_sort_commands(self, command_list):
-        """
-        Given an input command list, returns an output that has all conflicting
-        commands removed by priority.  The resulting list will be sorted with
-        highest-priority commands last (i.e. ready for transmission)
-        """
-        # TODO: Implement filtering if needed
-        return sorted(command_list, key=lambda x: x._priority)
+            data = dict()
+            for k, v in enumerate(self._strand_keys):
+                data[v] = self._output_buffer[k].tolist()
+            self._net.write_strand(data)
 
     def reset_output_buffer(self):
         """
         Clears the output buffer
         """
-        # TODO: Is this output buffer design slow enough that switching to NumPy would be useful?
-        for strand in self._output_buffer:
-            for address in self._output_buffer[strand]:
-                for i, _ in enumerate(self._output_buffer[strand][address]):
-                    self._output_buffer[strand][address][i] = (0, 0, 0)
+        self._output_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+        self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
 
-    def render_command_list(self, list, blend_state=1.0):
+    def render_command_list(self, list, buffer):
         """
         Renders the output of a command list to the output buffer.
         Commands are rendered in FIFO overlap style.  Run the list through
@@ -222,28 +242,22 @@ class Mixer:
         for command in list:
             color = command.get_color()
             if isinstance(command, SetAll):
-                for strand in self._output_buffer:
-                    for address in self._output_buffer[strand]:
-                        for pixel, _ in enumerate(self._output_buffer[strand][address]):
-                            self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
+                buffer[:,:,:] = color
 
             elif isinstance(command, SetStrand):
                 strand = command.get_strand()
-                for address in self._output_buffer[strand]:
-                    for pixel, _ in enumerate(self._output_buffer[strand][address]):
-                        self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
+                buffer[strand,:,:] = color
 
             elif isinstance(command, SetFixture):
                 strand = command.get_strand()
                 address = command.get_address()
-                for pixel, _ in enumerate(self._output_buffer[strand][address]):
-                    self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
+                buffer[strand,address,:] = color
 
             elif isinstance(command, SetPixel):
                 strand = command.get_strand()
                 address = command.get_address()
                 pixel = command.get_pixel()
-                self._output_buffer[strand][address][pixel] = self.blend(self._output_buffer[strand][address][pixel], color, blend_state)
+                buffer[strand][address][pixel] = color
 
     def blend(self, color1, color2, blend_state):
         """
@@ -255,7 +269,7 @@ class Mixer:
             return color2
         else:
             # TODO: This blending operation desaturates the output during transition.  Switch to HSV blending on Hue
-            r1, g1, b1 = [int(el * (1.0 - blend_state)) for el in color1]
-            r2, g2, b2 = [int(el * (blend_state)) for el in color2]
-            return (r1 + r2, g1 + g2, b1 + b2)
-
+            inv_state = 1.0 - blend_state
+            return (int((color1[0] * inv_state) + (color2[0] * blend_state)),
+                    int((color1[1] * inv_state) + (color2[1] * blend_state)),
+                    int((color1[2] * inv_state) + (color2[2] * blend_state)))
