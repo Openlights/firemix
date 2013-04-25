@@ -1,7 +1,6 @@
 import socket
 import array
 import struct
-import msgpack
 
 
 class Networking:
@@ -26,10 +25,14 @@ class Networking:
         The input strand data is a flat list of pixel values for all fixtures in the strand.
         Example: {0: [255, 127, 50, 255, 100, 70, ...]}
         """
-        # TODO: Would compression help here?
-        data = msgpack.packb(strand_data)
-        length = len(data)
-        packet = struct.pack('BBB', 0x27, ((length & 0xFF00) >> 8), (length & 0xFF)) + data
-        self._socket.sendto(array.array('B', packet), (self._ip, self._port))
+
+        # TODO: Split into smaller packets so that less-than-ideal networks will be OK
+
+        for strand in strand_data.keys():
+            #print "strand %d len %d" % (strand, len(strand_data[strand]))
+            #print strand_data[strand]
+            length = len(strand_data[strand]) + 1
+            packet = array.array('B', [0x27, (length & 0xFF00) >> 8, (length & 0xFF), strand] + strand_data[strand])
+            self._socket.sendto(packet, (self._ip, self._port))
 
 

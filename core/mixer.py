@@ -220,8 +220,18 @@ class Mixer:
         if self._net is not None:
             data = dict()
             for k, v in enumerate(self._strand_keys):
-                data[v] = self._output_buffer[k].tolist()
+                data[v] = self.get_strand_data(k, v)
             self._net.write_strand(data)
+
+    def get_strand_data(self, strand_key, strand_id):
+        """
+        Returns an optimized list of strand data, in fixture order, using the scene map
+        """
+        len_strand = sum([fix.pixels() for fix in self._scene.fixtures() if fix.strand() == strand_id])
+        data = self._output_buffer[strand_key].astype(int).tolist()
+        data_flat = [item for sublist in data for item in sublist]
+        data_flat = [item for sublist in data_flat for item in sublist]
+        return data_flat[0:3 * len_strand]
 
     def reset_output_buffer(self):
         """
