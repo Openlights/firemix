@@ -1,5 +1,6 @@
 import unittest
 import json
+import os
 import logging
 
 from lib.scene import Scene
@@ -13,7 +14,7 @@ class SceneLoader:
     """
 
     def __init__(self, filename):
-        self._filename = filename
+        self._filename = os.path.join(os.getcwd(), "data", "scenes", "".join([filename, ".scn"]))
         self._data = None
 
     def load(self):
@@ -29,4 +30,6 @@ class SceneLoader:
                 self._data = None
                 return None
         self._data["filepath"] = self._filename
+
+        log.info("Loaded scene from %s", self._filename)
         return Scene(self._data)

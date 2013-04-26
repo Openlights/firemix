@@ -1,3 +1,4 @@
+import os
 import logging
 import inspect
 import signal
@@ -8,6 +9,7 @@ import presets
 from core.mixer import Mixer
 from core.networking import Networking
 from core.scene_loader import SceneLoader
+from lib.playlist import Playlist
 
 
 def sigint_handler(signum, frame):
@@ -25,6 +27,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Firelight mixer and preset host")
     parser.add_argument("scene", type=str, help="Scene file to load (create scenes with FireSim)")
+    parser.add_argument("--playlist", type=str, help="Playlist file to load", default="default")
     parser.add_argument("--profile", action='store_const', const=True, default=False, help="Enable profiling")
 
     args = parser.parse_args()
@@ -33,8 +36,9 @@ if __name__ == "__main__":
 
     net = Networking()
 
-    scene = SceneLoader("data/scenes/%s" % args.scene).load()
-    log.info("Loaded scene from %s", scene._data["filepath"])
+    scene = SceneLoader(args.scene).load()
+
+    playlist = Playlist(args.playlist)
 
     mixer = Mixer(net=net, scene=scene, enable_profiling=args.profile)
 

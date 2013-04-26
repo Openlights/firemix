@@ -9,11 +9,14 @@ Installation / Development
 --------------------------
 
     pip install -r requirements.txt
-    python firemix.py [--profile] demo.json
+    python firemix.py [--profile] [--playlist PLIST] demo
 
 Use the `--profile` option to enable profiling of framerate and function calls.
 With profiling enabled, a log message will be printed any time a preset takes
 more than 12 ms to render a frame.
+
+Use the `--playlist` option to specifiy a playlist name.  If the playlist exists
+as a *.fpl file in `data/playlists`, it will be loaded.  If not, it will be created.
 
 
 Preset Development
