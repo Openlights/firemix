@@ -44,7 +44,7 @@ if __name__ == "__main__":
         log.info("Loading preset %s" % name)
         mixer.add_preset(obj)
 
-    if args.preset != "":
+    if args.preset:
         log.info("Setting constant preset %s" % args.preset)
         mixer.set_constant_preset(args.preset)
 
