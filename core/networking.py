@@ -31,8 +31,10 @@ class Networking:
         for strand in strand_data.keys():
             #print "strand %d len %d" % (strand, len(strand_data[strand]))
             #print strand_data[strand]
-            length = len(strand_data[strand]) + 1
-            packet = array.array('B', [0x27, (length & 0xFF00) >> 8, (length & 0xFF), strand] + strand_data[strand])
+            data = strand_data[strand][0:(3*160)]
+            length = len(data)
+            #packet = array.array('B', [0x27, (length & 0xFF00) >> 8, (length & 0xFF), strand] + strand_data[strand])
+            packet = array.array('B', [strand, 0x10, (length & 0xFF), (length & 0xFF00) >> 8] + data)
             self._socket.sendto(packet, (self._ip, self._port))
 
 
