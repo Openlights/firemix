@@ -39,6 +39,8 @@ class Mixer:
         self._stop_time = 0.0
         self._strand_keys = list()
         self._enable_profiling = enable_profiling
+        self._constant_preset = ""
+        self._paused = False
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -82,6 +84,14 @@ class Mixer:
         if self._running:
             self._tick_timer = threading.Timer(delay, self.on_tick_timer)
             self._tick_timer.start()
+
+    def set_constant_preset(self, preset_name):
+        self._constant_preset = preset_name
+        for idx, preset in enumerate(self._presets):
+            if preset.__class__.__name__ == preset_name:
+                self._active_preset = idx
+
+        self._paused = True
 
     def add_preset(self, preset):
         """
@@ -165,7 +175,7 @@ class Mixer:
                 if self._net is not None:
                     self._net.write(self._presets[self._active_preset].get_commands_packed())
 
-            if (self._elapsed >= self._duration) and self._presets[self._active_preset].can_transition():
+            if not self._paused and (self._elapsed >= self._duration) and self._presets[self._active_preset].can_transition():
                 self.start_transition()
                 self._elapsed = 0.0
 
@@ -198,6 +208,7 @@ class Mixer:
             start = time.time()
 
         commands = self._presets[first].get_commands()
+        #print commands
         self.render_command_list(commands, self._output_buffer)
 
         if self._enable_profiling:

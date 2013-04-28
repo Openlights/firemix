@@ -37,11 +37,12 @@ class Networking:
             #    continue
 
             data = strand_data[strand][0:(3*160)]
+
             length = len(data)
             #packet = array.array('B', [0x27, (length & 0xFF00) >> 8, (length & 0xFF), strand] + strand_data[strand])
             packet = array.array('B', [strand, 0x10, (length & 0xFF), (length & 0xFF00) >> 8] + data)
             for client in self._clients:
                 self._socket.sendto(packet, (client[0], client[1]))
-            #sleep(0.1)
+            #sleep(0.01)
 
 
