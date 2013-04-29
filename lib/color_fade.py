@@ -33,7 +33,8 @@ class ColorFade:
         # special case stage_progress=0, so if progress=1, we don't get
         # an IndexError
         if stage_progress == 0:
-            return self._convert_to_rgb(self.keyframes[stage])
+            c = self._convert_to_rgb(self.keyframes[stage])
+            return tuple([int(255.0 * el) for el in c])
 
         frame1 = self.keyframes[stage]
         frame1_weight = 1 - stage_progress

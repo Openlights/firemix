@@ -29,6 +29,7 @@ if __name__ == "__main__":
     parser.add_argument("scene", type=str, help="Scene file to load (create scenes with FireSim)")
     parser.add_argument("--playlist", type=str, help="Playlist file to load", default="default")
     parser.add_argument("--profile", action='store_const', const=True, default=False, help="Enable profiling")
+    parser.add_argument("--preset", type=str, help="Specify a preset name to run only that preset (useful for debugging)")
 
     args = parser.parse_args()
 
@@ -42,11 +43,14 @@ if __name__ == "__main__":
 
     mixer = Mixer(net=net, scene=scene, enable_profiling=args.profile)
 
-
     log.info("Loading presets...")
     for name, obj in inspect.getmembers(presets, inspect.isclass):
         log.info("Loading preset %s" % name)
         mixer.add_preset(obj)
+
+    if args.preset:
+        log.info("Setting constant preset %s" % args.preset)
+        mixer.set_constant_preset(args.preset)
 
     log.info("The current preset is %s" % mixer.get_active_preset_name())
 

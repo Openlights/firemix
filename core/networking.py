@@ -1,6 +1,7 @@
 import socket
 import array
 import struct
+from time import sleep
 
 
 class Networking:
@@ -9,6 +10,7 @@ class Networking:
         self._socket = None
         self._ip = ip
         self._port = port
+        self._clients = [("127.0.0.1", 3020), ("127.0.0.1", 3021)]
         self.open_socket()
 
     def open_socket(self):
@@ -29,10 +31,18 @@ class Networking:
         # TODO: Split into smaller packets so that less-than-ideal networks will be OK
 
         for strand in strand_data.keys():
-            #print "strand %d len %d" % (strand, len(strand_data[strand]))
-            #print strand_data[strand]
-            length = len(strand_data[strand]) + 1
-            packet = array.array('B', [0x27, (length & 0xFF00) >> 8, (length & 0xFF), strand] + strand_data[strand])
-            self._socket.sendto(packet, (self._ip, self._port))
+            # Temporary: firmware says #0 is all-call
+            # Fixed in FireNode by incrementing strand by one
+            #if strand == 0:
+            #    continue
+
+            data = strand_data[strand][0:(3*160)]
+
+            length = len(data)
+            #packet = array.array('B', [0x27, (length & 0xFF00) >> 8, (length & 0xFF), strand] + strand_data[strand])
+            packet = array.array('B', [strand, 0x10, (length & 0xFF), (length & 0xFF00) >> 8] + data)
+            for client in self._clients:
+                self._socket.sendto(packet, (client[0], client[1]))
+            #sleep(0.01)
 
 
