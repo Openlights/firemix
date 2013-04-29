@@ -1,29 +1,22 @@
-import os
 import logging
-import inspect
-import signal
 import argparse
 import yappi
+import signal
 
-import presets
-from core.mixer import Mixer
-from core.networking import Networking
-from core.scene_loader import SceneLoader
-from lib.playlist import Playlist
+from core.rpc_server import RPCServer
+from firemix_app import FireMixApp
 
 
-def sigint_handler(signum, frame):
-    global mixer
-    mixer.stop()
-
+def sig_handler(sig, frame):
+    global app, rpc_server
+    app.stop()
+    rpc_server.stop()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     log = logging.getLogger("firemix")
 
-    signal.signal(signal.SIGINT, sigint_handler)
-    signal.signal(signal.SIGABRT, sigint_handler)
-    signal.signal(signal.SIGTERM, sigint_handler)
+    signal.signal(signal.SIGINT, sig_handler)
 
     parser = argparse.ArgumentParser(description="Firelight mixer and preset host")
     parser.add_argument("scene", type=str, help="Scene file to load (create scenes with FireSim)")
@@ -35,32 +28,20 @@ if __name__ == "__main__":
 
     log.info("Booting FireMix...")
 
-    net = Networking()
-
-    scene = SceneLoader(args.scene).load()
-
-    playlist = Playlist(args.playlist)
-
-    mixer = Mixer(net=net, scene=scene, enable_profiling=args.profile)
-
-    log.info("Loading presets...")
-    for name, obj in inspect.getmembers(presets, inspect.isclass):
-        log.info("Loading preset %s" % name)
-        mixer.add_preset(obj)
-
-    if args.preset:
-        log.info("Setting constant preset %s" % args.preset)
-        mixer.set_constant_preset(args.preset)
-
-    log.info("The current preset is %s" % mixer.get_active_preset_name())
-
     if args.profile:
         log.info("Starting profiler")
         yappi.start()
-    mixer.run()
 
-    while mixer._running:
-        pass
+    app = FireMixApp(args)
+    rpc_server = RPCServer(app)
+
+    try:
+        app.start()
+        rpc_server.start()
+        app.join()
+        rpc_server.join()
+    except KeyboardInterrupt:
+        log.info("Shutting down")
 
     if args.profile:
         stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)

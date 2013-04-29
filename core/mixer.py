@@ -1,5 +1,5 @@
-import threading
 import logging
+import threading
 import time
 import numpy as np
 
@@ -15,7 +15,8 @@ class Mixer:
     device(s).
     """
 
-    def __init__(self, net=None, scene=None, tick_rate=32.0, preset_duration=5.0, enable_profiling=False):
+    def __init__(self, app, net=None, scene=None, tick_rate=32.0, preset_duration=5.0, enable_profiling=False):
+        self._app = app
         self._presets = []
         self._net = net
         self._scene = scene
@@ -72,6 +73,7 @@ class Mixer:
             self.reset_output_buffer()
 
     def stop(self):
+        log.info("Mixer got stop command")
         self._running = False
         self._stop_time = time.time()
 
@@ -81,6 +83,7 @@ class Mixer:
         dt = (time.clock() - start)
         delay = max(0, (1.0 / self._tick_rate) - dt)
         self._elapsed += (1.0 / self._tick_rate)
+        self._running = self._app._running
         if self._running:
             self._tick_timer = threading.Timer(delay, self.on_tick_timer)
             self._tick_timer.start()
