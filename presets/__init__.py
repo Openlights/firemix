@@ -4,4 +4,5 @@ from rgb_fade import RGBFade
 from separate_strand_rgb import SeparateStrandRGB
 from separate_strand_with_flash import SeparateStrandWithFlash
 from fireflies import Fireflies
+from fungus import Fungus
 from starry_night import StarryNight
