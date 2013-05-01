@@ -4,6 +4,7 @@ import time
 import numpy as np
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
+from lib.raw_preset import RawPreset
 
 log = logging.getLogger("firemix.core.mixer")
 
@@ -51,15 +52,13 @@ class Mixer:
             fh = self._scene.fixture_hierarchy()
             for strand in fh:
                 self._strand_keys.append(strand)
-                if len(fh[strand]) > self._max_fixtures:
-                    self._max_fixtures = len(fh[strand])
-                for fixture in fh[strand]:
-                    if fh[strand][fixture].pixels() > self._max_pixels:
-                        self._max_pixels = fh[strand][fixture].pixels()
-            log.info("Loaded scene with %d strands, will create array of %d fixtures by %d pixels." % (len(self._strand_keys), self._max_fixtures, self._max_pixels))
-            self._output_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
-            self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
 
+            (maxs, maxf, maxp) = self._scene.get_matrix_extents()
+            log.info("Loaded scene with %d strands, will create array of %d fixtures by %d pixels." % (maxs, maxf, maxp))
+            self._output_buffer = np.zeros((maxs, maxf, maxp, 3))
+            self._output_back_buffer = np.zeros((maxs, maxf, maxp, 3))
+            self._max_fixtures = maxf
+            self._max_pixels = maxp
 
     def run(self):
         if not self._running:
@@ -207,9 +206,14 @@ class Mixer:
         if self._enable_profiling:
             start = time.time()
 
-        commands = self._presets[first].get_commands()
-        #print commands
-        self.render_command_list(commands, self._output_buffer)
+        commands = []
+
+        if isinstance(self._presets[first], RawPreset):
+            self._output_buffer = self._presets[first].get_buffer()
+        else:
+            commands = self._presets[first].get_commands()
+            #print commands
+            self.render_command_list(commands, self._output_buffer)
 
         if self._enable_profiling:
             dt = 1000.0 * (time.time() - start)

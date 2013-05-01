@@ -1,6 +1,7 @@
 import unittest
 import time
 import logging
+import numpy as np
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel
 
@@ -119,7 +120,7 @@ class Preset:
         self._commands.append(cmd)
 
     def _convert_color(self, color):
-        if (type(color[0]) == float) or (type(color[1]) == float) or (type(color[2]) == float):
+        if (type(color[0]) == float) or (type(color[1]) == float) or (type(color[2]) == float) or (type(color[1]) ==np.float32):
             return tuple([int(c*255) for c in color])
         else:
             return color

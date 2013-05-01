@@ -38,3 +38,21 @@ class Scene:
                     self._fixture_hierarchy[f.strand()] = dict()
                 self._fixture_hierarchy[f.strand()][f.address()] = f
         return self._fixture_hierarchy
+
+    def get_matrix_extents(self):
+        """
+        Returns a tuple of (strands, fixtures, pixels) indicating the maximum extents needed
+        for a regular 3D matrix of pixels.
+        """
+        fh = self.fixture_hierarchy()
+        strands = len(fh)
+        fixtures = 0
+        pixels = 0
+        for strand in fh:
+            if len(fh[strand]) > fixtures:
+                fixtures = len(fh[strand])
+            for fixture in fh[strand]:
+                if fh[strand][fixture].pixels() > pixels:
+                    pixels = fh[strand][fixture].pixels()
+
+        return (strands, fixtures, pixels)
