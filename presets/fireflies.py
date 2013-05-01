@@ -27,9 +27,6 @@ class Fireflies(RawPreset):
 
     _fader = ColorFade('hsv', [_down_target, _up_target])
 
-    def setup(self):
-        pass
-
     def draw(self, dt):
 
         # Birth
@@ -43,7 +40,7 @@ class Fireflies(RawPreset):
 
         # Growth
         for address in self._fading_up:
-            color = self._get_next_color(address, uint8_to_float(self.current_color(address)), dt)
+            color = self._get_next_color(address, dt)
             if color == self._up_target_rgb:
                 self._fading_up.remove(address)
                 self._fading_down.append(address)
@@ -52,12 +49,12 @@ class Fireflies(RawPreset):
 
         # Decay
         for address in self._fading_down:
-            color = self._get_next_color(address, uint8_to_float(self.current_color(address)), dt, down=True)
+            color = self._get_next_color(address, dt, down=True)
             if color == self._down_target_rgb:
                 self._fading_down.remove(address)
             self._pixel_buffer[address] = color
 
-    def _get_next_color(self, address, color, dt, down=False):
+    def _get_next_color(self, address, dt, down=False):
         time_target = float(self._fade_down_time) if down else float(self._fade_up_time)
         progress = (dt - self._time[address]) / time_target
 
