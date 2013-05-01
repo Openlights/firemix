@@ -2,7 +2,7 @@ import colorsys
 import random
 
 from lib.raw_preset import RawPreset
-from lib.colors import uint8_to_float, float_to_uint8
+from lib.colors import float_to_uint8
 from lib.color_fade import ColorFade
 
 

@@ -32,7 +32,7 @@ class Fungus(RawPreset):
     _growth_spread_probability = 0.13
     _mass_destruction_time = 10.0
     _mass_destruction_pop_threshold = 150
-    _pop_limit = 300
+    _pop_limit = 500
 
     # Internal parameters
     _time = {}
