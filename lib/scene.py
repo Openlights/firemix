@@ -16,23 +16,36 @@ class Scene:
         self._pixel_neighbors_cache = {}
 
     def extents(self):
+        """
+        Returns the (x, y) extents of the scene.  Useful for determining
+        relative position of fixtures to some reference point.
+        """
         return tuple(self._data.get("extents", (0, 0)))
 
     def name(self):
         return self._data.get("name", "")
 
     def fixtures(self):
+        """
+        Returns a flat list of all fixtures in the scene.
+        """
         if self._fixtures is None:
             self._fixtures = [Fixture(fd) for fd in self._data["fixtures"]]
         return self._fixtures
 
     def fixture(self, strand, address):
+        """
+        Returns a reference to a given fixture
+        """
         for f in self.fixtures():
             if f.strand() == strand and f.address() == address:
                 return f
         return None
 
     def fixture_hierarchy(self):
+        """
+        Returns a dict of all strands, containing dicts of all fixtures on the strand.
+        """
         if self._fixture_hierarchy is None:
             self._fixture_hierarchy = dict()
             for f in self.fixtures():

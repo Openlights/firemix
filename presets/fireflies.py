@@ -67,4 +67,3 @@ class Fireflies(RawPreset):
             progress = 1.0 - progress
 
         return self._fader.get_color(progress)
-

@@ -61,7 +61,6 @@ class Fungus(RawPreset):
             neighbors = self.scene().get_pixel_neighbors(address)
             p, color = self._get_next_color(address, self._growth_time, dt)
             if p >= 1.0:
-                #print "grown"
                 self._growing.remove(address)
                 self._alive.append(address)
                 self._time[address] = dt
@@ -93,7 +92,6 @@ class Fungus(RawPreset):
 
             # Spread
             if (self._pop < self._pop_limit) and random.random() > (1.0 - self._spread_probability):
-
                 spread = neighbors[random.randint(0, len(neighbors) - 1)]
                 if spread not in (self._growing + self._alive + self._dying + self._fading_out):
                     self._growing.append(spread)
@@ -148,4 +146,3 @@ class Fungus(RawPreset):
             idx += (2.0 / 3.0)
 
         return (progress, self._fader.get_color(idx))
-
