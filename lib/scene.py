@@ -14,6 +14,7 @@ class Scene:
         self._fixture_hierarchy = None
         self._colliding_fixtures_cache = {}
         self._pixel_neighbors_cache = {}
+        self._pixel_locations_cache = {}
 
     def extents(self):
         """
@@ -139,3 +140,28 @@ class Scene:
             self._pixel_neighbors_cache[addr] = neighbors
 
         return neighbors
+
+    def get_pixel_location(self, addr):
+        """
+        Returns a given pixel's location in scene coordinates.
+        """
+        loc = self._pixel_locations_cache.get(addr, None)
+
+        if loc is None:
+            strand, address, pixel = addr
+            f = self.fixture(strand, address)
+
+            if pixel == 0:
+                loc = f.pos1()
+            elif pixel == (f.pixels() - 1):
+                loc = f.pos2()
+            else:
+                x1, y1 = f.pos1()
+                x2, y2 = f.pos2()
+                scale = float(pixel) / f.pixels()
+                relx, rely = ((x2 - x1) * scale, (y2 - y1) * scale)
+                loc = (x1 + relx, y1 + rely)
+
+            self._pixel_locations_cache[addr] = loc
+
+        return loc

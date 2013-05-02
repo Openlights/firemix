@@ -6,3 +6,4 @@ from separate_strand_with_flash import SeparateStrandWithFlash
 from fireflies import Fireflies
 from fungus import Fungus
 from starry_night import StarryNight
+from dragons import Dragons
