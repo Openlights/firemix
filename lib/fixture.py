@@ -8,6 +8,11 @@ class Fixture:
 
     def __init__(self, data=None):
         self._data = data
+        self._strand = data.get("strand", 0)
+        self._address = data.get("address", 0)
+        self._pixels = data.get("pixels", 0)
+        self._pos1 = tuple(data.get("pos1", (0, 0)))
+        self._pos2 = tuple(data.get("pos2", (0, 0)))
 
     def __repr__(self):
         return "Fixture%d [%d:%d]" % (self.pixels(), self.strand(), self.address())
@@ -16,19 +21,19 @@ class Fixture:
         """
         Returns the number of pixels in a fixture
         """
-        return self._data.get("pixels", 0)
+        return self._pixels
 
     def pos1(self):
         """
         Returns the (x, y) of the start point of the fixture
         """
-        return tuple(self._data.get("pos1", (0, 0)))
+        return self._pos1
 
     def pos2(self):
         """
         Returns the (x, y) of the end point of the fixture
         """
-        return tuple(self._data.get("pos2", (0, 0)))
+        return self._pos2
 
     def midpoint(self):
         """
@@ -42,13 +47,13 @@ class Fixture:
         """
         Returns the fixture's strand ID
         """
-        return self._data.get("strand", 0)
+        return self._strand
 
     def address(self):
         """
         Returns the fixture's address on the strand
         """
-        return self._data.get("address", 0)
+        return self._address
 
     def pixel_neighbors(self, pixel):
         """
