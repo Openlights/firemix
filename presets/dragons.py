@@ -126,14 +126,15 @@ class Dragons(RawPreset):
                     self._pixel_buffer[new_address] = self._alive_color_rgb
 
                 # Kill dragons that run into each other
-                colliding = [d for d in self._dragons if d != dragon and d.loc == dragon.loc]
-                if len(colliding) > 0:
-                    #print "collision between", dragon, "and", colliding[0]
-                    self._pixel_buffer[dragon.loc] = (0, 0, 0)
-                    self._dragons.remove(dragon)
-                    self._dragons.remove(colliding[0])
-                    self._pixel_buffer[dragon.loc] = (0, 0, 0)
-                    self._pop -= 2
+                if dragon in self._dragons:
+                    colliding = [d for d in self._dragons if d != dragon and d.loc == dragon.loc]
+                    if len(colliding) > 0:
+                        #print "collision between", dragon, "and", colliding[0]
+                        self._pixel_buffer[dragon.loc] = (0, 0, 0)
+                        self._dragons.remove(dragon)
+                        self._dragons.remove(colliding[0])
+                        self._pixel_buffer[dragon.loc] = (0, 0, 0)
+                        self._pop -= 2
 
         # Draw tails
         for loc, time in self._tails:

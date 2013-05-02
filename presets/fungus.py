@@ -79,7 +79,7 @@ class Fungus(RawPreset):
             neighbors = self.scene().get_pixel_neighbors(address)
             live_neighbors = [i for i in neighbors if i in self._alive]
             lt = self._life_time
-            if len(neighbors) == 0:
+            if len(neighbors) < 2:
                 lt = self._isolated_life_time
 
             if len(live_neighbors) < 2 and ((dt - self._time[address]) / lt) >= 1.0:
@@ -118,12 +118,12 @@ class Fungus(RawPreset):
         if (self._pop == self._pop_limit) or \
                 (self._pop > self._mass_destruction_pop_threshold and ((dt % self._mass_destruction_time) == 0)):
             for i in self._alive:
-                if random.random() > 0.75:
+                if random.random() > 0.95:
                     self._alive.remove(i)
                     self._dying.append(i)
                     self._pop -= 1
             for i in self._growing:
-                if random.random() > 0.75:
+                if random.random() > 0.85:
                     self._growing.remove(i)
                     self._dying.append(i)
                     self._pop -= 1
