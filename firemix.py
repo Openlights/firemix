@@ -60,7 +60,7 @@ if __name__ == "__main__":
     mixer.run()
 
     app = QtGui.QApplication(sys.argv)
-    gui = FireMixGUI()
+    gui = FireMixGUI(mixer=mixer)
     gui.show()
     app.exec_()
 

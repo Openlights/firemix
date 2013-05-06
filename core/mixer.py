@@ -74,12 +74,21 @@ class Mixer:
         self._running = False
         self._stop_time = time.time()
 
+    def pause(self, pause=True):
+        self._paused = pause
+
+    def is_paused(self):
+        return self._paused
+
     def on_tick_timer(self):
-        start = time.clock()
-        self.tick()
-        dt = (time.clock() - start)
-        delay = max(0, (1.0 / self._tick_rate) - dt)
-        self._elapsed += (1.0 / self._tick_rate)
+        if self._paused:
+            delay = 1.0 / self._tick_rate
+        else:
+            start = time.clock()
+            self.tick()
+            dt = (time.clock() - start)
+            delay = max(0, (1.0 / self._tick_rate) - dt)
+            self._elapsed += (1.0 / self._tick_rate)
         if self._running:
             self._tick_timer = threading.Timer(delay, self.on_tick_timer)
             self._tick_timer.start()

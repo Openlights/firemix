@@ -6,20 +6,54 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>240</width>
-    <height>320</height>
+    <width>381</width>
+    <height>466</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>FireMix</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>9</y>
+      <width>361</width>
+      <height>411</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="vl_outer">
+     <item>
+      <layout class="QHBoxLayout" name="hl_top_buttons">
+       <item>
+        <widget class="QPushButton" name="btn_blackout">
+         <property name="text">
+          <string>Blackout</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_playpause">
+         <property name="text">
+          <string>Pause</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QListWidget" name="lst_presets"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>240</width>
+     <width>381</width>
      <height>21</height>
     </rect>
    </property>
