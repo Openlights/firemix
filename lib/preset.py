@@ -16,6 +16,7 @@ class Preset:
         self._commands = []
         self._tickers = []
         self._ticks = 0
+        self._parameters = []
         self.setup()
 
     def setup(self):
@@ -31,6 +32,33 @@ class Preset:
         transition at any time.
         """
         return True
+
+    def add_parameter(self, parameter):
+        """
+        Adds a parameter to the preset (see ./lib/parameters.py)
+        """
+        self._parameters.append(parameter)
+
+    def get_parameters(self):
+        return self._parameters
+
+    def parameter(self, key):
+        p = None
+        for param in self._parameters:
+            if str(param) == key:
+                p = param
+        return p
+
+    def set_parameter(self, key, value):
+        """
+        Attempts to change the value of a parameter. Returns False if the parameter does not
+        exist or the new value is invalid.
+        """
+        params = [p for p in self._parameters if str(p) == key]
+        if len(params) != 1:
+            return False
+        param = params[0]
+        return param.set(value)
 
     def add_ticker(self, ticker, priority=0):
         """
