@@ -42,6 +42,13 @@ class Preset:
     def get_parameters(self):
         return self._parameters
 
+    def parameter(self, key):
+        p = None
+        for param in self._parameters:
+            if str(param) == key:
+                p = param
+        return p
+
     def set_parameter(self, key, value):
         """
         Attempts to change the value of a parameter. Returns False if the parameter does not

@@ -40,7 +40,7 @@ class BoolParameter(Parameter):
     """
 
     def __init__(self, name, value=False):
-        Parameter.__init__(name)
+        Parameter.__init__(self, name)
         self.set(value)
 
     def validate(self, value):
@@ -55,7 +55,7 @@ class IntParameter(Parameter):
     """
 
     def __init__(self, name, value=0):
-        Parameter.__init__(name)
+        Parameter.__init__(self, name)
         self.set(value)
 
     def validate(self, value):
@@ -70,7 +70,7 @@ class FloatParameter(Parameter):
     """
 
     def __init__(self, name, value=0.0):
-        Parameter.__init__(name)
+        Parameter.__init__(self, name)
         self.set(value)
 
     def validate(self, value):
@@ -85,7 +85,7 @@ class RGBParameter(Parameter):
     """
 
     def __init__(self, name, value=(0, 0, 0)):
-        Parameter.__init__(name)
+        Parameter.__init__(self, name)
         self.set(value)
 
     def validate(self, value):
