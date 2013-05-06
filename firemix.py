@@ -1,13 +1,17 @@
+import sys
 import logging
 import inspect
 import signal
 import argparse
 import yappi
 
+from PySide import QtGui
+
 import presets
 from core.mixer import Mixer
 from core.networking import Networking
 from core.scene_loader import SceneLoader
+from ui.firemixgui import FireMixGUI
 
 
 def sigint_handler(signum, frame):
@@ -55,8 +59,10 @@ if __name__ == "__main__":
         yappi.start()
     mixer.run()
 
-    while mixer._running:
-        pass
+    app = QtGui.QApplication(sys.argv)
+    gui = FireMixGUI()
+    gui.show()
+    app.exec_()
 
     if args.profile:
         stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)
