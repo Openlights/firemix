@@ -23,8 +23,9 @@ class Parameter:
     def set(self, value):
         if self.validate(value):
             self._value = value
+            return True
         else:
-            raise ValueError
+            return False
 
     def validate(self, value):
         """
