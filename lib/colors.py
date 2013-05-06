@@ -1,3 +1,6 @@
+import colorsys
+
+
 def float_to_uint8(float_color):
     """
     Converts a float color (0 to 1.0) to uint8 (0 to 255)
@@ -9,3 +12,6 @@ def uint8_to_float(uint8_color):
     Converts a uint8 color (0 to 255) to float (0 to 1.0)
     """
     return tuple(map(lambda x: float(x) / 255.0, uint8_color))
+
+def rgb_uint8_to_hsv_float(rgb_color):
+    return colorsys.rgb_to_hsv(*uint8_to_float(rgb_color))
