@@ -151,6 +151,17 @@ class Mixer:
         """
         return self._presets[self._active_preset].__class__.__name__
 
+    def set_active_preset_by_name(self, preset_name):
+        for i, preset in enumerate(self._presets):
+            if preset.__class__.__name__ == preset_name:
+                self.start_transition(i)
+
+    def next(self):
+        self.start_transition((self._active_preset + 1) % len(self._presets))
+
+    def prev(self):
+        self.start_transition((self._active_preset - 1) % len(self._presets))
+
     def start_transition(self, next=None):
         if next is not None:
             self._next_preset = next

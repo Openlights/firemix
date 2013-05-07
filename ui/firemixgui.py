@@ -9,11 +9,22 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         super(FireMixGUI, self).__init__(parent)
         self._mixer = mixer
         self.setupUi(self)
+
+        # Buttons
         self.btn_blackout.clicked.connect(self.on_btn_blackout)
         self.btn_runfreeze.clicked.connect(self.on_btn_runfreeze)
         self.btn_playpause.clicked.connect(self.on_btn_playpause)
         self.btn_next_preset.clicked.connect(self.on_btn_next_preset)
         self.btn_prev_preset.clicked.connect(self.on_btn_prev_preset)
+
+        # File menu
+        self.action_file_load_scene.triggered.connect(self.on_file_load_scene)
+        self.action_file_reload_presets.triggered.connect(self.on_file_reload_presets)
+        self.action_file_quit.triggered.connect(self.close)
+
+        # Preset list
+        self.lst_presets.itemDoubleClicked.connect(self.on_preset_double_clicked)
+
         self.update_preset_list()
         self._mixer.set_preset_changed_callback(self.on_mixer_preset_changed)
 
@@ -41,10 +52,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.btn_runfreeze.setText("Unfreeze")
 
     def on_btn_next_preset(self):
-        pass
+        self._mixer.next()
 
     def on_btn_prev_preset(self):
-        pass
+        self._mixer.prev()
 
     def update_preset_list(self):
         self.lst_presets.clear()
@@ -60,3 +71,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_mixer_preset_changed(self, new_preset):
         self.update_preset_list()
 
+    def on_file_load_scene(self):
+        pass
+
+    def on_file_reload_presets(self):
+        pass
+
+    def on_preset_double_clicked(self, preset_item):
+        self._mixer.set_active_preset_by_name(preset_item.text())
