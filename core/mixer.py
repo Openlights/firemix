@@ -42,6 +42,8 @@ class Mixer:
         self._enable_profiling = enable_profiling
         self._constant_preset = ""
         self._paused = False
+        self._frozen = False
+        self._preset_changed_callback = None
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -74,12 +76,27 @@ class Mixer:
         self._running = False
         self._stop_time = time.time()
 
+    def pause(self, pause=True):
+        self._paused = pause
+
+    def is_paused(self):
+        return self._paused
+
+    def freeze(self, freeze=True):
+        self._frozen = freeze
+
+    def is_frozen(self):
+        return self._frozen
+
     def on_tick_timer(self):
-        start = time.clock()
-        self.tick()
-        dt = (time.clock() - start)
-        delay = max(0, (1.0 / self._tick_rate) - dt)
-        self._elapsed += (1.0 / self._tick_rate)
+        if self._frozen:
+            delay = 1.0 / self._tick_rate
+        else:
+            start = time.clock()
+            self.tick()
+            dt = (time.clock() - start)
+            delay = max(0, (1.0 / self._tick_rate) - dt)
+            self._elapsed += (1.0 / self._tick_rate)
         if self._running:
             self._tick_timer = threading.Timer(delay, self.on_tick_timer)
             self._tick_timer.start()
@@ -90,6 +107,8 @@ class Mixer:
             if preset.__class__.__name__ == preset_name:
                 self._active_preset = idx
 
+        if self._preset_changed_callback is not None:
+            self._preset_changed_callback(self.get_active_preset())
         self._paused = True
 
     def add_preset(self, preset):
@@ -132,6 +151,17 @@ class Mixer:
         """
         return self._presets[self._active_preset].__class__.__name__
 
+    def set_active_preset_by_name(self, preset_name):
+        for i, preset in enumerate(self._presets):
+            if preset.__class__.__name__ == preset_name:
+                self.start_transition(i)
+
+    def next(self):
+        self.start_transition((self._active_preset + 1) % len(self._presets))
+
+    def prev(self):
+        self.start_transition((self._active_preset - 1) % len(self._presets))
+
     def start_transition(self, next=None):
         if next is not None:
             self._next_preset = next
@@ -161,6 +191,8 @@ class Mixer:
                     self._elapsed = 0.0
                     self._active_preset = self._next_preset
                     self._next_preset = (self._next_preset + 1) % len(self._presets)
+                    if self._preset_changed_callback is not None:
+                        self._preset_changed_callback(self.get_active_preset())
 
             # If the scene tree is available, we can do efficient mixing of presets.
             # If not, a tree would need to be constructed on-the-fly.
@@ -298,3 +330,6 @@ class Mixer:
             return (int((color1[0] * inv_state) + (color2[0] * blend_state)),
                     int((color1[1] * inv_state) + (color2[1] * blend_state)),
                     int((color1[2] * inv_state) + (color2[2] * blend_state)))
+
+    def set_preset_changed_callback(self, cb):
+        self._preset_changed_callback = cb
