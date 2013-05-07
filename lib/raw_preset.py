@@ -21,6 +21,9 @@ class RawPreset(Preset):
         Preset.__init__(self, mixer)
         self.init_pixels()
 
+    def reset(self):
+        self.init_pixels()
+
     def init_pixels(self):
         """
         Sets up the pixel array

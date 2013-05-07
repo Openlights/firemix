@@ -19,6 +19,12 @@ class Preset:
         self._parameters = []
         self.setup()
 
+    def reset(self):
+        """
+        This method is called each time the preset is about to start playing
+        """
+        pass
+
     def setup(self):
         """
         Override this method to initialize your tickers.

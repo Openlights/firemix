@@ -109,6 +109,8 @@ class Mixer:
 
         if self._preset_changed_callback is not None:
             self._preset_changed_callback(self.get_active_preset())
+
+        self._presets[self._active_preset].reset()
         self._paused = True
 
     def add_preset(self, preset):
@@ -177,6 +179,8 @@ class Mixer:
 
             # Handle transition by rendering both the active and the next preset, and blending them together
             if self._in_transition:
+                if self._elapsed == 0.0:
+                    self._presets[self._next_preset].reset()
                 if self._transition_duration > 0.0:
                     transition_progress = self._elapsed / self._transition_duration
                 else:
