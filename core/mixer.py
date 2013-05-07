@@ -42,6 +42,7 @@ class Mixer:
         self._enable_profiling = enable_profiling
         self._constant_preset = ""
         self._paused = False
+        self._frozen = False
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -80,8 +81,14 @@ class Mixer:
     def is_paused(self):
         return self._paused
 
+    def freeze(self, freeze=True):
+        self._frozen = freeze
+
+    def is_frozen(self):
+        return self._frozen
+
     def on_tick_timer(self):
-        if self._paused:
+        if self._frozen:
             delay = 1.0 / self._tick_rate
         else:
             start = time.clock()
