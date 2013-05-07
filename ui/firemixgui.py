@@ -1,8 +1,9 @@
-from PySide.QtGui import QMainWindow, QPushButton, QMessageBox
+from PySide import QtGui, QtCore
 
 from ui.ui_firemix import Ui_FireMixMain
 
-class FireMixGUI(QMainWindow, Ui_FireMixMain):
+
+class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def __init__(self, parent=None, mixer=None):
         super(FireMixGUI, self).__init__(parent)
@@ -13,6 +14,8 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
         self.btn_playpause.clicked.connect(self.on_btn_playpause)
         self.btn_next_preset.clicked.connect(self.on_btn_next_preset)
         self.btn_prev_preset.clicked.connect(self.on_btn_prev_preset)
+        self.update_preset_list()
+        self._mixer.set_preset_changed_callback(self.on_mixer_preset_changed)
 
     def closeEvent(self, event):
         self._mixer.stop()
@@ -42,3 +45,18 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
 
     def on_btn_prev_preset(self):
         pass
+
+    def update_preset_list(self):
+        self.lst_presets.clear()
+        presets = self._mixer.get_preset_playlist()
+        current = self._mixer.get_active_preset()
+        for preset in presets:
+            item = QtGui.QListWidgetItem(preset.__class__.__name__)
+
+            if preset == current:
+                item.setBackground(QtGui.QColor(100, 255, 200))
+            self.lst_presets.addItem(item)
+
+    def on_mixer_preset_changed(self, new_preset):
+        self.update_preset_list()
+

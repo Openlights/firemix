@@ -43,6 +43,7 @@ class Mixer:
         self._constant_preset = ""
         self._paused = False
         self._frozen = False
+        self._preset_changed_callback = None
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -106,6 +107,8 @@ class Mixer:
             if preset.__class__.__name__ == preset_name:
                 self._active_preset = idx
 
+        if self._preset_changed_callback is not None:
+            self._preset_changed_callback(self.get_active_preset())
         self._paused = True
 
     def add_preset(self, preset):
@@ -177,6 +180,8 @@ class Mixer:
                     self._elapsed = 0.0
                     self._active_preset = self._next_preset
                     self._next_preset = (self._next_preset + 1) % len(self._presets)
+                    if self._preset_changed_callback is not None:
+                        self._preset_changed_callback(self.get_active_preset())
 
             # If the scene tree is available, we can do efficient mixing of presets.
             # If not, a tree would need to be constructed on-the-fly.
@@ -314,3 +319,6 @@ class Mixer:
             return (int((color1[0] * inv_state) + (color2[0] * blend_state)),
                     int((color1[1] * inv_state) + (color2[1] * blend_state)),
                     int((color1[2] * inv_state) + (color2[2] * blend_state)))
+
+    def set_preset_changed_callback(self, cb):
+        self._preset_changed_callback = cb
