@@ -88,6 +88,24 @@ class Mixer:
     def is_frozen(self):
         return self._frozen
 
+    def set_preset_duration(self, duration):
+        if duration > self._transition_duration:
+            self._duration = duration
+        else:
+            log.warn("Duration %f must be longer than the transition duration (%f)" % (duration, self._transition_duration))
+
+    def get_preset_duration(self):
+        return self._duration
+
+    def set_transition_duration(self, duration):
+        if duration >= 0.0:
+            self._transition_duration = duration
+        else:
+            log.warn("Transition duration must be positive or zero.")
+
+    def get_transition_duration(self):
+        return self._transition_duration
+
     def on_tick_timer(self):
         if self._frozen:
             delay = 1.0 / self._tick_rate

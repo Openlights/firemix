@@ -1,5 +1,7 @@
 from PySide import QtGui, QtCore
 
+from lib.parameters import BoolParameter, FloatParameter, IntParameter, RGBParameter
+
 from ui.ui_firemix import Ui_FireMixMain
 
 
@@ -10,7 +12,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self._mixer = mixer
         self.setupUi(self)
 
-        # Buttons
+        # Control
         self.btn_blackout.clicked.connect(self.on_btn_blackout)
         self.btn_runfreeze.clicked.connect(self.on_btn_runfreeze)
         self.btn_playpause.clicked.connect(self.on_btn_playpause)
@@ -25,7 +27,17 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         # Preset list
         self.lst_presets.itemDoubleClicked.connect(self.on_preset_double_clicked)
 
+        # Settings
+        self.edit_preset_duration.valueChanged.connect(self.on_preset_duration_changed)
+        self.edit_transition_duration.valueChanged.connect(self.on_transition_duration_changed)
+        self.cb_transition_mode.currentIndexChanged.connect(self.on_transition_mode_changed)
+
+        # Preset Parameters
+        self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
+
         self.update_preset_list()
+        self.load_preset_parameters_table()
+        self.tbl_preset_parameters.setDisabled(True)
         self._mixer.set_preset_changed_callback(self.on_mixer_preset_changed)
 
     def closeEvent(self, event):
@@ -38,9 +50,13 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_btn_playpause(self):
         if self._mixer.is_paused():
             self._mixer.pause(False)
+            self.tbl_preset_parameters.setDisabled(True)
+            self.lbl_preset_parameters.setText("Preset Parameters (Pause to Edit)")
             self.btn_playpause.setText("Pause")
         else:
             self._mixer.pause()
+            self.lbl_preset_parameters.setText("Preset Parameters")
+            self.tbl_preset_parameters.setDisabled(False)
             self.btn_playpause.setText("Play")
 
     def on_btn_runfreeze(self):
@@ -70,6 +86,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_mixer_preset_changed(self, new_preset):
         self.update_preset_list()
+        self.load_preset_parameters_table()
 
     def on_file_load_scene(self):
         pass
@@ -79,3 +96,43 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_preset_double_clicked(self, preset_item):
         self._mixer.set_active_preset_by_name(preset_item.text())
+
+    def on_preset_duration_changed(self):
+        nd = self.edit_preset_duration.value()
+        self._mixer.set_preset_duration(nd)
+        self.edit_preset_duration.setValue(self._mixer.get_preset_duration())
+
+    def on_transition_duration_changed(self):
+        nd = self.edit_transition_duration.value()
+        self._mixer.set_transition_duration(nd)
+        self.edit_transition_duration.setValue(self._mixer.get_transition_duration())
+
+    def on_transition_mode_changed(self):
+        pass
+
+    def load_preset_parameters_table(self):
+        self.tbl_preset_parameters.clear()
+        parameters = self._mixer.get_active_preset().get_parameters()
+        self.tbl_preset_parameters.setColumnCount(2)
+        self.tbl_preset_parameters.setRowCount(len(parameters))
+        for i, parameter in enumerate(parameters):
+            key_item = QtGui.QTableWidgetItem(str(parameter))
+            key_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            value_item = QtGui.QTableWidgetItem(str(parameter.get()))
+            self.tbl_preset_parameters.setItem(i, 0, key_item)
+            self.tbl_preset_parameters.setItem(i, 1, value_item)
+
+    def on_preset_parameter_changed(self, item):
+        if item.column() == 0:
+            return
+        key = self.tbl_preset_parameters.item(item.row(), 0)
+        par = self._mixer.get_active_preset().parameter(key.text())
+        if isinstance(par, FloatParameter):
+            try:
+                value = float(item.text())
+                if not par.set(value):
+                    value = par.get()
+                    item.setText(str(value))
+            except ValueError:
+                item.setText(str(par.get()))
+
