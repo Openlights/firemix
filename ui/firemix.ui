@@ -286,7 +286,14 @@
     <addaction name="action_file_save_playlist"/>
     <addaction name="action_file_quit"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="action_settings_networking"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_file_load_scene">
@@ -313,6 +320,11 @@
   <action name="action_file_save_playlist">
    <property name="text">
     <string>Save Playlist</string>
+   </property>
+  </action>
+  <action name="action_settings_networking">
+   <property name="text">
+    <string>Networking</string>
    </property>
   </action>
  </widget>

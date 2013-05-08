@@ -21,13 +21,13 @@ class Mixer:
         self._presets = []
         self._net = app.net
         self._scene = app.scene
-        self._tick_rate = self._app.settings.get('mixer')['tick-rate']
+        self._tick_rate = self._app.settings['mixer']['tick-rate']
         self._active_preset = 0
         self._next_preset = 1
         self._in_transition = False
-        self._transition_duration = self._app.settings.get('mixer')['transition-duration']
+        self._transition_duration = self._app.settings['mixer']['transition-duration']
         self._tick_timer = None
-        self._duration = self._app.settings.get('mixer')['preset-duration']
+        self._duration = self._app.settings['mixer']['preset-duration']
         self._elapsed = 0.0
         self._running = False
         self._enable_rendering = True
