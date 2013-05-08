@@ -1,10 +1,11 @@
 import colorsys
 import random
-from math import fmod
+from twisted.test.test_factories import In
 
 from lib.raw_preset import RawPreset
 from lib.colors import uint8_to_float, float_to_uint8
 from lib.color_fade import ColorFade
+from lib.parameters import FloatParameter, IntParameter, RGBParameter
 
 
 class Dragons(RawPreset):
@@ -19,12 +20,7 @@ class Dragons(RawPreset):
     _dead_color = (0.1, 0.87, 0.88)  # HSV
 
     _growth_time = 0.3  # seconds
-    _tail_persist = 0.55
-
     _spontaneous_birth_probability = 0.0001
-    _spread_probability = 0.09
-
-    _pop_limit = 5
 
     # Internal parameters
     class Dragon:
@@ -50,6 +46,9 @@ class Dragons(RawPreset):
 
     def setup(self):
         random.seed()
+        self.add_parameter(FloatParameter('birth-rate', 0.09))
+        self.add_parameter(FloatParameter('tail-persist', 0.55))
+        self.add_parameter(IntParameter('pop-limit', 5))
 
     def draw(self, dt):
 
@@ -57,7 +56,7 @@ class Dragons(RawPreset):
         p_birth = (1.0 - self._spontaneous_birth_probability) if self._pop > 2 else 0.5
 
         # Spontaneous birth: Rare after startup
-        if (self._pop < self._pop_limit) and random.random() > p_birth:
+        if (self._pop < self.parameter('pop-limit').get()) and random.random() > p_birth:
             address = ( random.randint(0, self._max_strand - 1),
                         random.randint(0, self._max_fixture - 1),
                         0)
@@ -87,7 +86,7 @@ class Dragons(RawPreset):
 
                 # At a vertex: optionally spawn new dragons
                 if dragon.moving and  (p == 0 or p == (self.scene().fixture(s, f).pixels() - 1)):
-                    if (self._pop < self._pop_limit):
+                    if (self._pop < self.parameter('pop-limit').get()):
                         neighbors = self.scene().get_pixel_neighbors(dragon.loc)
                         random.shuffle(neighbors)
 
@@ -106,7 +105,7 @@ class Dragons(RawPreset):
                                 num_children += 1
                             else:
                                 # Randomly spawn new dragons
-                                if random.random() > (1.0 - self._spread_probability):
+                                if random.random() > (1.0 - self.parameter('birth-rate').get()):
                                     dir = 1 if candidate[2] == 0 else -1
                                     child = self.Dragon(candidate, dir, dt)
                                     child.moving = False
@@ -142,9 +141,9 @@ class Dragons(RawPreset):
 
         # Draw tails
         for loc, time in self._tails:
-            if (dt - time) > self._tail_persist:
+            if (dt - time) > self.parameter('tail-persist').get():
                 self._tails.remove((loc, time))
                 self._pixel_buffer[loc] = (0, 0, 0)
             else:
-                progress = (dt - time) / self._tail_persist
+                progress = (dt - time) / self.parameter('tail-persist').get()
                 self._pixel_buffer[loc] = self._tail_fader.get_color(progress)

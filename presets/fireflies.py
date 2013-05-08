@@ -4,6 +4,7 @@ import random
 from lib.raw_preset import RawPreset
 from lib.colors import float_to_uint8
 from lib.color_fade import ColorFade
+from lib.parameters import FloatParameter, HSVParameter
 
 
 class Fireflies(RawPreset):
@@ -11,26 +12,31 @@ class Fireflies(RawPreset):
 
     _fading_up = []
     _fading_down = []
-
-    # Configurable parameters
-    _up_target = (0.15, 1.0, 1.0)  # HSV
-    _down_target = (0.0, 0.0, 0.0)  # HSV
-    _fade_up_time = 0.25  # seconds
-    _fade_down_time = 2.5
-    _birth_rate = 0.15
-
-    # Internal parameters
-    _total_delta = tuple(map(lambda x, y: x - y, _up_target, _down_target))
     _time = {}
-    _up_target_rgb = float_to_uint8(colorsys.hsv_to_rgb(*_up_target))
-    _down_target_rgb = float_to_uint8(colorsys.hsv_to_rgb(*_down_target))
+    _fader = None
 
-    _fader = ColorFade('hsv', [_down_target, _up_target])
+    def setup(self):
+        random.seed()
+        self.add_parameter(FloatParameter('birth-rate', 0.15))
+        self.add_parameter(FloatParameter('fade-up-time', 0.25))
+        self.add_parameter(FloatParameter('fade-down-time', 2.5))
+        self.add_parameter(HSVParameter('on-color', (0.15, 1.0, 1.0)))
+        self.add_parameter(HSVParameter('off-color', (0.0, 0.0, 0.0)))
+        self._setup_colors()
+
+    def parameter_changed(self, parameter):
+        if str(parameter) == 'on-color':
+            self._setup_colors()
+
+    def _setup_colors(self):
+        self._up_target_rgb = float_to_uint8(colorsys.hsv_to_rgb(*self.parameter('on-color').get()))
+        self._down_target_rgb = float_to_uint8(colorsys.hsv_to_rgb(*self.parameter('off-color').get()))
+        self._fader = ColorFade('hsv', [self.parameter('off-color').get(), self.parameter('on-color').get()])
 
     def draw(self, dt):
 
         # Birth
-        if random.random() > (1.0 - self._birth_rate):
+        if random.random() > (1.0 - self.parameter('birth-rate').get()):
             address = ( random.randint(0, self._max_strand - 1),
                         random.randint(0, self._max_fixture - 1),
                         random.randint(0, self._max_pixel - 1))
@@ -55,7 +61,7 @@ class Fireflies(RawPreset):
             self._pixel_buffer[address] = color
 
     def _get_next_color(self, address, dt, down=False):
-        time_target = float(self._fade_down_time) if down else float(self._fade_up_time)
+        time_target = float(self.parameter('fade-up-time').get()) if down else float(self.parameter('fade-down-time').get())
         progress = (dt - self._time[address]) / time_target
 
         if progress > 1.0:
