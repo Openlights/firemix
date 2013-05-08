@@ -1,6 +1,7 @@
 import unittest
 import time
 import logging
+import numpy as np
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel
 
@@ -15,11 +16,24 @@ class Preset:
         self._commands = []
         self._tickers = []
         self._ticks = 0
+        self._parameters = []
         self.setup()
+
+    def reset(self):
+        """
+        This method is called each time the preset is about to start playing
+        """
+        pass
 
     def setup(self):
         """
         Override this method to initialize your tickers.
+        """
+        pass
+
+    def parameter_changed(self, parameter):
+        """
+        This callback will be called when any parameters are updated.
         """
         pass
 
@@ -30,6 +44,34 @@ class Preset:
         transition at any time.
         """
         return True
+
+    def add_parameter(self, parameter):
+        """
+        Adds a parameter to the preset (see ./lib/parameters.py)
+        """
+        parameter.set_parent(self)
+        self._parameters.append(parameter)
+
+    def get_parameters(self):
+        return self._parameters
+
+    def parameter(self, key):
+        p = None
+        for param in self._parameters:
+            if str(param) == key:
+                p = param
+        return p
+
+    def set_parameter(self, key, value):
+        """
+        Attempts to change the value of a parameter. Returns False if the parameter does not
+        exist or the new value is invalid.
+        """
+        params = [p for p in self._parameters if str(p) == key]
+        if len(params) != 1:
+            return False
+        param = params[0]
+        return param.set(value)
 
     def add_ticker(self, ticker, priority=0):
         """
@@ -64,6 +106,9 @@ class Preset:
         for (t, p) in self._tickers:
             if t == ticker:
                 self._tickers.remove((t, p))
+
+    def clear_tickers(self):
+        self._tickers = []
 
     def tick(self):
         if self._mixer._enable_profiling:
@@ -100,8 +145,8 @@ class Preset:
         self._ticks += 1
         if self._mixer._enable_profiling:
             tick_time = 1000.0 * (time.time() - start)
-            if tick_time > 12.0:
-                log.warn("%s took a while to tick: %0.2f ms" % (self.__class__, tick_time))
+            if tick_time > 30.0:
+                log.warn("%s slow frame: %d ms" % (self.__class__, tick_time))
 
     def tick_rate(self):
         return self._mixer.get_tick_rate()
@@ -119,7 +164,7 @@ class Preset:
         self._commands.append(cmd)
 
     def _convert_color(self, color):
-        if (type(color[0]) == float) or (type(color[1]) == float) or (type(color[2]) == float):
+        if (type(color[0]) == float) or (type(color[1]) == float) or (type(color[2]) == float) or (type(color[1]) ==np.float32):
             return tuple([int(c*255) for c in color])
         else:
             return color

@@ -1,3 +1,4 @@
+import sys
 import logging
 import argparse
 import yappi
@@ -5,6 +6,13 @@ import signal
 
 from core.rpc_server import RPCServer
 from firemix_app import FireMixApp
+from PySide import QtGui
+
+import presets
+from core.mixer import Mixer
+from core.networking import Networking
+from core.scene_loader import SceneLoader
+from ui.firemixgui import FireMixGUI
 
 
 def sig_handler(sig, frame):
@@ -22,6 +30,7 @@ if __name__ == "__main__":
     parser.add_argument("scene", type=str, help="Scene file to load (create scenes with FireSim)")
     parser.add_argument("--playlist", type=str, help="Playlist file to load", default="default")
     parser.add_argument("--profile", action='store_const', const=True, default=False, help="Enable profiling")
+    parser.add_argument("--nogui", action='store_const', const=True, default=False, help="Disable GUI")
     parser.add_argument("--preset", type=str, help="Specify a preset name to run only that preset (useful for debugging)")
 
     args = parser.parse_args()
@@ -42,6 +51,11 @@ if __name__ == "__main__":
         rpc_server.join()
     except KeyboardInterrupt:
         log.info("Shutting down")
+    if not args.nogui:
+        app = QtGui.QApplication(sys.argv)
+        gui = FireMixGUI(mixer=mixer)
+        gui.show()
+        app.exec_()
 
     if args.profile:
         stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)

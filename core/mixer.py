@@ -4,6 +4,7 @@ import time
 import numpy as np
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
+from lib.raw_preset import RawPreset
 
 log = logging.getLogger("firemix.core.mixer")
 
@@ -42,6 +43,8 @@ class Mixer:
         self._enable_profiling = enable_profiling
         self._constant_preset = ""
         self._paused = False
+        self._frozen = False
+        self._preset_changed_callback = None
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -52,15 +55,13 @@ class Mixer:
             fh = self._scene.fixture_hierarchy()
             for strand in fh:
                 self._strand_keys.append(strand)
-                if len(fh[strand]) > self._max_fixtures:
-                    self._max_fixtures = len(fh[strand])
-                for fixture in fh[strand]:
-                    if fh[strand][fixture].pixels() > self._max_pixels:
-                        self._max_pixels = fh[strand][fixture].pixels()
-            log.info("Loaded scene with %d strands, will create array of %d fixtures by %d pixels." % (len(self._strand_keys), self._max_fixtures, self._max_pixels))
-            self._output_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
-            self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
 
+            (maxs, maxf, maxp) = self._scene.get_matrix_extents()
+            log.info("Loaded scene with %d strands, will create array of %d fixtures by %d pixels." % (maxs, maxf, maxp))
+            self._output_buffer = np.zeros((maxs, maxf, maxp, 3))
+            self._output_back_buffer = np.zeros((maxs, maxf, maxp, 3))
+            self._max_fixtures = maxf
+            self._max_pixels = maxp
 
     def run(self):
         if not self._running:
@@ -73,16 +74,48 @@ class Mixer:
             self.reset_output_buffer()
 
     def stop(self):
-        log.info("Mixer got stop command")
         self._running = False
         self._stop_time = time.time()
 
+    def pause(self, pause=True):
+        self._paused = pause
+
+    def is_paused(self):
+        return self._paused
+
+    def freeze(self, freeze=True):
+        self._frozen = freeze
+
+    def is_frozen(self):
+        return self._frozen
+
+    def set_preset_duration(self, duration):
+        if duration > self._transition_duration:
+            self._duration = duration
+        else:
+            log.warn("Duration %f must be longer than the transition duration (%f)" % (duration, self._transition_duration))
+
+    def get_preset_duration(self):
+        return self._duration
+
+    def set_transition_duration(self, duration):
+        if duration >= 0.0:
+            self._transition_duration = duration
+        else:
+            log.warn("Transition duration must be positive or zero.")
+
+    def get_transition_duration(self):
+        return self._transition_duration
+
     def on_tick_timer(self):
-        start = time.clock()
-        self.tick()
-        dt = (time.clock() - start)
-        delay = max(0, (1.0 / self._tick_rate) - dt)
-        self._elapsed += (1.0 / self._tick_rate)
+        if self._frozen:
+            delay = 1.0 / self._tick_rate
+        else:
+            start = time.clock()
+            self.tick()
+            dt = (time.clock() - start)
+            delay = max(0, (1.0 / self._tick_rate) - dt)
+            self._elapsed += (1.0 / self._tick_rate)
         self._running = self._app._running
         if self._running:
             self._tick_timer = threading.Timer(delay, self.on_tick_timer)
@@ -94,6 +127,10 @@ class Mixer:
             if preset.__class__.__name__ == preset_name:
                 self._active_preset = idx
 
+        if self._preset_changed_callback is not None:
+            self._preset_changed_callback(self.get_active_preset())
+
+        self._presets[self._active_preset].reset()
         self._paused = True
 
     def add_preset(self, preset):
@@ -136,6 +173,17 @@ class Mixer:
         """
         return self._presets[self._active_preset].__class__.__name__
 
+    def set_active_preset_by_name(self, preset_name):
+        for i, preset in enumerate(self._presets):
+            if preset.__class__.__name__ == preset_name:
+                self.start_transition(i)
+
+    def next(self):
+        self.start_transition((self._active_preset + 1) % len(self._presets))
+
+    def prev(self):
+        self.start_transition((self._active_preset - 1) % len(self._presets))
+
     def start_transition(self, next=None):
         if next is not None:
             self._next_preset = next
@@ -151,6 +199,8 @@ class Mixer:
 
             # Handle transition by rendering both the active and the next preset, and blending them together
             if self._in_transition:
+                if self._elapsed == 0.0:
+                    self._presets[self._next_preset].reset()
                 if self._transition_duration > 0.0:
                     transition_progress = self._elapsed / self._transition_duration
                 else:
@@ -165,6 +215,8 @@ class Mixer:
                     self._elapsed = 0.0
                     self._active_preset = self._next_preset
                     self._next_preset = (self._next_preset + 1) % len(self._presets)
+                    if self._preset_changed_callback is not None:
+                        self._preset_changed_callback(self.get_active_preset())
 
             # If the scene tree is available, we can do efficient mixing of presets.
             # If not, a tree would need to be constructed on-the-fly.
@@ -210,9 +262,14 @@ class Mixer:
         if self._enable_profiling:
             start = time.time()
 
-        commands = self._presets[first].get_commands()
-        #print commands
-        self.render_command_list(commands, self._output_buffer)
+        commands = []
+
+        if isinstance(self._presets[first], RawPreset):
+            self._output_buffer = self._presets[first].get_buffer()
+        else:
+            commands = self._presets[first].get_commands()
+            #print commands
+            self.render_command_list(commands, self._output_buffer)
 
         if self._enable_profiling:
             dt = 1000.0 * (time.time() - start)
@@ -297,3 +354,6 @@ class Mixer:
             return (int((color1[0] * inv_state) + (color2[0] * blend_state)),
                     int((color1[1] * inv_state) + (color2[1] * blend_state)),
                     int((color1[2] * inv_state) + (color2[2] * blend_state)))
+
+    def set_preset_changed_callback(self, cb):
+        self._preset_changed_callback = cb

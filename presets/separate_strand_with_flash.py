@@ -1,10 +1,8 @@
-import colorsys
-import math
-
 from lib.preset import Preset
 
 from lib.color_fade import Rainbow
-from lib.basic_tickers import fade, offset, flash
+from lib.basic_tickers import fade, offset, flash, speed
+from lib.parameters import FloatParameter
 
 class SeparateStrandWithFlash(Preset):
     outside = [(0, 0),
@@ -47,11 +45,22 @@ class SeparateStrandWithFlash(Preset):
               (4, 4),
               (6, 4)]
 
-    def setup(self):
-        self.add_ticker(flash((), (255, 255, 255), 0.2, 0.8), 1)
 
-        self.add_ticker(fade((0,), Rainbow))
-        self.add_ticker(offset(fade(self.spokes, Rainbow), 0.05))
-        self.add_ticker(offset(fade(self.star, Rainbow), 0.1))
-        self.add_ticker(offset(fade(self.pentagon, Rainbow), 0.15))
-        self.add_ticker(offset(fade(self.spikes, Rainbow), 0.2))
+    def setup(self):
+        self.add_parameter(FloatParameter('speed', 0.5))
+        self.add_parameter(FloatParameter('interval', 0.05))
+        self.add_parameter(FloatParameter('flash-on', 0.2))
+        self.add_parameter(FloatParameter('flash-off', 0.8))
+        self._setup_tickers()
+
+    def parameter_changed(self, parameter):
+        self._setup_tickers()
+
+    def _setup_tickers(self):
+        self.clear_tickers()
+        self.add_ticker(flash((), (255, 255, 255), self.parameter('flash-on'), self.parameter('flash-off')), 1)
+        self.add_ticker(speed(fade(self.outside, Rainbow), self.parameter('speed')))
+        self.add_ticker(speed(offset(fade(self.spokes, Rainbow), 1.0 * self.parameter('interval').get()), self.parameter('speed').get()))
+        self.add_ticker(speed(offset(fade(self.star, Rainbow), 2.0 * self.parameter('interval').get()), self.parameter('speed').get()))
+        self.add_ticker(speed(offset(fade(self.pentagon, Rainbow), 3.0 * self.parameter('interval').get()), self.parameter('speed').get()))
+        self.add_ticker(speed(offset(fade(self.spikes, Rainbow), 4.0 * self.parameter('interval').get()), self.parameter('speed').get()))

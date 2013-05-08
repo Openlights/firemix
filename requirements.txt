@@ -1,5 +1,4 @@
 yappi>=0.62
 msgpack-python>=0.3.0
 numpy>=1.6.2
-Flask>=0.9
-Flask-XML-RPC>=0.1.2
+PySide>=1.1.2
