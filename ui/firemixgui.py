@@ -129,7 +129,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         key = self.tbl_preset_parameters.item(item.row(), 0)
         par = self._mixer.get_active_preset().parameter(key.text())
         try:
-            if not par.set_from_str(item.text()):
-                item.setText(par.get_as_str())
+            par.set_from_str(item.text())
+            item.setText(par.get_as_str())
         except ValueError:
             item.setText(par.get_as_str())

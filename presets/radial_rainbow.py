@@ -18,7 +18,6 @@ class RadialRainbow(Preset):
         self._create_tickers()
 
     def parameter_changed(self, parameter):
-        print parameter, parameter.get()
         if str(parameter) == 'width':
             self._create_tickers()
 
