@@ -1,5 +1,6 @@
-import threading
 import logging
+
+from PySide import QtCore
 
 from core.mixer import Mixer
 from core.networking import Networking
@@ -12,12 +13,13 @@ from lib.scene import Scene
 log = logging.getLogger("firemix")
 
 
-class FireMixApp(threading.Thread):
+class FireMixApp(QtCore.QThread):
     """
     Main logic of FireMix.  Operates the mixer tick loop.
     """
+    playlist_changed = QtCore.Signal()
 
-    def __init__(self, args):
+    def __init__(self, args, parent=None):
         self._running = False
         self.args = args
         self.settings = Settings()
@@ -32,7 +34,7 @@ class FireMixApp(threading.Thread):
             log.info("Setting constant preset %s" % args.preset)
             self.mixer.set_constant_preset(args.preset)
 
-        threading.Thread.__init__(self)
+        QtCore.QThread.__init__(self, parent)
 
     def run(self):
         self._running = True

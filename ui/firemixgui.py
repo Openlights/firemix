@@ -40,7 +40,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.update_preset_list()
         self.load_preset_parameters_table()
         self.tbl_preset_parameters.setDisabled(True)
-        self._app.playlist.register_callback(self.on_playlist_callback)
+        self._app.playlist_changed.connect(self.on_playlist_changed)
+
+        self.update_mixer_settings()
 
     def closeEvent(self, event):
         self._mixer.stop()
@@ -75,6 +77,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_btn_prev_preset(self):
         self._mixer.prev()
 
+    def update_mixer_settings(self):
+        self.edit_preset_duration.setValue(self._mixer.get_preset_duration())
+        self.edit_transition_duration.setValue(self._mixer.get_transition_duration())
+
     def update_preset_list(self):
         self.lst_presets.clear()
         presets = self._app.playlist.get()
@@ -86,7 +92,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                 item.setBackground(QtGui.QColor(100, 255, 200))
             self.lst_presets.addItem(item)
 
-    def on_playlist_callback(self, new_preset):
+    def on_playlist_changed(self):
         self.update_preset_list()
         self.load_preset_parameters_table()
 

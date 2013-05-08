@@ -26,8 +26,6 @@ class Playlist(JSONDict):
         self._active_index = 0
         self._next_index = 0
 
-        self._callback = None
-
         self.load_playlist()
 
     def load_playlist(self):
@@ -45,13 +43,6 @@ class Playlist(JSONDict):
 
         return self._playlist
 
-    def register_callback(self, cb):
-        self._callback = cb
-
-    def callback(self):
-        if self._callback is not None:
-            self._callback(self.get_active_preset())
-
     def get(self):
         return self._playlist
 
@@ -61,7 +52,7 @@ class Playlist(JSONDict):
         """
         self._active_index = (self._active_index + direction) % len(self._playlist)
         self._next_index = (self._next_index + direction) % len(self._playlist)
-        self.callback()
+        self._app.playlist_changed.emit()
 
     def __len__(self):
         return len(self._playlist)
@@ -85,7 +76,7 @@ class Playlist(JSONDict):
         self._active_index = idx % len(self._playlist)
         self._next_index = (self._active_index + 1) % len(self._playlist)
         log.info("Setting active index to %d, next index to %d" % (self._active_index, self._next_index))
-        self.callback()
+        self._app.playlist_changed.emit()
 
     def set_active_preset_by_name(self, classname):
         for i, preset in enumerate(self._playlist):

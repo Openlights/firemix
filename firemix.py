@@ -41,24 +41,16 @@ if __name__ == "__main__":
         log.info("Starting profiler")
         yappi.start()
 
-    app = FireMixApp(args)
-    #rpc_server = RPCServer(app)
+    qt_app = QtGui.QApplication(sys.argv)
 
-    try:
-        app.start()
-        #rpc_server.start()
-        app.join()
-        #rpc_server.join()
-    except KeyboardInterrupt:
-        log.info("Shutting down")
+    app = FireMixApp(args, parent=qt_app)
+    app.start()
 
     if not args.nogui:
-        qt_app = QtGui.QApplication(sys.argv)
         gui = FireMixGUI(app=app)
         gui.show()
-        qt_app.exec_()
 
-    app.stop()
+    qt_app.exec_()
 
     if args.profile:
         stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)

@@ -23,7 +23,10 @@ class Preset:
         """
         This method is called each time the preset is about to start playing
         """
-        pass
+        self._tickers = []
+        self._commands = []
+        self._parameters = []
+        self.setup()
 
     def setup(self):
         """
