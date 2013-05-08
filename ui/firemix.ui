@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>524</width>
-    <height>482</height>
+    <width>643</width>
+    <height>465</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,13 +23,16 @@
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>9</x>
-      <y>9</y>
-      <width>509</width>
-      <height>411</height>
+      <x>-1</x>
+      <y>-1</y>
+      <width>641</width>
+      <height>421</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="vl_outer">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetMinimumSize</enum>
+     </property>
      <item>
       <layout class="QHBoxLayout" name="hl_top_buttons">
        <item>
@@ -267,7 +270,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>524</width>
+     <width>643</width>
      <height>25</height>
     </rect>
    </property>
