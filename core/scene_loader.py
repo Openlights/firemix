@@ -25,6 +25,10 @@ class SceneLoader:
         with open(self._filename, 'r') as f:
             try:
                 self._data = json.load(f)
+                if self._data.get('file-type', '') != 'scene':
+                    log.error("Error loading scene from %s.  Bad file-type." % self._filename)
+                    self._data = None
+                    return None
             except:
                 log.error("Error loading scene data from %s" % self._filename)
                 self._data = None

@@ -32,7 +32,12 @@ class Playlist:
         else:
             with open(self._filepath, 'r') as f:
                 try:
-                    self._data = json.load(f)
+                    raw_data = json.load(f)
+                    if raw_data.get('file-type', '') != 'playlist':
+                        log.error("Error loading playlist data from %s: file-type mismatch." % self._filepath)
+                        self._data = None
+                        return None
+                    self._data = raw_data.get('playlist', [])
                 except:
                     log.error("Error loading playlist data from %s" % self._filepath)
                     self._data = None
