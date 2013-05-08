@@ -7,9 +7,10 @@ from ui.ui_firemix import Ui_FireMixMain
 
 class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
-    def __init__(self, parent=None, mixer=None):
+    def __init__(self, parent=None, app=None):
         super(FireMixGUI, self).__init__(parent)
-        self._mixer = mixer
+        self._app = app
+        self._mixer = app._mixer
         self.setupUi(self)
 
         # Control

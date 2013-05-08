@@ -4,21 +4,17 @@ import argparse
 import yappi
 import signal
 
-from core.rpc_server import RPCServer
-from firemix_app import FireMixApp
 from PySide import QtGui
 
-import presets
-from core.mixer import Mixer
-from core.networking import Networking
-from core.scene_loader import SceneLoader
+#from core.rpc_server import RPCServer
+from firemix_app import FireMixApp
 from ui.firemixgui import FireMixGUI
 
 
 def sig_handler(sig, frame):
-    global app, rpc_server
+    global app  # , rpc_server
     app.stop()
-    rpc_server.stop()
+    #rpc_server.stop()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
@@ -42,20 +38,23 @@ if __name__ == "__main__":
         yappi.start()
 
     app = FireMixApp(args)
-    rpc_server = RPCServer(app)
+    #rpc_server = RPCServer(app)
 
     try:
         app.start()
-        rpc_server.start()
+        #rpc_server.start()
         app.join()
-        rpc_server.join()
+        #rpc_server.join()
     except KeyboardInterrupt:
         log.info("Shutting down")
+
     if not args.nogui:
-        app = QtGui.QApplication(sys.argv)
-        gui = FireMixGUI(mixer=mixer)
+        qt_app = QtGui.QApplication(sys.argv)
+        gui = FireMixGUI(app=app)
         gui.show()
-        app.exec_()
+        qt_app.exec_()
+
+    app.stop()
 
     if args.profile:
         stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)
@@ -64,7 +63,7 @@ if __name__ == "__main__":
         for s in stats:
             print "%s\t[%0.3f]" % (s[0], s[1])
         print   "------ TICK TIME HISTOGRAM ------"
-        elapsed = (mixer._stop_time - mixer._start_time)
-        print "%d frames in %0.2f seconds (%0.2f FPS) " %  (mixer._num_frames, elapsed, mixer._num_frames / elapsed)
-        for c in sorted(mixer._tick_time_data.iterkeys()):
-            print "[%d fps]:\t%4d\t%0.2f%%" % (c, mixer._tick_time_data[c], (float(mixer._tick_time_data[c]) / mixer._num_frames) * 100.0)
+        elapsed = (app._mixer._stop_time - app._mixer._start_time)
+        print "%d frames in %0.2f seconds (%0.2f FPS) " %  (app._mixer._num_frames, elapsed, app._mixer._num_frames / elapsed)
+        for c in sorted(app._mixer._tick_time_data.iterkeys()):
+            print "[%d fps]:\t%4d\t%0.2f%%" % (c, app._mixer._tick_time_data[c], (float(app._mixer._tick_time_data[c]) / app._mixer._num_frames) * 100.0)
