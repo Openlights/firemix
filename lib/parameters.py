@@ -1,4 +1,4 @@
-
+import ast
 
 
 class Parameter:
@@ -18,6 +18,9 @@ class Parameter:
     def get(self):
         return self._value
 
+    def get_as_str(self):
+        return str(self._value)
+
     def __cmp__(self, other):
         return (self._value == other._value)
 
@@ -29,6 +32,20 @@ class Parameter:
             return True
         else:
             return False
+
+    def set_from_str(self, value):
+        cval = None
+        cval = self._cast_from_str(value)
+        if cval is not None:
+            return self.set(cval)
+        else:
+            return False
+
+    def _cast_from_str(self, value):
+        """
+        Override this in child classes to define how to cast a string into a value
+        """
+        pass
 
     def validate(self, value):
         """
@@ -54,6 +71,9 @@ class BoolParameter(Parameter):
             return False
         return True
 
+    def _cast_from_str(self, value):
+        return True if value == 'True' else False
+
 
 class IntParameter(Parameter):
     """
@@ -69,6 +89,9 @@ class IntParameter(Parameter):
             return False
         return True
 
+    def _cast_from_str(self, value):
+        return int(value)
+
 
 class FloatParameter(Parameter):
     """
@@ -83,6 +106,9 @@ class FloatParameter(Parameter):
         if not isinstance(value, float):
             return False
         return True
+
+    def _cast_from_str(self, value):
+        return float(value)
 
 
 class RGBParameter(Parameter):
@@ -109,6 +135,9 @@ class RGBParameter(Parameter):
 
         return True
 
+    def _cast_from_str(self, value):
+        return ast.literal_eval(value)
+
 
 class HSVParameter(Parameter):
     """
@@ -133,3 +162,6 @@ class HSVParameter(Parameter):
             return False
 
         return True
+
+    def _cast_from_str(self, value):
+        return ast.literal_eval(value)
