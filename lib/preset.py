@@ -107,6 +107,9 @@ class Preset:
             if t == ticker:
                 self._tickers.remove((t, p))
 
+    def clear_tickers(self):
+        self._tickers = []
+
     def tick(self):
         if self._mixer._enable_profiling:
             start = time.time()

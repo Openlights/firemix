@@ -22,6 +22,7 @@ class RadialRainbow(Preset):
             self._create_tickers()
 
     def _create_tickers(self):
+        self.clear_tickers()
         fixtures = self.scene().fixtures()
         midpoint_tuples = [(f.strand(), f.address(), f.midpoint()) for f in fixtures]
         extents = self.scene().extents()
