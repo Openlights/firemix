@@ -75,7 +75,7 @@ class Playlist(JSONDict):
     def set_active_index(self, idx):
         self._active_index = idx % len(self._playlist)
         self._next_index = (self._active_index + 1) % len(self._playlist)
-        log.info("Setting active index to %d, next index to %d" % (self._active_index, self._next_index))
+        self.get_active_preset()._reset()
         self._app.playlist_changed.emit()
 
     def set_active_preset_by_name(self, classname):

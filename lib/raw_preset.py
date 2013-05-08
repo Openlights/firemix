@@ -21,8 +21,9 @@ class RawPreset(Preset):
         Preset.__init__(self, mixer)
         self.init_pixels()
 
-    def reset(self):
+    def _reset(self):
         self.init_pixels()
+        Preset._reset(self)
 
     def init_pixels(self):
         """

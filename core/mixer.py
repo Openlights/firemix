@@ -23,6 +23,7 @@ class Mixer:
         self._scene = app.scene
         self._tick_rate = self._app.settings.get('mixer')['tick-rate']
         self._in_transition = False
+        self._start_transition = False
         self._transition_duration = self._app.settings.get('mixer')['transition-duration']
         self._tick_timer = None
         self._duration = self._app.settings.get('mixer')['preset-duration']
@@ -39,10 +40,8 @@ class Mixer:
         self._stop_time = 0.0
         self._strand_keys = list()
         self._enable_profiling = self._app.args.profile
-        self._constant_preset = ""
         self._paused = False
         self._frozen = False
-        self._preset_changed_callback = None
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -133,29 +132,36 @@ class Mixer:
         return self._tick_rate
 
     def next(self):
+        #TODO: Fix this after the Playlist merge
         if len(self._playlist) == 0:
             return
         self.start_transition((self._playlist.get_active_index() + 1) % len(self._playlist))
 
     def prev(self):
+        #TODO: Fix this after the Playlist merge
         if len(self._playlist) == 0:
             return
         self.start_transition((self._playlist.get_active_index() - 1) % len(self._playlist))
 
     def start_transition(self, next=None):
+        #TODO: Fix this after the Playlist merge
         self._in_transition = True
+        self._start_transition = True
 
     def tick(self):
         self._num_frames += 1
         if len(self._playlist) > 0:
+
             self._playlist.get_active_preset().clear_commands()
             self._playlist.get_active_preset().tick()
             transition_progress = 0.0
 
             # Handle transition by rendering both the active and the next preset, and blending them together
             if self._in_transition:
-                if self._elapsed == 0.0:
-                    self._playlist.get_next_preset().reset()
+                if self._start_transition:
+                    self._start_transition = False
+                    self._playlist.get_next_preset()._reset()
+                    self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
                 if self._transition_duration > 0.0:
                     transition_progress = self._elapsed / self._transition_duration
                 else:
@@ -169,8 +175,6 @@ class Mixer:
                     # Reset the elapsed time counter so the preset runs for the full duration after the transition
                     self._elapsed = 0.0
                     self._playlist.advance()
-                    if self._preset_changed_callback is not None:
-                        self._preset_changed_callback(self._playlist.get_active_preset())
 
             # If the scene tree is available, we can do efficient mixing of presets.
             # If not, a tree would need to be constructed on-the-fly.
@@ -234,8 +238,11 @@ class Mixer:
             if self._enable_profiling:
                 start = time.time()
 
-            second_commands = self._playlist.get_preset_by_index(second).get_commands()
-            self.render_command_list(second_commands, self._output_back_buffer)
+            if isinstance(self._playlist.get_preset_by_index(second), RawPreset):
+                self._output_back_buffer = self._playlist.get_preset_by_index(second).get_buffer()
+            else:
+                second_commands = self._playlist.get_preset_by_index(second).get_commands()
+                self.render_command_list(second_commands, self._output_back_buffer)
 
             if self._enable_profiling:
                 dt = 1000.0 * (time.time() - start)
@@ -308,6 +315,3 @@ class Mixer:
             return (int((color1[0] * inv_state) + (color2[0] * blend_state)),
                     int((color1[1] * inv_state) + (color2[1] * blend_state)),
                     int((color1[2] * inv_state) + (color2[2] * blend_state)))
-
-    def set_preset_changed_callback(self, cb):
-        self._preset_changed_callback = cb

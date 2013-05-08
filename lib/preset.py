@@ -21,12 +21,16 @@ class Preset:
 
     def reset(self):
         """
-        This method is called each time the preset is about to start playing
+        Override this method to perform any initialization that will be triggered
+        each time the preset is about to start playing.  Note that code that should
+        only run once (e.g. creating parameters) should go in the setup() method instead.
         """
+        pass
+
+    def _reset(self):
         self._tickers = []
         self._commands = []
-        self._parameters = []
-        self.setup()
+        self.reset()
 
     def setup(self):
         """
