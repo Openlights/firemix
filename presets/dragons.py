@@ -48,6 +48,9 @@ class Dragons(RawPreset):
     _growth_fader = ColorFade('hsv', [(0., 0., 0.), _alive_color])
     _tail_fader = ColorFade('hsv', [_alive_color, _tail_color, (0., 0., 0.)])
 
+    def setup(self):
+        random.seed()
+
     def draw(self, dt):
 
         # Ensure that empty displays start up with some dragons
@@ -86,6 +89,7 @@ class Dragons(RawPreset):
                 if dragon.moving and  (p == 0 or p == (self.scene().fixture(s, f).pixels() - 1)):
                     if (self._pop < self._pop_limit):
                         neighbors = self.scene().get_pixel_neighbors(dragon.loc)
+                        random.shuffle(neighbors)
 
                         # Iterate over candidate pixels that aren't on the current fixture
                         num_children = 0
