@@ -38,7 +38,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         # Preset Parameters
         self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
 
-        self.update_preset_list()
+        self.update_playlist()
         self.load_preset_parameters_table()
         self.tbl_preset_parameters.setDisabled(True)
         self._app.playlist_changed.connect(self.on_playlist_changed)
@@ -82,23 +82,25 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.edit_preset_duration.setValue(self._mixer.get_preset_duration())
         self.edit_transition_duration.setValue(self._mixer.get_transition_duration())
 
-    def update_preset_list(self):
+    def update_playlist(self):
         self.lst_presets.clear()
         presets = self._app.playlist.get()
         current = self._app.playlist.get_active_preset()
         for preset in presets:
-            item = QtGui.QListWidgetItem(str(preset))
+            item = QtGui.QListWidgetItem(preset.get_name())
 
             if preset == current:
                 item.setBackground(QtGui.QColor(100, 255, 200))
             self.lst_presets.addItem(item)
 
     def on_playlist_changed(self):
-        self.update_preset_list()
+        self.update_playlist()
         self.load_preset_parameters_table()
 
     def on_playlist_reorder(self):
-        print "reorder"
+        names = [self.lst_presets.item(i).text() for i in range(self.lst_presets.count())]
+        self._app.playlist.reorder_playlist_by_names(names)
+        self.update_playlist()
 
     def on_file_load_scene(self):
         pass

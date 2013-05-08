@@ -100,7 +100,14 @@ class Playlist(JSONDict):
             if preset.get_name() == classname:
                 self.set_active_index(i)
 
-    def reorder_playlist_by_name(self, names):
+    def reorder_playlist_by_names(self, names):
         """
         Pass in a list of preset names to reorder.
         """
+        current = dict([(preset.get_name(), preset) for preset in self._playlist])
+
+        new = []
+        for name in names:
+            new.append(current[name])
+
+        self._playlist = new

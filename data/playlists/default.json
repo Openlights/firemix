@@ -2,14 +2,6 @@
     "file-type": "playlist", 
     "playlist": [
         {
-            "classname": "RadialRainbow", 
-            "name": "RaidialRainbow-1", 
-            "params": {
-                "speed": 0.4, 
-                "width": 0.25
-            }
-        }, 
-        {
             "classname": "Fungus", 
             "name": "Fungus-1", 
             "params": {
@@ -33,6 +25,14 @@
                 "mass-destruction-time": 10.0, 
                 "pop-limit": 500, 
                 "spread-rate": 0.13
+            }
+        }, 
+        {
+            "classname": "RadialRainbow", 
+            "name": "RaidialRainbow-1", 
+            "params": {
+                "speed": 0.4, 
+                "width": 0.25
             }
         }
     ]
