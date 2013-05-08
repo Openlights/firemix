@@ -1,4 +1,13 @@
 [
-    "RadialRainbow",
-    "SeparateStrandRGB"
+    {
+        "preset": "RadialRainbow",
+        "params": {
+            "speed": 0.4,
+            "width": 0.25
+        }
+    },
+    {
+        "preset": "Fungus",
+        "params": {}
+    }
 ]
