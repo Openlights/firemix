@@ -40,7 +40,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.update_preset_list()
         self.load_preset_parameters_table()
         self.tbl_preset_parameters.setDisabled(True)
-        self._mixer.set_preset_changed_callback(self.on_mixer_preset_changed)
+        self._app.playlist.register_callback(self.on_playlist_callback)
 
     def closeEvent(self, event):
         self._mixer.stop()
@@ -77,8 +77,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def update_preset_list(self):
         self.lst_presets.clear()
-        presets = self._mixer.get_preset_playlist()
-        current = self._mixer.get_active_preset()
+        presets = self._app.playlist.get()
+        current = self._app.playlist.get_active_preset()
         for preset in presets:
             item = QtGui.QListWidgetItem(preset.__class__.__name__)
 
@@ -86,7 +86,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                 item.setBackground(QtGui.QColor(100, 255, 200))
             self.lst_presets.addItem(item)
 
-    def on_mixer_preset_changed(self, new_preset):
+    def on_playlist_callback(self, new_preset):
         self.update_preset_list()
         self.load_preset_parameters_table()
 
@@ -97,7 +97,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         pass
 
     def on_preset_double_clicked(self, preset_item):
-        self._mixer.set_active_preset_by_name(preset_item.text())
+        self._app.playlist.set_active_preset_by_name(preset_item.text())
 
     def on_preset_duration_changed(self):
         nd = self.edit_preset_duration.value()
@@ -114,10 +114,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def load_preset_parameters_table(self):
         self.tbl_preset_parameters.clear()
-        if self._mixer.get_active_preset() == None:
+        if self._app.playlist.get_active_preset() == None:
             return
 
-        parameters = self._mixer.get_active_preset().get_parameters()
+        parameters = self._app.playlist.get_active_preset().get_parameters()
         self.tbl_preset_parameters.setColumnCount(2)
         self.tbl_preset_parameters.setRowCount(len(parameters))
         for i, parameter in enumerate(parameters):
@@ -134,7 +134,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         if item.column() == 0:
             return
         key = self.tbl_preset_parameters.item(item.row(), 0)
-        par = self._mixer.get_active_preset().parameter(key.text())
+        par = self._app.playlist.get_active_preset().parameter(key.text())
         try:
             par.set_from_str(item.text())
             item.setText(par.get_as_str())

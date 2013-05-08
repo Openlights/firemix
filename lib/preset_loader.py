@@ -33,7 +33,7 @@ class PresetLoader:
                         log.info("Loaded %s" % obj.__name__)
                         self._presets.append(obj)
         log.info("Loaded %d presets." % len(self._presets))
-        return self._presets
+        return dict([(i.__name__, i) for i in self._presets])
 
 
 

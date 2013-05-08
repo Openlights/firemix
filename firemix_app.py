@@ -23,8 +23,10 @@ class FireMixApp(threading.Thread):
         self.settings = Settings()
         self.net = Networking(self)
         self.scene = Scene(SceneLoader(self))
-        self.playlist = Playlist(self)
         self.mixer = Mixer(self)
+        self.playlist = Playlist(self)
+
+        self.mixer.set_playlist(self.playlist)
 
         if self.args.preset:
             log.info("Setting constant preset %s" % args.preset)
