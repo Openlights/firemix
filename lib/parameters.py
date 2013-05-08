@@ -5,11 +5,12 @@ class Parameter:
     """
     Base class for a preset parameter
     """
-    def __init__(self, name):
+    def __init__(self, name, parent=None):
         if not isinstance(name, str):
             raise ValueError("Parameter name must be a string.")
         self._name = name
         self._value = None
+        self._parent = parent
 
     def __repr__(self):
         return self._name
@@ -23,6 +24,8 @@ class Parameter:
     def set(self, value):
         if self.validate(value):
             self._value = value
+            if self._parent is not None:
+                self._parent.parameter_changed(self)
             return True
         else:
             return False
@@ -32,6 +35,9 @@ class Parameter:
         Override this in child classes in order to validate parameter setting
         """
         raise NotImplementedError
+
+    def set_parent(self, parent):
+        self._parent = parent
 
 
 class BoolParameter(Parameter):

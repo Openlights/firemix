@@ -31,6 +31,12 @@ class Preset:
         """
         pass
 
+    def parameter_changed(self, parameter):
+        """
+        This callback will be called when any parameters are updated.
+        """
+        pass
+
     def can_transition(self):
         """
         Override this method to define clear points at which the mixer can
@@ -43,6 +49,7 @@ class Preset:
         """
         Adds a parameter to the preset (see ./lib/parameters.py)
         """
+        parameter.set_parent(self)
         self._parameters.append(parameter)
 
     def get_parameters(self):

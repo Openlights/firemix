@@ -15,7 +15,7 @@ def constant(lights, color):
 
     return ret
 
-def fade(lights, colorfade):
+def fade(lights, colorfade, mod=1):
     """
     fades along the colorfade with a total duration of 1 second (use speed() to
     alter time)
@@ -25,7 +25,7 @@ def fade(lights, colorfade):
     """
 
     def ret(ticks, elapsed_time):
-        yield(lights, colorfade.get_color(elapsed_time % 1))
+        yield(lights, colorfade.get_color(elapsed_time % mod))
 
     return ret
 
