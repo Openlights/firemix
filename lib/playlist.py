@@ -97,7 +97,10 @@ class Playlist(JSONDict):
 
     def set_active_preset_by_name(self, classname):
         for i, preset in enumerate(self._playlist):
-            if preset.__class__.__name__ == classname:
+            if preset.get_name() == classname:
                 self.set_active_index(i)
 
-
+    def reorder_playlist_by_name(self, names):
+        """
+        Pass in a list of preset names to reorder.
+        """
