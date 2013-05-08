@@ -1,23 +1,23 @@
 {
-    "file-type": "settings",
-    "last-scene": "demo",
-    "last-playlist": "default",
     "mixer": {
-        "tick-rate": 32.0,
-        "preset-duration": 10.0,
-        "transition-duration": 1.25,
-        "transition-mode": "cut"
-    },
+        "preset-duration": 10.0, 
+        "transition-duration": 1.25, 
+        "transition-mode": "cut", 
+        "tick-rate": 32.0
+    }, 
+    "file-type": "settings", 
     "networking": {
         "clients": [
             {
-                "ip": "127.0.0.1",
+                "ip": "127.0.0.1", 
                 "port": "3020"
-            },
+            }, 
             {
-                "ip": "127.0.0.1",
+                "ip": "127.0.0.1", 
                 "port": "3021"
             }
         ]
-    }
+    }, 
+    "last-scene": "demo", 
+    "last-playlist": "default"
 }

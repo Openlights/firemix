@@ -1,16 +1,16 @@
 {
-   "file-type": "playlist", 
-   "playlist": [
-      {
-         "preset": "RadialRainbow", 
-         "params": {
-            "width": 0.25, 
-            "speed": 0.4
-         }
-      }, 
-      {
-         "preset": "Fungus", 
-         "params": {}
-      }
-   ]
+    "file-type": "playlist", 
+    "playlist": [
+        {
+            "preset": "RadialRainbow", 
+            "params": {
+                "width": 0.25, 
+                "speed": 0.4
+            }
+        }, 
+        {
+            "preset": "Fungus", 
+            "params": {}
+        }
+    ]
 }

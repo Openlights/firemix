@@ -46,4 +46,5 @@ class FireMixApp(threading.Thread):
 
     def stop(self):
         self._running = False
-        self.playlist.save_file()
+        self.playlist.save()
+        self.settings.save()
