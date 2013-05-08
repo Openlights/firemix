@@ -8,6 +8,7 @@ from core.networking import Networking
 from core.scene_loader import SceneLoader
 from lib.playlist import Playlist
 from lib.settings import Settings
+from lib.scene import Scene
 
 
 log = logging.getLogger("firemix")
@@ -22,7 +23,7 @@ class FireMixApp(threading.Thread):
         self.args = args
         self.settings = Settings()
         self.net = Networking(self)
-        self.scene = SceneLoader(self).load()
+        self.scene = Scene(SceneLoader(self))
         self.playlist = Playlist(self)
         self.mixer = Mixer(self)
 

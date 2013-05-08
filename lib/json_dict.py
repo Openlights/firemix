@@ -14,7 +14,7 @@ class JSONDict(collections.MutableMapping):
         self.data = dict()
         self.filetype = filetype
         self.filename = filename
-        self._load_from_file(create_new)
+        self.load(create_new)
 
     def __getitem__(self, key):
         return self.data[key]
@@ -31,7 +31,7 @@ class JSONDict(collections.MutableMapping):
     def __len__(self):
         return len(self.data)
 
-    def _load_from_file(self, create_new):
+    def load(self, create_new):
         if not os.path.exists(self.filename):
             if create_new:
                 with open(self.filename, 'w') as f:
@@ -50,6 +50,6 @@ class JSONDict(collections.MutableMapping):
                     self.data = None
                     return None
 
-    def _save_to_file(self):
+    def save(self):
         with open(self.filename, 'w') as f:
             json.dump(self.data, f, indent=4)
