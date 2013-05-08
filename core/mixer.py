@@ -165,13 +165,19 @@ class Mixer:
         """
         Returns the active preset (the object itself!)
         """
-        return self._presets[self._active_preset]
+        if len(self._presets) == 0:
+            return None
+        else:
+            return self._presets[self._active_preset]
 
     def get_active_preset_name(self):
         """
         Returns (for display purposes) the name of the active preset
         """
-        return self._presets[self._active_preset].__class__.__name__
+        if len(self._presets) == 0:
+            return ""
+        else:
+            return self._presets[self._active_preset].__class__.__name__
 
     def set_active_preset_by_name(self, preset_name):
         for i, preset in enumerate(self._presets):
@@ -179,12 +185,18 @@ class Mixer:
                 self.start_transition(i)
 
     def next(self):
+        if len(self._presets) == 0:
+            return
         self.start_transition((self._active_preset + 1) % len(self._presets))
 
     def prev(self):
+        if len(self._presets) == 0:
+            return
         self.start_transition((self._active_preset - 1) % len(self._presets))
 
     def start_transition(self, next=None):
+        if len(self._presets) == 0:
+            return
         if next is not None:
             self._next_preset = next
         self._in_transition = True

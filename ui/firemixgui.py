@@ -114,6 +114,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def load_preset_parameters_table(self):
         self.tbl_preset_parameters.clear()
+        if self._mixer.get_active_preset() == None:
+            return
 
         parameters = self._mixer.get_active_preset().get_parameters()
         self.tbl_preset_parameters.setColumnCount(2)

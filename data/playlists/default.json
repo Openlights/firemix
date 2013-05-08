@@ -2,15 +2,17 @@
     "file-type": "playlist", 
     "playlist": [
         {
+            "classname": "RadialRainbow", 
+            "name": "RaidialRainbow-1", 
             "params": {
                 "speed": 0.4, 
                 "width": 0.25
-            }, 
-            "preset": "RadialRainbow"
+            }
         }, 
         {
-            "params": {}, 
-            "preset": "Fungus"
+            "classname": "Fungus", 
+            "name": "Fungus-1", 
+            "params": {}
         }
     ]
 }
