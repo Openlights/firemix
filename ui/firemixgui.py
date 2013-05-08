@@ -22,6 +22,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         # File menu
         self.action_file_load_scene.triggered.connect(self.on_file_load_scene)
         self.action_file_reload_presets.triggered.connect(self.on_file_reload_presets)
+        self.action_file_save_playlist.triggered.connect(self.on_file_save_playlist)
         self.action_file_quit.triggered.connect(self.close)
 
         # Preset list
@@ -136,3 +137,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             item.setText(par.get_as_str())
         except ValueError:
             item.setText(par.get_as_str())
+
+    def on_file_save_playlist(self):
+        pass

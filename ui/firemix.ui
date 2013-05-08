@@ -283,6 +283,7 @@
     </property>
     <addaction name="action_file_load_scene"/>
     <addaction name="action_file_reload_presets"/>
+    <addaction name="action_file_save_playlist"/>
     <addaction name="action_file_quit"/>
    </widget>
    <addaction name="menuFile"/>
@@ -307,6 +308,11 @@
   <action name="action_file_quit">
    <property name="text">
     <string>Quit</string>
+   </property>
+  </action>
+  <action name="action_file_save_playlist">
+   <property name="text">
+    <string>Save Playlist</string>
    </property>
   </action>
  </widget>
