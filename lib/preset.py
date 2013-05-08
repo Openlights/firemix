@@ -11,13 +11,23 @@ log = logging.getLogger("firemix.lib.preset")
 class Preset:
     """Base Preset.  Does nothing."""
 
-    def __init__(self, mixer):
+    def __init__(self, mixer, name=""):
         self._mixer = mixer
         self._commands = []
         self._tickers = []
         self._ticks = 0
         self._parameters = []
+        self._instance_name = name
         self.setup()
+
+    def __repr__(self):
+        return "%s (%s)" % (self._instance_name, self.__class__.__name__)
+
+    def set_name(self, name):
+        self._instance_name = name
+
+    def get_name(self):
+        return self._instance_name
 
     def reset(self):
         """

@@ -42,5 +42,6 @@ class FireMixApp(QtCore.QThread):
 
     def stop(self):
         self._running = False
+        self.mixer.stop()
         self.playlist.save()
         self.settings.save()

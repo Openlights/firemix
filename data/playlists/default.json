@@ -12,7 +12,28 @@
         {
             "classname": "Fungus", 
             "name": "Fungus-1", 
-            "params": {}
+            "params": {
+                "alive-color": [
+                    0.35, 
+                    1.0, 
+                    1.0
+                ], 
+                "birth-rate": 0.03, 
+                "dead-color": [
+                    0.13, 
+                    0.87, 
+                    0.57
+                ], 
+                "death-time": 1.75, 
+                "fade-out-time": 0.25, 
+                "growth-time": 0.75, 
+                "isolated-life-time": 1.0, 
+                "life-time": 5.0, 
+                "mass-destruction-threshold": 150, 
+                "mass-destruction-time": 10.0, 
+                "pop-limit": 500, 
+                "spread-rate": 0.13
+            }
         }
     ]
 }

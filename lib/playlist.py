@@ -26,14 +26,14 @@ class Playlist(JSONDict):
         self._active_index = 0
         self._next_index = 0
 
-        self.load_playlist()
+        self.generate_playlist()
 
-    def load_playlist(self):
+    def generate_playlist(self):
         if len(self._playlist_data) == 0:
             self._playlist = []
 
         for entry in self._playlist_data:
-            inst = self._preset_classes[entry['classname']](self._app.mixer)
+            inst = self._preset_classes[entry['classname']](self._app.mixer, name=entry['name'])
             for _, key in enumerate(entry.get('params', {})):
                 inst.parameter(key).set(entry['params'][key])
             self._playlist.append(inst)
@@ -42,6 +42,23 @@ class Playlist(JSONDict):
         self._next_index = 1 % len(self._playlist)
 
         return self._playlist
+
+    def save(self):
+        log.info("Saving playlist")
+        # Pack the current state into self.data
+        self.data = {'file-type': 'playlist'}
+        playlist = []
+        for preset in self._playlist:
+            playlist_entry = {'classname': preset.__class__.__name__,
+                              'name': preset.get_name()}
+            param_dict = {}
+            for param in preset.get_parameters():
+                param_dict[str(param)] = param.get()
+            playlist_entry['params'] = param_dict
+            playlist.append(playlist_entry)
+        self.data['playlist'] = playlist
+        # Superclass write to file
+        JSONDict.save(self)
 
     def get(self):
         return self._playlist

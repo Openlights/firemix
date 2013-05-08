@@ -45,7 +45,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.update_mixer_settings()
 
     def closeEvent(self, event):
-        self._mixer.stop()
+        self._app.stop()
         event.accept()
 
     def on_btn_blackout(self):
