@@ -12,10 +12,10 @@ Installation / Development
     python firemix.py demo [--profile] [--playlist listname] [--preset ClassName] [--nogui]
 
 This will start FireMix with the `demo` scene and the default playlist.  The program will
-look in the `data/scenes` directory for a file called `demo.scn`.
+look in the `data/scenes` directory for a file called `demo.json`.
 
 Use the `--playlist` option to specify a playlist name (without extension) to load. The program
-will look in the `data/playlists` directory for a file called `listname.fpl`, and will create
+will look in the `data/playlists` directory for a file called `listname.json`, and will create
 it (as an empty playlist) if it does not exist.
 
 Use the `--profile` option to enable profiling of framerate and function calls.

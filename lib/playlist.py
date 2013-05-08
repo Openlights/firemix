@@ -23,7 +23,7 @@ class Playlist:
         if self._name is None:
             return False
 
-        self._filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self._name, ".fpl"]))
+        self._filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self._name, ".json"]))
 
         if not os.path.exists(self._filepath):
             with open(self._filepath, 'w') as f:

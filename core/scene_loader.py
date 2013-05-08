@@ -14,7 +14,7 @@ class SceneLoader:
     """
 
     def __init__(self, filename):
-        self._filename = os.path.join(os.getcwd(), "data", "scenes", "".join([filename, ".scn"]))
+        self._filename = os.path.join(os.getcwd(), "data", "scenes", "".join([filename, ".json"]))
         self._data = None
 
     def load(self):
