@@ -10,7 +10,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def __init__(self, parent=None, app=None):
         super(FireMixGUI, self).__init__(parent)
         self._app = app
-        self._mixer = app._mixer
+        self._mixer = app.mixer
         self.setupUi(self)
 
         # Control

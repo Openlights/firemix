@@ -13,7 +13,8 @@ class SceneLoader:
     Constructs a Scene object from a JSON file
     """
 
-    def __init__(self, filename):
+    def __init__(self, app):
+        filename = app.args.scene
         self._filename = os.path.join(os.getcwd(), "data", "scenes", "".join([filename, ".json"]))
         self._data = None
 

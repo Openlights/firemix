@@ -16,18 +16,18 @@ class Mixer:
     device(s).
     """
 
-    def __init__(self, app, net=None, scene=None, tick_rate=32.0, preset_duration=10.0, enable_profiling=False):
+    def __init__(self, app):
         self._app = app
         self._presets = []
-        self._net = net
-        self._scene = scene
-        self._tick_rate = tick_rate
+        self._net = app.net
+        self._scene = app.scene
+        self._tick_rate = self._app.settings.get('mixer')['tick-rate']
         self._active_preset = 0
         self._next_preset = 1
         self._in_transition = False
-        self._transition_duration = 1.25
+        self._transition_duration = self._app.settings.get('mixer')['transition-duration']
         self._tick_timer = None
-        self._duration = preset_duration
+        self._duration = self._app.settings.get('mixer')['preset-duration']
         self._elapsed = 0.0
         self._running = False
         self._enable_rendering = True
@@ -40,7 +40,7 @@ class Mixer:
         self._start_time = 0.0
         self._stop_time = 0.0
         self._strand_keys = list()
-        self._enable_profiling = enable_profiling
+        self._enable_profiling = self._app.args.profile
         self._constant_preset = ""
         self._paused = False
         self._frozen = False

@@ -63,7 +63,7 @@ if __name__ == "__main__":
         for s in stats:
             print "%s\t[%0.3f]" % (s[0], s[1])
         print   "------ TICK TIME HISTOGRAM ------"
-        elapsed = (app._mixer._stop_time - app._mixer._start_time)
-        print "%d frames in %0.2f seconds (%0.2f FPS) " %  (app._mixer._num_frames, elapsed, app._mixer._num_frames / elapsed)
-        for c in sorted(app._mixer._tick_time_data.iterkeys()):
-            print "[%d fps]:\t%4d\t%0.2f%%" % (c, app._mixer._tick_time_data[c], (float(app._mixer._tick_time_data[c]) / app._mixer._num_frames) * 100.0)
+        elapsed = (app.mixer._stop_time - app.mixer._start_time)
+        print "%d frames in %0.2f seconds (%0.2f FPS) " %  (app.mixer._num_frames, elapsed, app.mixer._num_frames / elapsed)
+        for c in sorted(app.mixer._tick_time_data.iterkeys()):
+            print "[%d fps]:\t%4d\t%0.2f%%" % (c, app.mixer._tick_time_data[c], (float(app.mixer._tick_time_data[c]) / app.mixer._num_frames) * 100.0)

@@ -6,10 +6,9 @@ from time import sleep
 
 class Networking:
 
-    def __init__(self, ip="127.0.0.1", port=3020):
+    def __init__(self, app):
         self._socket = None
-        self._ip = ip
-        self._port = port
+        self._app = app
         self._clients = [("127.0.0.1", 3020), ("127.0.0.1", 3021)]
         self.open_socket()
 

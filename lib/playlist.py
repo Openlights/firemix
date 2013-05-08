@@ -10,8 +10,8 @@ class Playlist:
     Represents a list of presets that is stored long-term in a *.fpl file
     """
 
-    def __init__(self, name=None):
-        self._name = name
+    def __init__(self, app):
+        self._name = app.args.playlist
         self._data = None
         self._filepath = None
         self.load_file()

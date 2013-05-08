@@ -3,6 +3,7 @@
     "last-scene": "demo",
     "last-playlist": "default",
     "mixer": {
+        "tick-rate": 32.0,
         "preset-duration": 10.0,
         "transition-duration": 1.25,
         "transition-mode": "cut"
