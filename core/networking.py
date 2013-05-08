@@ -9,7 +9,7 @@ class Networking:
     def __init__(self, app):
         self._socket = None
         self._app = app
-        self._clients = [("127.0.0.1", 3020), ("127.0.0.1", 3021)]
+        self._clients = [(c["ip"], int(c["port"])) for c in app.settings['networking']['clients']]
         self.open_socket()
 
     def open_socket(self):

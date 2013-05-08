@@ -1,10 +1,4 @@
 {
-    "mixer": {
-        "preset-duration": 10.0, 
-        "transition-duration": 1.25, 
-        "transition-mode": "cut", 
-        "tick-rate": 32.0
-    }, 
     "file-type": "settings", 
     "networking": {
         "clients": [
@@ -19,5 +13,11 @@
         ]
     }, 
     "last-scene": "demo", 
+    "mixer": {
+        "preset-duration": 10.0, 
+        "tick-rate": 32.0, 
+        "transition-mode": "cut", 
+        "transition-duration": 1.25
+    }, 
     "last-playlist": "default"
 }
