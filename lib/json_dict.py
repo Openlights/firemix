@@ -52,4 +52,4 @@ class JSONDict(collections.MutableMapping):
 
     def save(self):
         with open(self.filename, 'w') as f:
-            json.dump(self.data, f, indent=4)
+            json.dump(self.data, f, indent=4, sort_keys=True)

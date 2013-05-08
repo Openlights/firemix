@@ -1,5 +1,13 @@
 {
     "file-type": "settings", 
+    "last-playlist": "default", 
+    "last-scene": "demo", 
+    "mixer": {
+        "preset-duration": 10.0, 
+        "tick-rate": 32.0, 
+        "transition-duration": 1.25, 
+        "transition-mode": "cut"
+    }, 
     "networking": {
         "clients": [
             {
@@ -11,13 +19,5 @@
                 "port": "3021"
             }
         ]
-    }, 
-    "last-scene": "demo", 
-    "mixer": {
-        "preset-duration": 10.0, 
-        "tick-rate": 32.0, 
-        "transition-mode": "cut", 
-        "transition-duration": 1.25
-    }, 
-    "last-playlist": "default"
+    }
 }
