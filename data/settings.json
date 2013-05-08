@@ -1,0 +1,22 @@
+{
+    "file-type": "settings",
+    "last-scene": "demo",
+    "last-playlist": "default",
+    "mixer": {
+        "preset-duration": 10.0,
+        "transition-duration": 1.25,
+        "transition-mode": "cut"
+    },
+    "networking": {
+        "clients": [
+            {
+                "ip": "127.0.0.1",
+                "port": "3020"
+            },
+            {
+                "ip": "127.0.0.1",
+                "port": "3021"
+            }
+        ]
+    }
+}

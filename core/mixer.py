@@ -16,7 +16,7 @@ class Mixer:
     device(s).
     """
 
-    def __init__(self, app, net=None, scene=None, tick_rate=32.0, preset_duration=5.0, enable_profiling=False):
+    def __init__(self, app, net=None, scene=None, tick_rate=32.0, preset_duration=10.0, enable_profiling=False):
         self._app = app
         self._presets = []
         self._net = net
