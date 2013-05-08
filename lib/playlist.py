@@ -18,7 +18,7 @@ class Playlist:
 
     def load_file(self):
         """
-        Reads JSON data from a *.fpl file
+        Reads JSON data from a playlist file
         """
         if self._name is None:
             return False
@@ -44,3 +44,19 @@ class Playlist:
                     return None
 
             log.info("Loaded playlist from %s", self._filepath)
+
+    def save_file(self):
+        """
+        Dumps a playlist back to a file
+        """
+        if self._name is None:
+            return False
+
+        self._filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self._name, ".json"]))
+
+        with open(self._filepath, 'w') as f:
+            save_data = {'file-type': 'playlist', 'playlist': self._data}
+            json.dump(save_data, f, indent=3)
+
+        log.info("Saved playlist to %s" % self._filepath)
+
