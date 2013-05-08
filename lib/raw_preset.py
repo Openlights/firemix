@@ -17,12 +17,13 @@ class RawPreset(Preset):
     _indices = None
     _max_strand, _max_fixture, _max_pixel = (0, 0, 0)
 
-    def __init__(self, mixer):
-        Preset.__init__(self, mixer)
+    def __init__(self, mixer, name):
+        Preset.__init__(self, mixer, name)
         self.init_pixels()
 
-    def reset(self):
+    def _reset(self):
         self.init_pixels()
+        Preset._reset(self)
 
     def init_pixels(self):
         """

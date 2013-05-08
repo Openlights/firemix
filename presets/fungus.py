@@ -46,6 +46,14 @@ class Fungus(RawPreset):
         self.add_parameter(HSVParameter('dead-color', (0.13, 0.87, 0.57)))
         self._setup_colors()
 
+    def reset(self):
+        self._growing = []
+        self._alive = []
+        self._dying = []
+        self._fading_out = []
+        self._pop = 0
+        self._time = {}
+
     def parameter_changed(self, parameter):
         self._setup_colors()
 

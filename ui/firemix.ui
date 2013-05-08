@@ -33,8 +33,23 @@
      <property name="sizeConstraint">
       <enum>QLayout::SetMinimumSize</enum>
      </property>
+     <property name="margin">
+      <number>6</number>
+     </property>
      <item>
       <layout class="QHBoxLayout" name="hl_top_buttons">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QPushButton" name="btn_blackout">
          <property name="enabled">
@@ -69,7 +84,16 @@
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="3,4">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
@@ -100,6 +124,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="btn_reset_preset">
+             <property name="text">
+              <string>Reset</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="btn_next_preset">
              <property name="text">
               <string>Next</string>
@@ -109,115 +140,198 @@
           </layout>
          </item>
          <item>
-          <widget class="QListWidget" name="lst_presets"/>
+          <widget class="DraggableListWidget" name="lst_presets"/>
          </item>
         </layout>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,2">
          <property name="margin">
           <number>0</number>
          </property>
          <item>
-          <widget class="QLabel" name="label_2">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Playback Parameters</string>
-           </property>
-           <property name="textFormat">
-            <enum>Qt::AutoText</enum>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignBottom|Qt::AlignHCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <layout class="QFormLayout" name="formLayout">
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
            <property name="margin">
-            <number>6</number>
+            <number>3</number>
            </property>
-           <item row="0" column="0">
-            <widget class="QLabel" name="lbl_preset_duration">
-             <property name="text">
-              <string>Preset Duration</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QDoubleSpinBox" name="edit_preset_duration">
-             <property name="suffix">
-              <string>s</string>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="maximum">
-              <double>10000.000000000000000</double>
-             </property>
-             <property name="value">
-              <double>5.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="lbl_transition_duration">
-             <property name="text">
-              <string>Transition Duration</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QDoubleSpinBox" name="edit_transition_duration">
-             <property name="suffix">
-              <string>s</string>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.250000000000000</double>
-             </property>
-             <property name="value">
-              <double>1.250000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QComboBox" name="cb_transition_mode">
-             <property name="enabled">
-              <bool>false</bool>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <property name="margin">
+              <number>3</number>
              </property>
              <item>
-              <property name="text">
-               <string>Cut</string>
-              </property>
+              <widget class="QLabel" name="lbl_playlist_editing">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Playlist Editing</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::AutoText</enum>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignHCenter|Qt::AlignTop</set>
+               </property>
+              </widget>
              </item>
              <item>
-              <property name="text">
-               <string>Dissolve</string>
-              </property>
+              <widget class="QPushButton" name="btn_add_preset">
+               <property name="text">
+                <string>Add</string>
+               </property>
+              </widget>
              </item>
              <item>
-              <property name="text">
-               <string>Random</string>
-              </property>
+              <widget class="QPushButton" name="btn_remove_preset">
+               <property name="text">
+                <string>Remove</string>
+               </property>
+              </widget>
              </item>
-            </widget>
+             <item>
+              <widget class="QPushButton" name="btn_clone_preset">
+               <property name="text">
+                <string>Clone</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btn_clear_playlist">
+               <property name="text">
+                <string>Clear</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="lbl_transition_mode">
-             <property name="text">
-              <string>Transition Mode</string>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <property name="margin">
+              <number>3</number>
              </property>
-            </widget>
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Playback Parameters</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::AutoText</enum>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignHCenter|Qt::AlignTop</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QFormLayout" name="formLayout">
+               <property name="fieldGrowthPolicy">
+                <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+               </property>
+               <property name="margin">
+                <number>6</number>
+               </property>
+               <item row="2" column="0">
+                <widget class="QLabel" name="lbl_preset_duration">
+                 <property name="text">
+                  <string>Preset Duration</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="edit_preset_duration">
+                 <property name="suffix">
+                  <string>s</string>
+                 </property>
+                 <property name="decimals">
+                  <number>2</number>
+                 </property>
+                 <property name="maximum">
+                  <double>10000.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>5.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="lbl_transition_duration">
+                 <property name="text">
+                  <string>Transition Duration</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="edit_transition_duration">
+                 <property name="suffix">
+                  <string>s</string>
+                 </property>
+                 <property name="decimals">
+                  <number>2</number>
+                 </property>
+                 <property name="maximum">
+                  <double>100.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.250000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>1.250000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="lbl_transition_mode">
+                 <property name="text">
+                  <string>Transition Mode</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QComboBox" name="cb_transition_mode">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Cut</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Dissolve</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Random</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>
@@ -274,7 +388,7 @@
      <x>0</x>
      <y>0</y>
      <width>643</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -328,6 +442,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DraggableListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">ui/draggable_list_widget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

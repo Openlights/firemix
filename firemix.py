@@ -17,7 +17,7 @@ def sig_handler(sig, frame):
     #rpc_server.stop()
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.ERROR)
     log = logging.getLogger("firemix")
 
     signal.signal(signal.SIGINT, sig_handler)
@@ -28,8 +28,12 @@ if __name__ == "__main__":
     parser.add_argument("--profile", action='store_const', const=True, default=False, help="Enable profiling")
     parser.add_argument("--nogui", action='store_const', const=True, default=False, help="Disable GUI")
     parser.add_argument("--preset", type=str, help="Specify a preset name to run only that preset (useful for debugging)")
+    parser.add_argument("--verbose", action='store_const', const=True, default=False, help="Enable verbose log output")
 
     args = parser.parse_args()
+
+    if args.verbose:
+        log.setLevel(logging.DEBUG)
 
     log.info("Booting FireMix...")
 
@@ -37,24 +41,16 @@ if __name__ == "__main__":
         log.info("Starting profiler")
         yappi.start()
 
-    app = FireMixApp(args)
-    #rpc_server = RPCServer(app)
+    qt_app = QtGui.QApplication(sys.argv)
 
-    try:
-        app.start()
-        #rpc_server.start()
-        app.join()
-        #rpc_server.join()
-    except KeyboardInterrupt:
-        log.info("Shutting down")
+    app = FireMixApp(args, parent=qt_app)
+    app.start()
 
     if not args.nogui:
-        qt_app = QtGui.QApplication(sys.argv)
         gui = FireMixGUI(app=app)
         gui.show()
-        qt_app.exec_()
 
-    app.stop()
+    qt_app.exec_()
 
     if args.profile:
         stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)

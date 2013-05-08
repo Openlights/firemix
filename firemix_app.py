@@ -1,8 +1,7 @@
-import threading
 import logging
-import inspect
 
-import presets
+from PySide import QtCore
+
 from core.mixer import Mixer
 from core.networking import Networking
 from core.scene_loader import SceneLoader
@@ -13,32 +12,29 @@ from lib.scene import Scene
 
 log = logging.getLogger("firemix")
 
-class FireMixApp(threading.Thread):
+
+class FireMixApp(QtCore.QThread):
     """
     Main logic of FireMix.  Operates the mixer tick loop.
     """
+    playlist_changed = QtCore.Signal()
 
-    def __init__(self, args):
+    def __init__(self, args, parent=None):
         self._running = False
         self.args = args
         self.settings = Settings()
         self.net = Networking(self)
         self.scene = Scene(SceneLoader(self))
-        self.playlist = Playlist(self)
         self.mixer = Mixer(self)
+        self.playlist = Playlist(self)
 
-        log.info("Loading presets...")
-        for name, obj in inspect.getmembers(presets, inspect.isclass):
-            log.info("Loading preset %s" % name)
-            self.mixer.add_preset(obj)
+        self.mixer.set_playlist(self.playlist)
 
         if self.args.preset:
             log.info("Setting constant preset %s" % args.preset)
             self.mixer.set_constant_preset(args.preset)
 
-        log.info("The current preset is %s" % self.mixer.get_active_preset_name())
-
-        threading.Thread.__init__(self)
+        QtCore.QThread.__init__(self, parent)
 
     def run(self):
         self._running = True
@@ -46,5 +42,6 @@ class FireMixApp(threading.Thread):
 
     def stop(self):
         self._running = False
+        self.mixer.stop()
         self.playlist.save()
         self.settings.save()

@@ -18,16 +18,15 @@ class Mixer:
 
     def __init__(self, app):
         self._app = app
-        self._presets = []
         self._net = app.net
+        self._playlist = None
         self._scene = app.scene
-        self._tick_rate = self._app.settings['mixer']['tick-rate']
-        self._active_preset = 0
-        self._next_preset = 1
+        self._tick_rate = self._app.settings.get('mixer')['tick-rate']
         self._in_transition = False
-        self._transition_duration = self._app.settings['mixer']['transition-duration']
+        self._start_transition = False
+        self._transition_duration = self._app.settings.get('mixer')['transition-duration']
         self._tick_timer = None
-        self._duration = self._app.settings['mixer']['preset-duration']
+        self._duration = self._app.settings.get('mixer')['preset-duration']
         self._elapsed = 0.0
         self._running = False
         self._enable_rendering = True
@@ -41,10 +40,8 @@ class Mixer:
         self._stop_time = 0.0
         self._strand_keys = list()
         self._enable_profiling = self._app.args.profile
-        self._constant_preset = ""
         self._paused = False
         self._frozen = False
-        self._preset_changed_callback = None
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -122,115 +119,76 @@ class Mixer:
             self._tick_timer.start()
 
     def set_constant_preset(self, preset_name):
-        self._constant_preset = preset_name
-        for idx, preset in enumerate(self._presets):
-            if preset.__class__.__name__ == preset_name:
-                self._active_preset = idx
-
-        if self._preset_changed_callback is not None:
-            self._preset_changed_callback(self.get_active_preset())
-
-        self._presets[self._active_preset].reset()
+        self._playlist.set_active_preset_by_name(preset_name)
         self._paused = True
 
-    def add_preset(self, preset):
+    def set_playlist(self, playlist):
         """
-        Appends a preset to the end of the current playlist
+        Assigns a Playlist object to the mixer
         """
-        self._presets.append(preset(self))
-
-    def get_preset_playlist(self):
-        """
-        Returns the current playlist, in order.
-        """
-        return self._presets
-
-    def reorder_preset_playlist(self, order):
-        """
-        Defines a new order for the current playlist.
-        """
-        assert(len(order) == len(self._presets))
-        self._presets = [[self._presets[i] for i in order]]
-
-    def clear_preset_playlist(self):
-        """
-        Wipes the current playlist.  Does not change the playback state.
-        """
-        self._presets = []
+        self._playlist = playlist
 
     def get_tick_rate(self):
         return self._tick_rate
 
-    def get_active_preset(self):
-        """
-        Returns the active preset (the object itself!)
-        """
-        return self._presets[self._active_preset]
-
-    def get_active_preset_name(self):
-        """
-        Returns (for display purposes) the name of the active preset
-        """
-        return self._presets[self._active_preset].__class__.__name__
-
-    def set_active_preset_by_name(self, preset_name):
-        for i, preset in enumerate(self._presets):
-            if preset.__class__.__name__ == preset_name:
-                self.start_transition(i)
-
     def next(self):
-        self.start_transition((self._active_preset + 1) % len(self._presets))
+        #TODO: Fix this after the Playlist merge
+        if len(self._playlist) == 0:
+            return
+        self.start_transition((self._playlist.get_active_index() + 1) % len(self._playlist))
 
     def prev(self):
-        self.start_transition((self._active_preset - 1) % len(self._presets))
+        #TODO: Fix this after the Playlist merge
+        if len(self._playlist) == 0:
+            return
+        self.start_transition((self._playlist.get_active_index() - 1) % len(self._playlist))
 
     def start_transition(self, next=None):
-        if next is not None:
-            self._next_preset = next
+        #TODO: Fix this after the Playlist merge
         self._in_transition = True
-
+        self._start_transition = True
 
     def tick(self):
         self._num_frames += 1
-        if len(self._presets) > 0:
-            self._presets[self._active_preset].clear_commands()
-            self._presets[self._active_preset].tick()
+        if len(self._playlist) > 0:
+
+            self._playlist.get_active_preset().clear_commands()
+            self._playlist.get_active_preset().tick()
             transition_progress = 0.0
 
             # Handle transition by rendering both the active and the next preset, and blending them together
             if self._in_transition:
-                if self._elapsed == 0.0:
-                    self._presets[self._next_preset].reset()
+                if self._start_transition:
+                    self._start_transition = False
+                    self._playlist.get_next_preset()._reset()
+                    self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
                 if self._transition_duration > 0.0:
                     transition_progress = self._elapsed / self._transition_duration
                 else:
                     transition_progress = 1.0
-                self._presets[self._next_preset].clear_commands()
-                self._presets[self._next_preset].tick()
+                self._playlist.get_next_preset().clear_commands()
+                self._playlist.get_next_preset().tick()
 
                 # Exit from transition state after the transition duration has elapsed
                 if transition_progress >= 1.0:
                     self._in_transition = False
                     # Reset the elapsed time counter so the preset runs for the full duration after the transition
                     self._elapsed = 0.0
-                    self._active_preset = self._next_preset
-                    self._next_preset = (self._next_preset + 1) % len(self._presets)
-                    if self._preset_changed_callback is not None:
-                        self._preset_changed_callback(self.get_active_preset())
+                    self._playlist.advance()
 
             # If the scene tree is available, we can do efficient mixing of presets.
             # If not, a tree would need to be constructed on-the-fly.
             # TODO: Support mixing without a scene tree available
             if self._enable_rendering:
                 if self._in_transition:
-                    self.render_presets(self._active_preset, self._next_preset, transition_progress)
+                    self.render_presets(self._playlist.get_active_index(), self._playlist.get_next_index(), transition_progress)
                 else:
-                    self.render_presets(self._active_preset)
+                    self.render_presets(self._playlist.get_active_index())
             else:
                 if self._net is not None:
-                    self._net.write(self._presets[self._active_preset].get_commands_packed())
+                    self._net.write(self._playlist.get_active_preset().get_commands_packed())
 
-            if not self._paused and (self._elapsed >= self._duration) and self._presets[self._active_preset].can_transition():
+            if not self._paused and (self._elapsed >= self._duration) and self._playlist.get_active_preset().can_transition():
                 self.start_transition()
                 self._elapsed = 0.0
 
@@ -250,10 +208,10 @@ class Mixer:
         If a second preset index is given, render_preset will blend the two together
         according to blend_state (0.0 = 100% first, 1.0 = 100% second)
         """
-        if first >= len(self._presets):
+        if first >= len(self._playlist):
             raise ValueError("first index %d out of range" % first)
         if second is not None:
-            if second >= len(self._presets):
+            if second >= len(self._playlist):
                 raise ValueError("second index %d out of range" % second)
             if blend_state < 0.0 or blend_state > 1.0:
                 raise ValueError("blend_state %f out of range: must be between 0.0 and 1.0" % blend_state)
@@ -264,10 +222,10 @@ class Mixer:
 
         commands = []
 
-        if isinstance(self._presets[first], RawPreset):
-            self._output_buffer = self._presets[first].get_buffer()
+        if isinstance(self._playlist.get_preset_by_index(first), RawPreset):
+            self._output_buffer = self._playlist.get_preset_by_index(first).get_buffer()
         else:
-            commands = self._presets[first].get_commands()
+            commands = self._playlist.get_preset_by_index(first).get_commands()
             #print commands
             self.render_command_list(commands, self._output_buffer)
 
@@ -280,8 +238,11 @@ class Mixer:
             if self._enable_profiling:
                 start = time.time()
 
-            second_commands = self._presets[second].get_commands()
-            self.render_command_list(second_commands, self._output_back_buffer)
+            if isinstance(self._playlist.get_preset_by_index(second), RawPreset):
+                self._output_back_buffer = self._playlist.get_preset_by_index(second).get_buffer()
+            else:
+                second_commands = self._playlist.get_preset_by_index(second).get_commands()
+                self.render_command_list(second_commands, self._output_back_buffer)
 
             if self._enable_profiling:
                 dt = 1000.0 * (time.time() - start)
@@ -354,6 +315,3 @@ class Mixer:
             return (int((color1[0] * inv_state) + (color2[0] * blend_state)),
                     int((color1[1] * inv_state) + (color2[1] * blend_state)),
                     int((color1[2] * inv_state) + (color2[2] * blend_state)))
-
-    def set_preset_changed_callback(self, cb):
-        self._preset_changed_callback = cb
