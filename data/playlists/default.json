@@ -92,6 +92,13 @@
                 "interval": 0.05, 
                 "speed": 0.5
             }
+        }, 
+        {
+            "classname": "RGBFade", 
+            "name": "RGBFade-2", 
+            "params": {
+                "speed": 0.2
+            }
         }
     ]
 }

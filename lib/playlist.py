@@ -103,16 +103,22 @@ class Playlist(JSONDict):
         else:
             return self._playlist[idx]
 
+    def get_preset_by_name(self, name):
+        for preset in self._playlist:
+            if preset.get_name() == name:
+                return preset
+        return None
+
     def set_active_index(self, idx):
         self._active_index = idx % len(self._playlist)
         self._next_index = (self._active_index + 1) % len(self._playlist)
         self.get_active_preset()._reset()
         self._app.playlist_changed.emit()
 
-    def set_active_preset_by_name(self, classname):
+    def set_active_preset_by_name(self, name):
         #TODO: Support transitions other than jump cut
         for i, preset in enumerate(self._playlist):
-            if preset.get_name() == classname:
+            if preset.get_name() == name:
                 preset._reset()
                 self._active_index = i
                 self._app.mixer._elapsed = 0.0  # Hack
