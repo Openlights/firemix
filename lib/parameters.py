@@ -118,10 +118,10 @@ class RGBParameter(Parameter):
 
     def __init__(self, name, value=(0, 0, 0)):
         Parameter.__init__(self, name)
-        self.set(value)
+        self.set(tuple(value))
 
     def validate(self, value):
-        if not isinstance(value, tuple):
+        if (not isinstance(value, tuple)) and (not isinstance(value, list)):
             return False
 
         if len(value) != 3:
@@ -146,10 +146,10 @@ class HSVParameter(Parameter):
 
     def __init__(self, name, value=(0., 0., 0.)):
         Parameter.__init__(self, name)
-        self.set(value)
+        self.set(tuple(value))
 
     def validate(self, value):
-        if not isinstance(value, tuple):
+        if (not isinstance(value, tuple)) and (not isinstance(value, list)):
             return False
 
         if len(value) != 3:
