@@ -18,12 +18,7 @@ class DlgAddPreset(QtGui.QDialog, Ui_DlgAddPreset):
         self.populate_preset_name()
 
     def populate_preset_name(self):
-        i = 1
-        name = self.cb_preset_type.currentText() + "-" + str(i)
-        while self.playlist.preset_name_exists(name):
-            i += 1
-            name = self.cb_preset_type.currentText() + "-" + str(i)
-        self.edit_preset_name.setText(name)
+        self.edit_preset_name.setText(self.playlist.suggest_preset_name(self.cb_preset_type.currentText()))
 
     def validate_preset_name(self):
         if self.playlist.preset_name_exists(self.edit_preset_name.text()):

@@ -73,7 +73,7 @@ class Playlist(JSONDict):
         #TODO: support transitions other than cut
         self._active_index = (self._active_index + direction) % len(self._playlist)
         self._next_index = (self._next_index + direction) % len(self._playlist)
-        self._playlist[self._active_index]._reset()
+        #self._playlist[self._active_index]._reset()
         self._app.playlist_changed.emit()
 
     def __len__(self):
@@ -103,16 +103,22 @@ class Playlist(JSONDict):
         else:
             return self._playlist[idx]
 
+    def get_preset_by_name(self, name):
+        for preset in self._playlist:
+            if preset.get_name() == name:
+                return preset
+        return None
+
     def set_active_index(self, idx):
         self._active_index = idx % len(self._playlist)
         self._next_index = (self._active_index + 1) % len(self._playlist)
         self.get_active_preset()._reset()
         self._app.playlist_changed.emit()
 
-    def set_active_preset_by_name(self, classname):
+    def set_active_preset_by_name(self, name):
         #TODO: Support transitions other than jump cut
         for i, preset in enumerate(self._playlist):
-            if preset.get_name() == classname:
+            if preset.get_name() == name:
                 preset._reset()
                 self._active_index = i
                 self._app.mixer._elapsed = 0.0  # Hack
@@ -149,11 +155,16 @@ class Playlist(JSONDict):
             return False
 
         inst = self._preset_classes[classname](self._app.mixer, name=name)
+        inst._reset()
 
         if idx is not None:
             self._playlist.insert(idx, inst)
         else:
             self._playlist.append(inst)
+
+        if self._active_index == self._next_index:
+            self._next_index = (self._next_index + 1) % len(self._playlist)
+
         return True
 
     def remove_preset(self, name):
@@ -163,12 +174,20 @@ class Playlist(JSONDict):
         if not self.preset_name_exists(name):
             return False
 
-        pl = [p for p in self._playlist if p.get_name() == name]
+        pl = [(i, p) for i, p in enumerate(self._playlist) if p.get_name() == name]
         assert len(pl) == 1
-        self._playlist.remove(pl[0])
+
+        if pl[0][0] == self._next_index:
+            self._next_index = (self._next_index + 1) % len(self._playlist)
+        elif pl[0][0] == self._active_index:
+            self._active_index = (self._active_index + 1) % len(self._playlist)
+
+        self._playlist.remove(pl[0][1])
 
     def clear_playlist(self):
         self._playlist = []
+        self._active_index = 0
+        self._next_index = 0
 
     def rename_preset(self, old_name, new_name):
         pl = [i for i, p in enumerate(self._playlist) if p.get_name() == old_name]
@@ -186,4 +205,16 @@ class Playlist(JSONDict):
             inst = self._preset_classes[cn](self._app.mixer, name=name)
             inst.setup()
             self._playlist.append(inst)
+
+    def suggest_preset_name(self, classname):
+        """
+        Returns an unused preset name based on the classname, in the form "Classname-N",
+        where N is an integer.
+        """
+        i = 1
+        name = classname + "-" + str(i)
+        while self.preset_name_exists(name):
+            i += 1
+            name = classname + "-" + str(i)
+        return name
 
