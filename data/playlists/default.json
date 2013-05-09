@@ -21,7 +21,7 @@
             "name": "Dragons-1", 
             "params": {
                 "birth-rate": 0.09, 
-                "pop-limit": 5, 
+                "pop-limit": 25, 
                 "tail-persist": 0.55
             }
         }, 
@@ -40,22 +40,30 @@
                     0.87, 
                     0.57
                 ], 
-                "death-time": 1.75, 
+                "death-time": 1.0, 
                 "fade-out-time": 0.25, 
                 "growth-time": 0.75, 
                 "isolated-life-time": 1.0, 
-                "life-time": 5.0, 
+                "life-time": 2.5, 
                 "mass-destruction-threshold": 150, 
                 "mass-destruction-time": 10.0, 
                 "pop-limit": 500, 
-                "spread-rate": 0.13
+                "spread-rate": 0.1
             }
         }, 
         {
             "classname": "RadialRainbow", 
             "name": "RadialRainbow-1", 
             "params": {
-                "speed": 0.2, 
+                "speed": 0.5, 
+                "width": 3.0
+            }
+        }, 
+        {
+            "classname": "RadialRainbow", 
+            "name": "RadialRainbow-2", 
+            "params": {
+                "speed": 1.5, 
                 "width": 1.0
             }
         }, 
@@ -76,13 +84,6 @@
                     42, 
                     255
                 ]
-            }
-        }, 
-        {
-            "classname": "RGBFade", 
-            "name": "RGBFade-1", 
-            "params": {
-                "speed": 0.2
             }
         }, 
         {
