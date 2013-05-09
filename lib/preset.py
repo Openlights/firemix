@@ -38,7 +38,6 @@ class Preset:
         pass
 
     def _reset(self):
-        self._tickers = []
         self._commands = []
         self.reset()
 

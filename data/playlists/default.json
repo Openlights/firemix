@@ -112,6 +112,13 @@
                     1.0
                 ]
             }
+        }, 
+        {
+            "classname": "RGBFade", 
+            "name": "RGBFade-1", 
+            "params": {
+                "speed": 0.2
+            }
         }
     ]
 }
