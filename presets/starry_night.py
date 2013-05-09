@@ -27,6 +27,11 @@ class StarryNight(RawPreset):
 
         self._fader = ColorFade('hsv', [death_rgb, star_rgb])
 
+    def reset(self):
+        self._fading_up = []
+        self._fading_down = []
+        self._time = {}
+
     def draw(self, dt):
 
         # Birth

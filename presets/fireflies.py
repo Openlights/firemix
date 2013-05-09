@@ -33,6 +33,11 @@ class Fireflies(RawPreset):
         self._down_target_rgb = float_to_uint8(colorsys.hsv_to_rgb(*self.parameter('off-color').get()))
         self._fader = ColorFade('hsv', [self.parameter('off-color').get(), self.parameter('on-color').get()])
 
+    def reset(self):
+        self._fading_up = []
+        self._fading_down = []
+        self._time = {}
+
     def draw(self, dt):
 
         # Birth
