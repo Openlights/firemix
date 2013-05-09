@@ -6,6 +6,9 @@ import numpy as np
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
 from lib.raw_preset import RawPreset
 
+# Hack
+from plugins.dissolve_transition import DissolveTransition
+
 log = logging.getLogger("firemix.core.mixer")
 
 
@@ -30,7 +33,7 @@ class Mixer:
         self._elapsed = 0.0
         self._running = False
         self._enable_rendering = True
-        self._output_buffer = None
+        self._main_buffer = None
         self._max_fixtures = 0
         self._max_pixels = 0
         self._tick_time_data = dict()
@@ -42,6 +45,7 @@ class Mixer:
         self._enable_profiling = self._app.args.profile
         self._paused = False
         self._frozen = False
+        self._transition = DissolveTransition()  # Hack
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -55,8 +59,8 @@ class Mixer:
 
             (maxs, maxf, maxp) = self._scene.get_matrix_extents()
             log.info("Loaded scene with %d strands, will create array of %d fixtures by %d pixels." % (maxs, maxf, maxp))
-            self._output_buffer = np.zeros((maxs, maxf, maxp, 3))
-            self._output_back_buffer = np.zeros((maxs, maxf, maxp, 3))
+            self._main_buffer = np.zeros((maxs, maxf, maxp, 3))
+            self._secondary_buffer = np.zeros((maxs, maxf, maxp, 3))
             self._max_fixtures = maxf
             self._max_pixels = maxp
 
@@ -162,7 +166,7 @@ class Mixer:
                 if self._start_transition:
                     self._start_transition = False
                     self._playlist.get_next_preset()._reset()
-                    self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+                    self._secondary_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
                 if self._transition_duration > 0.0:
                     transition_progress = self._elapsed / self._transition_duration
                 else:
@@ -203,32 +207,24 @@ class Mixer:
     def scene(self):
         return self._scene
 
-    def render_presets(self, first, second=None, blend_state=0.0):
+    def render_presets(self, first, second=None, transition_progress=0.0):
         """
         Grabs the command output from a preset with the index given by first.
-        If a second preset index is given, render_preset will blend the two together
-        according to blend_state (0.0 = 100% first, 1.0 = 100% second)
+        If a second preset index is given, render_preset will use a Transition class to generate the output
+        according to transition_progress (0.0 = 100% first, 1.0 = 100% second)
         """
-        if first >= len(self._playlist):
-            raise ValueError("first index %d out of range" % first)
-        if second is not None:
-            if second >= len(self._playlist):
-                raise ValueError("second index %d out of range" % second)
-            if blend_state < 0.0 or blend_state > 1.0:
-                raise ValueError("blend_state %f out of range: must be between 0.0 and 1.0" % blend_state)
 
-        #self.reset_output_buffer()
         if self._enable_profiling:
             start = time.time()
 
         commands = []
 
         if isinstance(self._playlist.get_preset_by_index(first), RawPreset):
-            self._output_buffer = self._playlist.get_preset_by_index(first).get_buffer()
+            self._main_buffer = self._playlist.get_preset_by_index(first).get_buffer()
         else:
             commands = self._playlist.get_preset_by_index(first).get_commands()
             #print commands
-            self.render_command_list(commands, self._output_buffer)
+            self.render_command_list(commands, self._main_buffer)
 
         if self._enable_profiling:
             dt = 1000.0 * (time.time() - start)
@@ -240,15 +236,18 @@ class Mixer:
                 start = time.time()
 
             if isinstance(self._playlist.get_preset_by_index(second), RawPreset):
-                self._output_back_buffer = self._playlist.get_preset_by_index(second).get_buffer()
+                self._secondary_buffer = self._playlist.get_preset_by_index(second).get_buffer()
             else:
                 second_commands = self._playlist.get_preset_by_index(second).get_commands()
-                self.render_command_list(second_commands, self._output_back_buffer)
+                self.render_command_list(second_commands, self._secondary_buffer)
 
             if self._enable_profiling:
                 dt = 1000.0 * (time.time() - start)
                 if dt > 10.0:
                     log.info("rendered second preset in %0.2f ms (%d commands)" % (dt, len(second_commands)))
+
+            if self._in_transition:
+                self._main_buffer = self._transition.get(self._main_buffer, self._secondary_buffer, transition_progress)
 
         if self._net is not None:
             data = dict()
@@ -261,7 +260,7 @@ class Mixer:
         Returns an optimized list of strand data, in fixture order, using the scene map
         """
         len_strand = sum([fix.pixels() for fix in self._scene.fixtures() if fix.strand() == strand_id])
-        data = self._output_buffer[strand_key].astype(int).tolist()
+        data = self._main_buffer[strand_key].astype(int).tolist()
         data_flat = [item for sublist in data for item in sublist]
         data_flat = [item for sublist in data_flat for item in sublist]
         return data_flat[0:3 * len_strand]
@@ -270,8 +269,8 @@ class Mixer:
         """
         Clears the output buffer
         """
-        self._output_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
-        self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+        self._main_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+        self._secondary_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
 
     def render_command_list(self, list, buffer):
         """

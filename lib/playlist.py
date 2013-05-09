@@ -73,7 +73,7 @@ class Playlist(JSONDict):
         #TODO: support transitions other than cut
         self._active_index = (self._active_index + direction) % len(self._playlist)
         self._next_index = (self._next_index + direction) % len(self._playlist)
-        self._playlist[self._active_index]._reset()
+        #self._playlist[self._active_index]._reset()
         self._app.playlist_changed.emit()
 
     def __len__(self):

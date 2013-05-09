@@ -16,4 +16,7 @@ class DissolveTransition(Transition):
         pass
 
     def get(self, start, end, progress):
-        pass
+        """
+        Simple dissolve
+        """
+        return (start * (1.0 - progress)) + (end * progress)
