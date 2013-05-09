@@ -8,6 +8,7 @@ from core.scene_loader import SceneLoader
 from lib.playlist import Playlist
 from lib.settings import Settings
 from lib.scene import Scene
+from lib.plugin_loader import PluginLoader
 
 
 log = logging.getLogger("firemix")
@@ -25,6 +26,7 @@ class FireMixApp(QtCore.QThread):
         self.settings = Settings()
         self.net = Networking(self)
         self.scene = Scene(SceneLoader(self))
+        self.plugins = PluginLoader()
         self.mixer = Mixer(self)
         self.playlist = Playlist(self)
 

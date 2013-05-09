@@ -6,6 +6,7 @@ import numpy as np
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
 from lib.raw_preset import RawPreset
 
+
 log = logging.getLogger("firemix.core.mixer")
 
 
@@ -30,7 +31,7 @@ class Mixer:
         self._elapsed = 0.0
         self._running = False
         self._enable_rendering = True
-        self._output_buffer = None
+        self._main_buffer = None
         self._max_fixtures = 0
         self._max_pixels = 0
         self._tick_time_data = dict()
@@ -42,6 +43,14 @@ class Mixer:
         self._enable_profiling = self._app.args.profile
         self._paused = False
         self._frozen = False
+
+        # Load transitions
+        tn = self._app.settings.get('mixer')['transition']
+        if tn == "Cut":
+            self._transition = None
+        else:
+            tl = [c for c in self._app.plugins.get('Transition') if c.__name__ == tn]
+            self._transition = tl[0]()
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -55,8 +64,8 @@ class Mixer:
 
             (maxs, maxf, maxp) = self._scene.get_matrix_extents()
             log.info("Loaded scene with %d strands, will create array of %d fixtures by %d pixels." % (maxs, maxf, maxp))
-            self._output_buffer = np.zeros((maxs, maxf, maxp, 3))
-            self._output_back_buffer = np.zeros((maxs, maxf, maxp, 3))
+            self._main_buffer = np.zeros((maxs, maxf, maxp, 3))
+            self._secondary_buffer = np.zeros((maxs, maxf, maxp, 3))
             self._max_fixtures = maxf
             self._max_pixels = maxp
 
@@ -80,6 +89,19 @@ class Mixer:
     def is_paused(self):
         return self._paused
 
+    def set_transition_mode(self, classname):
+        if not classname or classname == "Cut":
+            self._transition = None
+            return True
+
+        tl = [c for c in self._app.plugins.get('Transition') if c.__name__ == classname]
+        if len(tl) == 1:
+            self._transition = tl[0]()
+            return True
+        else:
+            log.error("Transition class %s is not loaded!" % classname)
+            return False
+
     def freeze(self, freeze=True):
         self._frozen = freeze
 
@@ -89,8 +111,10 @@ class Mixer:
     def set_preset_duration(self, duration):
         if duration > self._transition_duration:
             self._duration = duration
+            return True
         else:
             log.warn("Duration %f must be longer than the transition duration (%f)" % (duration, self._transition_duration))
+            return False
 
     def get_preset_duration(self):
         return self._duration
@@ -98,8 +122,10 @@ class Mixer:
     def set_transition_duration(self, duration):
         if duration >= 0.0:
             self._transition_duration = duration
+            return True
         else:
             log.warn("Transition duration must be positive or zero.")
+            return False
 
     def get_transition_duration(self):
         return self._transition_duration
@@ -162,8 +188,8 @@ class Mixer:
                 if self._start_transition:
                     self._start_transition = False
                     self._playlist.get_next_preset()._reset()
-                    self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
-                if self._transition_duration > 0.0:
+                    self._secondary_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+                if self._transition_duration > 0.0 and self._transition is not None:
                     transition_progress = self._elapsed / self._transition_duration
                 else:
                     transition_progress = 1.0
@@ -190,7 +216,8 @@ class Mixer:
                     self._net.write(self._playlist.get_active_preset().get_commands_packed())
 
             if not self._paused and (self._elapsed >= self._duration) and self._playlist.get_active_preset().can_transition():
-                self.start_transition()
+                if len(self._playlist) > 1:
+                    self.start_transition()
                 self._elapsed = 0.0
 
         if self._enable_profiling:
@@ -203,32 +230,24 @@ class Mixer:
     def scene(self):
         return self._scene
 
-    def render_presets(self, first, second=None, blend_state=0.0):
+    def render_presets(self, first, second=None, transition_progress=0.0):
         """
         Grabs the command output from a preset with the index given by first.
-        If a second preset index is given, render_preset will blend the two together
-        according to blend_state (0.0 = 100% first, 1.0 = 100% second)
+        If a second preset index is given, render_preset will use a Transition class to generate the output
+        according to transition_progress (0.0 = 100% first, 1.0 = 100% second)
         """
-        if first >= len(self._playlist):
-            raise ValueError("first index %d out of range" % first)
-        if second is not None:
-            if second >= len(self._playlist):
-                raise ValueError("second index %d out of range" % second)
-            if blend_state < 0.0 or blend_state > 1.0:
-                raise ValueError("blend_state %f out of range: must be between 0.0 and 1.0" % blend_state)
 
-        #self.reset_output_buffer()
         if self._enable_profiling:
             start = time.time()
 
         commands = []
 
         if isinstance(self._playlist.get_preset_by_index(first), RawPreset):
-            self._output_buffer = self._playlist.get_preset_by_index(first).get_buffer()
+            self._main_buffer = self._playlist.get_preset_by_index(first).get_buffer()
         else:
             commands = self._playlist.get_preset_by_index(first).get_commands()
             #print commands
-            self.render_command_list(commands, self._output_buffer)
+            self.render_command_list(commands, self._main_buffer)
 
         if self._enable_profiling:
             dt = 1000.0 * (time.time() - start)
@@ -240,15 +259,18 @@ class Mixer:
                 start = time.time()
 
             if isinstance(self._playlist.get_preset_by_index(second), RawPreset):
-                self._output_back_buffer = self._playlist.get_preset_by_index(second).get_buffer()
+                self._secondary_buffer = self._playlist.get_preset_by_index(second).get_buffer()
             else:
                 second_commands = self._playlist.get_preset_by_index(second).get_commands()
-                self.render_command_list(second_commands, self._output_back_buffer)
+                self.render_command_list(second_commands, self._secondary_buffer)
 
             if self._enable_profiling:
                 dt = 1000.0 * (time.time() - start)
                 if dt > 10.0:
                     log.info("rendered second preset in %0.2f ms (%d commands)" % (dt, len(second_commands)))
+
+            if self._in_transition:
+                self._main_buffer = self._transition.get(self._main_buffer, self._secondary_buffer, transition_progress)
 
         if self._net is not None:
             data = dict()
@@ -261,7 +283,7 @@ class Mixer:
         Returns an optimized list of strand data, in fixture order, using the scene map
         """
         len_strand = sum([fix.pixels() for fix in self._scene.fixtures() if fix.strand() == strand_id])
-        data = self._output_buffer[strand_key].astype(int).tolist()
+        data = self._main_buffer[strand_key].astype(int).tolist()
         data_flat = [item for sublist in data for item in sublist]
         data_flat = [item for sublist in data_flat for item in sublist]
         return data_flat[0:3 * len_strand]
@@ -270,8 +292,8 @@ class Mixer:
         """
         Clears the output buffer
         """
-        self._output_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
-        self._output_back_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+        self._main_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+        self._secondary_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
 
     def render_command_list(self, list, buffer):
         """
@@ -301,18 +323,3 @@ class Mixer:
                 address = command.get_address()
                 pixel = command.get_pixel()
                 buffer[strand][address][pixel] = color
-
-    def blend(self, color1, color2, blend_state):
-        """
-        Returns a 3-tuple (R, G, B) of the equal-weighted blend between the two input colors.
-        """
-        if blend_state == 0.0:
-            return color1
-        elif blend_state == 1.0:
-            return color2
-        else:
-            # TODO: This blending operation desaturates the output during transition.  Switch to HSV blending on Hue
-            inv_state = 1.0 - blend_state
-            return (int((color1[0] * inv_state) + (color2[0] * blend_state)),
-                    int((color1[1] * inv_state) + (color2[1] * blend_state)),
-                    int((color1[2] * inv_state) + (color2[2] * blend_state)))

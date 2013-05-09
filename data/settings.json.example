@@ -1,21 +1,24 @@
 {
-    "file-type": "settings",
-    "last-scene": "demo",
-    "last-playlist": "default",
+    "file-type": "settings", 
+    "last-playlist": "default", 
+    "last-scene": "demo", 
     "mixer": {
-        "preset-duration": 10.0,
-        "transition-duration": 1.25,
-        "transition-mode": "cut"
-    },
+        "preset-duration": 6.0, 
+        "tick-rate": 32.0, 
+        "transition": "Dissolve", 
+        "transition-duration": 2.5
+    }, 
     "networking": {
         "clients": [
             {
-                "ip": "127.0.0.1",
-                "port": "3020"
-            },
+                "enabled": true, 
+                "ip": "127.0.0.1", 
+                "port": 3020
+            }, 
             {
-                "ip": "127.0.0.1",
-                "port": "3021"
+                "enabled": false, 
+                "ip": "127.0.0.1", 
+                "port": 3021
             }
         ]
     }
