@@ -19,6 +19,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.btn_playpause.clicked.connect(self.on_btn_playpause)
         self.btn_next_preset.clicked.connect(self.on_btn_next_preset)
         self.btn_prev_preset.clicked.connect(self.on_btn_prev_preset)
+        self.btn_reset_preset.clicked.connect(self.on_btn_reset_preset)
+        self.btn_add_preset.clicked.connect(self.on_btn_add_preset)
+        self.btn_remove_preset.clicked.connect(self.on_btn_remove_preset)
+        self.btn_clone_preset.clicked.connect(self.on_btn_clone_preset)
+        self.btn_clear_playlist.clicked.connect(self.on_btn_clear_playlist)
 
         # File menu
         self.action_file_load_scene.triggered.connect(self.on_file_load_scene)
@@ -78,6 +83,21 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_btn_prev_preset(self):
         self._mixer.prev()
 
+    def on_btn_reset_preset(self):
+        self._app.playlist.get_active_preset()._reset()
+
+    def on_btn_add_preset(self):
+        pass
+
+    def on_btn_remove_preset(self):
+        pass
+
+    def on_btn_clone_preset(self):
+        pass
+
+    def on_btn_clear_playlist(self):
+        pass
+
     def update_mixer_settings(self):
         self.edit_preset_duration.setValue(self._mixer.get_preset_duration())
         self.edit_transition_duration.setValue(self._mixer.get_transition_duration())
@@ -90,7 +110,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             item = QtGui.QListWidgetItem(preset.get_name())
 
             if preset == current:
-                item.setBackground(QtGui.QColor(100, 255, 200))
+                item.setForeground(QtGui.QColor(0, 100, 200))
             self.lst_presets.addItem(item)
 
     def on_playlist_changed(self):
