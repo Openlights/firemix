@@ -1,70 +1,56 @@
 import sys
 import logging
-import inspect
-import signal
 import argparse
 import yappi
+import signal
 
 from PySide import QtGui
 
-import presets
-from core.mixer import Mixer
-from core.networking import Networking
-from core.scene_loader import SceneLoader
+#from core.rpc_server import RPCServer
+from firemix_app import FireMixApp
 from ui.firemixgui import FireMixGUI
 
 
-def sigint_handler(signum, frame):
-    global mixer
-    mixer.stop()
-
+def sig_handler(sig, frame):
+    global app  # , rpc_server
+    app.stop()
+    #rpc_server.stop()
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.ERROR)
     log = logging.getLogger("firemix")
 
-    signal.signal(signal.SIGINT, sigint_handler)
-    signal.signal(signal.SIGABRT, sigint_handler)
-    signal.signal(signal.SIGTERM, sigint_handler)
+    signal.signal(signal.SIGINT, sig_handler)
 
     parser = argparse.ArgumentParser(description="Firelight mixer and preset host")
     parser.add_argument("scene", type=str, help="Scene file to load (create scenes with FireSim)")
+    parser.add_argument("--playlist", type=str, help="Playlist file to load", default="default")
     parser.add_argument("--profile", action='store_const', const=True, default=False, help="Enable profiling")
     parser.add_argument("--nogui", action='store_const', const=True, default=False, help="Disable GUI")
     parser.add_argument("--preset", type=str, help="Specify a preset name to run only that preset (useful for debugging)")
+    parser.add_argument("--verbose", action='store_const', const=True, default=False, help="Enable verbose log output")
 
     args = parser.parse_args()
 
+    if args.verbose:
+        log.setLevel(logging.DEBUG)
+
     log.info("Booting FireMix...")
-
-    net = Networking()
-
-    scene = SceneLoader("data/scenes/%s" % args.scene).load()
-    log.info("Loaded scene from %s", scene._data["filepath"])
-
-    mixer = Mixer(net=net, scene=scene, enable_profiling=args.profile)
-
-    log.info("Loading presets...")
-    for name, obj in inspect.getmembers(presets, inspect.isclass):
-        log.info("Loading preset %s" % name)
-        mixer.add_preset(obj)
-
-    if args.preset:
-        log.info("Setting constant preset %s" % args.preset)
-        mixer.set_constant_preset(args.preset)
-
-    log.info("The current preset is %s" % mixer.get_active_preset_name())
 
     if args.profile:
         log.info("Starting profiler")
         yappi.start()
-    mixer.run()
+
+    qt_app = QtGui.QApplication(sys.argv)
+
+    app = FireMixApp(args, parent=qt_app)
+    app.start()
 
     if not args.nogui:
-        app = QtGui.QApplication(sys.argv)
-        gui = FireMixGUI(mixer=mixer)
+        gui = FireMixGUI(app=app)
         gui.show()
-        app.exec_()
+
+    qt_app.exec_()
 
     if args.profile:
         stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)
@@ -73,7 +59,7 @@ if __name__ == "__main__":
         for s in stats:
             print "%s\t[%0.3f]" % (s[0], s[1])
         print   "------ TICK TIME HISTOGRAM ------"
-        elapsed = (mixer._stop_time - mixer._start_time)
-        print "%d frames in %0.2f seconds (%0.2f FPS) " %  (mixer._num_frames, elapsed, mixer._num_frames / elapsed)
-        for c in sorted(mixer._tick_time_data.iterkeys()):
-            print "[%d fps]:\t%4d\t%0.2f%%" % (c, mixer._tick_time_data[c], (float(mixer._tick_time_data[c]) / mixer._num_frames) * 100.0)
+        elapsed = (app.mixer._stop_time - app.mixer._start_time)
+        print "%d frames in %0.2f seconds (%0.2f FPS) " %  (app.mixer._num_frames, elapsed, app.mixer._num_frames / elapsed)
+        for c in sorted(app.mixer._tick_time_data.iterkeys()):
+            print "[%d fps]:\t%4d\t%0.2f%%" % (c, app.mixer._tick_time_data[c], (float(app.mixer._tick_time_data[c]) / app.mixer._num_frames) * 100.0)

@@ -1,32 +1,24 @@
-import unittest
-import json
+import os
 import logging
 
-from lib.scene import Scene
+from lib.json_dict import JSONDict
 
 log = logging.getLogger("firemix.core.scene_loader")
 
 
-class SceneLoader:
+class SceneLoader(JSONDict):
     """
     Constructs a Scene object from a JSON file
     """
 
-    def __init__(self, filename):
-        self._filename = filename
-        self._data = None
+    def __init__(self, app):
+        filename = app.args.scene
+        self._filename = os.path.join(os.getcwd(), "data", "scenes", "".join([filename, ".json"]))
+        JSONDict.__init__(self, 'scene', self._filename, False)
+        self.data["filepath"] = self._filename
 
-    def load(self):
+    def save(self):
         """
-        Loads a scene from a JSON file
+        Disable saving for scenes
         """
-        assert(self._filename)
-        with open(self._filename, 'r') as f:
-            try:
-                self._data = json.load(f)
-            except:
-                log.error("Error loading scene data from %s" % self._filename)
-                self._data = None
-                return None
-        self._data["filepath"] = self._filename
-        return Scene(self._data)
+        pass

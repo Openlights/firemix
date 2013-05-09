@@ -1,4 +1,5 @@
 {
+  "file-type": "scene",
   "backdrop_enable": true, 
   "backdrop_filename": "light_dome.png", 
   "extents": [
