@@ -9,7 +9,7 @@ class Networking:
     def __init__(self, app):
         self._socket = None
         self._app = app
-        self._clients = [(c["ip"], int(c["port"])) for c in app.settings['networking']['clients']]
+        self._clients = [(c["ip"], int(c["port"])) for c in app.settings['networking']['clients'] if c["enabled"]]
         self.open_socket()
 
     def open_socket(self):

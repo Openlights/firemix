@@ -2,6 +2,7 @@ from PySide import QtGui, QtCore
 
 from ui.ui_firemix import Ui_FireMixMain
 from ui.dlg_add_preset import DlgAddPreset
+from ui.dlg_setup_networking import DlgSetupNetworking
 
 class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
@@ -29,6 +30,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.action_file_save_playlist.triggered.connect(self.on_file_save_playlist)
         self.action_file_quit.triggered.connect(self.close)
         self.action_file_generate_default_playlist.triggered.connect(self.on_file_generate_default_playlist)
+
+        # Settings menu
+        self.action_settings_networking.triggered.connect(self.on_settings_networking)
 
         # Preset list
         self.lst_presets.itemDoubleClicked.connect(self.on_preset_double_clicked)
@@ -232,3 +236,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         if ret == QtGui.QMessageBox.Yes:
             self._app.playlist.generate_default_playlist()
             self.update_playlist()
+
+    def on_settings_networking(self):
+        dlg = DlgSetupNetworking(self)
+        dlg.exec_()
+        if dlg.result() == QtGui.QDialog.Accepted:
+            pass

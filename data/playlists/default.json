@@ -20,7 +20,7 @@
             "classname": "Dragons", 
             "name": "Dragons-1", 
             "params": {
-                "birth-rate": 0.09, 
+                "birth-rate": 0.11, 
                 "pop-limit": 25, 
                 "tail-persist": 0.55
             }
@@ -65,33 +65,6 @@
             "params": {
                 "speed": 1.5, 
                 "width": 1.0
-            }
-        }, 
-        {
-            "classname": "StarryNight", 
-            "name": "StarryNight-1", 
-            "params": {
-                "birth-rate": 0.15, 
-                "death-color": [
-                    0, 
-                    0, 
-                    0
-                ], 
-                "fade-down-time": 1.5, 
-                "fade-up-time": 0.25, 
-                "star-color": [
-                    0, 
-                    42, 
-                    255
-                ]
-            }
-        }, 
-        {
-            "classname": "SeparateStrandRGB", 
-            "name": "SeparateStrandRGB-1", 
-            "params": {
-                "interval": 0.05, 
-                "speed": 0.5
             }
         }, 
         {
