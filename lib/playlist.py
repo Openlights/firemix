@@ -150,3 +150,6 @@ class Playlist(JSONDict):
         assert len(pl) == 1
         self._playlist.remove(pl[0])
 
+    def clear_playlist(self):
+        self._playlist = []
+

@@ -103,7 +103,16 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         pass
 
     def on_btn_clear_playlist(self):
-        pass
+        dlg = QtGui.QMessageBox()
+        dlg.setWindowTitle("FireMix - Clear Playlist")
+        dlg.setText("Are you sure you want to clear the playlist?")
+        dlg.setInformativeText("This action cannot be undone.")
+        dlg.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        dlg.setDefaultButton(QtGui.QMessageBox.No)
+        ret = dlg.exec_()
+        if ret == QtGui.QMessageBox.Yes:
+            self._app.playlist.clear_playlist()
+            self.update_playlist()
 
     def update_mixer_settings(self):
         self.edit_preset_duration.setValue(self._mixer.get_preset_duration())
