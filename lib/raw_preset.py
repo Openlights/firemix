@@ -59,6 +59,7 @@ class RawPreset(Preset):
         if self._mixer._enable_profiling:
             start = time.time()
 
+        # TODO: This does not account for varying frame rate
         dt = self._ticks * (1.0 / self.tick_rate())
         self.draw(dt)
 

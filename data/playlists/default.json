@@ -2,107 +2,19 @@
     "file-type": "playlist", 
     "playlist": [
         {
-            "classname": "SeparateStrandWithFlash", 
-            "name": "SeparateStrandWithFlash-1", 
+            "classname": "RGBFade", 
+            "name": "RGBFade-1", 
             "params": {
-                "flash-off": 0.8, 
-                "flash-on": 0.2, 
-                "interval": 0.05, 
-                "speed": 0.5
+                "speed": 0.2
             }
-        }, 
-        {
-            "classname": "FixtureStepFade", 
-            "name": "FixtureStepFade-1", 
-            "params": {}
         }, 
         {
             "classname": "Dragons", 
             "name": "Dragons-1", 
             "params": {
-                "birth-rate": 0.11, 
-                "pop-limit": 25, 
+                "birth-rate": 0.09, 
+                "pop-limit": 5, 
                 "tail-persist": 0.55
-            }
-        }, 
-        {
-            "classname": "Fungus", 
-            "name": "Fungus-1", 
-            "params": {
-                "alive-color": [
-                    0.35, 
-                    1.0, 
-                    1.0
-                ], 
-                "birth-rate": 0.03, 
-                "dead-color": [
-                    0.13, 
-                    0.87, 
-                    0.57
-                ], 
-                "death-time": 1.0, 
-                "fade-out-time": 0.25, 
-                "growth-time": 0.75, 
-                "isolated-life-time": 1.0, 
-                "life-time": 2.5, 
-                "mass-destruction-threshold": 150, 
-                "mass-destruction-time": 10.0, 
-                "pop-limit": 500, 
-                "spread-rate": 0.1
-            }
-        }, 
-        {
-            "classname": "RadialRainbow", 
-            "name": "RadialRainbow-1", 
-            "params": {
-                "speed": 0.5, 
-                "width": 3.0
-            }
-        }, 
-        {
-            "classname": "RadialRainbow", 
-            "name": "RadialRainbow-2", 
-            "params": {
-                "speed": 1.5, 
-                "width": 1.0
-            }
-        }, 
-        {
-            "classname": "Twinkle", 
-            "name": "Fireflies", 
-            "params": {
-                "birth-rate": 0.5, 
-                "fade-down-time": 2.5, 
-                "fade-up-time": 0.15, 
-                "off-color": [
-                    0.15, 
-                    0.0, 
-                    0.0
-                ], 
-                "on-color": [
-                    0.15, 
-                    1.0, 
-                    1.0
-                ]
-            }
-        }, 
-        {
-            "classname": "Twinkle", 
-            "name": "StarryNight", 
-            "params": {
-                "birth-rate": 0.15, 
-                "fade-down-time": 4.5, 
-                "fade-up-time": 0.75, 
-                "off-color": [
-                    0.66, 
-                    0.0, 
-                    0.0
-                ], 
-                "on-color": [
-                    0.66, 
-                    1.0, 
-                    1.0
-                ]
             }
         }
     ]

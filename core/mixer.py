@@ -196,7 +196,8 @@ class Mixer:
                     self._net.write(self._playlist.get_active_preset().get_commands_packed())
 
             if not self._paused and (self._elapsed >= self._duration) and self._playlist.get_active_preset().can_transition():
-                self.start_transition()
+                if len(self._playlist) > 1:
+                    self.start_transition()
                 self._elapsed = 0.0
 
         if self._enable_profiling:
@@ -302,18 +303,3 @@ class Mixer:
                 address = command.get_address()
                 pixel = command.get_pixel()
                 buffer[strand][address][pixel] = color
-
-    def blend(self, color1, color2, blend_state):
-        """
-        Returns a 3-tuple (R, G, B) of the equal-weighted blend between the two input colors.
-        """
-        if blend_state == 0.0:
-            return color1
-        elif blend_state == 1.0:
-            return color2
-        else:
-            # TODO: This blending operation desaturates the output during transition.  Switch to HSV blending on Hue
-            inv_state = 1.0 - blend_state
-            return (int((color1[0] * inv_state) + (color2[0] * blend_state)),
-                    int((color1[1] * inv_state) + (color2[1] * blend_state)),
-                    int((color1[2] * inv_state) + (color2[2] * blend_state)))

@@ -149,11 +149,16 @@ class Playlist(JSONDict):
             return False
 
         inst = self._preset_classes[classname](self._app.mixer, name=name)
+        inst._reset()
 
         if idx is not None:
             self._playlist.insert(idx, inst)
         else:
             self._playlist.append(inst)
+
+        if self._active_index == self._next_index:
+            self._next_index = (self._next_index + 1) % len(self._playlist)
+
         return True
 
     def remove_preset(self, name):
@@ -163,12 +168,20 @@ class Playlist(JSONDict):
         if not self.preset_name_exists(name):
             return False
 
-        pl = [p for p in self._playlist if p.get_name() == name]
+        pl = [(i, p) for i, p in enumerate(self._playlist) if p.get_name() == name]
         assert len(pl) == 1
-        self._playlist.remove(pl[0])
+
+        if pl[0][0] == self._next_index:
+            self._next_index = (self._next_index + 1) % len(self._playlist)
+        elif pl[0][0] == self._active_index:
+            self._active_index = (self._active_index + 1) % len(self._playlist)
+
+        self._playlist.remove(pl[0][1])
 
     def clear_playlist(self):
         self._playlist = []
+        self._active_index = 0
+        self._next_index = 0
 
     def rename_preset(self, old_name, new_name):
         pl = [i for i, p in enumerate(self._playlist) if p.get_name() == old_name]

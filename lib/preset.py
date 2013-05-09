@@ -129,6 +129,7 @@ class Preset:
     def tick(self):
         if self._mixer._enable_profiling:
             start = time.time()
+            # TODO: This does not account for varying frame rate
         dt = self._ticks * (1.0 / self.tick_rate())
         # Assume that self._tickers is already sorted via add_ticker()
         for ticker, priority in self._tickers:
