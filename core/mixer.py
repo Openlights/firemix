@@ -89,6 +89,19 @@ class Mixer:
     def is_paused(self):
         return self._paused
 
+    def set_transition_mode(self, classname):
+        if not classname or classname == "Cut":
+            self._transition = None
+            return True
+
+        tl = [c for c in self._app.plugins.get('Transition') if c.__name__ == classname]
+        if len(tl) == 1:
+            self._transition = tl[0]()
+            return True
+        else:
+            log.error("Transition class %s is not loaded!" % classname)
+            return False
+
     def freeze(self, freeze=True):
         self._frozen = freeze
 
@@ -98,8 +111,10 @@ class Mixer:
     def set_preset_duration(self, duration):
         if duration > self._transition_duration:
             self._duration = duration
+            return True
         else:
             log.warn("Duration %f must be longer than the transition duration (%f)" % (duration, self._transition_duration))
+            return False
 
     def get_preset_duration(self):
         return self._duration
@@ -107,8 +122,10 @@ class Mixer:
     def set_transition_duration(self, duration):
         if duration >= 0.0:
             self._transition_duration = duration
+            return True
         else:
             log.warn("Transition duration must be positive or zero.")
+            return False
 
     def get_transition_duration(self):
         return self._transition_duration

@@ -11,6 +11,12 @@ class Transition:
     def __init__(self):
         pass
 
+    def __repr__(self):
+        """
+        Override this with the screen-friendly name of your transition
+        """
+        return "Transition"
+
     def setup(self):
         """
         This method will be called right before the transition is scheduled to start.

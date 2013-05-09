@@ -12,6 +12,9 @@ class Dissolve(Transition):
     def __init__(self):
         Transition.__init__(self)
 
+    def __str__(self):
+        return "Dissolve"
+
     def setup(self):
         pass
 

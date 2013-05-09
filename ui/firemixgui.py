@@ -131,6 +131,13 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def update_mixer_settings(self):
         self.edit_preset_duration.setValue(self._mixer.get_preset_duration())
         self.edit_transition_duration.setValue(self._mixer.get_transition_duration())
+        # Populate transition list
+        current_transition = self._app.settings.get('mixer')['transition']
+        transition_list = [str(t()) for t in self._app.plugins.get('Transition')]
+        transition_list.insert(0, "Cut")
+        self.cb_transition_mode.clear()
+        self.cb_transition_mode.insertItems(0, transition_list)
+        self.cb_transition_mode.setCurrentIndex(self.cb_transition_mode.findText(current_transition))
 
     def update_playlist(self):
         self.lst_presets.clear()
@@ -187,16 +194,19 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_preset_duration_changed(self):
         nd = self.edit_preset_duration.value()
-        self._mixer.set_preset_duration(nd)
+        if self._mixer.set_preset_duration(nd):
+            self._app.settings['mixer']['preset-duration'] = nd
         self.edit_preset_duration.setValue(self._mixer.get_preset_duration())
 
     def on_transition_duration_changed(self):
         nd = self.edit_transition_duration.value()
-        self._mixer.set_transition_duration(nd)
+        if self._mixer.set_transition_duration(nd):
+            self._app.settings['mixer']['transition-duration'] = nd
         self.edit_transition_duration.setValue(self._mixer.get_transition_duration())
 
     def on_transition_mode_changed(self):
-        pass
+        if self._app.mixer.set_transition_mode(self.cb_transition_mode.currentText()):
+            self._app.settings['mixer']['transition'] = self.cb_transition_mode.currentText()
 
     def load_preset_parameters_table(self):
         self.tbl_preset_parameters.clear()
