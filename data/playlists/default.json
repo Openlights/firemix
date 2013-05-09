@@ -95,14 +95,14 @@
             }
         }, 
         {
-            "classname": "Fireflies", 
-            "name": "Fireflies-1", 
+            "classname": "Twinkle", 
+            "name": "Fireflies", 
             "params": {
-                "birth-rate": 0.15, 
+                "birth-rate": 0.5, 
                 "fade-down-time": 2.5, 
-                "fade-up-time": 0.25, 
+                "fade-up-time": 0.15, 
                 "off-color": [
-                    0.0, 
+                    0.15, 
                     0.0, 
                     0.0
                 ], 
@@ -114,10 +114,22 @@
             }
         }, 
         {
-            "classname": "RGBFade", 
-            "name": "RGBFade-1", 
+            "classname": "Twinkle", 
+            "name": "StarryNight", 
             "params": {
-                "speed": 0.2
+                "birth-rate": 0.15, 
+                "fade-down-time": 4.5, 
+                "fade-up-time": 0.75, 
+                "off-color": [
+                    0.66, 
+                    0.0, 
+                    0.0
+                ], 
+                "on-color": [
+                    0.66, 
+                    1.0, 
+                    1.0
+                ]
             }
         }
     ]

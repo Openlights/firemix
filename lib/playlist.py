@@ -33,10 +33,13 @@ class Playlist(JSONDict):
             self._playlist = []
 
         for entry in self._playlist_data:
-            inst = self._preset_classes[entry['classname']](self._app.mixer, name=entry['name'])
-            for _, key in enumerate(entry.get('params', {})):
-                inst.parameter(key).set(entry['params'][key])
-            self._playlist.append(inst)
+            if entry['classname'] in self._preset_classes:
+                inst = self._preset_classes[entry['classname']](self._app.mixer, name=entry['name'])
+                for _, key in enumerate(entry.get('params', {})):
+                    inst.parameter(key).set(entry['params'][key])
+                self._playlist.append(inst)
+            else:
+                self._playlist_data.remove(entry)
 
         self._active_index = 0
         self._next_index = 0 if len(self._playlist) == 0 else 1 % len(self._playlist)
@@ -181,5 +184,6 @@ class Playlist(JSONDict):
         for cn in self._preset_classes:
             name = cn + "-1"
             inst = self._preset_classes[cn](self._app.mixer, name=name)
+            inst.setup()
             self._playlist.append(inst)
 

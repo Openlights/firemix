@@ -7,8 +7,8 @@ from lib.color_fade import ColorFade
 from lib.parameters import FloatParameter, HSVParameter
 
 
-class Fireflies(RawPreset):
-    """Random decaying fireflies"""
+class Twinkle(RawPreset):
+    """Random pixels fade in and out"""
 
     _fading_up = []
     _fading_down = []
