@@ -46,8 +46,11 @@ class Mixer:
 
         # Load transitions
         tn = self._app.settings.get('mixer')['transition']
-        tl = [c for c in self._app.plugins.get('Transition') if c.__name__ == tn]
-        self._transition = tl[0]()
+        if tn == "Cut":
+            self._transition = None
+        else:
+            tl = [c for c in self._app.plugins.get('Transition') if c.__name__ == tn]
+            self._transition = tl[0]()
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -169,7 +172,7 @@ class Mixer:
                     self._start_transition = False
                     self._playlist.get_next_preset()._reset()
                     self._secondary_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
-                if self._transition_duration > 0.0:
+                if self._transition_duration > 0.0 and self._transition is not None:
                     transition_progress = self._elapsed / self._transition_duration
                 else:
                     transition_progress = 1.0
