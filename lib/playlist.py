@@ -39,7 +39,7 @@ class Playlist(JSONDict):
             self._playlist.append(inst)
 
         self._active_index = 0
-        self._next_index = 1 % len(self._playlist)
+        self._next_index = 0 if len(self._playlist) == 0 else 1 % len(self._playlist)
 
         return self._playlist
 
@@ -81,13 +81,22 @@ class Playlist(JSONDict):
         return self._next_index
 
     def get_active_preset(self):
-        return self._playlist[self._active_index]
+        if len(self._playlist) == 0:
+            return None
+        else:
+            return self._playlist[self._active_index]
 
     def get_next_preset(self):
-        return self._playlist[self._next_index]
+        if len(self._playlist) == 0:
+            return None
+        else:
+            return self._playlist[self._next_index]
 
     def get_preset_by_index(self, idx):
-        return self._playlist[idx]
+        if len(self._playlist) == 0:
+            return None
+        else:
+            return self._playlist[idx]
 
     def set_active_index(self, idx):
         self._active_index = idx % len(self._playlist)
@@ -158,4 +167,14 @@ class Playlist(JSONDict):
         if len(pl) != 1:
             return False
         self._playlist[pl[0]].set_name(new_name)
+
+    def generate_default_playlist(self):
+        """
+        Wipes out the existing playlist and adds one instance of each preset
+        """
+        self.clear_playlist()
+        for cn in self._preset_classes:
+            name = cn + "-1"
+            inst = self._preset_classes[cn](self._app.mixer, name=name)
+            self._playlist.append(inst)
 

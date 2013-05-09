@@ -398,6 +398,7 @@
     <addaction name="action_file_load_scene"/>
     <addaction name="action_file_reload_presets"/>
     <addaction name="action_file_save_playlist"/>
+    <addaction name="action_file_generate_default_playlist"/>
     <addaction name="action_file_quit"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
@@ -457,6 +458,11 @@
    </property>
    <property name="text">
     <string>MIDI</string>
+   </property>
+  </action>
+  <action name="action_file_generate_default_playlist">
+   <property name="text">
+    <string>Generate Default Playlist</string>
    </property>
   </action>
  </widget>

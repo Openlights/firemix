@@ -28,6 +28,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.action_file_reload_presets.triggered.connect(self.on_file_reload_presets)
         self.action_file_save_playlist.triggered.connect(self.on_file_save_playlist)
         self.action_file_quit.triggered.connect(self.close)
+        self.action_file_generate_default_playlist.triggered.connect(self.on_file_generate_default_playlist)
 
         # Preset list
         self.lst_presets.itemDoubleClicked.connect(self.on_preset_double_clicked)
@@ -217,3 +218,15 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_file_save_playlist(self):
         pass
+
+    def on_file_generate_default_playlist(self):
+        dlg = QtGui.QMessageBox()
+        dlg.setWindowTitle("FireMix - Generate Default Playlist")
+        dlg.setText("Are you sure you want to generate the default playlist?")
+        dlg.setInformativeText("All existing playlist entries will be removed.  This action cannot be undone.")
+        dlg.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        dlg.setDefaultButton(QtGui.QMessageBox.No)
+        ret = dlg.exec_()
+        if ret == QtGui.QMessageBox.Yes:
+            self._app.playlist.generate_default_playlist()
+            self.update_playlist()
