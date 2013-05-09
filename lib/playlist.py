@@ -200,3 +200,15 @@ class Playlist(JSONDict):
             inst.setup()
             self._playlist.append(inst)
 
+    def suggest_preset_name(self, classname):
+        """
+        Returns an unused preset name based on the classname, in the form "Classname-N",
+        where N is an integer.
+        """
+        i = 1
+        name = classname + "-" + str(i)
+        while self.preset_name_exists(name):
+            i += 1
+            name = classname + "-" + str(i)
+        return name
+
