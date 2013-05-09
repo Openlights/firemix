@@ -238,7 +238,5 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.update_playlist()
 
     def on_settings_networking(self):
-        dlg = DlgSetupNetworking(self)
-        dlg.exec_()
-        if dlg.result() == QtGui.QDialog.Accepted:
-            pass
+        DlgSetupNetworking(self).exec_()
+

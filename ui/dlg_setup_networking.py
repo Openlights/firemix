@@ -25,7 +25,6 @@ class DlgSetupNetworking(QtGui.QDialog, Ui_DlgSetupNetworking):
         for row in range(self.tbl_clients.rowCount()):
             for col in range(self.tbl_clients.columnCount()):
                 if not self.validate_client_table_item(self.tbl_clients.item(row, col)):
-                    print self.tbl_clients.item(row, col).text(), "failed validation"
                     return False
         return True
 
@@ -41,9 +40,9 @@ class DlgSetupNetworking(QtGui.QDialog, Ui_DlgSetupNetworking):
             return True
 
         if valid == QtGui.QValidator.Invalid:
-            item.setBackground(QtGui.QColor(255, 200, 200))
+            item.setBackground(QtGui.QColor(255, 190, 190))
         elif valid == QtGui.QValidator.Intermediate:
-            item.setBackground(QtGui.QColor(255, 255, 200))
+            item.setBackground(QtGui.QColor(255, 255, 190))
         else:
             item.setBackground(QtGui.QColor(255, 255, 255))
 
@@ -51,7 +50,19 @@ class DlgSetupNetworking(QtGui.QDialog, Ui_DlgSetupNetworking):
 
     def accept(self):
         if self.validate():
+            clients = []
+            for i in range(self.tbl_clients.rowCount()):
+                ip = self.tbl_clients.item(i, 0).text()
+                port = int(self.tbl_clients.item(i, 1).text())
+                enabled = (self.tbl_clients.cellWidget(i, 2).checkState() == QtCore.Qt.Checked)
+                client = {"ip": ip, "port": port, "enabled": enabled}
+                if client not in clients:
+                    clients.append(client)
+            self.app.settings['networking']['clients'] = clients
+
             QtGui.QDialog.accept(self)
+        else:
+            QtGui.QMessageBox(QtGui.QMessageBox.Warning, "FireMix", "Please correct all highlighted entries!").exec_()
 
     def populate_clients_table(self):
         clients = self.app.settings['networking']['clients']
@@ -68,7 +79,11 @@ class DlgSetupNetworking(QtGui.QDialog, Ui_DlgSetupNetworking):
         self.tbl_clients.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
 
     def add_client_row(self):
-        pass
+        row = self.tbl_clients.rowCount()
+        self.tbl_clients.insertRow(row)
+        self.tbl_clients.setItem(row, 0, QtGui.QTableWidgetItem(""))
+        self.tbl_clients.setItem(row, 1, QtGui.QTableWidgetItem("3020"))
+        self.tbl_clients.setCellWidget(row, 2, QtGui.QCheckBox())
 
     def del_client_row(self):
-        pass
+        self.tbl_clients.removeRow(self.tbl_clients.currentRow())
