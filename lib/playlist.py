@@ -67,8 +67,10 @@ class Playlist(JSONDict):
         """
         Advances the playlist
         """
+        #TODO: support transitions other than cut
         self._active_index = (self._active_index + direction) % len(self._playlist)
         self._next_index = (self._next_index + direction) % len(self._playlist)
+        self._playlist[self._active_index]._reset()
         self._app.playlist_changed.emit()
 
     def __len__(self):
@@ -105,9 +107,12 @@ class Playlist(JSONDict):
         self._app.playlist_changed.emit()
 
     def set_active_preset_by_name(self, classname):
+        #TODO: Support transitions other than jump cut
         for i, preset in enumerate(self._playlist):
             if preset.get_name() == classname:
-                self.set_active_index(i)
+                preset._reset()
+                self._active_index = i
+                self._app.mixer._elapsed = 0.0  # Hack
 
     def reorder_playlist_by_names(self, names):
         """

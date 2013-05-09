@@ -147,6 +147,7 @@ class Mixer:
         #TODO: Fix this after the Playlist merge
         self._in_transition = True
         self._start_transition = True
+        self._elapsed = 0.0
 
     def tick(self):
         self._num_frames += 1
