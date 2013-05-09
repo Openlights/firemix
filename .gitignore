@@ -2,3 +2,4 @@
 .idea
 
 /data/settings.json
+ui/ui_*.py
