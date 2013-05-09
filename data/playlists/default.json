@@ -29,18 +29,18 @@
         }, 
         {
             "classname": "RadialRainbow", 
-            "name": "RadialRainbow-1", 
-            "params": {
-                "speed": 0.4, 
-                "width": 0.25
-            }
-        }, 
-        {
-            "classname": "RadialRainbow", 
             "name": "RadialRainbow-2", 
             "params": {
                 "speed": 1.0, 
                 "width": 3.0
+            }
+        }, 
+        {
+            "classname": "RadialRainbow", 
+            "name": "RadialRainbow-11", 
+            "params": {
+                "speed": 0.4, 
+                "width": 0.25
             }
         }
     ]

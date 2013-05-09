@@ -153,3 +153,9 @@ class Playlist(JSONDict):
     def clear_playlist(self):
         self._playlist = []
 
+    def rename_preset(self, old_name, new_name):
+        pl = [i for i, p in enumerate(self._playlist) if p.get_name() == old_name]
+        if len(pl) != 1:
+            return False
+        self._playlist[pl[0]].set_name(new_name)
+

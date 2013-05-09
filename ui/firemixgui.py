@@ -31,7 +31,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         # Preset list
         self.lst_presets.itemDoubleClicked.connect(self.on_preset_double_clicked)
+        self.lst_presets.itemChanged.connect(self.on_preset_name_changed)
         self.lst_presets.layout_changed.connect(self.on_playlist_reorder)
+        self.lst_presets.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.lst_presets.customContextMenuRequested.connect(self.preset_list_context_menu)
+        self.lst_presets.setEditTriggers(QtGui.QAbstractItemView.EditKeyPressed | QtGui.QAbstractItemView.SelectedClicked)
 
         # Settings
         self.edit_preset_duration.valueChanged.connect(self.on_preset_duration_changed)
@@ -124,6 +128,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         current = self._app.playlist.get_active_preset()
         for preset in presets:
             item = QtGui.QListWidgetItem(preset.get_name())
+            #TODO: Enable renaming in the list when we have a real delegate
+            #item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
 
             if preset == current:
                 item.setForeground(QtGui.QColor(0, 100, 200))
@@ -142,6 +148,26 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         pass
 
     def on_file_reload_presets(self):
+        pass
+
+    def preset_list_context_menu(self, point):
+        ctx = QtGui.QMenu("test")
+        action_rename = QtGui.QAction("Rename" ,self)
+        action_rename.triggered.connect(self.start_rename)
+        ctx.addAction(action_rename)
+        ctx.exec_(self.lst_presets.pos() + self.mapToParent(point))
+
+    def start_rename(self):
+        #TODO: Enable renaming in the list when we have a real delegate
+        #self.lst_presets.editItem(self.lst_presets.currentItem())
+        old_name = self.lst_presets.currentItem().text()
+        new_name, ok = QtGui.QInputDialog.getText(self, 'Rename Preset', 'New name', text=old_name)
+        if ok and new_name:
+            if not self._app.playlist.preset_name_exists(new_name):
+                self._app.playlist.rename_preset(old_name, new_name)
+                self.update_playlist()
+
+    def on_preset_name_changed(self, item):
         pass
 
     def on_preset_double_clicked(self, preset_item):
