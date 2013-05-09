@@ -111,3 +111,42 @@ class Playlist(JSONDict):
             new.append(current[name])
 
         self._playlist = new
+
+    def get_available_presets(self):
+        return self._preset_classes.keys()
+
+    def preset_name_exists(self, name):
+        return True if name in [p.get_name() for p in self._playlist] else False
+
+    def add_preset(self, classname, name, idx=None):
+        """
+        Adds a new preset instance to the playlist.  Classname must be a currently loaded
+        preset class.  Name must be unique.  If idx is specified, the preset will be inserted
+        at the position idx, else it will be appended to the end of the playlist.
+        """
+        if classname not in self._preset_classes:
+            log.error("Tried to add nonexistent preset class %s" % classname)
+            return False
+
+        if self.preset_name_exists(name):
+            return False
+
+        inst = self._preset_classes[classname](self._app.mixer, name=name)
+
+        if idx is not None:
+            self._playlist.insert(idx, inst)
+        else:
+            self._playlist.append(inst)
+        return True
+
+    def remove_preset(self, name):
+        """
+        Removes an existing instance from the playlist
+        """
+        if not self.preset_name_exists(name):
+            return False
+
+        pl = [p for p in self._playlist if p.get_name() == name]
+        assert len(pl) == 1
+        self._playlist.remove(pl[0])
+

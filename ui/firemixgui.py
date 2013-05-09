@@ -1,9 +1,7 @@
 from PySide import QtGui, QtCore
 
-from lib.parameters import BoolParameter, FloatParameter, IntParameter, RGBParameter
-
 from ui.ui_firemix import Ui_FireMixMain
-
+from ui.dlg_add_preset import DlgAddPreset
 
 class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
@@ -87,10 +85,19 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self._app.playlist.get_active_preset()._reset()
 
     def on_btn_add_preset(self):
-        pass
+        dlg = DlgAddPreset(self)
+        dlg.exec_()
+        if dlg.result() == QtGui.QDialog.Accepted:
+            classname = dlg.cb_preset_type.currentText()
+            name = dlg.edit_preset_name.text()
+            self._app.playlist.add_preset(classname, name)
+            self.update_playlist()
 
     def on_btn_remove_preset(self):
-        pass
+        ci = self.lst_presets.currentItem()
+        if ci is not None:
+            self._app.playlist.remove_preset(ci.text())
+            self.update_playlist()
 
     def on_btn_clone_preset(self):
         pass
