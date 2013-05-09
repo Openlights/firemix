@@ -6,8 +6,6 @@ import numpy as np
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
 from lib.raw_preset import RawPreset
 
-# Hack
-from plugins.dissolve_transition import DissolveTransition
 
 log = logging.getLogger("firemix.core.mixer")
 
@@ -45,7 +43,11 @@ class Mixer:
         self._enable_profiling = self._app.args.profile
         self._paused = False
         self._frozen = False
-        self._transition = DissolveTransition()  # Hack
+
+        # Load transitions
+        tn = self._app.settings.get('mixer')['transition']
+        tl = [c for c in self._app.plugins.get('Transition') if c.__name__ == tn]
+        self._transition = tl[0]()
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")

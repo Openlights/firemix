@@ -4,7 +4,7 @@ import numpy as np
 from lib.transition import Transition
 
 
-class DissolveTransition(Transition):
+class Dissolve(Transition):
     """
     Implements a simple cross dissolve
     """
