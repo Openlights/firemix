@@ -187,6 +187,8 @@ class Mixer:
             if self._in_transition:
                 if self._start_transition:
                     self._start_transition = False
+                    if self._transition:
+                        self._transition.setup()
                     self._playlist.get_next_preset()._reset()
                     self._secondary_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
                 if self._transition_duration > 0.0 and self._transition is not None:

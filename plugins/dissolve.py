@@ -1,6 +1,3 @@
-import numpy as np
-
-
 from lib.transition import Transition
 
 

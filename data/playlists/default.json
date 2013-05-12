@@ -2,46 +2,11 @@
     "file-type": "playlist", 
     "playlist": [
         {
-            "classname": "RadialRainbow", 
-            "name": "RadialRainbow-1", 
+            "classname": "RGBFade", 
+            "name": "RGBFade-1", 
             "params": {
-                "speed": 0.2, 
-                "width": 1.0
+                "speed": 0.2
             }
-        }, 
-        {
-            "classname": "SeparateStrandWithFlash", 
-            "name": "SeparateStrandWithFlash-1", 
-            "params": {
-                "flash-off": 0.8, 
-                "flash-on": 0.2, 
-                "interval": 0.05, 
-                "speed": 0.5
-            }
-        }, 
-        {
-            "classname": "Twinkle", 
-            "name": "Twinkle-1", 
-            "params": {
-                "birth-rate": 0.15, 
-                "fade-down-time": 2.5, 
-                "fade-up-time": 0.25, 
-                "off-color": [
-                    0.0, 
-                    0.0, 
-                    0.0
-                ], 
-                "on-color": [
-                    0.15, 
-                    1.0, 
-                    1.0
-                ]
-            }
-        }, 
-        {
-            "classname": "FixtureStepFade", 
-            "name": "FixtureStepFade-1", 
-            "params": {}
         }, 
         {
             "classname": "Dragons", 
@@ -53,51 +18,11 @@
             }
         }, 
         {
-            "classname": "Fungus", 
-            "name": "Fungus-1", 
+            "classname": "RadialRainbow", 
+            "name": "RadialRainbow-1", 
             "params": {
-                "alive-color": [
-                    0.35, 
-                    1.0, 
-                    1.0
-                ], 
-                "birth-rate": 0.03, 
-                "dead-color": [
-                    0.13, 
-                    0.87, 
-                    0.57
-                ], 
-                "death-time": 1.75, 
-                "fade-out-time": 0.25, 
-                "growth-time": 0.75, 
-                "isolated-life-time": 1.0, 
-                "life-time": 5.0, 
-                "mass-destruction-threshold": 150, 
-                "mass-destruction-time": 10.0, 
-                "pop-limit": 500, 
-                "spread-rate": 0.13
-            }
-        }, 
-        {
-            "classname": "RGBFade", 
-            "name": "RGBFade-1", 
-            "params": {
-                "speed": 0.2
-            }
-        }, 
-        {
-            "classname": "SeparateStrandRGB", 
-            "name": "SeparateStrandRGB-1", 
-            "params": {
-                "interval": 0.05, 
-                "speed": 0.5
-            }
-        }, 
-        {
-            "classname": "RGBFade", 
-            "name": "RGBFade-2", 
-            "params": {
-                "speed": 0.2
+                "speed": 0.2, 
+                "width": 1.0
             }
         }
     ]

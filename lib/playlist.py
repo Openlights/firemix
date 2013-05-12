@@ -177,12 +177,10 @@ class Playlist(JSONDict):
         pl = [(i, p) for i, p in enumerate(self._playlist) if p.get_name() == name]
         assert len(pl) == 1
 
-        if pl[0][0] == self._next_index:
-            self._next_index = (self._next_index + 1) % len(self._playlist)
-        elif pl[0][0] == self._active_index:
-            self._active_index = (self._active_index + 1) % len(self._playlist)
-
         self._playlist.remove(pl[0][1])
+
+        self._next_index = self._next_index % len(self._playlist)
+        self._active_index = self._active_index % len(self._playlist)
 
     def clear_playlist(self):
         self._playlist = []
