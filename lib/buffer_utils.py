@@ -68,6 +68,15 @@ class BufferUtils:
         return (location[0], pixel_offset)
 
     @classmethod
+    def get_fixture_extents(cls, app, strand, fixture):
+        """
+        Returns a tuple of (start, end) containing the buffer pixel addresses on a given fixtures
+        """
+        _, start_offset = cls.get_buffer_address(app, (strand, fixture, 0))
+        num_pixels = app.scene.fixture(strand, fixture).pixels
+        return (start_offset, start_offset + num_pixels)
+
+    @classmethod
     def get_strand_length(cls, app, strand):
         """
         Returns the length of a strand (in pixels)
