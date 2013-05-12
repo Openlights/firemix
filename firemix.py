@@ -37,9 +37,9 @@ if __name__ == "__main__":
 
     log.info("Booting FireMix...")
 
-    if args.profile:
-        log.info("Starting profiler")
-        yappi.start()
+    #if args.profile:
+    #    log.info("Starting profiler")
+    #    yappi.start()
 
     qt_app = QtGui.QApplication(sys.argv)
 
@@ -53,11 +53,11 @@ if __name__ == "__main__":
     qt_app.exec_()
 
     if args.profile:
-        stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)
-        stats = [(s.name, s.ttot) for s in stats.func_stats]
-        print "\n------ PROFILING STATS ------"
-        for s in stats:
-            print "%s\t[%0.3f]" % (s[0], s[1])
+        #stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)
+        #stats = [(s.name, s.ttot) for s in stats.func_stats]
+        #print "\n------ PROFILING STATS ------"
+        #for s in stats:
+        #    print "%s\t[%0.3f]" % (s[0], s[1])
         print   "------ TICK TIME HISTOGRAM ------"
         elapsed = (app.mixer._stop_time - app.mixer._start_time)
         print "%d frames in %0.2f seconds (%0.2f FPS) " %  (app.mixer._num_frames, elapsed, app.mixer._num_frames / elapsed)

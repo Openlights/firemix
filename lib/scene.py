@@ -11,6 +11,7 @@ class Scene:
     def __init__(self, data):
         self._data = data
         self._fixtures = None
+        self._fixture_dict = {}
         self._fixture_hierarchy = None
         self._colliding_fixtures_cache = {}
         self._pixel_neighbors_cache = {}
@@ -47,10 +48,13 @@ class Scene:
         """
         Returns a reference to a given fixture
         """
-        for f in self.fixtures():
-            if f.strand == strand and f.address == address:
-                return f
-        return None
+        fix = self._fixture_dict.get((strand, address), None)
+        if fix is None:
+            for f in self.fixtures():
+                if f.strand == strand and f.address == address:
+                    fix = f
+                    self._fixture_dict[(strand, address)] = f
+        return fix
 
     def fixture_hierarchy(self):
         """
