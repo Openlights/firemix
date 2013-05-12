@@ -41,6 +41,13 @@ class BufferUtils:
         return np.zeros((cls._num_strands, cls._max_fixtures * cls._max_pixels, 3))
 
     @classmethod
+    def get_buffer_size(cls, app):
+        if cls._first_time:
+            cls._num_strands, cls._max_fixtures, cls._max_pixels = app.scene.get_matrix_extents()
+
+        return (cls._num_strands, cls._max_fixtures * cls._max_pixels)
+
+    @classmethod
     def get_buffer_address(cls, app, location):
         """
         Calculates the in-buffer address for a given [s:f:p] address (see above)
