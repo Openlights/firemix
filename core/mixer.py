@@ -90,6 +90,9 @@ class Mixer:
         return self._paused
 
     def set_transition_mode(self, classname):
+        self._in_transition = False
+        self._start_transition = False
+
         if not classname or classname == "Cut":
             self._transition = None
             return True

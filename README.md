@@ -20,7 +20,7 @@ Use the `--playlist` option to specify a playlist name (without extension) to lo
 will look in the `data/playlists` directory for a file called `listname.json`, and will create
 it (as an empty playlist) if it does not exist.
 
-Use the `--profile` option to enable profiling of framerate and function calls.
+Use the `--profile` option to enable profiling of framerate.
 With profiling enabled, a log message will be printed any time a preset takes
 more than 30 ms to render a frame.
 
