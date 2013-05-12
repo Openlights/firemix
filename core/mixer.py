@@ -314,22 +314,25 @@ class Mixer:
         for command in list:
             color = command.get_color()
             if isinstance(command, SetAll):
-                buffer[:,:,:] = color
+                buffer[:,:] = color
 
             elif isinstance(command, SetStrand):
                 strand = command.get_strand()
-                buffer[strand,:,:] = color
+                buffer[strand,:] = color
 
             elif isinstance(command, SetFixture):
                 strand = command.get_strand()
                 address = command.get_address()
-                buffer[strand,address,:] = color
+                _, start = BufferUtils.get_buffer_address(self._app, (strand, address, 0))
+                end = start + self._scene.fixture(strand, address).pixels
+                buffer[strand,start:end] = color
 
             elif isinstance(command, SetPixel):
                 strand = command.get_strand()
                 address = command.get_address()
                 pixel = command.get_pixel()
-                buffer[strand][address][pixel] = color
+                (strand, pixel_offset) = BufferUtils.get_buffer_address(self._app, (strand, address, pixel))
+                buffer[strand][pixel_offset] = color
 
     def get_buffer_shape(self):
         return self._main_buffer.shape
