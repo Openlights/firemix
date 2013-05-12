@@ -8,8 +8,8 @@ class Transition:
     Given two numpy arrays and a progress (0 to 1.0), it produces one output array.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, app):
+        self._app = app
 
     def __repr__(self):
         """

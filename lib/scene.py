@@ -16,6 +16,15 @@ class Scene:
         self._pixel_neighbors_cache = {}
         self._pixel_locations_cache = {}
 
+        # Warmup caches
+        fh = self.fixture_hierarchy()
+        for strand in fh:
+            for fixture in fh[strand]:
+                self.get_colliding_fixtures(strand, fixture)
+                for pixel in range(self.fixture(strand, fixture).pixels):
+                    self.get_pixel_neighbors((strand, fixture, pixel))
+                    self.get_pixel_location((strand, fixture, pixel))
+
     def extents(self):
         """
         Returns the (x, y) extents of the scene.  Useful for determining
@@ -39,7 +48,7 @@ class Scene:
         Returns a reference to a given fixture
         """
         for f in self.fixtures():
-            if f.strand() == strand and f.address() == address:
+            if f.strand == strand and f.address == address:
                 return f
         return None
 
@@ -50,9 +59,9 @@ class Scene:
         if self._fixture_hierarchy is None:
             self._fixture_hierarchy = dict()
             for f in self.fixtures():
-                if not self._fixture_hierarchy.get(f.strand(), None):
-                    self._fixture_hierarchy[f.strand()] = dict()
-                self._fixture_hierarchy[f.strand()][f.address()] = f
+                if not self._fixture_hierarchy.get(f.strand, None):
+                    self._fixture_hierarchy[f.strand] = dict()
+                self._fixture_hierarchy[f.strand][f.address] = f
         return self._fixture_hierarchy
 
     def get_matrix_extents(self):
@@ -68,8 +77,8 @@ class Scene:
             if len(fh[strand]) > fixtures:
                 fixtures = len(fh[strand])
             for fixture in fh[strand]:
-                if fh[strand][fixture].pixels() > pixels:
-                    pixels = fh[strand][fixture].pixels()
+                if fh[strand][fixture].pixels > pixels:
+                    pixels = fh[strand][fixture].pixels
 
         return (strands, fixtures, pixels)
 
@@ -84,9 +93,9 @@ class Scene:
         f = self.fixture(strand, address)
 
         if loc == 'start':
-            center = f.pos1()
+            center = f.pos1
         elif loc == 'end':
-            center = f.pos2()
+            center = f.pos2
         elif loc == 'midpoint':
             center = f.midpoint()
         else:
@@ -100,16 +109,16 @@ class Scene:
             x1, y1 = center
             for tf in self.fixtures():
                 # Match start point
-                x2, y2 = tf.pos1()
+                x2, y2 = tf.pos1
                 if pow(x2 - x1, 2) + pow(y2 - y1, 2) <= r2:
                     #print tf, "collides with", strand, address
-                    colliding.append((tf.strand(), tf.address(), 0))
+                    colliding.append((tf.strand, tf.address, 0))
                     continue
                     # Match end point
-                x2, y2 = tf.pos2()
+                x2, y2 = tf.pos2
                 if pow(x2 - x1, 2) + pow(y2 - y1, 2) <= r2:
                     #print tf, "collides with", strand, address, "backwards"
-                    colliding.append((tf.strand(), tf.address(), tf.pixels() - 1))
+                    colliding.append((tf.strand, tf.address, tf.pixels - 1))
 
             self._colliding_fixtures_cache[(strand, address, loc)] = colliding
 
@@ -129,7 +138,7 @@ class Scene:
             f = self.fixture(strand, address)
             neighbors = [(strand, address, p) for p in f.pixel_neighbors(pixel)]
 
-            if (pixel == 0) or (pixel == f.pixels() - 1):
+            if (pixel == 0) or (pixel == f.pixels - 1):
                 # If this pixel is on the end of a fixture, consider the neighboring fixtures
                 loc = 'end'
                 if pixel == 0:
@@ -152,13 +161,13 @@ class Scene:
             f = self.fixture(strand, address)
 
             if pixel == 0:
-                loc = f.pos1()
-            elif pixel == (f.pixels() - 1):
-                loc = f.pos2()
+                loc = f.pos1
+            elif pixel == (f.pixels - 1):
+                loc = f.pos2
             else:
-                x1, y1 = f.pos1()
-                x2, y2 = f.pos2()
-                scale = float(pixel) / f.pixels()
+                x1, y1 = f.pos1
+                x2, y2 = f.pos2
+                scale = float(pixel) / f.pixels
                 relx, rely = ((x2 - x1) * scale, (y2 - y1) * scale)
                 loc = (x1 + relx, y1 + rely)
 

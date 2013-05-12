@@ -3,7 +3,7 @@ import time
 import logging
 
 from lib.preset import Preset
-from lib.commands import SetPixel
+from lib.buffer_utils import BufferUtils
 
 log = logging.getLogger("firemix.lib.per_pixel_preset")
 
@@ -31,7 +31,7 @@ class RawPreset(Preset):
         Sets up the pixel array
         """
         (self._max_strand, self._max_fixture, self._max_pixel) = self.scene().get_matrix_extents()
-        self._pixel_buffer = np.zeros((self._max_strand, self._max_fixture, self._max_pixel, 3), dtype=np.float32)
+        self._pixel_buffer = BufferUtils.create_buffer(self._mixer._app)
 
     def draw(self, dt):
         """
@@ -46,6 +46,13 @@ class RawPreset(Preset):
         address is a tuple of (strand, fixture, pixel)
         """
         return self._pixel_buffer[address]
+
+    def setp(self, location, color):
+        """
+        Sets a pixel to a color
+        """
+        x, y = BufferUtils.get_buffer_address(self._mixer._app, location)
+        self._pixel_buffer[x][y] = color
 
     def get_buffer(self):
         """

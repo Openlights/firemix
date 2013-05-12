@@ -31,6 +31,7 @@ class Dragons(RawPreset):
             self.growing = True
             self.alive = False
             self.moving = False
+
         def __repr__(self):
             ds = 'Fwd' if self.dir == 1 else 'Rev'
             return "Dragon (%d, %d, %d) %s: %0.2f" % (self.loc[0], self.loc[1], self.loc[2], ds, self.lifetime)
@@ -41,14 +42,14 @@ class Dragons(RawPreset):
     _tail_color_rgb = float_to_uint8(colorsys.hsv_to_rgb(*_tail_color))
     _dead_color_rgb = float_to_uint8(colorsys.hsv_to_rgb(*_dead_color))
     _pop = 0
-    _growth_fader = ColorFade('hsv', [(0., 0., 0.), _alive_color])
-    _tail_fader = ColorFade('hsv', [_alive_color, _tail_color, (0., 0., 0.)])
 
     def setup(self):
         random.seed()
         self.add_parameter(FloatParameter('birth-rate', 0.09))
         self.add_parameter(FloatParameter('tail-persist', 0.55))
         self.add_parameter(IntParameter('pop-limit', 5))
+        self._growth_fader = ColorFade('hsv', [(0., 0., 0.), self._alive_color], tick_rate=self._mixer.get_tick_rate())
+        self._tail_fader = ColorFade('hsv', [self._alive_color, self._tail_color, (0., 0., 0.)], tick_rate=self._mixer.get_tick_rate())
 
     def draw(self, dt):
 
@@ -77,15 +78,15 @@ class Dragons(RawPreset):
                     dragon.alive = True
                     dragon.lifetime = dt
 
-                self._pixel_buffer[dragon.loc] = color
+                self.setp(dragon.loc, color)
 
             # Alive - can move or die
             if dragon.alive:
                 s, f, p = dragon.loc
-                self._pixel_buffer[dragon.loc] = (0, 0, 0)
+                self.setp(dragon.loc, (0, 0, 0))
 
                 # At a vertex: optionally spawn new dragons
-                if dragon.moving and  (p == 0 or p == (self.scene().fixture(s, f).pixels() - 1)):
+                if dragon.moving and  (p == 0 or p == (self.scene().fixture(s, f).pixels - 1)):
                     if (self._pop < self.parameter('pop-limit').get()):
                         neighbors = self.scene().get_pixel_neighbors(dragon.loc)
                         random.shuffle(neighbors)
@@ -126,24 +127,24 @@ class Dragons(RawPreset):
                         assert(False)
                     dragon.loc = new_address
                     dragon.moving = True
-                    self._pixel_buffer[new_address] = self._alive_color_rgb
+                    self.setp(new_address, self._alive_color_rgb)
 
                 # Kill dragons that run into each other
                 if dragon in self._dragons:
                     colliding = [d for d in self._dragons if d != dragon and d.loc == dragon.loc]
                     if len(colliding) > 0:
                         #print "collision between", dragon, "and", colliding[0]
-                        self._pixel_buffer[dragon.loc] = (0, 0, 0)
+                        self.setp(dragon.loc, (0, 0, 0))
                         self._dragons.remove(dragon)
                         self._dragons.remove(colliding[0])
-                        self._pixel_buffer[dragon.loc] = (0, 0, 0)
+                        self.setp(dragon.loc, (0, 0, 0))
                         self._pop -= 2
 
         # Draw tails
         for loc, time in self._tails:
             if (dt - time) > self.parameter('tail-persist').get():
                 self._tails.remove((loc, time))
-                self._pixel_buffer[loc] = (0, 0, 0)
+                self.setp(loc, (0, 0, 0))
             else:
                 progress = (dt - time) / self.parameter('tail-persist').get()
-                self._pixel_buffer[loc] = self._tail_fader.get_color(progress)
+                self.setp(loc, self._tail_fader.get_color(progress))

@@ -133,7 +133,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.edit_transition_duration.setValue(self._mixer.get_transition_duration())
         # Populate transition list
         current_transition = self._app.settings.get('mixer')['transition']
-        transition_list = [str(t()) for t in self._app.plugins.get('Transition')]
+        transition_list = [str(t(None)) for t in self._app.plugins.get('Transition')]
         transition_list.insert(0, "Cut")
         self.cb_transition_mode.clear()
         self.cb_transition_mode.insertItems(0, transition_list)
@@ -216,12 +216,14 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         parameters = self._app.playlist.get_active_preset().get_parameters()
         self.tbl_preset_parameters.setColumnCount(2)
         self.tbl_preset_parameters.setRowCount(len(parameters))
-        for i, parameter in enumerate(parameters):
-            key_item = QtGui.QTableWidgetItem(str(parameter))
+        i = 0
+        for name, parameter in parameters.iteritems():
+            key_item = QtGui.QTableWidgetItem(name)
             key_item.setFlags(QtCore.Qt.ItemIsEnabled)
             value_item = QtGui.QTableWidgetItem(str(parameter.get()))
             self.tbl_preset_parameters.setItem(i, 0, key_item)
             self.tbl_preset_parameters.setItem(i, 1, value_item)
+            i += 1
 
         self.tbl_preset_parameters.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
         self.tbl_preset_parameters.horizontalHeader().resizeSection(1, 125)

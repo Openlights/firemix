@@ -16,7 +16,7 @@ class Preset:
         self._commands = []
         self._tickers = []
         self._ticks = 0
-        self._parameters = []
+        self._parameters = {}
         self._instance_name = name
         self.setup()
 
@@ -66,28 +66,24 @@ class Preset:
         Adds a parameter to the preset (see ./lib/parameters.py)
         """
         parameter.set_parent(self)
-        self._parameters.append(parameter)
+        self._parameters[str(parameter)] = parameter
 
     def get_parameters(self):
         return self._parameters
 
     def parameter(self, key):
-        p = None
-        for param in self._parameters:
-            if str(param) == key:
-                p = param
-        return p
+        return self._parameters.get(key, None)
 
     def set_parameter(self, key, value):
         """
         Attempts to change the value of a parameter. Returns False if the parameter does not
         exist or the new value is invalid.
         """
-        params = [p for p in self._parameters if str(p) == key]
-        if len(params) != 1:
+        try:
+            self._parameters[key].set(value)
+            return True
+        except KeyError:
             return False
-        param = params[0]
-        return param.set(value)
 
     def add_ticker(self, ticker, priority=0):
         """

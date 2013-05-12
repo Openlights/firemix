@@ -5,6 +5,7 @@ import numpy as np
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
 from lib.raw_preset import RawPreset
+from lib.buffer_utils import BufferUtils
 
 
 log = logging.getLogger("firemix.core.mixer")
@@ -45,12 +46,7 @@ class Mixer:
         self._frozen = False
 
         # Load transitions
-        tn = self._app.settings.get('mixer')['transition']
-        if tn == "Cut":
-            self._transition = None
-        else:
-            tl = [c for c in self._app.plugins.get('Transition') if c.__name__ == tn]
-            self._transition = tl[0]()
+        self.set_transition_mode(self._app.settings.get('mixer')['transition'])
 
         if not self._scene:
             log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
@@ -63,11 +59,15 @@ class Mixer:
                 self._strand_keys.append(strand)
 
             (maxs, maxf, maxp) = self._scene.get_matrix_extents()
-            log.info("Loaded scene with %d strands, will create array of %d fixtures by %d pixels." % (maxs, maxf, maxp))
-            self._main_buffer = np.zeros((maxs, maxf, maxp, 3))
-            self._secondary_buffer = np.zeros((maxs, maxf, maxp, 3))
+
+            self._main_buffer = BufferUtils.create_buffer(self._app)
+            self._secondary_buffer = BufferUtils.create_buffer(self._app)
             self._max_fixtures = maxf
             self._max_pixels = maxp
+
+            log.info("Warming up BufferUtils cache...")
+            BufferUtils.warmup(self._app)
+            log.info("Completed BufferUtils cache warmup")
 
     def run(self):
         if not self._running:
@@ -94,9 +94,9 @@ class Mixer:
             self._transition = None
             return True
 
-        tl = [c for c in self._app.plugins.get('Transition') if c.__name__ == classname]
+        tl = [c for c in self._app.plugins.get('Transition') if str(c(None)) == classname]
         if len(tl) == 1:
-            self._transition = tl[0]()
+            self._transition = tl[0](self._app)
             return True
         else:
             log.error("Transition class %s is not loaded!" % classname)
@@ -190,7 +190,7 @@ class Mixer:
                     if self._transition:
                         self._transition.setup()
                     self._playlist.get_next_preset()._reset()
-                    self._secondary_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+                    self._secondary_buffer = BufferUtils.create_buffer(self._app)
                 if self._transition_duration > 0.0 and self._transition is not None:
                     transition_progress = self._elapsed / self._transition_duration
                 else:
@@ -284,18 +284,23 @@ class Mixer:
         """
         Returns an optimized list of strand data, in fixture order, using the scene map
         """
-        len_strand = sum([fix.pixels() for fix in self._scene.fixtures() if fix.strand() == strand_id])
+        len_strand = sum([fix.pixels for fix in self._scene.fixtures() if fix.strand == strand_id])
         data = self._main_buffer[strand_key].astype(int).tolist()
         data_flat = [item for sublist in data for item in sublist]
-        data_flat = [item for sublist in data_flat for item in sublist]
         return data_flat[0:3 * len_strand]
+
+    def create_buffers(self):
+        """
+        Pixel buffers are 3D numpy arrays.  The axes are strand, pixel, and color.
+        The "y" axis (pixel) is an expanded pixel address
+        """
 
     def reset_output_buffer(self):
         """
         Clears the output buffer
         """
-        self._main_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
-        self._secondary_buffer = np.zeros((len(self._strand_keys), self._max_fixtures, self._max_pixels, 3))
+        self._main_buffer = BufferUtils.create_buffer(self._app)
+        self._secondary_buffer = BufferUtils.create_buffer(self._app)
 
     def render_command_list(self, list, buffer):
         """
@@ -325,3 +330,6 @@ class Mixer:
                 address = command.get_address()
                 pixel = command.get_pixel()
                 buffer[strand][address][pixel] = color
+
+    def get_buffer_shape(self):
+        return self._main_buffer.shape

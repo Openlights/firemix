@@ -55,8 +55,8 @@ class Playlist(JSONDict):
             playlist_entry = {'classname': preset.__class__.__name__,
                               'name': preset.get_name()}
             param_dict = {}
-            for param in preset.get_parameters():
-                param_dict[str(param)] = param.get()
+            for name, param in preset.get_parameters().iteritems():
+                param_dict[name] = param.get()
             playlist_entry['params'] = param_dict
             playlist.append(playlist_entry)
         self.data['playlist'] = playlist

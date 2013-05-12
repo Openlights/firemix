@@ -6,8 +6,8 @@ class Dissolve(Transition):
     Implements a simple cross dissolve
     """
 
-    def __init__(self):
-        Transition.__init__(self)
+    def __init__(self, app):
+        Transition.__init__(self, app)
 
     def __str__(self):
         return "Dissolve"

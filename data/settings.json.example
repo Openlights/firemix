@@ -4,7 +4,7 @@
     "last-scene": "demo", 
     "mixer": {
         "preset-duration": 6.0, 
-        "tick-rate": 32.0, 
+        "tick-rate": 32,
         "transition": "Dissolve", 
         "transition-duration": 2.5
     }, 
