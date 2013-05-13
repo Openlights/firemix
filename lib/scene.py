@@ -25,6 +25,7 @@ class Scene:
                 for pixel in range(self.fixture(strand, fixture).pixels):
                     self.get_pixel_neighbors((strand, fixture, pixel))
                     self.get_pixel_location((strand, fixture, pixel))
+        self.get_fixture_bounding_box()
 
     def extents(self):
         """
@@ -178,3 +179,29 @@ class Scene:
             self._pixel_locations_cache[addr] = loc
 
         return loc
+
+    def get_fixture_bounding_box(self):
+        """
+        Returns the bounding box containing all fixtures in the scene
+        Return value is a tuple of (xmin, ymin, xmax, ymax)
+        """
+        xmin = 999999
+        xmax = -999999
+        ymin = 999999
+        ymax = -999999
+
+        fh = self.fixture_hierarchy()
+        for strand in fh:
+            for fixture in fh[strand]:
+                for pixel in range(self.fixture(strand, fixture).pixels):
+                    x, y = self.get_pixel_location((strand, fixture, pixel))
+                    if x < xmin:
+                        xmin = x
+                    if x > xmax:
+                        xmax = x
+                    if y < ymin:
+                        ymin = y
+                    if y > ymax:
+                        ymax = y
+
+        return (xmin, ymin, xmax, ymax)

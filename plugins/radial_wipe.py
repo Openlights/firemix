@@ -5,34 +5,26 @@ from lib.transition import Transition
 from lib.buffer_utils import BufferUtils
 
 
-class Wipe(Transition):
+class RadialWipe(Transition):
     """
-    Implements a simple wipe
+    Implements a radial wipe (Iris) transition
     """
 
     def __init__(self, app):
         Transition.__init__(self, app)
 
     def __str__(self):
-        return "Wipe"
+        return "Radial Wipe"
 
     def setup(self):
         self.num_strands, self.num_pixels = BufferUtils.get_buffer_size(self._app)
         self.mask = np.tile(False, (self.num_strands, self.num_pixels, 3))
 
-        midpoints = [f.midpoint() for f in self._app.scene.fixtures()]
-        self.min_x = min([mp[0] for mp in midpoints])
-        max_x = max([mp[0] for mp in midpoints])
-        self.min_y = min([mp[1] for mp in midpoints])
-        max_y = max([mp[1] for mp in midpoints])
-        self.span_x = max_x - self.min_x
-        self.span_y = max_y - self.min_y
-
-        angle = np.random.random() * np.pi * 2.0
-        self.wipe_vector = np.zeros((2))
-
-        self.wipe_vector[0] = math.cos(angle)
-        self.wipe_vector[1] = math.sin(angle)
+        self.scene_bb = self._app.scene.get_fixture_bounding_box()
+        self.scene_center = (self.scene_bb[0] + (self.scene_bb[2] - self.scene_bb[0]) / 2, self.scene_bb[1] + (self.scene_bb[3] - self.scene_bb[1]) / 2)
+        dx = self.scene_bb[2] - self.scene_center[0]
+        dy = self.scene_bb[3] - self.scene_center[1]
+        self.radius = math.sqrt(math.pow(dx,2) + math.pow(dy, 2))
 
         self.locations = []
         for f in self._app.scene.fixtures():
@@ -40,12 +32,11 @@ class Wipe(Transition):
                 self.locations.append((f.strand, f.address, p, self._app.scene.get_pixel_location((f.strand, f.address, p))))
 
     def get(self, start, end, progress):
-        """
-        Simple wipe
-        """
 
         for strand, address, pixel, location in self.locations:
-            if location[0] < (self.min_x + (progress * self.span_x)):
+            dy = math.fabs(location[1] - self.scene_center[1])
+            dx = math.fabs(location[0] - self.scene_center[0])
+            if math.sqrt(math.pow(dx,2) + math.pow(dy, 2)) < (self.radius * progress):
                 _, pixel = BufferUtils.get_buffer_address(self._app, (strand, address, pixel))
                 self.mask[strand][pixel][:] = True
 

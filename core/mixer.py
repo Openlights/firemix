@@ -112,11 +112,11 @@ class Mixer:
         return self._frozen
 
     def set_preset_duration(self, duration):
-        if duration > self._transition_duration:
+        if duration >= 0.0:
             self._duration = duration
             return True
         else:
-            log.warn("Duration %f must be longer than the transition duration (%f)" % (duration, self._transition_duration))
+            log.warn("Preset duration must be positive or zero.")
             return False
 
     def get_preset_duration(self):
@@ -220,7 +220,7 @@ class Mixer:
                 if self._net is not None:
                     self._net.write(self._playlist.get_active_preset().get_commands_packed())
 
-            if not self._paused and (self._elapsed >= self._duration) and self._playlist.get_active_preset().can_transition():
+            if not self._paused and (self._elapsed >= self._duration) and self._playlist.get_active_preset().can_transition() and not self._in_transition:
                 if len(self._playlist) > 1:
                     self.start_transition()
                 self._elapsed = 0.0
