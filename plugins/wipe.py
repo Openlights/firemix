@@ -20,13 +20,9 @@ class Wipe(Transition):
         self.num_strands, self.num_pixels = BufferUtils.get_buffer_size(self._app)
         self.mask = np.tile(False, (self.num_strands, self.num_pixels, 3))
 
-        midpoints = [f.midpoint() for f in self._app.scene.fixtures()]
-        self.min_x = min([mp[0] for mp in midpoints])
-        max_x = max([mp[0] for mp in midpoints])
-        self.min_y = min([mp[1] for mp in midpoints])
-        max_y = max([mp[1] for mp in midpoints])
-        self.span_x = max_x - self.min_x
-        self.span_y = max_y - self.min_y
+        bb = self._app.scene.get_fixture_bounding_box()
+        self.scene_center = np.asarray([bb[0] + (bb[2] - bb[0]) / 2, bb[1] + (bb[3] - bb[1]) / 2])
+        self.bb = bb
 
         angle = np.random.random() * np.pi * 2.0
         self.wipe_vector = np.zeros((2))
@@ -37,21 +33,39 @@ class Wipe(Transition):
         self.locations = []
         for f in self._app.scene.fixtures():
             for p in range(f.pixels):
-                self.locations.append((f.strand, f.address, p, self._app.scene.get_pixel_location((f.strand, f.address, p))))
+                self.locations.append((f.strand, f.address, p, np.asarray(self._app.scene.get_pixel_location((f.strand, f.address, p)))))
+
+        # Determine the endpoints of the wipe line
+        self.wipe_start = np.copy(self.scene_center)
+        wipe_end = np.copy(self.scene_center)
+        neg_d = 999999
+        pos_d = -999999
+        for s, a, p, location in self.locations:
+            # Project vector from the center to the pixel with the wipe vector
+            pixel_vector = location - self.scene_center
+            dp = np.dot(pixel_vector, self.wipe_vector)
+            if dp > pos_d:
+                pos_d = dp
+                wipe_end = location
+            elif dp < neg_d:
+                neg_d = dp
+                self.wipe_start = location
+
+        self.wipe_line_vector = np.asarray([wipe_end[0] - self.wipe_start[0], wipe_end[1] - self.wipe_start[1]])
 
     def get(self, start, end, progress):
         """
         Simple wipe
         """
+        # Move the wipe point along the wipe line
+        wipe_point = self.wipe_start + (progress * self.wipe_line_vector)
 
+        # Mask based on the wipe point
         for strand, address, pixel, location in self.locations:
-            if location[0] < (self.min_x + (progress * self.span_x)):
+            if np.dot(location - wipe_point, self.wipe_vector) < 0:
                 _, pixel = BufferUtils.get_buffer_address(self._app, (strand, address, pixel))
                 self.mask[strand][pixel][:] = True
 
         start[self.mask] = 0.0
         end[np.invert(self.mask)] = 0.0
         return start + end
-
-    def _is_point_inside_wipe(self, point, progress):
-        return np.dot((point - self.wipe_point), self.wipe_vector) >= 0
