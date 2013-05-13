@@ -4,7 +4,7 @@ from lib.transition import Transition
 from lib.buffer_utils import BufferUtils
 
 
-class RandomFixtures(Transition):
+class FixtureStep(Transition):
     """
     """
 
@@ -12,7 +12,7 @@ class RandomFixtures(Transition):
         Transition.__init__(self, app)
 
     def __str__(self):
-        return "Random Fixtures"
+        return "Fixture Step"
 
     def setup(self):
         x, y = BufferUtils.get_buffer_size(self._app)
