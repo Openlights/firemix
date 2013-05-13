@@ -135,6 +135,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         current_transition = self._app.settings.get('mixer')['transition']
         transition_list = [str(t(None)) for t in self._app.plugins.get('Transition')]
         transition_list.insert(0, "Cut")
+        transition_list.insert(1, "Random")
         self.cb_transition_mode.clear()
         self.cb_transition_mode.insertItems(0, transition_list)
         self.cb_transition_mode.setCurrentIndex(self.cb_transition_mode.findText(current_transition))

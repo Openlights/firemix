@@ -1,6 +1,7 @@
 import logging
 import threading
 import time
+import random
 import numpy as np
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
@@ -44,6 +45,7 @@ class Mixer:
         self._enable_profiling = self._app.args.profile
         self._paused = False
         self._frozen = False
+        self._random_transition = False
 
         # Load transitions
         self.set_transition_mode(self._app.settings.get('mixer')['transition'])
@@ -89,21 +91,39 @@ class Mixer:
     def is_paused(self):
         return self._paused
 
-    def set_transition_mode(self, classname):
+    def set_transition_mode(self, name):
         self._in_transition = False
         self._start_transition = False
 
-        if not classname or classname == "Cut":
+        if not name or name == "Cut":
             self._transition = None
+            self._random_transition = False
             return True
 
-        tl = [c for c in self._app.plugins.get('Transition') if str(c(None)) == classname]
+        if name == "Random":
+            self._random_transition = True
+            self.build_random_transition_list()
+            self.get_next_transition()
+            return True
+        else:
+            self._random_transition = False
+
+        tl = [c for c in self._app.plugins.get('Transition') if str(c(None)) == name]
         if len(tl) == 1:
             self._transition = tl[0](self._app)
             return True
         else:
-            log.error("Transition class %s is not loaded!" % classname)
+            log.error("Transition %s is not loaded!" % name)
             return False
+
+    def build_random_transition_list(self):
+        self._transition_list = [c for c in self._app.plugins.get('Transition')]
+        random.shuffle(self._transition_list)
+
+    def get_next_transition(self):
+        if len(self._transition_list) == 0:
+            self.build_random_transition_list()
+        self._transition = self._transition_list.pop()(self._app)
 
     def freeze(self, freeze=True):
         self._frozen = freeze
@@ -190,6 +210,8 @@ class Mixer:
             if self._in_transition:
                 if self._start_transition:
                     self._start_transition = False
+                    if self._random_transition:
+                        self.get_next_transition()
                     if self._transition:
                         self._transition.setup()
                     self._playlist.get_next_preset()._reset()

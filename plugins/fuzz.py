@@ -4,7 +4,7 @@ from lib.transition import Transition
 from lib.buffer_utils import BufferUtils
 
 
-class RandomStatic(Transition):
+class Fuzz(Transition):
     """
     """
 
@@ -12,7 +12,7 @@ class RandomStatic(Transition):
         Transition.__init__(self, app)
 
     def __str__(self):
-        return "Random Static"
+        return "Fuzz"
 
     def setup(self):
         x, y = BufferUtils.get_buffer_size(self._app)
