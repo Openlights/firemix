@@ -1,7 +1,10 @@
 import unittest
+import math
+import logging
 
 from lib.fixture import Fixture
 
+log = logging.getLogger("firemix.lib.scene")
 
 class Scene:
     """
@@ -16,16 +19,24 @@ class Scene:
         self._colliding_fixtures_cache = {}
         self._pixel_neighbors_cache = {}
         self._pixel_locations_cache = {}
+        self._pixel_distance_cache = {}
+        self._intersection_points = None
+        self._all_pixels = None
 
-        # Warmup caches
+        log.info("Warming up scene caches...")
         fh = self.fixture_hierarchy()
         for strand in fh:
             for fixture in fh[strand]:
                 self.get_colliding_fixtures(strand, fixture)
                 for pixel in range(self.fixture(strand, fixture).pixels):
-                    self.get_pixel_neighbors((strand, fixture, pixel))
+                    neighbors = self.get_pixel_neighbors((strand, fixture, pixel))
                     self.get_pixel_location((strand, fixture, pixel))
+                    for neighbor in neighbors:
+                        self.get_pixel_distance((strand, fixture, pixel), neighbor)
         self.get_fixture_bounding_box()
+        self.get_intersection_points()
+        self.get_all_pixels()
+        log.info("Done")
 
     def extents(self):
         """
@@ -180,6 +191,35 @@ class Scene:
 
         return loc
 
+    def get_pixel_distance(self, first, second):
+        """
+        Calculates the distance (in scene coordinate units) between two pixels
+        """
+        dist = self._pixel_distance_cache.get((first, second), None)
+        if dist is None:
+            first_loc = self.get_pixel_location(first)
+            second_loc = self.get_pixel_location(second)
+            dist = self.get_point_distance(first_loc, second_loc)
+            self._pixel_distance_cache[(first, second)] = dist
+            self._pixel_distance_cache[(second, first)] = dist
+        return dist
+
+    def get_point_distance(self, first, second):
+        return math.fabs(math.sqrt(math.pow(second[0] - first[0], 2) + math.pow(second[1] - first[1], 2)))
+
+    def get_all_pixels(self):
+        """
+        Returns all the pixel addresses in the scene
+        """
+        if self._all_pixels is None:
+            addresses = []
+            for f in self.fixtures():
+                pixels = range(f.pixels)
+                for pixel in pixels:
+                    addresses.append((f.strand, f.address, pixel))
+            self._all_pixels = addresses
+        return self._all_pixels
+
     def get_fixture_bounding_box(self):
         """
         Returns the bounding box containing all fixtures in the scene
@@ -205,3 +245,46 @@ class Scene:
                         ymax = y
 
         return (xmin, ymin, xmax, ymax)
+
+    def get_intersection_points(self, threshold=50):
+        """
+        Returns a list of points in scene coordinates that represent the average location of
+        each intersection of two or more fixture endpoints.
+
+        For each fixture endpoint, all other endpoints are compared to see if they fall within a certain distance
+        of the given endpoint.  This loop generates a list of groups.  Then, the average location of each
+        group is calculated and returned.
+        """
+        if self._intersection_points is None:
+
+            endpoints = []
+            for f in self.fixtures():
+                endpoints.append(f.pos1)
+                endpoints.append(f.pos2)
+
+            groups = []
+            while len(endpoints) > 0:
+                endpoint = endpoints.pop()
+                group = [endpoint]
+                to_remove = []
+                for other in endpoints:
+                    dx, dy = (other[0] - endpoint[0], other[1] - endpoint[1])
+                    dist = math.fabs(math.sqrt(math.pow(dx, 2) + math.pow(dy, 2)))
+                    if (dist < threshold):
+                        group.append(other)
+                        to_remove.append(other)
+                endpoints = [e for e in endpoints if e not in to_remove]
+                groups.append(group)
+
+            centroids = []
+            for group in groups:
+                num_points = len(group)
+                tx = 0
+                ty = 0
+                for point in group:
+                    tx += point[0]
+                    ty += point[1]
+                centroids.append((tx / num_points, ty / num_points))
+            self._intersection_points = centroids
+
+        return self._intersection_points
