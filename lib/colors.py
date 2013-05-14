@@ -15,3 +15,6 @@ def uint8_to_float(uint8_color):
 
 def rgb_uint8_to_hsv_float(rgb_color):
     return colorsys.rgb_to_hsv(*uint8_to_float(rgb_color))
+
+def hsv_float_to_rgb_uint8(hsv_color):
+    return float_to_uint8(colorsys.hsv_to_rgb(*hsv_color))
