@@ -1,4 +1,5 @@
 import random
+import math
 
 from lib.raw_preset import RawPreset
 from lib.colors import hsv_float_to_rgb_uint8
@@ -25,6 +26,8 @@ class NoiseGradient(RawPreset):
         self.pixel_weights = {}
         self.pixel_hues = {}
 
+        self.delta = 0.01
+
     def parameter_changed(self, parameter):
         pass
 
@@ -34,10 +37,12 @@ class NoiseGradient(RawPreset):
 
     def draw(self, dt):
         for pixel in self.pixels:
-            # 32 ms/frame
-            colors, weights = zip(*[(self.colors[v], w) for v, w in self.pixel_weights[pixel]])
-            color = self._weighted_average_color(colors, weights)
+            colors, weights = zip(*[(self.hues[v], w) for v, w in self.pixel_weights[pixel]])
+            color = hsv_float_to_rgb_uint8((self._weighted_average(colors, weights), 1.0, 1.0))
             self.setp(pixel, color)
+
+        for vertex in self.hues:
+            self.hues[vertex] = math.fmod(self.hues[vertex] + self.delta, 1.0)
 
     def _create_gradient(self, relax=5.0, threshold=250.0):
         # Pick a random hue at each vertex
@@ -65,3 +70,10 @@ class NoiseGradient(RawPreset):
         if d == 0:
             return 0.0
         return tuple([int(float(x) / d) for x in n])
+
+    def _weighted_average(self, data, weights):
+        n = sum([x * w for x, w in zip(data, weights)])
+        d = sum(weights)
+        if d == 0:
+            return 0.0
+        return float(n) / d
