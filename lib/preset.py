@@ -71,6 +71,9 @@ class Preset:
     def get_parameters(self):
         return self._parameters
 
+    def clear_parameters(self):
+        self._parameters = []
+
     def parameter(self, key):
         return self._parameters.get(key, None)
 

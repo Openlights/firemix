@@ -1,4 +1,5 @@
 import os
+import gc
 import logging
 
 from lib.json_dict import JSONDict
@@ -34,7 +35,10 @@ class Playlist(JSONDict):
 
         for entry in self._playlist_data:
             if entry['classname'] in self._preset_classes:
+
                 inst = self._preset_classes[entry['classname']](self._app.mixer, name=entry['name'])
+                inst._reset()
+
                 for _, key in enumerate(entry.get('params', {})):
                     try:
                         inst.parameter(key).set(entry['params'][key])
@@ -48,6 +52,21 @@ class Playlist(JSONDict):
         self._next_index = 0 if len(self._playlist) == 0 else 1 % len(self._playlist)
 
         return self._playlist
+
+    def reload_presets(self):
+        """Attempts to reload all preset classes in the playlist"""
+        old_active = self._active_index
+        old_next = self._next_index
+        self._preset_classes = self._loader.reload()
+        while len(self._playlist) > 0:
+            inst = self._playlist.pop(0)
+            inst.clear_parameters()
+            del inst
+
+        gc.collect()
+        self.generate_playlist()
+        self._active_index = old_active % len(self._playlist)
+        self._next_index = old_next % len(self._playlist)
 
     def save(self):
         log.info("Saving playlist")
@@ -218,4 +237,3 @@ class Playlist(JSONDict):
             i += 1
             name = classname + "-" + str(i)
         return name
-

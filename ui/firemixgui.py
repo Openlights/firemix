@@ -166,7 +166,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         pass
 
     def on_file_reload_presets(self):
-        pass
+        self._app.mixer.freeze(True)
+        self._app.playlist.reload_presets()
+        self.on_playlist_changed()
+        self._app.mixer.freeze(False)
 
     def preset_list_context_menu(self, point):
         ctx = QtGui.QMenu("test")

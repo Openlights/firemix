@@ -28,12 +28,23 @@ class PresetLoader:
             if ext == ".py":
                 module = __import__("presets." + module_name, fromlist=['dummy'])
                 self._modules.append(module)
-                for name, obj in inspect.getmembers(module, inspect.isclass):
-                    if issubclass(obj, Preset) and (name is not "Preset") and (name is not "RawPreset"):
-                        log.info("Loaded %s" % obj.__name__)
-                        self._presets.append(obj)
+                self._load_presets_from_modules(module)
         log.info("Loaded %d presets." % len(self._presets))
         return dict([(i.__name__, i) for i in self._presets])
+
+    def reload(self):
+        """Reloads all preset modules"""
+        self._presets = []
+        for module in self._modules:
+            reload(module)
+            self._load_presets_from_modules(module)
+        return dict([(i.__name__, i) for i in self._presets])
+
+    def _load_presets_from_modules(self, module):
+        for name, obj in inspect.getmembers(module, inspect.isclass):
+            if issubclass(obj, Preset) and (name is not "Preset") and (name is not "RawPreset"):
+                log.info("Loaded %s" % obj.__name__)
+                self._presets.append(obj)
 
 
 

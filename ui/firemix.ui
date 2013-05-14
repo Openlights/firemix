@@ -388,7 +388,7 @@
      <x>0</x>
      <y>0</y>
      <width>751</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -423,7 +423,7 @@
   </action>
   <action name="action_file_reload_presets">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Reload Presets</string>
