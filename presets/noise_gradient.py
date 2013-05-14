@@ -36,3 +36,5 @@ class NoiseGradient(RawPreset):
     def _create_gradient(self):
         for v in self._vertices:
             self._hues[v] = random.random()
+
+        # Todo: Need to precalculate a list of (weight, vertex) for each pixel!
