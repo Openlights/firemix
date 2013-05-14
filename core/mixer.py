@@ -167,8 +167,9 @@ class Mixer:
             self._tick_timer = threading.Timer(delay, self.on_tick_timer)
             self._tick_timer.start()
 
-    def set_constant_preset(self, preset_name):
-        self._playlist.set_active_preset_by_name(preset_name)
+    def set_constant_preset(self, classname):
+        self._app.playlist.clear_playlist()
+        self._app.playlist.add_preset(classname, classname)
         self._paused = True
 
     def set_playlist(self, playlist):

@@ -36,7 +36,10 @@ class Playlist(JSONDict):
             if entry['classname'] in self._preset_classes:
                 inst = self._preset_classes[entry['classname']](self._app.mixer, name=entry['name'])
                 for _, key in enumerate(entry.get('params', {})):
-                    inst.parameter(key).set(entry['params'][key])
+                    try:
+                        inst.parameter(key).set(entry['params'][key])
+                    except AttributeError:
+                        log.warn("Parameter %s called out in playlist but not found in plugin.  Perhaps it was renamed?" % key)
                 self._playlist.append(inst)
             else:
                 self._playlist_data.remove(entry)
