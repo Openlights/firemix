@@ -22,6 +22,7 @@ class Scene:
         self._pixel_distance_cache = {}
         self._intersection_points = None
         self._all_pixels = None
+        self._all_pixel_locations = None
 
         log.info("Warming up scene caches...")
         fh = self.fixture_hierarchy()
@@ -36,6 +37,7 @@ class Scene:
         self.get_fixture_bounding_box()
         self.get_intersection_points()
         self.get_all_pixels()
+        self.get_all_pixel_locations()
         log.info("Done")
 
     def extents(self):
@@ -219,6 +221,20 @@ class Scene:
                     addresses.append((f.strand, f.address, pixel))
             self._all_pixels = addresses
         return self._all_pixels
+
+    def get_all_pixel_locations(self):
+        """
+        Returns a list of ((strand, address, pixel), (x, y)) tuples
+        """
+        if self._all_pixel_locations is None:
+            pixels = self.get_all_pixels()
+            pixel_location_list = []
+            for pixel in pixels:
+                pixel_location_list.append((pixel, self.get_pixel_location(pixel)))
+
+            self._all_pixel_locations = pixel_location_list
+        return self._all_pixel_locations
+
 
     def get_fixture_bounding_box(self):
         """
