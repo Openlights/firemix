@@ -5,8 +5,9 @@ from lib.parameters import FloatParameter
 from ext import simplexnoise
 
 
-class NoiseGradient(RawPreset):
+class SimplexNoise(RawPreset):
     """
+    Simplex noise hue map
     """
 
     def setup(self):
