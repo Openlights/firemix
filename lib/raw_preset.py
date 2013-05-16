@@ -76,4 +76,4 @@ class RawPreset(Preset):
         if self._mixer._enable_profiling:
             tick_time = 1000.0 * (time.time() - start)
             if tick_time > 30.0:
-                log.warn("%s slow frame: %d ms" % (self.__class__, tick_time))
+                log.info("%s slow frame: %d ms" % (self.__class__, tick_time))
