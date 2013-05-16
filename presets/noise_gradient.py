@@ -15,6 +15,7 @@ class NoiseGradient(RawPreset):
         self.add_parameter(FloatParameter('speed', 2.0))
 
         self.pixel_locations = self.scene().get_all_pixel_locations()
+        self.scale = 0.01  # TODO: parameterize
 
         self._setup_pars()
 
@@ -28,6 +29,7 @@ class NoiseGradient(RawPreset):
 
     def draw(self, dt):
         speed = dt * self.speed
+        d3 = self.scale * dt
         for pixel, location in self.pixel_locations:
-            hue = simplexnoise.scaled_octave_noise_3d(1, 2.0, 0.01, self.hue_min, self.hue_max, location[0] + speed, location[1] + speed, dt)
+            hue = (1.0 + simplexnoise.raw_noise_3d(self.scale * (location[0] + speed), self.scale * (location[1] + speed), d3)) / 2.0
             self.setp(pixel, hsv_float_to_rgb_uint8((hue, 1.0, 1.0)))
