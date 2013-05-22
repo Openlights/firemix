@@ -64,8 +64,8 @@ class RawPreset(Preset):
         """
         Unlike tick() in Preset, this method applies pixel_behavior to all pixels.
         """
-        if self._mixer._enable_profiling:
-            start = time.time()
+        # if self._mixer._enable_profiling:
+        #     start = time.time()
 
         # TODO: This does not account for varying frame rate
         dt = self._ticks * (1.0 / self.tick_rate())
@@ -73,7 +73,7 @@ class RawPreset(Preset):
 
         self._ticks += 1
 
-        if self._mixer._enable_profiling:
-            tick_time = 1000.0 * (time.time() - start)
-            if tick_time > 30.0:
-                log.info("%s slow frame: %d ms" % (self.__class__, tick_time))
+        # if self._mixer._enable_profiling:
+        #     tick_time = 1000.0 * (time.time() - start)
+        #     if tick_time > 30.0:
+        #         log.info("%s slow frame: %d ms" % (self.__class__, tick_time))

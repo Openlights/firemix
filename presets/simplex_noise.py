@@ -3,7 +3,7 @@ from lib.parameters import FloatParameter, IntParameter
 from lib.buffer_utils import BufferUtils
 from lib.colors import hsv_float_to_rgb_uint8
 
-from ext import simplexnoise
+from ext.simplexnoise import SimplexNoiseTools
 
 
 class SimplexNoise(RawPreset):
@@ -22,10 +22,8 @@ class SimplexNoise(RawPreset):
         self.pixel_addresses = {}
         self.scale = 0.01  # TODO: parameterize
 
-        for pixel, _ in self.pixel_locations:
-            self.pixel_addresses[pixel] = BufferUtils.get_buffer_address(self._mixer._app, pixel)
-
         self.color_lookup = {}
+        self.noise = SimplexNoiseTools()
         self._setup_pars()
 
     def parameter_changed(self, parameter):
@@ -43,12 +41,12 @@ class SimplexNoise(RawPreset):
             self.color_lookup[i] = hsv_float_to_rgb_uint8((hue, 1.0, 1.0))
 
     def draw(self, dt):
-        speed = dt * self.speed
+        delta = dt * self.speed
         d3 = self.color_speed * dt
         res = self.parameter('resolution').get()
+        rn3d = self.noise.raw_noise_3d
+        setp = self.setp
+
         for pixel, location in self.pixel_locations:
-            hue = (1.0 + simplexnoise.raw_noise_3d(self.scale * (location[0] + speed), self.scale * (location[1] + speed), d3)) / 2.0
-            #self.setp(pixel, hsv_float_to_rgb_uint8((hue, 1.0, 1.0)))
-            #x, y = BufferUtils.get_buffer_address(self._mixer._app, pixel)
-            x, y = self.pixel_addresses[pixel]
-            self._pixel_buffer[x][y] = self.color_lookup[int(hue * res)]
+            hue = (1.0 + rn3d(self.scale * (location[0] + delta), self.scale * (location[1] + delta), d3)) / 2.0
+            setp(pixel, self.color_lookup[int(hue * res)])
