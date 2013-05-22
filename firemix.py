@@ -1,20 +1,17 @@
 import sys
 import logging
 import argparse
-import yappi
 import signal
 
 from PySide import QtGui
 
-#from core.rpc_server import RPCServer
 from firemix_app import FireMixApp
 from ui.firemixgui import FireMixGUI
 
 
 def sig_handler(sig, frame):
-    global app  # , rpc_server
+    global app
     app.stop()
-    #rpc_server.stop()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.ERROR)
@@ -37,10 +34,6 @@ if __name__ == "__main__":
 
     log.info("Booting FireMix...")
 
-    #if args.profile:
-    #    log.info("Starting profiler")
-    #    yappi.start()
-
     qt_app = QtGui.QApplication(sys.argv)
 
     app = FireMixApp(args, parent=qt_app)
@@ -53,11 +46,6 @@ if __name__ == "__main__":
     qt_app.exec_()
 
     if args.profile:
-        #stats = yappi.get_stats(yappi.SORTTYPE_TSUB, yappi.SORTORDER_DESC, 10)
-        #stats = [(s.name, s.ttot) for s in stats.func_stats]
-        #print "\n------ PROFILING STATS ------"
-        #for s in stats:
-        #    print "%s\t[%0.3f]" % (s[0], s[1])
         print   "------ TICK TIME HISTOGRAM ------"
         elapsed = (app.mixer._stop_time - app.mixer._start_time)
         print "%d frames in %0.2f seconds (%0.2f FPS) " %  (app.mixer._num_frames, elapsed, app.mixer._num_frames / elapsed)
