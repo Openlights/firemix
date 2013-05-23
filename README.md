@@ -15,15 +15,6 @@ Setup instructions are now located on the wiki:
 General information and development tips are located on the wiki also,
 check out the [main page](https://github.com/craftyjon/firemix/wiki) to get started.
 
-Realtime Audio Support (Linux only for now)
--------------------------------------------
-
-Instructions for Ubuntu: (modify as needed for other distros)
-
-- Install JACK
-        apt-get install jackd qjackctl pulseaudio-module-jack
-- Configure Pulseaudio connector
-
 
 Usage
 -----

@@ -4,6 +4,8 @@ import time
 import random
 import numpy as np
 
+from PySide import QtCore
+
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
 from lib.raw_preset import RawPreset
 from lib.buffer_utils import BufferUtils
@@ -12,7 +14,7 @@ from lib.buffer_utils import BufferUtils
 log = logging.getLogger("firemix.core.mixer")
 
 
-class Mixer:
+class Mixer(QtCore.QObject):
     """
     Mixer is the brains of FireMix.  It handles the playback of presets
     and the generation of the final command stream to send to the output
@@ -20,6 +22,7 @@ class Mixer:
     """
 
     def __init__(self, app):
+        super(Mixer, self).__init__()
         self._app = app
         self._net = app.net
         self._playlist = None
@@ -46,6 +49,9 @@ class Mixer:
         self._paused = False
         self._frozen = False
         self._random_transition = False
+        self._last_onset_time = 0.0
+        self._onset_window = 0.1
+        self._onset = False
 
         # Load transitions
         self.set_transition_mode(self._app.settings.get('mixer')['transition'])
@@ -90,6 +96,14 @@ class Mixer:
 
     def is_paused(self):
         return self._paused
+
+    @QtCore.Slot()
+    def onset_detected(self):
+        t = time.clock()
+        if (t - self._last_onset_time) > self._onset_window:
+            self._last_onset_time = t
+            self._onset = True
+            self._playlist.get_active_preset().onset_detected()
 
     def set_transition_mode(self, name):
         self._in_transition = False
@@ -159,6 +173,7 @@ class Mixer:
         else:
             start = time.clock()
             self.tick()
+            #self._onset = False
             dt = (time.clock() - start)
             delay = max(0, (1.0 / self._tick_rate) - dt)
             self._elapsed += (1.0 / self._tick_rate)
@@ -180,6 +195,11 @@ class Mixer:
 
     def get_tick_rate(self):
         return self._tick_rate
+
+    def is_onset(self):
+        o = self._onset
+        self._onset = False
+        return o
 
     def next(self):
         #TODO: Fix this after the Playlist merge

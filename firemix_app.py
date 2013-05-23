@@ -30,7 +30,10 @@ class FireMixApp(QtCore.QThread):
         self.plugins = PluginLoader()
         self.mixer = Mixer(self)
         self.playlist = Playlist(self)
-        self.aubio_connector = AubioConnector()
+
+        if self.args.audio:
+            self.aubio_connector = AubioConnector()
+            self.aubio_connector.onset_detected.connect(self.mixer.onset_detected)
 
         self.mixer.set_playlist(self.playlist)
 
