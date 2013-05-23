@@ -53,6 +53,7 @@ class Mixer(QtCore.QObject):
         self._last_onset_time = 0.0
         self._onset_holdoff = self._app.settings.get('mixer')['onset-holdoff']
         self._onset = False
+        self._reset_onset = False
         self._global_dimmer = 1.0
 
         # Load transitions
@@ -201,9 +202,13 @@ class Mixer(QtCore.QObject):
         return self._tick_rate
 
     def is_onset(self):
-        o = self._onset
-        self._onset = False
-        return o
+        """
+        Called by presets; resets after tick if called during tick
+        """
+        if self._onset:
+            self._reset_onset = True
+            return True
+        return False
 
     def next(self):
         #TODO: Fix this after the Playlist merge
@@ -273,6 +278,10 @@ class Mixer(QtCore.QObject):
                         self.start_transition()
                     self._elapsed = 0.0
 
+            if self._reset_onset:
+                self._onset = False
+                self._reset_onset = False
+
         if self._enable_profiling:
             tick_time = (time.time() - self._last_frame_time)
             self._last_frame_time = time.time()
@@ -280,8 +289,7 @@ class Mixer(QtCore.QObject):
                 index = int((1.0 / tick_time))
                 self._tick_time_data[index] = self._tick_time_data.get(index, 0) + 1
 
-        if self._onset:
-            self._onset = False
+
 
     def scene(self):
         return self._scene
