@@ -53,12 +53,6 @@ class Preset:
         """
         pass
 
-    def onset_detected(self):
-        """
-        This method will be called if an onset (beat) is detected
-        """
-        pass
-
     def can_transition(self):
         """
         Override this method to define clear points at which the mixer can

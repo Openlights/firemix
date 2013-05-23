@@ -31,6 +31,7 @@ class Mixer(QtCore.QObject):
         self._in_transition = False
         self._start_transition = False
         self._transition_duration = self._app.settings.get('mixer')['transition-duration']
+        self._transition_slop = self._app.settings.get('mixer')['transition-slop']
         self._tick_timer = None
         self._duration = self._app.settings.get('mixer')['preset-duration']
         self._elapsed = 0.0
@@ -50,7 +51,7 @@ class Mixer(QtCore.QObject):
         self._frozen = False
         self._random_transition = False
         self._last_onset_time = 0.0
-        self._onset_window = 0.1
+        self._onset_holdoff = self._app.settings.get('mixer')['onset-holdoff']
         self._onset = False
         self._global_dimmer = 1.0
 
@@ -101,10 +102,9 @@ class Mixer(QtCore.QObject):
     @QtCore.Slot()
     def onset_detected(self):
         t = time.clock()
-        if (t - self._last_onset_time) > self._onset_window:
+        if (t - self._last_onset_time) > self._onset_holdoff:
             self._last_onset_time = t
             self._onset = True
-            self._playlist.get_active_preset().onset_detected()
 
     def set_global_dimmer(self, dimmer):
         self._global_dimmer = dimmer
@@ -268,9 +268,10 @@ class Mixer(QtCore.QObject):
                     self._net.write(self._playlist.get_active_preset().get_commands_packed())
 
             if not self._paused and (self._elapsed >= self._duration) and self._playlist.get_active_preset().can_transition() and not self._in_transition:
-                if len(self._playlist) > 1:
-                    self.start_transition()
-                self._elapsed = 0.0
+                if (self._elapsed >= (self._duration + self._transition_slop)) or self._onset:
+                    if len(self._playlist) > 1:
+                        self.start_transition()
+                    self._elapsed = 0.0
 
         if self._enable_profiling:
             tick_time = (time.time() - self._last_frame_time)
@@ -278,6 +279,9 @@ class Mixer(QtCore.QObject):
             if tick_time > 0.0:
                 index = int((1.0 / tick_time))
                 self._tick_time_data[index] = self._tick_time_data.get(index, 0) + 1
+
+        if self._onset:
+            self._onset = False
 
     def scene(self):
         return self._scene
