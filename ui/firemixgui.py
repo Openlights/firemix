@@ -23,6 +23,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.btn_remove_preset.clicked.connect(self.on_btn_remove_preset)
         self.btn_clone_preset.clicked.connect(self.on_btn_clone_preset)
         self.btn_clear_playlist.clicked.connect(self.on_btn_clear_playlist)
+        self.slider_global_dimmer.valueChanged.connect(self.on_global_dimmer)
 
         # File menu
         self.action_file_load_scene.triggered.connect(self.on_file_load_scene)
@@ -139,6 +140,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.cb_transition_mode.clear()
         self.cb_transition_mode.insertItems(0, transition_list)
         self.cb_transition_mode.setCurrentIndex(self.cb_transition_mode.findText(current_transition))
+
+    def on_global_dimmer(self):
+        self._app.mixer.set_global_dimmer(self.slider_global_dimmer.value() / 100.0)
 
     def update_playlist(self):
         self.lst_presets.clear()

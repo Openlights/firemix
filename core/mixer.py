@@ -52,6 +52,7 @@ class Mixer(QtCore.QObject):
         self._last_onset_time = 0.0
         self._onset_window = 0.1
         self._onset = False
+        self._global_dimmer = 1.0
 
         # Load transitions
         self.set_transition_mode(self._app.settings.get('mixer')['transition'])
@@ -104,6 +105,9 @@ class Mixer(QtCore.QObject):
             self._last_onset_time = t
             self._onset = True
             self._playlist.get_active_preset().onset_detected()
+
+    def set_global_dimmer(self, dimmer):
+        self._global_dimmer = dimmer
 
     def set_transition_mode(self, name):
         self._in_transition = False
@@ -319,6 +323,9 @@ class Mixer(QtCore.QObject):
 
             if self._in_transition:
                 self._main_buffer = self._transition.get(self._main_buffer, self._secondary_buffer, transition_progress)
+
+        if self._global_dimmer < 1.0:
+            self._main_buffer *= self._global_dimmer
 
         if self._net is not None:
             data = dict()
