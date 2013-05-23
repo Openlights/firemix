@@ -81,6 +81,29 @@
         </spacer>
        </item>
        <item>
+        <widget class="QRadioButton" name="btn_onset_detected">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Onset Detected</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
         <widget class="QLabel" name="lbl_global_dimmer">
          <property name="text">
           <string>Global Dimmer</string>

@@ -56,6 +56,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.tbl_preset_parameters.setDisabled(True)
         self._app.playlist_changed.connect(self.on_playlist_changed)
 
+        if self._app.aubio_connector is not None:
+            self._app.aubio_connector.onset_detected.connect(self.onset_detected)
+
         self.update_mixer_settings()
 
     def closeEvent(self, event):
@@ -64,6 +67,15 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_btn_blackout(self):
         pass
+
+    @QtCore.Slot()
+    def onset_detected(self):
+        self.btn_onset_detected.setChecked(QtCore.Qt.Checked)
+        QtCore.QTimer.singleShot(50, self.clear_onset_detected)
+
+    @QtCore.Slot()
+    def clear_onset_detected(self):
+        self.btn_onset_detected.setChecked(QtCore.Qt.Unchecked)
 
     def on_btn_playpause(self):
         if self._mixer.is_paused():
