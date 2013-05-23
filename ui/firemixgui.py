@@ -91,7 +91,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self._app.playlist.advance(-1)
 
     def on_btn_reset_preset(self):
+        self._app.mixer.pause()
         self._app.playlist.get_active_preset()._reset()
+        self._app.mixer.pause(False)
 
     def on_btn_add_preset(self):
         dlg = DlgAddPreset(self)

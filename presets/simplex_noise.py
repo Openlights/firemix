@@ -1,3 +1,5 @@
+import numpy as np
+
 from lib.raw_preset import RawPreset
 from lib.parameters import FloatParameter, IntParameter
 from lib.buffer_utils import BufferUtils
@@ -17,10 +19,10 @@ class SimplexNoise(RawPreset):
         self.add_parameter(FloatParameter('speed', 7.0))
         self.add_parameter(FloatParameter('color-speed', 0.5))
         self.add_parameter(IntParameter('resolution', 128))
+        self.add_parameter(FloatParameter('scale', 0.01))
 
         self.pixel_locations = self.scene().get_all_pixel_locations()
         self.pixel_addresses = {}
-        self.scale = 0.01  # TODO: parameterize
 
         self.color_lookup = {}
         self.noise = SimplexNoiseTools()
@@ -29,11 +31,15 @@ class SimplexNoise(RawPreset):
     def parameter_changed(self, parameter):
         self._setup_pars()
 
+    def reset(self):
+        self._setup_pars()
+
     def _setup_pars(self):
         self.hue_min = self.parameter('hue-min').get()
         self.hue_max = self.parameter('hue-max').get()
         self.speed = 10.0 * self.parameter('speed').get()
         self.color_speed = self.parameter('color-speed').get()
+        self.scale = self.parameter('scale').get() / 100.0
 
         res = self.parameter('resolution').get()
         for i in range(res):
