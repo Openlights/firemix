@@ -34,14 +34,4 @@ class AdditiveBlend(Transition):
 
         self.frame = start.astype(np.uint8) + end.astype(np.uint8)
 
-        # for pixel, loc in self.pixel_locations:
-        #     a, b = self.pixel_addr[pixel]
-        #     s = start.astype(np.uint16)[a][b] + end.astype(np.uint16)[a][b]
-        #     m = max(s)
-        #     if m > 255:
-        #         r = 255.0 / m
-        #         s = s * r
-        #     #print s
-        #     self.frame[a][b] = s
-
         return self.frame
