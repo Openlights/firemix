@@ -24,6 +24,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.btn_clone_preset.clicked.connect(self.on_btn_clone_preset)
         self.btn_clear_playlist.clicked.connect(self.on_btn_clear_playlist)
         self.slider_global_dimmer.valueChanged.connect(self.on_global_dimmer)
+        self.btn_shuffle_playlist.clicked.connect(self.on_btn_shuffle_playlist)
 
         # File menu
         self.action_file_load_scene.triggered.connect(self.on_file_load_scene)
@@ -155,6 +156,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.cb_transition_mode.insertItems(0, transition_list)
         self.cb_transition_mode.setCurrentIndex(self.cb_transition_mode.findText(current_transition))
 
+        shuffle_state = QtCore.Qt.Checked if self._app.settings['mixer']['shuffle'] else QtCore.Qt.Unchecked
+        self.btn_shuffle_playlist.setChecked(shuffle_state)
+
     def on_global_dimmer(self):
         self._app.mixer.set_global_dimmer(self.slider_global_dimmer.value() / 100.0)
 
@@ -162,6 +166,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.lst_presets.clear()
         presets = self._app.playlist.get()
         current = self._app.playlist.get_active_preset()
+        next = self._app.playlist.get_next_preset()
         for preset in presets:
             item = QtGui.QListWidgetItem(preset.get_name())
             #TODO: Enable renaming in the list when we have a real delegate
@@ -169,6 +174,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
             if preset == current:
                 item.setForeground(QtGui.QColor(0, 100, 200))
+            elif preset == next:
+                item.setForeground(QtGui.QColor(200, 100, 0))
             self.lst_presets.addItem(item)
 
     def on_playlist_changed(self):
@@ -278,4 +285,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_settings_networking(self):
         DlgSetupNetworking(self).exec_()
+
+    def on_btn_shuffle_playlist(self):
+        shuffle = self.btn_shuffle_playlist.isChecked()
+        self._app.settings['mixer']['shuffle'] = shuffle
+        self._app.playlist.shuffle_mode(shuffle)
 

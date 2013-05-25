@@ -8,7 +8,8 @@
         "transition": "Dissolve", 
         "transition-duration": 2.5,
         "transition-slop": 1.0,
-        "onset-holdoff": 0.1
+        "onset-holdoff": 0.1,
+        "shuffle": false
     }, 
     "networking": {
         "clients": [

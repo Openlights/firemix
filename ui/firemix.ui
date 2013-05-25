@@ -192,6 +192,13 @@
           </layout>
          </item>
          <item>
+          <widget class="QCheckBox" name="btn_shuffle_playlist">
+           <property name="text">
+            <string>Shuffle Playback</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="DraggableListWidget" name="lst_presets"/>
          </item>
         </layout>
@@ -440,7 +447,7 @@
      <x>0</x>
      <y>0</y>
      <width>751</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

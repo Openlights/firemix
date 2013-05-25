@@ -1,6 +1,7 @@
 import os
 import gc
 import logging
+import random
 
 from lib.json_dict import JSONDict
 from lib.preset_loader import PresetLoader
@@ -26,6 +27,8 @@ class Playlist(JSONDict):
 
         self._active_index = 0
         self._next_index = 0
+        self._shuffle = self._app.settings['mixer']['shuffle']
+        self._shuffle_list = []
 
         self.generate_playlist()
 
@@ -49,9 +52,28 @@ class Playlist(JSONDict):
                 self._playlist_data.remove(entry)
 
         self._active_index = 0
-        self._next_index = 0 if len(self._playlist) == 0 else 1 % len(self._playlist)
+        if self._shuffle:
+            self.generate_shuffle()
+            self._next_index = self._shuffle_list.pop()
+        else:
+            self._next_index = 0 if len(self._playlist) == 0 else 1 % len(self._playlist)
 
         return self._playlist
+
+    def shuffle_mode(self, shuffle=True):
+        """
+        Enables or disables playlist shuffle
+        """
+        self._shuffle = shuffle
+
+    def generate_shuffle(self):
+        """
+        Creates a shuffle list
+        """
+        self._shuffle_list = range(len(self._playlist))
+        random.shuffle(self._shuffle_list)
+        if self._active_index in self._shuffle_list:
+            self._shuffle_list.remove(self._active_index)
 
     def reload_presets(self):
         """Attempts to reload all preset classes in the playlist"""
@@ -93,9 +115,15 @@ class Playlist(JSONDict):
         Advances the playlist
         """
         #TODO: support transitions other than cut
-        self._active_index = (self._active_index + direction) % len(self._playlist)
-        self._next_index = (self._next_index + direction) % len(self._playlist)
-        #self._playlist[self._active_index]._reset()
+        self._active_index = self._next_index
+
+        if self._shuffle:
+            if len(self._shuffle_list) == 0:
+                self.generate_shuffle()
+            self._next_index = self._shuffle_list.pop()
+        else:
+            self._next_index = (self._next_index + direction) % len(self._playlist)
+
         self._app.playlist_changed.emit()
 
     def __len__(self):
