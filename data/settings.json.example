@@ -6,7 +6,9 @@
         "preset-duration": 6.0, 
         "tick-rate": 32,
         "transition": "Dissolve", 
-        "transition-duration": 2.5
+        "transition-duration": 2.5,
+        "transition-slop": 1.0,
+        "onset-holdoff": 0.1
     }, 
     "networking": {
         "clients": [

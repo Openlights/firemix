@@ -15,6 +15,7 @@ Setup instructions are now located on the wiki:
 General information and development tips are located on the wiki also,
 check out the [main page](https://github.com/craftyjon/firemix/wiki) to get started.
 
+
 Usage
 -----
 

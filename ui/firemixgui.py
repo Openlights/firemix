@@ -23,6 +23,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.btn_remove_preset.clicked.connect(self.on_btn_remove_preset)
         self.btn_clone_preset.clicked.connect(self.on_btn_clone_preset)
         self.btn_clear_playlist.clicked.connect(self.on_btn_clear_playlist)
+        self.slider_global_dimmer.valueChanged.connect(self.on_global_dimmer)
 
         # File menu
         self.action_file_load_scene.triggered.connect(self.on_file_load_scene)
@@ -55,6 +56,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.tbl_preset_parameters.setDisabled(True)
         self._app.playlist_changed.connect(self.on_playlist_changed)
 
+        if self._app.aubio_connector is not None:
+            self._app.aubio_connector.onset_detected.connect(self.onset_detected)
+
         self.update_mixer_settings()
 
     def closeEvent(self, event):
@@ -63,6 +67,15 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_btn_blackout(self):
         pass
+
+    @QtCore.Slot()
+    def onset_detected(self):
+        self.btn_onset_detected.setChecked(QtCore.Qt.Checked)
+        QtCore.QTimer.singleShot(50, self.clear_onset_detected)
+
+    @QtCore.Slot()
+    def clear_onset_detected(self):
+        self.btn_onset_detected.setChecked(QtCore.Qt.Unchecked)
 
     def on_btn_playpause(self):
         if self._mixer.is_paused():
@@ -141,6 +154,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.cb_transition_mode.clear()
         self.cb_transition_mode.insertItems(0, transition_list)
         self.cb_transition_mode.setCurrentIndex(self.cb_transition_mode.findText(current_transition))
+
+    def on_global_dimmer(self):
+        self._app.mixer.set_global_dimmer(self.slider_global_dimmer.value() / 100.0)
 
     def update_playlist(self):
         self.lst_presets.clear()

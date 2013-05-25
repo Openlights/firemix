@@ -26,6 +26,7 @@ if __name__ == "__main__":
     parser.add_argument("--nogui", action='store_const', const=True, default=False, help="Disable GUI")
     parser.add_argument("--preset", type=str, help="Specify a preset name to run only that preset (useful for debugging)")
     parser.add_argument("--verbose", action='store_const', const=True, default=False, help="Enable verbose log output")
+    parser.add_argument("--audio", action='store_const', const=True, default=False, help="Enable audio processing client")
 
     args = parser.parse_args()
 

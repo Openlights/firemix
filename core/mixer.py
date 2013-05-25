@@ -4,6 +4,8 @@ import time
 import random
 import numpy as np
 
+from PySide import QtCore
+
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
 from lib.raw_preset import RawPreset
 from lib.buffer_utils import BufferUtils
@@ -12,7 +14,7 @@ from lib.buffer_utils import BufferUtils
 log = logging.getLogger("firemix.core.mixer")
 
 
-class Mixer:
+class Mixer(QtCore.QObject):
     """
     Mixer is the brains of FireMix.  It handles the playback of presets
     and the generation of the final command stream to send to the output
@@ -20,6 +22,7 @@ class Mixer:
     """
 
     def __init__(self, app):
+        super(Mixer, self).__init__()
         self._app = app
         self._net = app.net
         self._playlist = None
@@ -28,6 +31,7 @@ class Mixer:
         self._in_transition = False
         self._start_transition = False
         self._transition_duration = self._app.settings.get('mixer')['transition-duration']
+        self._transition_slop = self._app.settings.get('mixer')['transition-slop']
         self._tick_timer = None
         self._duration = self._app.settings.get('mixer')['preset-duration']
         self._elapsed = 0.0
@@ -46,6 +50,11 @@ class Mixer:
         self._paused = False
         self._frozen = False
         self._random_transition = False
+        self._last_onset_time = 0.0
+        self._onset_holdoff = self._app.settings.get('mixer')['onset-holdoff']
+        self._onset = False
+        self._reset_onset = False
+        self._global_dimmer = 1.0
 
         # Load transitions
         self.set_transition_mode(self._app.settings.get('mixer')['transition'])
@@ -90,6 +99,16 @@ class Mixer:
 
     def is_paused(self):
         return self._paused
+
+    @QtCore.Slot()
+    def onset_detected(self):
+        t = time.clock()
+        if (t - self._last_onset_time) > self._onset_holdoff:
+            self._last_onset_time = t
+            self._onset = True
+
+    def set_global_dimmer(self, dimmer):
+        self._global_dimmer = dimmer
 
     def set_transition_mode(self, name):
         self._in_transition = False
@@ -159,6 +178,7 @@ class Mixer:
         else:
             start = time.clock()
             self.tick()
+            #self._onset = False
             dt = (time.clock() - start)
             delay = max(0, (1.0 / self._tick_rate) - dt)
             self._elapsed += (1.0 / self._tick_rate)
@@ -180,6 +200,15 @@ class Mixer:
 
     def get_tick_rate(self):
         return self._tick_rate
+
+    def is_onset(self):
+        """
+        Called by presets; resets after tick if called during tick
+        """
+        if self._onset:
+            self._reset_onset = True
+            return True
+        return False
 
     def next(self):
         #TODO: Fix this after the Playlist merge
@@ -244,9 +273,14 @@ class Mixer:
                     self._net.write(self._playlist.get_active_preset().get_commands_packed())
 
             if not self._paused and (self._elapsed >= self._duration) and self._playlist.get_active_preset().can_transition() and not self._in_transition:
-                if len(self._playlist) > 1:
-                    self.start_transition()
-                self._elapsed = 0.0
+                if (self._elapsed >= (self._duration + self._transition_slop)) or self._onset:
+                    if len(self._playlist) > 1:
+                        self.start_transition()
+                    self._elapsed = 0.0
+
+            if self._reset_onset:
+                self._onset = False
+                self._reset_onset = False
 
         if self._enable_profiling:
             tick_time = (time.time() - self._last_frame_time)
@@ -254,6 +288,8 @@ class Mixer:
             if tick_time > 0.0:
                 index = int((1.0 / tick_time))
                 self._tick_time_data[index] = self._tick_time_data.get(index, 0) + 1
+
+
 
     def scene(self):
         return self._scene
@@ -299,6 +335,9 @@ class Mixer:
 
             if self._in_transition:
                 self._main_buffer = self._transition.get(self._main_buffer, self._secondary_buffer, transition_progress)
+
+        if self._global_dimmer < 1.0:
+            self._main_buffer *= self._global_dimmer
 
         if self._net is not None:
             data = dict()

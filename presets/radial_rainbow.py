@@ -31,3 +31,4 @@ class RadialRainbow(Preset):
             dx, dy = (midpoint[0] - center[0], midpoint[1] - center[1])
             angle = (math.pi + math.atan2(dy, dx)) / (2.0 * math.pi) * self.parameter('width').get()
             self.add_ticker(speed(offset(fade((strand, address), Rainbow), angle), self.parameter('speed')))
+

@@ -41,13 +41,21 @@ class Twinkle(RawPreset):
     def draw(self, dt):
 
         # Birth
-        if random.random() > (1.0 - self.parameter('birth-rate').get()):
-            address = ( random.randint(0, self._max_strand - 1),
-                        random.randint(0, self._max_fixture - 1),
-                        random.randint(0, self._max_pixel - 1))
-            if address not in self._fading_up:
-                self._fading_up.append(address)
-                self._time[address] = dt
+        if self._mixer.is_onset():
+            pbirth = 1.0
+            nbirth = 25
+        else:
+            pbirth = self.parameter('birth-rate').get()
+            nbirth = 1
+
+        for i in range(nbirth):
+            if random.random() > (1.0 - pbirth):
+                address = ( random.randint(0, self._max_strand - 1),
+                            random.randint(0, self._max_fixture - 1),
+                            random.randint(0, self._max_pixel - 1))
+                if address not in self._fading_up:
+                    self._fading_up.append(address)
+                    self._time[address] = dt
 
         # Growth
         for address in self._fading_up:

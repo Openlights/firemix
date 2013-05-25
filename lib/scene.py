@@ -47,6 +47,13 @@ class Scene:
         """
         return tuple(self._data.get("extents", (0, 0)))
 
+    def get_centroid(self):
+        """
+        Returns the (x, y) centroid of all fixtures in the scene
+        """
+        bb = self.get_fixture_bounding_box()
+        return ([bb[0] + (bb[2] - bb[0]) / 2.0, bb[1] + (bb[3] - bb[1]) / 2.0])
+
     def name(self):
         return self._data.get("name", "")
 

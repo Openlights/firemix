@@ -9,6 +9,7 @@ from lib.playlist import Playlist
 from lib.settings import Settings
 from lib.scene import Scene
 from lib.plugin_loader import PluginLoader
+from lib.aubio_connector import AubioConnector
 
 
 log = logging.getLogger("firemix")
@@ -29,6 +30,10 @@ class FireMixApp(QtCore.QThread):
         self.plugins = PluginLoader()
         self.mixer = Mixer(self)
         self.playlist = Playlist(self)
+
+        if self.args.audio:
+            self.aubio_connector = AubioConnector()
+            self.aubio_connector.onset_detected.connect(self.mixer.onset_detected)
 
         self.mixer.set_playlist(self.playlist)
 
