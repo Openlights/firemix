@@ -1,9 +1,10 @@
+import noise
+from noise import snoise3
+
 from lib.raw_preset import RawPreset
 from lib.parameters import FloatParameter, IntParameter
 from lib.buffer_utils import BufferUtils
 from lib.colors import hsv_float_to_rgb_uint8
-
-from ext.simplexnoise import SimplexNoiseTools
 
 
 class SimplexNoise(RawPreset):
@@ -23,7 +24,6 @@ class SimplexNoise(RawPreset):
         self.scale = 0.01  # TODO: parameterize
 
         self.color_lookup = {}
-        self.noise = SimplexNoiseTools()
         self._setup_pars()
 
     def parameter_changed(self, parameter):
@@ -44,9 +44,8 @@ class SimplexNoise(RawPreset):
         delta = dt * self.speed
         d3 = self.color_speed * dt
         res = self.parameter('resolution').get()
-        rn3d = self.noise.raw_noise_3d
         setp = self.setp
 
         for pixel, location in self.pixel_locations:
-            hue = (1.0 + rn3d(self.scale * (location[0] + delta), self.scale * (location[1] + delta), d3)) / 2.0
+            hue = (1.0 + snoise3(self.scale * (location[0] + delta), self.scale * (location[1] + delta), d3, 1, 0.5, 0.5)) / 2.0
             setp(pixel, self.color_lookup[int(hue * res)])
