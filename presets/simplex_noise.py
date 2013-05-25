@@ -1,9 +1,7 @@
-import noise
 from noise import snoise3
 
 from lib.raw_preset import RawPreset
 from lib.parameters import FloatParameter, IntParameter
-from lib.buffer_utils import BufferUtils
 from lib.colors import hsv_float_to_rgb_uint8
 
 
