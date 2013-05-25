@@ -18,13 +18,16 @@ class SimplexBlend(Transition):
         return "Simplex Blend"
 
     def setup(self):
-        x, y = BufferUtils.get_buffer_size(self._app)
-        self.frame = np.tile(0.0, (x, y, 3))
+        self.reset()
 
         self.pixel_locations = self._app.scene.get_all_pixel_locations()
         self.pixel_addr = {}
         for pixel, _ in self.pixel_locations:
             self.pixel_addr[pixel] = BufferUtils.get_buffer_address(self._app, pixel)
+
+    def reset(self):
+        x, y = BufferUtils.get_buffer_size(self._app)
+        self.frame = np.tile(0.0, (x, y, 3))
 
     def get(self, start, end, progress):
         for pixel, loc in self.pixel_locations:

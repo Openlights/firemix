@@ -130,6 +130,7 @@ class Mixer(QtCore.QObject):
         tl = [c for c in self._app.plugins.get('Transition') if str(c(None)) == name]
         if len(tl) == 1:
             self._transition = tl[0](self._app)
+            self._transition.setup()
             return True
         else:
             log.error("Transition %s is not loaded!" % name)
@@ -143,6 +144,7 @@ class Mixer(QtCore.QObject):
         if len(self._transition_list) == 0:
             self.build_random_transition_list()
         self._transition = self._transition_list.pop()(self._app)
+        self._transition.setup()
 
     def freeze(self, freeze=True):
         self._frozen = freeze
@@ -243,7 +245,7 @@ class Mixer(QtCore.QObject):
                     if self._random_transition:
                         self.get_next_transition()
                     if self._transition:
-                        self._transition.setup()
+                        self._transition.reset()
                     self._playlist.get_next_preset()._reset()
                     self._secondary_buffer = BufferUtils.create_buffer(self._app)
                 if self._transition_duration > 0.0 and self._transition is not None:

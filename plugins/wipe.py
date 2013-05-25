@@ -18,12 +18,15 @@ class Wipe(Transition):
 
     def setup(self):
         self.num_strands, self.num_pixels = BufferUtils.get_buffer_size(self._app)
-        self.mask = np.tile(False, (self.num_strands, self.num_pixels, 3))
 
         bb = self._app.scene.get_fixture_bounding_box()
         self.scene_center = np.asarray([bb[0] + (bb[2] - bb[0]) / 2, bb[1] + (bb[3] - bb[1]) / 2])
         self.bb = bb
 
+        self.reset()
+
+    def reset(self):
+        self.mask = np.tile(False, (self.num_strands, self.num_pixels, 3))
         angle = np.random.random() * np.pi * 2.0
         self.wipe_vector = np.zeros((2))
 

@@ -18,13 +18,15 @@ class RadialWipe(Transition):
 
     def setup(self):
         self.num_strands, self.num_pixels = BufferUtils.get_buffer_size(self._app)
-        self.mask = np.tile(False, (self.num_strands, self.num_pixels, 3))
 
         self.scene_bb = self._app.scene.get_fixture_bounding_box()
         self.scene_center = (self.scene_bb[0] + (self.scene_bb[2] - self.scene_bb[0]) / 2, self.scene_bb[1] + (self.scene_bb[3] - self.scene_bb[1]) / 2)
         dx = self.scene_bb[2] - self.scene_center[0]
         dy = self.scene_bb[3] - self.scene_center[1]
         self.radius = math.sqrt(math.pow(dx,2) + math.pow(dy, 2))
+
+    def reset(self):
+        self.mask = np.tile(False, (self.num_strands, self.num_pixels, 3))
 
         self.locations = []
         for f in self._app.scene.fixtures():

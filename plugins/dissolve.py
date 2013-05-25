@@ -12,9 +12,6 @@ class Dissolve(Transition):
     def __str__(self):
         return "Dissolve"
 
-    def setup(self):
-        pass
-
     def get(self, start, end, progress):
         """
         Simple dissolve

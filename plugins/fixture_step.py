@@ -15,10 +15,13 @@ class FixtureStep(Transition):
         return "Fixture Step"
 
     def setup(self):
+        self.fixtures = self._app.scene.fixtures()
+        self.reset()
+
+    def reset(self):
         x, y = BufferUtils.get_buffer_size(self._app)
         self.mask = np.tile(False, (x, y, 3))
 
-        self.fixtures = self._app.scene.fixtures()
         np.random.seed()
         self.rand_index = np.arange(len(self.fixtures))
         np.random.shuffle(self.rand_index)

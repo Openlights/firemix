@@ -17,13 +17,17 @@ class AdditiveBlend(Transition):
         return "Additive Blend"
 
     def setup(self):
-        x, y = BufferUtils.get_buffer_size(self._app)
-        self.frame = np.tile(np.array([0.0], dtype=np.uint8), (x, y, 3))
+        self.x, self.y = BufferUtils.get_buffer_size(self._app)
 
         self.pixel_locations = self._app.scene.get_all_pixel_locations()
         self.pixel_addr = {}
         for pixel, _ in self.pixel_locations:
             self.pixel_addr[pixel] = BufferUtils.get_buffer_address(self._app, pixel)
+
+        self.reset()
+
+    def reset(self):
+        self.frame = np.tile(np.array([0.0], dtype=np.uint8), (self.x, self.y, 3))
 
     def get(self, start, end, progress):
 

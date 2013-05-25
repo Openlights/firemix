@@ -15,6 +15,9 @@ class Fuzz(Transition):
         return "Fuzz"
 
     def setup(self):
+        self.reset()
+
+    def reset(self):
         x, y = BufferUtils.get_buffer_size(self._app)
         self.mask = np.tile(False, (x, y, 3))
 
@@ -24,6 +27,7 @@ class Fuzz(Transition):
         np.random.shuffle(self.rand_index)
 
         self.last_idx = 0
+
 
     def get(self, start, end, progress):
         start[self.mask] = 0.0

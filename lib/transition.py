@@ -19,6 +19,12 @@ class Transition:
 
     def setup(self):
         """
+        This method will be called once when the transition is loaded
+        """
+        pass
+
+    def reset(self):
+        """
         This method will be called right before the transition is scheduled to start.
         """
         pass
