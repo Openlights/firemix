@@ -51,14 +51,13 @@ class Spiral(Transition):
 
         radius_progress = fmod(progress * self.revolutions, 1.0)
         distance_progress = self.scene_radius * progress
-
-        print radius_progress, distance_progress
+        distance_cutoff = (1.0 / self.revolutions) * self.scene_radius * progress
 
         for pixel, location in self.active:
             angle = self.angles[pixel]
             distance = self.radii[pixel]
 
-            if distance < distance_progress and angle < radius_progress:
+            if distance < distance_cutoff or (distance < distance_progress and angle < radius_progress):
                 strand, pa = self.buffer_addr[pixel]
                 self.mask[strand][pa][:] = True
                 self.active.remove((pixel, location))
