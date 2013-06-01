@@ -28,20 +28,23 @@ class Networking:
         """
 
         # TODO: Split into smaller packets so that less-than-ideal networks will be OK
+        packet = array.array('B', [])
 
         for strand in strand_data.keys():
             # Temporary: firmware says #0 is all-call
             # Fixed in FireNode by incrementing strand by one
-            #if strand == 0:
-            #    continue
+            if strand != 0:
+                continue
 
             data = strand_data[strand][0:(3*160)]
 
             length = len(data)
+            # HACK: Strand zero has flipped RGB order
+            command = 0x20 if strand == 0 else 0x10
             #packet = array.array('B', [0x27, (length & 0xFF00) >> 8, (length & 0xFF), strand] + strand_data[strand])
-            packet = array.array('B', [strand, 0x10, (length & 0xFF), (length & 0xFF00) >> 8] + data)
-            for client in self._clients:
-                self._socket.sendto(packet, (client[0], client[1]))
-            #sleep(0.01)
+            packet.extend(array.array('B', [strand, command, (length & 0xFF), (length & 0xFF00) >> 8] + data))
+
+        for client in self._clients:
+            self._socket.sendto(packet, (client[0], client[1]))
 
 

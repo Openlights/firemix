@@ -16,7 +16,8 @@ class Dragons(RawPreset):
 
     # Configurable parameters
     _alive_color = (0.01, 1.0, 1.0)  # HSV
-    _tail_color = (0.04, 1.0, 0.5)
+    #_tail_color = (0.04, 1.0, 0.5)
+    _tail_color = (0.1, 1.0, 0.0)
     _dead_color = (0.1, 0.87, 0.88)  # HSV
 
     _growth_time = 0.3  # seconds
