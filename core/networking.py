@@ -33,8 +33,8 @@ class Networking:
         for strand in strand_data.keys():
             # Temporary: firmware says #0 is all-call
             # Fixed in FireNode by incrementing strand by one
-            if strand != 0:
-                continue
+            #if strand != 0:
+            #    continue
 
             data = strand_data[strand][0:(3*160)]
 
