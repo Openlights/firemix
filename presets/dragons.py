@@ -1,6 +1,5 @@
 import colorsys
 import random
-from twisted.test.test_factories import In
 
 from lib.raw_preset import RawPreset
 from lib.colors import uint8_to_float, float_to_uint8
