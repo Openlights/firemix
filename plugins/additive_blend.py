@@ -31,11 +31,11 @@ class AdditiveBlend(Transition):
 
     def get(self, start, end, progress):
 
-        if progress >= 0.75:
-            start = 4.0 * (1.0 - progress) * start
-        if progress <= 0.25:
-            end = (4.0 * progress) * end
-
-        self.frame = start.astype(np.uint8) + end.astype(np.uint8)
+        if progress >= 0.5:
+            start = 2.0 * (1.0 - progress) * start
+        if progress <= 0.5:
+            end = (2.0 * progress) * end
+        
+        (start + end).clip(0, 255, out=self.frame)
 
         return self.frame
