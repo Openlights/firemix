@@ -9,12 +9,13 @@ from lib.parameters import FloatParameter
 
 class SpiralGradient(RawPreset):
     """Spiral gradient that responds to onsets"""
-
+       
     def setup(self):
+        self.add_parameter(FloatParameter('speed', 0.25))
+        self.add_parameter(FloatParameter('hue_width', 2.0))
+        self.add_parameter(FloatParameter('twist', 2.0))        
+        self.add_parameter(FloatParameter('hue_step', 0.1))    
         self.hue_inner = random.random()
-        self.hue_width = 2
-        self.speed = 0.25
-        self.hue_step = 0.1
 
         self.pixels = self.scene().get_all_pixels()
         cx, cy = self.scene().get_centroid()
@@ -40,10 +41,10 @@ class SpiralGradient(RawPreset):
 
     def draw(self, dt):
         if self._mixer.is_onset():
-            self.hue_inner = math.fmod(self.hue_inner + self.hue_step, 1.0)
+            self.hue_inner = math.fmod(self.hue_inner + self.parameter('hue_step').get(), 1.0)
 
-        start = math.fmod(self.hue_inner + (dt * self.speed), 1.0)
+        start = math.fmod(self.hue_inner + (dt * self.parameter('speed').get()), 1.0)
 
         for pixel in self.pixels:
-            hue = start + (self.hue_width * self.pixel_distances[pixel]) + (self.pixel_angles[pixel] * self.hue_width)
+            hue = start + (self.parameter('twist').get() * self.pixel_distances[pixel]) + (self.pixel_angles[pixel] * self.parameter('hue_width').get())
             self.setp(pixel, hsv_float_to_rgb_uint8((hue, 1.0, 1.0)))
