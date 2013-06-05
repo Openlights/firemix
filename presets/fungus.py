@@ -27,18 +27,18 @@ class Fungus(RawPreset):
     _time = {}
     _pop = 0
     _fader = None
-    _growth_time = 0.75
-    _life_time = 5.0
+    _growth_time = 0.6
+    _life_time = 1.0
     _isolated_life_time = 1.0
-    _death_time = 1.75
-    _birth_rate = 0.03
-    _spread_rate = 0.13
-    _fade_out_time = 0.25
+    _death_time = 7.0
+    _birth_rate = 0.05
+    _spread_rate = 0.25
+    _fade_out_time = 4.0
     _mass_destruction_time = 10.0
     _mass_destruction_threshold = 150
     _pop_limit = 500
-    _alive_color = (0.35, 1.0, 1.0)
-    _dead_color = (0.13, 0.87, 0.57)
+    _alive_color = (1.0, 0.0, 1.0)
+    _dead_color = (0.0, 1.0, 1.0)
 
     def setup(self):
         self._pop = 0
