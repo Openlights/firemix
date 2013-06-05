@@ -36,6 +36,9 @@ class ColorFade:
 
         color = self.color_cache.get(progress, None)
         if color is None:
+            if progress > 1.0:
+                progress = 1.0
+            
             overall_progress = progress * (len(self.keyframes)-1)
             stage = int(overall_progress)
             stage_progress = overall_progress - stage
@@ -44,8 +47,8 @@ class ColorFade:
             # an IndexError
             if stage_progress == 0:
                 c = self._convert_to_rgb(self.keyframes[stage])
-                return tuple([int(255.0 * el) for el in c])
-
+                return tuple([int(255.0 * el) for el in c])          
+                
             frame1 = self.keyframes[stage]
             frame1_weight = 1 - stage_progress
 
