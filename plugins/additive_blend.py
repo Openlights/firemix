@@ -33,8 +33,8 @@ class AdditiveBlend(Transition):
 
         if progress >= 0.5:
             start = 2.0 * (1.0 - progress) * start
-        if progress <= 0.5:
-            end = (2.0 * progress) * end
+        if progress <= 0.25:
+            end = (4.0 * progress) * end
         
         (start + end).clip(0, 255, out=self.frame)
 

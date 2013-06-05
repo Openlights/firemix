@@ -12,11 +12,11 @@ class SimplexNoise(RawPreset):
 
     def setup(self):
         self.add_parameter(FloatParameter('hue-min', 0.0))
-        self.add_parameter(FloatParameter('hue-max', 1.0))
-        self.add_parameter(FloatParameter('speed', 7.0))
-        self.add_parameter(FloatParameter('color-speed', 0.5))
+        self.add_parameter(FloatParameter('hue-max', 3.0))
+        self.add_parameter(FloatParameter('speed', 0.7))
+        self.add_parameter(FloatParameter('color-speed', 0.2))
         self.add_parameter(IntParameter('resolution', 128))
-        self.add_parameter(FloatParameter('scale', 0.01))
+        self.add_parameter(FloatParameter('scale', 0.25))
 
         self.pixel_locations = self.scene().get_all_pixel_locations()
         self.pixel_addresses = {}

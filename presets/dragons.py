@@ -4,7 +4,7 @@ import random
 from lib.raw_preset import RawPreset
 from lib.colors import uint8_to_float, float_to_uint8
 from lib.color_fade import ColorFade
-from lib.parameters import FloatParameter, IntParameter, RGBParameter
+from lib.parameters import FloatParameter, IntParameter, RGBParameter, HSVParameter
 
 
 class Dragons(RawPreset):
@@ -14,12 +14,10 @@ class Dragons(RawPreset):
     """
 
     # Configurable parameters
-    _alive_color = (0.01, 1.0, 1.0)  # HSV
-    #_tail_color = (0.04, 1.0, 0.5)
-    _tail_color = (0.1, 1.0, 0.0)
-    _dead_color = (0.1, 0.87, 0.88)  # HSV
+    _alive_color = (0.5, 0.0, 1.0)  # HSV
+    _tail_color = (0.0, 1.0, 1.0)
+    _dead_color = (1.0, 1.0, 0.0)  # HSV
 
-    _growth_time = 0.3  # seconds
     _spontaneous_birth_probability = 0.0001
 
     # Internal parameters
@@ -45,11 +43,25 @@ class Dragons(RawPreset):
 
     def setup(self):
         random.seed()
-        self.add_parameter(FloatParameter('birth-rate', 0.09))
-        self.add_parameter(FloatParameter('tail-persist', 0.55))
-        self.add_parameter(IntParameter('pop-limit', 5))
+        self.add_parameter(FloatParameter('growth-time', 2.0))        
+        self.add_parameter(FloatParameter('birth-rate', 0.4))
+        self.add_parameter(FloatParameter('tail-persist', 0.5))
+        self.add_parameter(IntParameter('pop-limit', 20))
+        self.add_parameter(HSVParameter('alive-color', self._alive_color))
+        self.add_parameter(HSVParameter('dead-color', self._dead_color))
+        self.add_parameter(HSVParameter('tail-color', self._tail_color))
+        self._setup_colors()
+
+    def _setup_colors(self):
+        self._alive_color = self.parameter('alive-color').get()
+        self._dead_color = self.parameter('dead-color').get()
+        self._tail_color = self.parameter('tail-color').get()
+        fade_colors = [(0., 0., 0.), self.parameter('alive-color').get(), self.parameter('dead-color').get(), (0., 0., 0.)]
         self._growth_fader = ColorFade('hsv', [(0., 0., 0.), self._alive_color], tick_rate=self._mixer.get_tick_rate())
         self._tail_fader = ColorFade('hsv', [self._alive_color, self._tail_color, (0., 0., 0.)], tick_rate=self._mixer.get_tick_rate())
+
+    def parameter_changed(self, parameter):
+        self._setup_colors()
 
     def draw(self, dt):
 
@@ -69,7 +81,7 @@ class Dragons(RawPreset):
         for dragon in self._dragons:
             # Fade in
             if dragon.growing:
-                p = (dt - dragon.lifetime) / self._growth_time
+                p = (dt - dragon.lifetime) / self.parameter('growth-time').get()
                 if (p > 1):
                     p = 1.0
                 color = self._growth_fader.get_color(p)
