@@ -469,9 +469,8 @@
    </widget>
    <widget class="QMenu" name="menu_edit">
     <property name="title">
-     <string>Settings</string>
+     <string>Edit</string>
     </property>
-    <addaction name="action_settings_networking"/>
     <addaction name="action_edit_settings"/>
    </widget>
    <addaction name="menu_file"/>

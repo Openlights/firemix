@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>DlgSettings</class>
+ <widget class="QDialog" name="DlgSettings">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>611</width>
-    <height>353</height>
+    <width>613</width>
+    <height>351</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>FireMix Settings</string>
   </property>
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
@@ -40,27 +40,12 @@
         </column>
         <item>
          <property name="text">
-          <string>General</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
           <string>Mixer</string>
          </property>
         </item>
         <item>
          <property name="text">
           <string>Networking</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Plugins</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Presets</string>
          </property>
         </item>
         <item>
@@ -81,8 +66,66 @@
         <property name="currentIndex">
          <number>2</number>
         </property>
-        <widget class="QWidget" name="page_general"/>
-        <widget class="QWidget" name="page_mixer"/>
+        <widget class="QWidget" name="page_mixer">
+         <widget class="QWidget" name="formLayoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>171</width>
+            <height>201</height>
+           </rect>
+          </property>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="lbl_onset_holdoff">
+             <property name="text">
+              <string>Onset Holdoff (sec)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QDoubleSpinBox" name="edit_onset_holdoff">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.050000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="lbl_tick_rate">
+             <property name="text">
+              <string>Tick Rate (1/sec)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="spinBox">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>120</number>
+             </property>
+             <property name="singleStep">
+              <number>10</number>
+             </property>
+             <property name="value">
+              <number>30</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
         <widget class="QWidget" name="page_networking">
          <widget class="QWidget" name="verticalLayoutWidget_2">
           <property name="geometry">
@@ -109,7 +152,7 @@
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QTableWidget" name="tbl_clients">
+                 <widget class="QTableWidget" name="tbl_networking_clients">
                   <property name="rowCount">
                    <number>1</number>
                   </property>
@@ -176,7 +219,7 @@
                    <number>0</number>
                   </property>
                   <item>
-                   <widget class="QPushButton" name="btn_add_client">
+                   <widget class="QPushButton" name="btn_networking_add_client">
                     <property name="maximumSize">
                      <size>
                       <width>50</width>
@@ -189,7 +232,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="btn_del_client">
+                   <widget class="QPushButton" name="btn_networking_del_client">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -236,9 +279,56 @@
           </layout>
          </widget>
         </widget>
-        <widget class="QWidget" name="page_plugins"/>
-        <widget class="QWidget" name="page_presets"/>
-        <widget class="QWidget" name="page_strands"/>
+        <widget class="QWidget" name="page_strands">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>10</y>
+            <width>451</width>
+            <height>301</height>
+           </rect>
+          </property>
+          <property name="title">
+           <string>Strands</string>
+          </property>
+          <widget class="QTableWidget" name="tbl_strands_list">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>20</y>
+             <width>431</width>
+             <height>271</height>
+            </rect>
+           </property>
+           <row>
+            <property name="text">
+             <string>1</string>
+            </property>
+           </row>
+           <column>
+            <property name="text">
+             <string>ID</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Color Mode</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Enabled</string>
+            </property>
+           </column>
+           <item row="0" column="0">
+            <property name="text">
+             <string>1</string>
+            </property>
+           </item>
+          </widget>
+         </widget>
+        </widget>
        </widget>
       </item>
      </layout>
@@ -264,7 +354,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>DlgSettings</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -280,7 +370,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>DlgSettings</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
