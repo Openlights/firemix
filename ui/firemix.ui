@@ -81,6 +81,13 @@
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="btn_trigger_onset">
+         <property name="text">
+          <string>Trigger Onset</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QRadioButton" name="btn_onset_detected">
          <property name="enabled">
           <bool>false</bool>
@@ -447,7 +454,7 @@
      <x>0</x>
      <y>0</y>
      <width>751</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
