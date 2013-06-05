@@ -25,6 +25,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.btn_clear_playlist.clicked.connect(self.on_btn_clear_playlist)
         self.slider_global_dimmer.valueChanged.connect(self.on_global_dimmer)
         self.btn_shuffle_playlist.clicked.connect(self.on_btn_shuffle_playlist)
+        self.btn_trigger_onset.clicked.connect(self.on_btn_trigger_onset)
 
         # File menu
         self.action_file_load_scene.triggered.connect(self.on_file_load_scene)
@@ -77,6 +78,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     @QtCore.Slot()
     def clear_onset_detected(self):
         self.btn_onset_detected.setChecked(QtCore.Qt.Unchecked)
+
+    def on_btn_trigger_onset(self):
+        self._app.mixer.onset_detected()
+        self.onset_detected()
 
     def on_btn_playpause(self):
         if self._mixer.is_paused():
