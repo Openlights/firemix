@@ -1,6 +1,7 @@
 from PySide import QtCore, QtGui
 
 from ui.ui_dlg_settings import Ui_DlgSettings
+from lib import color_modes
 
 
 class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
@@ -83,7 +84,8 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             ip = self.tbl_networking_clients.item(i, 0).text()
             port = int(self.tbl_networking_clients.item(i, 1).text())
             enabled = (self.tbl_networking_clients.cellWidget(i, 2).checkState() == QtCore.Qt.Checked)
-            client = {"ip": ip, "port": port, "enabled": enabled}
+            color_mode = self.tbl_networking_clients.cellWidget(i, 3).currentText()
+            client = {"ip": ip, "port": port, "enabled": enabled, "color-mode": color_mode}
             if client not in clients:
                 clients.append(client)
         self.app.settings['networking']['clients'] = clients
@@ -95,11 +97,20 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             item_ip = QtGui.QTableWidgetItem(client["ip"])
             item_port = QtGui.QTableWidgetItem(str(client["port"]))
             item_enabled = QtGui.QCheckBox()
+
+            item_color_mode = QtGui.QComboBox()
+            for mode in color_modes.modes:
+                item_color_mode.addItem(mode)
+
+            item_color_mode.setCurrentIndex(color_modes.modes.index(client["color-mode"]))
+
             if client["enabled"]:
                 item_enabled.setCheckState(QtCore.Qt.Checked)
+
             self.tbl_networking_clients.setItem(i, 0, item_ip)
             self.tbl_networking_clients.setItem(i, 1, item_port)
             self.tbl_networking_clients.setCellWidget(i, 2, item_enabled)
+            self.tbl_networking_clients.setCellWidget(i, 3, item_color_mode)
         self.tbl_networking_clients.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
 
     def add_networking_client_row(self):
