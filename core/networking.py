@@ -9,7 +9,6 @@ class Networking:
     def __init__(self, app):
         self._socket = None
         self._app = app
-        self._clients = [(c["ip"], int(c["port"])) for c in app.settings['networking']['clients'] if c["enabled"]]
         self.open_socket()
 
     def open_socket(self):
@@ -44,7 +43,7 @@ class Networking:
             #packet = array.array('B', [0x27, (length & 0xFF00) >> 8, (length & 0xFF), strand] + strand_data[strand])
             packet.extend(array.array('B', [strand, command, (length & 0xFF), (length & 0xFF00) >> 8] + data))
 
-        for client in self._clients:
+        for client in [client for client in self._app.settings['networking']['clients'] if client["enabled"]]:
             self._socket.sendto(packet, (client[0], client[1]))
 
 
