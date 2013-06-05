@@ -18,10 +18,10 @@ class Twinkle(RawPreset):
     def setup(self):
         random.seed()
         self.add_parameter(FloatParameter('birth-rate', 0.15))
-        self.add_parameter(FloatParameter('fade-up-time', 0.25))
-        self.add_parameter(FloatParameter('fade-down-time', 2.5))
-        self.add_parameter(HSVParameter('on-color', (0.15, 1.0, 1.0)))
-        self.add_parameter(HSVParameter('off-color', (0.0, 0.0, 0.0)))
+        self.add_parameter(FloatParameter('fade-up-time', 0.5))
+        self.add_parameter(FloatParameter('fade-down-time', 4.0))
+        self.add_parameter(HSVParameter('on-color', (0.1, 1.0, 1.0)))
+        self.add_parameter(HSVParameter('off-color', (1.0, 0.0, 0.0)))
         self._setup_colors()
 
     def parameter_changed(self, parameter):
@@ -74,7 +74,7 @@ class Twinkle(RawPreset):
             self.setp(address, color)
 
     def _get_next_color(self, address, dt, down=False):
-        time_target = float(self.parameter('fade-up-time').get()) if down else float(self.parameter('fade-down-time').get())
+        time_target = float(self.parameter('fade-down-time').get()) if down else float(self.parameter('fade-up-time').get())
         progress = (dt - self._time[address]) / time_target
 
         if progress > 1.0:
