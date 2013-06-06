@@ -26,7 +26,7 @@ class FireMixApp(QtCore.QThread):
         self.args = args
         self.settings = Settings()
         self.net = Networking(self)
-        self.scene = Scene(SceneLoader(self))
+        self.scene = Scene(self)
         self.plugins = PluginLoader()
         self.mixer = Mixer(self)
         self.playlist = Playlist(self)
