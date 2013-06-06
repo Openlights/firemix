@@ -44,6 +44,6 @@ class Networking:
             packet.extend(array.array('B', [strand, command, (length & 0xFF), (length & 0xFF00) >> 8] + data))
 
         for client in [client for client in self._app.settings['networking']['clients'] if client["enabled"]]:
-            self._socket.sendto(packet, (client[0], client[1]))
+            self._socket.sendto(packet, (client["host"], client["port"]))
 
 

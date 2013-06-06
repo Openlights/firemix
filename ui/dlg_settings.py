@@ -22,8 +22,8 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         self.tbl_networking_clients.itemChanged.connect(self.validate_networking_client_table_item)
 
         self.port_validator = QtGui.QIntValidator(1, 65535, self)
-        ip_regex = QtCore.QRegExp(r"(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
-        self.ip_validator = QtGui.QRegExpValidator(ip_regex, self)
+        host_regex = QtCore.QRegExp(r"(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+        self.host_validator = QtGui.QRegExpValidator(host_regex, self)
 
         # Setup validation and acceptance methods for all panes
         self.validators = [self.validate_networking]
@@ -53,8 +53,8 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         if item is None:
             return True
         valid = None
-        if item.column() == 0:  # IP address
-            valid, _, _ = self.ip_validator.validate(item.text(), 0)
+        if item.column() == 0:  # host address
+            valid, _, _ = self.host_validator.validate(item.text(), 0)
         elif item.column() == 1:  # Port
             valid, _, _ = self.port_validator.validate(item.text(), 0)
         else:
@@ -81,11 +81,11 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
     def accept_networking(self):
         clients = []
         for i in range(self.tbl_networking_clients.rowCount()):
-            ip = self.tbl_networking_clients.item(i, 0).text()
+            host = self.tbl_networking_clients.item(i, 0).text()
             port = int(self.tbl_networking_clients.item(i, 1).text())
             enabled = (self.tbl_networking_clients.cellWidget(i, 2).checkState() == QtCore.Qt.Checked)
             color_mode = self.tbl_networking_clients.cellWidget(i, 3).currentText()
-            client = {"ip": ip, "port": port, "enabled": enabled, "color-mode": color_mode}
+            client = {"host": host, "port": port, "enabled": enabled, "color-mode": color_mode}
             if client not in clients:
                 clients.append(client)
         self.app.settings['networking']['clients'] = clients
@@ -94,7 +94,7 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         clients = self.app.settings['networking']['clients']
         self.tbl_networking_clients.setRowCount(len(clients))
         for i, client in enumerate(clients):
-            item_ip = QtGui.QTableWidgetItem(client["ip"])
+            item_host = QtGui.QTableWidgetItem(client["host"])
             item_port = QtGui.QTableWidgetItem(str(client["port"]))
             item_enabled = QtGui.QCheckBox()
 
@@ -107,7 +107,7 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             if client["enabled"]:
                 item_enabled.setCheckState(QtCore.Qt.Checked)
 
-            self.tbl_networking_clients.setItem(i, 0, item_ip)
+            self.tbl_networking_clients.setItem(i, 0, item_host)
             self.tbl_networking_clients.setItem(i, 1, item_port)
             self.tbl_networking_clients.setCellWidget(i, 2, item_enabled)
             self.tbl_networking_clients.setCellWidget(i, 3, item_color_mode)
@@ -122,3 +122,6 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
 
     def del_networking_client_row(self):
         self.tbl_networking_clients.removeRow(self.tbl_networking_clients.currentRow())
+
+    def populate_strand_settings_table(self):
+        strands = self.app.scene.strand_settings()

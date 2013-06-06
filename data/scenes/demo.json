@@ -497,7 +497,37 @@
       "strand": 1, 
       "type": "linear"
     }
-  ], 
+  ],
+  "strand-settings": [
+      {
+          "id": 0,
+          "color-mode": "RGB8"
+      },
+      {
+          "id": 1,
+          "color-mode": "BGR8"
+      },
+      {
+          "id": 2,
+          "color-mode": "BGR8"
+      },
+      {
+          "id": 3,
+          "color-mode": "BGR8"
+      },
+      {
+          "id": 4,
+          "color-mode": "BGR8"
+      },
+      {
+          "id": 5,
+          "color-mode": "BGR8"
+      },
+      {
+          "id": 6,
+          "color-mode": "BGR8"
+      },
+  ],
   "labels_enable": true, 
   "locked": true, 
   "name": "Demo"

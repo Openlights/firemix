@@ -57,6 +57,12 @@ class Scene:
     def name(self):
         return self._data.get("name", "")
 
+    def get_strand_settings(self):
+        return self._data.get("strand-settings", [])
+
+    def set_strand_settings(self, settings):
+        self._data["strand-settings"] = settings
+
     def fixtures(self):
         """
         Returns a flat list of all fixtures in the scene.
