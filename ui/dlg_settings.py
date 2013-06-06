@@ -27,7 +27,7 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
 
         # Setup validation and acceptance methods for all panes
         self.validators = [self.validate_networking]
-        self.acceptors = [self.accept_networking]
+        self.acceptors = [self.accept_networking, self.accept_strands]
 
         # Initialize settings panes
         self.populate_networking_clients_table()
@@ -91,6 +91,16 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
                 clients.append(client)
         self.app.settings['networking']['clients'] = clients
 
+    def accept_strands(self):
+        strands = []
+        for i in range(self.tbl_strands_list.rowCount()):
+            idx = int(self.tbl_strands_list.item(i, 0).text())
+            color_mode = self.tbl_strands_list.cellWidget(i, 1).currentText()
+            enabled = (self.tbl_strands_list.cellWidget(i, 2).checkState() == QtCore.Qt.Checked)
+            strand = {"id": idx, "enabled": enabled, "color-mode": color_mode}
+            strands.append(strand)
+        self.app.scene.set_strand_settings(strands)
+
     def populate_networking_clients_table(self):
         clients = self.app.settings['networking']['clients']
         self.tbl_networking_clients.setRowCount(len(clients))
@@ -151,5 +161,6 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
 
             self.tbl_strands_list.setItem(i, 0, idx)
             self.tbl_strands_list.setCellWidget(i, 1, color_mode)
-            self.tbl_strands_list.setCellWidget(i, 2, w_enabled)
+            # TODO: Use w_enabled rather than enabled (need to change the accept method)
+            self.tbl_strands_list.setCellWidget(i, 2, enabled)
 
