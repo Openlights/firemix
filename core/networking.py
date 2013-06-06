@@ -1,6 +1,7 @@
 import socket
 import array
 import struct
+import colorsys
 from time import sleep
 
 
@@ -40,7 +41,8 @@ class Networking:
                 color_mode = strand_settings[strand]["color-mode"]
 
                 if client_color_mode == "RGB8":
-                    data = [int(255.0 * min(1.0, item)) for sublist in strand_data[strand][0:(3*160)] for item in sublist]
+                    data = [colorsys.hls_to_rgb(*pixel) for pixel in strand_data[strand][0:(3*160)]]
+                    data = [int(255.0 * min(1.0, item)) for sublist in data for item in sublist]
 
                 length = len(data)
                 command = COMMAND_SET_RGB if color_mode == "RGB8" else COMMAND_SET_BGR
