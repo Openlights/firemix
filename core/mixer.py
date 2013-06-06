@@ -92,6 +92,7 @@ class Mixer(QtCore.QObject):
 
     def stop(self):
         self._running = False
+        self._tick_timer.cancel()
         self._stop_time = time.time()
 
     def pause(self, pause=True):
