@@ -45,7 +45,6 @@ class SimplexNoise(RawPreset):
         delta = dt * self.speed
         d3 = self.color_speed * dt
         posterization = self.parameter('resolution').get()
-        setp = self.setp
         
         for pixel, location in self.pixel_locations:
             hue = (1.0 + snoise3(self.scale * (location[0] + delta), self.scale * (location[1] + delta), d3, 1, 0.5, 0.5)) / 2.0
@@ -63,4 +62,4 @@ class SimplexNoise(RawPreset):
             
             brightness = 0 if brightness < self.parameter('blackout').get() else 1.0
             
-            setPixelHSV(pixel, (hue, saturation, brightness))
+            self.setPixelHSV(pixel, (hue, saturation, brightness))
