@@ -1,6 +1,8 @@
 import unittest
 import colorsys
 
+from lib.colors import truncate
+
 _color_sys_converters = {
     "rgb": lambda r, g, b: (r, g, b),
     "hls": colorsys.hls_to_rgb,
@@ -33,6 +35,8 @@ class ColorFade:
         Given a progress value between 0 and 1, returns the color for that
         progress and a (r, g, b) tuple with float values between 0 and 1
         """
+
+        progress = truncate(0.0, progress, 1.0)
 
         color = self.color_cache.get(progress, None)
         if color is None:
