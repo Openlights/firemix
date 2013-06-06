@@ -31,6 +31,7 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
 
         # Initialize settings panes
         self.populate_networking_clients_table()
+        self.populate_strand_settings_table()
 
     def on_tree_changed(self):
         self.settings_stack.setCurrentIndex(self.tree_settings.currentIndex().row())
@@ -124,4 +125,31 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         self.tbl_networking_clients.removeRow(self.tbl_networking_clients.currentRow())
 
     def populate_strand_settings_table(self):
-        strands = self.app.scene.strand_settings()
+        strands = self.app.scene.get_strand_settings()
+        self.tbl_strands_list.setRowCount(len(strands))
+        self.tbl_strands_list.verticalHeader().setVisible(False)
+        for i, strand in enumerate(strands):
+            idx = QtGui.QTableWidgetItem(str(strand["id"]))
+            idx.setFlags(~QtCore.Qt.ItemIsEnabled)
+
+            enabled = QtGui.QCheckBox()
+            if strand["enabled"]:
+                enabled.setCheckState(QtCore.Qt.Checked)
+
+            color_mode = QtGui.QComboBox()
+            for mode in color_modes.strand_modes:
+                color_mode.addItem(mode)
+
+            color_mode.setCurrentIndex(color_modes.strand_modes.index(strand["color-mode"]))
+
+            w_enabled = QtGui.QWidget()
+            cb_layout = QtGui.QHBoxLayout()
+            cb_layout.addWidget(enabled)
+            cb_layout.setAlignment(QtCore.Qt.AlignCenter)
+            cb_layout.setContentsMargins(0, 0, 0, 0)
+            w_enabled.setLayout(cb_layout)
+
+            self.tbl_strands_list.setItem(i, 0, idx)
+            self.tbl_strands_list.setCellWidget(i, 1, color_mode)
+            self.tbl_strands_list.setCellWidget(i, 2, w_enabled)
+
