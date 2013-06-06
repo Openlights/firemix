@@ -108,7 +108,7 @@ class Fungus(RawPreset):
                 self._growing.remove(address)
                 self._alive.append(address)
                 self._time[address] = dt
-            self.setp(address, color)
+            self.setPixelRGB(address, color)
 
             # Spread
             if (self._pop < self._pop_limit) and random.random() > (1.0 - self._spread_rate):
@@ -132,7 +132,7 @@ class Fungus(RawPreset):
                 self._time[address] = dt
                 self._pop -= 1
 
-            self.setp(address, self._alive_color_rgb)
+            self.setPixelRGB(address, self._alive_color_rgb)
 
             # Spread
             if (self._pop < self._pop_limit) and random.random() > (1.0 - self._birth_rate):
@@ -149,14 +149,14 @@ class Fungus(RawPreset):
                 self._dying.remove(address)
                 self._fading_out.append(address)
                 self._time[address] = dt
-            self.setp(address, color)
+            self.setPixelRGB(address, color)
 
         # Fade out
         for address in self._fading_out:
             p, color = self._get_next_color(address, self._fade_out_time, dt)
             if p >= 1.0:
                 self._fading_out.remove(address)
-            self.setp(address, color)
+            self.setPixelRGB(address, color)
 
         # Mass destruction
         if (self._pop == self._pop_limit) or \

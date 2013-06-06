@@ -63,4 +63,4 @@ class SimplexNoise(RawPreset):
             
             brightness = 0 if brightness < self.parameter('blackout').get() else 1.0
             
-            setp(pixel, hsv_float_to_rgb_uint8((hue, saturation, brightness)))                    
+            setPixelHSV(pixel, (hue, saturation, brightness))

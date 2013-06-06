@@ -64,14 +64,14 @@ class Twinkle(RawPreset):
                 self._fading_up.remove(address)
                 self._fading_down.append(address)
                 self._time[address] = dt
-            self.setp(address, color)
+            self.setPixelRGB(address, color)
 
         # Decay
         for address in self._fading_down:
             color = self._get_next_color(address, dt, down=True)
             if color == self._down_target_rgb:
                 self._fading_down.remove(address)
-            self.setp(address, color)
+            self.setPixelRGB(address, color)
 
     def _get_next_color(self, address, dt, down=False):
         time_target = float(self.parameter('fade-down-time').get()) if down else float(self.parameter('fade-up-time').get())

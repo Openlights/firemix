@@ -90,12 +90,12 @@ class Dragons(RawPreset):
                     dragon.alive = True
                     dragon.lifetime = dt
 
-                self.setp(dragon.loc, color)
+                self.setPixelRGB(dragon.loc, color)
 
             # Alive - can move or die
             if dragon.alive:
                 s, f, p = dragon.loc
-                self.setp(dragon.loc, (0, 0, 0))
+                self.setPixelRGB(dragon.loc, (0, 0, 0))
 
                 # At a vertex: optionally spawn new dragons
                 if dragon.moving and  (p == 0 or p == (self.scene().fixture(s, f).pixels - 1)):
@@ -139,24 +139,24 @@ class Dragons(RawPreset):
                         assert(False)
                     dragon.loc = new_address
                     dragon.moving = True
-                    self.setp(new_address, self._alive_color_rgb)
+                    self.setPixelRGB(new_address, self._alive_color_rgb)
 
                 # Kill dragons that run into each other
                 if dragon in self._dragons:
                     colliding = [d for d in self._dragons if d != dragon and d.loc == dragon.loc]
                     if len(colliding) > 0:
                         #print "collision between", dragon, "and", colliding[0]
-                        self.setp(dragon.loc, (0, 0, 0))
+                        self.setPixelRGB(dragon.loc, (0, 0, 0))
                         self._dragons.remove(dragon)
                         self._dragons.remove(colliding[0])
-                        self.setp(dragon.loc, (0, 0, 0))
+                        self.setPixelRGB(dragon.loc, (0, 0, 0))
                         self._pop -= 2
 
         # Draw tails
         for loc, time in self._tails:
             if (dt - time) > self.parameter('tail-persist').get():
                 self._tails.remove((loc, time))
-                self.setp(loc, (0, 0, 0))
+                self.setPixelRGB(loc, (0, 0, 0))
             else:
                 progress = (dt - time) / self.parameter('tail-persist').get()
-                self.setp(loc, self._tail_fader.get_color(progress))
+                self.setPixelRGB(loc, self._tail_fader.get_color(progress))
