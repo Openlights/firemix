@@ -353,9 +353,10 @@ class Mixer(QtCore.QObject):
         Returns an optimized list of strand data, in fixture order, using the scene map
         """
         len_strand = sum([fix.pixels for fix in self._scene.fixtures() if fix.strand == strand_id])
-        data = self._main_buffer[strand_key].astype(int).tolist()
-        data_flat = [item for sublist in data for item in sublist]
-        return data_flat[0:3 * len_strand]
+        data = self._main_buffer[strand_key].tolist()
+
+        #data_flat = [item for sublist in data for item in sublist]
+        return data
 
     def create_buffers(self):
         """

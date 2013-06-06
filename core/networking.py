@@ -25,21 +25,23 @@ class Networking:
     def write_strand(self, strand_data):
         """
         Performs a bulk strand write.
-        The expected input format is a dictionary of strand addresses and strand data.
-        The input strand data is a flat list of pixel values for all fixtures in the strand.
-        Example: {0: [255, 127, 50, 255, 100, 70, ...]}
+        Decodes the HLS-Float data according to client settings
         """
         strand_settings = self._app.scene.get_strand_settings()
 
         for client in [client for client in self._app.settings['networking']['clients'] if client["enabled"]]:
             # TODO: Split into smaller packets so that less-than-ideal networks will be OK
             packet = array.array('B', [])
+            client_color_mode = client["color-mode"]
 
             for strand in strand_data.keys():
                 if not strand_settings[strand]["enabled"]:
                     continue
                 color_mode = strand_settings[strand]["color-mode"]
-                data = strand_data[strand][0:(3*160)]
+
+                if client_color_mode == "RGB8":
+                    data = [int(255.0 * min(1.0, item)) for sublist in strand_data[strand][0:(3*160)] for item in sublist]
+
                 length = len(data)
                 command = COMMAND_SET_RGB if color_mode == "RGB8" else COMMAND_SET_BGR
                 packet.extend(array.array('B', [strand, command, (length & 0xFF), (length & 0xFF00) >> 8] + data))
