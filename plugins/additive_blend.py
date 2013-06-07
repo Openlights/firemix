@@ -27,15 +27,15 @@ class AdditiveBlend(Transition):
         self.reset()
 
     def reset(self):
-        self.frame = np.tile(np.array([0.0], dtype=np.uint8), (self.x, self.y, 3))
+        self.frame = np.tile(np.array([0.0], dtype=np.float), (self.x, self.y, 3))
 
     def get(self, start, end, progress):
 
-        if progress >= 0.5:
-            start = 2.0 * (1.0 - progress) * start
+        if progress >= 0.75:
+            start = 4.0 * (1.0 - progress) * start
         if progress <= 0.25:
             end = (4.0 * progress) * end
         
-        (start + end).clip(0, 255, out=self.frame)
+        (start + end).clip(0, 1, out=self.frame)
 
         return self.frame
