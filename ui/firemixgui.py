@@ -96,7 +96,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def update_mixer_fps(self):
         frames = self._mixer._num_frames
-        fps = float(frames - self.last_frames) / (time.time() - self.last_time)
+        if self._mixer._running and frames > self.last_frames:
+            fps = float(frames - self.last_frames) / (time.time() - self.last_time)
+        else:
+            fps = 0.0
+            self.last_frames = frames
         self.last_time = time.time()
         self.last_frames = frames
         self.setWindowTitle("FireMix - %0.2f FPS" % fps)

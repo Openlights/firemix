@@ -82,6 +82,7 @@ class Mixer(QtCore.QObject):
 
     def run(self):
         if not self._running:
+            self._tick_rate = self._app.settings.get('mixer')['tick-rate']
             self._tick_timer = threading.Timer(1.0 / self._tick_rate, self.on_tick_timer)
             self._tick_timer.start()
             self._running = True

@@ -26,10 +26,11 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         self.host_validator = QtGui.QRegExpValidator(host_regex, self)
 
         # Setup validation and acceptance methods for all panes
-        self.validators = [self.validate_networking]
-        self.acceptors = [self.accept_networking, self.accept_strands]
+        self.validators = [self.validate_networking, self.validate_mixer]
+        self.acceptors = [self.accept_networking, self.accept_strands, self.accept_mixer]
 
         # Initialize settings panes
+        self.populate_mixer_settings()
         self.populate_networking_clients_table()
         self.populate_strand_settings_table()
 
@@ -163,4 +164,30 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             self.tbl_strands_list.setCellWidget(i, 1, color_mode)
             # TODO: Use w_enabled rather than enabled (need to change the accept method)
             self.tbl_strands_list.setCellWidget(i, 2, enabled)
+
+    def populate_mixer_settings(self):
+        self.edit_onset_holdoff.setValue(self.app.settings.get("mixer")["onset-holdoff"])
+        self.edit_tick_rate.setValue(self.app.settings.get("mixer")["tick-rate"])
+
+    def validate_mixer(self):
+        onset_holdoff = self.edit_onset_holdoff.value()
+        tick_rate = self.edit_tick_rate.value()
+
+        if onset_holdoff < 0.001 or onset_holdoff > 10.0:
+            return False
+
+        if tick_rate < 1 or tick_rate > 120:
+            return False
+
+        return True
+
+    def accept_mixer(self):
+        onset_holdoff = self.edit_onset_holdoff.value()
+        tick_rate = self.edit_tick_rate.value()
+
+        self.app.settings.get("mixer")["onset-holdoff"] = onset_holdoff
+        self.app.settings.get("mixer")["tick-rate"] = tick_rate
+
+        self.app.mixer.stop()
+        self.app.mixer.run()
 
