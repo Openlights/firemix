@@ -128,8 +128,9 @@ class Dragons(RawPreset):
                                     num_children += 1
                     # Kill dragons that reach the end of a fixture
                     dragon.moving = False
-                    self._dragons.remove(dragon)
-                    self._pop -= 1
+                    if dragon in self._dragons:
+                        self._dragons.remove(dragon)
+                        self._pop -= 1
                 else:
                     # Move dragons along the fixture
                     self._tails.append((dragon.loc, dt))
