@@ -58,7 +58,7 @@ class SeparateStrandWithFlash(Preset):
 
     def _setup_tickers(self):
         self.clear_tickers()
-        self.add_ticker(flash((), (255, 255, 255), self.parameter('flash-on'), self.parameter('flash-off')), 1)
+        self.add_ticker(flash((), (1, 1, 1), self.parameter('flash-on'), self.parameter('flash-off')), 1)
         self.add_ticker(speed(fade(self.outside, Rainbow), self.parameter('speed')))
         self.add_ticker(speed(offset(fade(self.spokes, Rainbow), 1.0 * self.parameter('interval').get()), self.parameter('speed').get()))
         self.add_ticker(speed(offset(fade(self.star, Rainbow), 2.0 * self.parameter('interval').get()), self.parameter('speed').get()))

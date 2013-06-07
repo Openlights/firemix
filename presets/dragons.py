@@ -4,7 +4,7 @@ import random
 from lib.raw_preset import RawPreset
 from lib.colors import uint8_to_float, float_to_uint8
 from lib.color_fade import ColorFade
-from lib.parameters import FloatParameter, IntParameter, RGBParameter, HSVParameter
+from lib.parameters import FloatParameter, IntParameter, HLSParameter
 
 
 class Dragons(RawPreset):
@@ -14,9 +14,9 @@ class Dragons(RawPreset):
     """
 
     # Configurable parameters
-    _alive_color = (0.5, 0.0, 1.0)  # HSV
-    _tail_color = (0.0, 1.0, 1.0)
-    _dead_color = (1.0, 1.0, 0.0)  # HSV
+    _alive_color = (0.0, 1.0, 1.0)
+    _tail_color = (0.5, 0.0, 1.0)
+    _dead_color = (0.0, 0.0, 0.0)
 
     _spontaneous_birth_probability = 0.0001
 
@@ -36,9 +36,9 @@ class Dragons(RawPreset):
 
     _dragons = []
     _tails = []
-    _alive_color_rgb = float_to_uint8(colorsys.hsv_to_rgb(*_alive_color))
-    _tail_color_rgb = float_to_uint8(colorsys.hsv_to_rgb(*_tail_color))
-    _dead_color_rgb = float_to_uint8(colorsys.hsv_to_rgb(*_dead_color))
+    _alive_color = _alive_color
+    _tail_color = _tail_color
+    _dead_color = _dead_color
     _pop = 0
 
     def setup(self):
@@ -47,9 +47,9 @@ class Dragons(RawPreset):
         self.add_parameter(FloatParameter('birth-rate', 0.4))
         self.add_parameter(FloatParameter('tail-persist', 0.5))
         self.add_parameter(IntParameter('pop-limit', 20))
-        self.add_parameter(HSVParameter('alive-color', self._alive_color))
-        self.add_parameter(HSVParameter('dead-color', self._dead_color))
-        self.add_parameter(HSVParameter('tail-color', self._tail_color))
+        self.add_parameter(HLSParameter('alive-color', self._alive_color))
+        self.add_parameter(HLSParameter('dead-color', self._dead_color))
+        self.add_parameter(HLSParameter('tail-color', self._tail_color))
         self._setup_colors()
 
     def _setup_colors(self):
@@ -57,8 +57,8 @@ class Dragons(RawPreset):
         self._dead_color = self.parameter('dead-color').get()
         self._tail_color = self.parameter('tail-color').get()
         fade_colors = [(0., 0., 0.), self.parameter('alive-color').get(), self.parameter('dead-color').get(), (0., 0., 0.)]
-        self._growth_fader = ColorFade('hsv', [(0., 0., 0.), self._alive_color], tick_rate=self._mixer.get_tick_rate())
-        self._tail_fader = ColorFade('hsv', [self._alive_color, self._tail_color, (0., 0., 0.)], tick_rate=self._mixer.get_tick_rate())
+        self._growth_fader = ColorFade([(0., 0., 0.), self._alive_color], tick_rate=self._mixer.get_tick_rate())
+        self._tail_fader = ColorFade([self._alive_color, self._tail_color, (0., 0., 0.)], tick_rate=self._mixer.get_tick_rate())
 
     def parameter_changed(self, parameter):
         self._setup_colors()
@@ -90,12 +90,12 @@ class Dragons(RawPreset):
                     dragon.alive = True
                     dragon.lifetime = dt
 
-                self.setPixelRGB(dragon.loc, color)
+                self.setPixelHLS(dragon.loc, color)
 
             # Alive - can move or die
             if dragon.alive:
                 s, f, p = dragon.loc
-                self.setPixelRGB(dragon.loc, (0, 0, 0))
+                self.setPixelHLS(dragon.loc, (0, 0, 0))
 
                 # At a vertex: optionally spawn new dragons
                 if dragon.moving and  (p == 0 or p == (self.scene().fixture(s, f).pixels - 1)):
@@ -139,24 +139,24 @@ class Dragons(RawPreset):
                         assert(False)
                     dragon.loc = new_address
                     dragon.moving = True
-                    self.setPixelRGB(new_address, self._alive_color_rgb)
+                    self.setPixelHLS(new_address, self._alive_color)
 
                 # Kill dragons that run into each other
                 if dragon in self._dragons:
                     colliding = [d for d in self._dragons if d != dragon and d.loc == dragon.loc]
                     if len(colliding) > 0:
                         #print "collision between", dragon, "and", colliding[0]
-                        self.setPixelRGB(dragon.loc, (0, 0, 0))
+                        self.setPixelHLS(dragon.loc, (0, 0, 0))
                         self._dragons.remove(dragon)
                         self._dragons.remove(colliding[0])
-                        self.setPixelRGB(dragon.loc, (0, 0, 0))
+                        self.setPixelHLS(dragon.loc, (0, 0, 0))
                         self._pop -= 2
 
         # Draw tails
         for loc, time in self._tails:
             if (dt - time) > self.parameter('tail-persist').get():
                 self._tails.remove((loc, time))
-                self.setPixelRGB(loc, (0, 0, 0))
+                self.setPixelHLS(loc, (0, 0, 0))
             else:
                 progress = (dt - time) / self.parameter('tail-persist').get()
-                self.setPixelRGB(loc, self._tail_fader.get_color(progress))
+                self.setPixelHLS(loc, self._tail_fader.get_color(progress))

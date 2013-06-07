@@ -4,7 +4,7 @@ import random
 from lib.raw_preset import RawPreset
 from lib.colors import float_to_uint8
 from lib.color_fade import ColorFade
-from lib.parameters import FloatParameter, HSVParameter
+from lib.parameters import FloatParameter, HLSParameter
 
 
 class Twinkle(RawPreset):
@@ -20,8 +20,8 @@ class Twinkle(RawPreset):
         self.add_parameter(FloatParameter('birth-rate', 0.15))
         self.add_parameter(FloatParameter('fade-up-time', 0.5))
         self.add_parameter(FloatParameter('fade-down-time', 4.0))
-        self.add_parameter(HSVParameter('on-color', (0.1, 1.0, 1.0)))
-        self.add_parameter(HSVParameter('off-color', (1.0, 0.0, 0.0)))
+        self.add_parameter(HLSParameter('on-color', (0.1, 1.0, 1.0)))
+        self.add_parameter(HLSParameter('off-color', (1.0, 0.0, 1.0)))
         self._setup_colors()
 
     def parameter_changed(self, parameter):
@@ -29,9 +29,9 @@ class Twinkle(RawPreset):
             self._setup_colors()
 
     def _setup_colors(self):
-        self._up_target_rgb = float_to_uint8(colorsys.hsv_to_rgb(*self.parameter('on-color').get()))
-        self._down_target_rgb = float_to_uint8(colorsys.hsv_to_rgb(*self.parameter('off-color').get()))
-        self._fader = ColorFade('hsv', [self.parameter('off-color').get(), self.parameter('on-color').get()])
+        self._up_target = self.parameter('on-color').get()
+        self._down_target = self.parameter('off-color').get()
+        self._fader = ColorFade([self.parameter('off-color').get(), self.parameter('on-color').get()])
 
     def reset(self):
         self._fading_up = []
@@ -60,18 +60,18 @@ class Twinkle(RawPreset):
         # Growth
         for address in self._fading_up:
             color = self._get_next_color(address, dt)
-            if color == self._up_target_rgb:
+            if color == self._up_target:
                 self._fading_up.remove(address)
                 self._fading_down.append(address)
                 self._time[address] = dt
-            self.setPixelRGB(address, color)
+            self.setPixelHLS(address, color)
 
         # Decay
         for address in self._fading_down:
             color = self._get_next_color(address, dt, down=True)
-            if color == self._down_target_rgb:
+            if color == self._down_target:
                 self._fading_down.remove(address)
-            self.setPixelRGB(address, color)
+            self.setPixelHLS(address, color)
 
     def _get_next_color(self, address, dt, down=False):
         time_target = float(self.parameter('fade-down-time').get()) if down else float(self.parameter('fade-up-time').get())

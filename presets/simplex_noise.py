@@ -2,7 +2,6 @@ from noise import snoise3
 
 from lib.raw_preset import RawPreset
 from lib.parameters import FloatParameter, IntParameter
-from lib.colors import hsv_float_to_rgb_uint8
 import math
 
 class SimplexNoise(RawPreset):

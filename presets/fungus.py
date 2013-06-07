@@ -4,7 +4,7 @@ import random
 from lib.raw_preset import RawPreset
 from lib.colors import uint8_to_float, float_to_uint8
 from lib.color_fade import ColorFade
-from lib.parameters import FloatParameter, IntParameter, HSVParameter
+from lib.parameters import FloatParameter, IntParameter, HLSParameter
 
 
 class Fungus(RawPreset):
@@ -27,18 +27,19 @@ class Fungus(RawPreset):
     _time = {}
     _pop = 0
     _fader = None
-    _growth_time = 0.6
-    _life_time = 1.0
+    
+    _growth_time = 0.6    
+    _life_time = 0.5
     _isolated_life_time = 1.0
-    _death_time = 7.0
+    _death_time = 3.0
     _birth_rate = 0.05
     _spread_rate = 0.25
-    _fade_out_time = 4.0
-    _mass_destruction_time = 10.0
+    _fade_out_time = 2.0
+    _mass_destruction_time = 2.0
     _mass_destruction_threshold = 150
     _pop_limit = 500
-    _alive_color = (1.0, 0.0, 1.0)
-    _dead_color = (0.0, 1.0, 1.0)
+    _alive_color = (1.0, 1.0, 1.0)
+    _dead_color = (0.0, 0.5, 1.0)
 
     def setup(self):
         self._pop = 0
@@ -53,8 +54,8 @@ class Fungus(RawPreset):
         self.add_parameter(FloatParameter('mass-destruction-time', self._mass_destruction_time))
         self.add_parameter(IntParameter('mass-destruction-threshold', self._mass_destruction_threshold))
         self.add_parameter(IntParameter('pop-limit', self._pop_limit))
-        self.add_parameter(HSVParameter('alive-color', self._alive_color))
-        self.add_parameter(HSVParameter('dead-color', self._dead_color))
+        self.add_parameter(HLSParameter('alive-color', self._alive_color))
+        self.add_parameter(HLSParameter('dead-color', self._dead_color))
         self.parameter_changed(None)
 
     def reset(self):
@@ -80,10 +81,10 @@ class Fungus(RawPreset):
         self._pop_limit = self._pop_limit
 
     def _setup_colors(self):
-        self._alive_color_rgb = float_to_uint8(colorsys.hsv_to_rgb(*self.parameter('alive-color').get()))
-        self._dead_color_rgb = float_to_uint8(colorsys.hsv_to_rgb(*self.parameter('dead-color').get()))
-        fade_colors = [(0., 0., 0.), self.parameter('alive-color').get(), self.parameter('dead-color').get(), (0., 0., 0.)]
-        self._fader = ColorFade('hsv', fade_colors, tick_rate=self._mixer.get_tick_rate())
+        self._alive_color = self.parameter('alive-color').get()
+        self._dead_color = self.parameter('dead-color').get()
+        fade_colors = [(0., 0., 1.), self.parameter('alive-color').get(), self.parameter('dead-color').get(), (0., 0., 1.)]
+        self._fader = ColorFade(fade_colors, tick_rate=self._mixer.get_tick_rate())
 
     def draw(self, dt):
 
@@ -108,7 +109,7 @@ class Fungus(RawPreset):
                 self._growing.remove(address)
                 self._alive.append(address)
                 self._time[address] = dt
-            self.setPixelRGB(address, color)
+            self.setPixelHLS(address, color)
 
             # Spread
             if (self._pop < self._pop_limit) and random.random() > (1.0 - self._spread_rate):
@@ -132,7 +133,7 @@ class Fungus(RawPreset):
                 self._time[address] = dt
                 self._pop -= 1
 
-            self.setPixelRGB(address, self._alive_color_rgb)
+            self.setPixelHLS(address, self._alive_color)
 
             # Spread
             if (self._pop < self._pop_limit) and random.random() > (1.0 - self._birth_rate):
@@ -149,14 +150,14 @@ class Fungus(RawPreset):
                 self._dying.remove(address)
                 self._fading_out.append(address)
                 self._time[address] = dt
-            self.setPixelRGB(address, color)
+            self.setPixelHLS(address, color)
 
         # Fade out
         for address in self._fading_out:
             p, color = self._get_next_color(address, self._fade_out_time, dt)
             if p >= 1.0:
                 self._fading_out.remove(address)
-            self.setPixelRGB(address, color)
+            self.setPixelHLS(address, color)
 
         # Mass destruction
         if (self._pop == self._pop_limit) or \

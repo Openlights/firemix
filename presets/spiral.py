@@ -3,7 +3,6 @@ import random
 import math
 
 from lib.raw_preset import RawPreset
-from lib.colors import hsv_float_to_rgb_uint8
 from lib.parameters import FloatParameter
 
 
