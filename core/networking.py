@@ -4,6 +4,8 @@ import struct
 import colorsys
 from time import sleep
 
+from lib.colors import clip
+
 
 COMMAND_SET_BGR = 0x10
 COMMAND_SET_RGB = 0x20
@@ -42,7 +44,7 @@ class Networking:
 
                 if client_color_mode == "RGB8":
                     data = [colorsys.hls_to_rgb(*pixel) for pixel in strand_data[strand][0:(3*160)]]
-                    data = [int(255.0 * min(1.0, item)) for sublist in data for item in sublist]
+                    data = [clip(0, int(255.0 * item), 255) for sublist in data for item in sublist]
 
                 length = len(data)
                 command = COMMAND_SET_RGB if color_mode == "RGB8" else COMMAND_SET_BGR
