@@ -1,3 +1,5 @@
+import time
+
 from PySide import QtGui, QtCore
 
 from ui.ui_firemix import Ui_FireMixMain
@@ -62,6 +64,14 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         if self._app.aubio_connector is not None:
             self._app.aubio_connector.onset_detected.connect(self.onset_detected)
 
+        # Mixer FPS update
+        self.last_frames = 0
+        self.last_time = time.time()
+        self.mixer_fps_update_timer = QtCore.QTimer()
+        self.mixer_fps_update_timer.setInterval(1000)
+        self.mixer_fps_update_timer.timeout.connect(self.update_mixer_fps)
+        self.mixer_fps_update_timer.start()
+
         self.update_mixer_settings()
 
     def closeEvent(self, event):
@@ -83,6 +93,13 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_btn_trigger_onset(self):
         self._app.mixer.onset_detected()
         self.onset_detected()
+
+    def update_mixer_fps(self):
+        frames = self._mixer._num_frames
+        fps = float(frames - self.last_frames) / (time.time() - self.last_time)
+        self.last_time = time.time()
+        self.last_frames = frames
+        self.setWindowTitle("FireMix - %0.2f FPS" % fps)
 
     def on_btn_playpause(self):
         if self._mixer.is_paused():
