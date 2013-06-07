@@ -14,13 +14,15 @@
     "networking": {
         "clients": [
             {
-                "enabled": true, 
-                "ip": "127.0.0.1", 
+                "color-mode": "RGB8",
+                "enabled": true,
+                "host": "127.0.0.1",
                 "port": 3020
-            }, 
+            },
             {
-                "enabled": false, 
-                "ip": "127.0.0.1", 
+                "color-mode": "RGB8",
+                "enabled": false,
+                "host": "127.0.0.1",
                 "port": 3021
             }
         ]

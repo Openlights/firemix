@@ -1,18 +1,23 @@
-import unittest
+import os
 import math
 import logging
 
+from lib.json_dict import JSONDict
 from lib.fixture import Fixture
 
 log = logging.getLogger("firemix.lib.scene")
 
-class Scene:
+class Scene(JSONDict):
     """
     Basic model for a scene.
     """
 
-    def __init__(self, data):
-        self._data = data
+    def __init__(self, app):
+        self._app = app
+        self._name = app.args.scene
+        self._filepath = os.path.join(os.getcwd(), "data", "scenes", "".join([self._name, ".json"]))
+        JSONDict.__init__(self, 'scene', self._filepath, False)
+
         self._fixtures = None
         self._fixture_dict = {}
         self._fixture_hierarchy = None
@@ -45,7 +50,7 @@ class Scene:
         Returns the (x, y) extents of the scene.  Useful for determining
         relative position of fixtures to some reference point.
         """
-        return tuple(self._data.get("extents", (0, 0)))
+        return tuple(self.data.get("extents", (0, 0)))
 
     def get_centroid(self):
         """
@@ -55,14 +60,20 @@ class Scene:
         return ([bb[0] + (bb[2] - bb[0]) / 2.0, bb[1] + (bb[3] - bb[1]) / 2.0])
 
     def name(self):
-        return self._data.get("name", "")
+        return self.data.get("name", "")
+
+    def get_strand_settings(self):
+        return self.data.get("strand-settings", [])
+
+    def set_strand_settings(self, settings):
+        self.data["strand-settings"] = settings
 
     def fixtures(self):
         """
         Returns a flat list of all fixtures in the scene.
         """
         if self._fixtures is None:
-            self._fixtures = [Fixture(fd) for fd in self._data["fixtures"]]
+            self._fixtures = [Fixture(fd) for fd in self.data["fixtures"]]
         return self._fixtures
 
     def fixture(self, strand, address):

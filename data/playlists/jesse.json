@@ -124,13 +124,13 @@
                 "fade-down-time": 4.0, 
                 "fade-up-time": 0.5, 
                 "off-color": [
-                    1.0, 
-                    1.0, 
-                    0.0
+                    0.6, 
+                    0.2, 
+                    1.0
                 ], 
                 "on-color": [
                     0.1, 
-                    0.5, 
+                    1.0, 
                     1.0
                 ]
             }
@@ -140,21 +140,21 @@
             "name": "Dragons-1", 
             "params": {
                 "alive-color": [
-                    0.5, 
                     0.0, 
+                    0.5, 
                     1.0
                 ], 
                 "birth-rate": 0.4, 
                 "dead-color": [
-                    1.0, 
-                    1.0, 
-                    0.0
+                    0.0, 
+                    0.5, 
+                    1.0
                 ], 
                 "growth-time": 2.0, 
                 "pop-limit": 20, 
                 "tail-color": [
-                    0.0, 
-                    1.0, 
+                    0.2, 
+                    0.5, 
                     1.0
                 ], 
                 "tail-persist": 0.5
@@ -194,24 +194,24 @@
             "params": {
                 "alive-color": [
                     1.0, 
-                    0.0, 
+                    1.0, 
                     1.0
                 ], 
                 "birth-rate": 0.3, 
                 "dead-color": [
                     0.0, 
-                    1.0, 
+                    0.5, 
                     1.0
                 ], 
                 "death-time": 3.0, 
-                "fade-out-time": 10.0, 
-                "growth-time": 0.2, 
+                "fade-out-time": 5.0, 
+                "growth-time": 0.3, 
                 "isolated-life-time": 0.2, 
                 "life-time": 0.3, 
-                "mass-destruction-threshold": 10, 
-                "mass-destruction-time": 1.0, 
+                "mass-destruction-threshold": 20, 
+                "mass-destruction-time": 5.0, 
                 "pop-limit": 500, 
-                "spread-rate": 0.08
+                "spread-rate": 0.2
             }
         }, 
         {
@@ -277,24 +277,24 @@
             "name": "Dragons-2", 
             "params": {
                 "alive-color": [
-                    0.6, 
-                    1.0, 
+                    0.4, 
+                    0.5, 
                     1.0
                 ], 
                 "birth-rate": 2.0, 
                 "dead-color": [
                     1.0, 
-                    1.0, 
+                    0.5, 
                     1.0
                 ], 
                 "growth-time": 0.1, 
-                "pop-limit": 20, 
+                "pop-limit": 2, 
                 "tail-color": [
-                    0.2, 
-                    1.0, 
-                    0.5
+                    0.0, 
+                    0.5, 
+                    1.0
                 ], 
-                "tail-persist": 0.1
+                "tail-persist": 1.0
             }
         }, 
         {
@@ -343,6 +343,87 @@
                 "scale": 0.25, 
                 "speed": 0.7, 
                 "whiteout": 0.8
+            }
+        }, 
+        {
+            "classname": "SeparateStrandWithFlash", 
+            "name": "SeparateStrandWithFlash-1", 
+            "params": {
+                "flash-off": 0.8, 
+                "flash-on": 0.2, 
+                "interval": 0.05, 
+                "speed": 0.5
+            }
+        }, 
+        {
+            "classname": "RadialRainbow", 
+            "name": "RadialRainbow-1", 
+            "params": {
+                "speed": 0.3, 
+                "width": 2.0
+            }
+        }, 
+        {
+            "classname": "Twinkle", 
+            "name": "Twinkle-3", 
+            "params": {
+                "birth-rate": 0.15, 
+                "fade-down-time": 4.0, 
+                "fade-up-time": 0.5, 
+                "off-color": [
+                    1.0, 
+                    0.0, 
+                    1.0
+                ], 
+                "on-color": [
+                    0.1, 
+                    1.0, 
+                    1.0
+                ]
+            }
+        }, 
+        {
+            "classname": "FixtureStepFade", 
+            "name": "FixtureStepFade-1", 
+            "params": {}
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "SpiralGradient-6", 
+            "params": {
+                "angle-hue-width": 2.0, 
+                "hue-step": 0.1, 
+                "radius-hue-width": 1.5, 
+                "speed": 0.3, 
+                "wave-hue-period": 0.1, 
+                "wave-hue-width": 0.1, 
+                "wave-speed": 0.1
+            }
+        }, 
+        {
+            "classname": "Fungus", 
+            "name": "Fungus-2", 
+            "params": {
+                "alive-color": [
+                    1.0, 
+                    1.0, 
+                    1.0
+                ], 
+                "birth-rate": 0.05, 
+                "dead-color": [
+                    0.0, 
+                    0.5, 
+                    1.0
+                ], 
+                "death-time": 3.0, 
+                "fade-out-time": 2.0, 
+                "growth-time": 0.6, 
+                "isolated-life-time": 1.0, 
+                "life-time": 0.5, 
+                "mass-destruction-threshold": 40, 
+                "mass-destruction-time": 2.0, 
+                "pop-limit": 500, 
+                "spread-rate": 0.3
             }
         }
     ]

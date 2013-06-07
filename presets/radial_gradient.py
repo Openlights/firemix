@@ -67,4 +67,4 @@ class RadialGradient(RawPreset):
             hue = math.fmod(start + hue * self.parameter('hue-width').get(), 1.0)
             brightness = 0 if luminance > self.parameter('blackout').get() else 1.0
             saturation = 0 if luminance < self.parameter('whiteout').get() else 1.0
-            self.setp(pixel, hsv_float_to_rgb_uint8((hue, saturation, brightness)))
+            self.setPixelHSV(pixel, (hue, saturation, brightness))

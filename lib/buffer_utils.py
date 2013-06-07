@@ -38,7 +38,7 @@ class BufferUtils:
         if cls._first_time:
             cls._num_strands, cls._max_fixtures, cls._max_pixels = app.scene.get_matrix_extents()
 
-        return np.zeros((cls._num_strands, cls._max_fixtures * cls._max_pixels, 3))
+        return np.zeros((cls._num_strands, cls._max_fixtures * cls._max_pixels, 3), dtype=np.float32)
 
     @classmethod
     def get_buffer_size(cls, app):

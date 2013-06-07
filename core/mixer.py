@@ -82,6 +82,7 @@ class Mixer(QtCore.QObject):
 
     def run(self):
         if not self._running:
+            self._tick_rate = self._app.settings.get('mixer')['tick-rate']
             self._tick_timer = threading.Timer(1.0 / self._tick_rate, self.on_tick_timer)
             self._tick_timer.start()
             self._running = True
@@ -92,6 +93,7 @@ class Mixer(QtCore.QObject):
 
     def stop(self):
         self._running = False
+        self._tick_timer.cancel()
         self._stop_time = time.time()
 
     def pause(self, pause=True):
@@ -352,9 +354,10 @@ class Mixer(QtCore.QObject):
         Returns an optimized list of strand data, in fixture order, using the scene map
         """
         len_strand = sum([fix.pixels for fix in self._scene.fixtures() if fix.strand == strand_id])
-        data = self._main_buffer[strand_key].astype(int).tolist()
-        data_flat = [item for sublist in data for item in sublist]
-        return data_flat[0:3 * len_strand]
+        data = self._main_buffer[strand_key].tolist()
+
+        #data_flat = [item for sublist in data for item in sublist]
+        return data
 
     def create_buffers(self):
         """
