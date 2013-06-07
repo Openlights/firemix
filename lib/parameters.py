@@ -163,5 +163,29 @@ class HSVParameter(Parameter):
 
         return True
 
+class HLSParameter(Parameter):
+    """
+    Parameter holding an HSV tuple (in normalized floating-point)
+    """
+
+    def __init__(self, name, value=(0., 0., 0.)):
+        Parameter.__init__(self, name)
+        self.set(tuple(value))
+
+    def validate(self, value):
+        if (not isinstance(value, tuple)) and (not isinstance(value, list)):
+            return False
+
+        if len(value) != 3:
+            return False
+
+        if (type(value[0]) != float) or (type(value[1]) != float) or (type(value[2]) != float):
+            return False
+
+        if (value[1] < 0. or value[1] > 1.) or (value[2] < 0. or value[2] > 1.):
+            return False
+
+        return True
+
     def _cast_from_str(self, value):
         return ast.literal_eval(value)

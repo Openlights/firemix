@@ -1,7 +1,14 @@
 import socket
 import array
 import struct
+import colorsys
 from time import sleep
+
+from lib.colors import clip
+
+
+COMMAND_SET_BGR = 0x10
+COMMAND_SET_RGB = 0x20
 
 
 class Networking:
@@ -9,7 +16,6 @@ class Networking:
     def __init__(self, app):
         self._socket = None
         self._app = app
-        self._clients = [(c["ip"], int(c["port"])) for c in app.settings['networking']['clients'] if c["enabled"]]
         self.open_socket()
 
     def open_socket(self):
@@ -22,29 +28,28 @@ class Networking:
     def write_strand(self, strand_data):
         """
         Performs a bulk strand write.
-        The expected input format is a dictionary of strand addresses and strand data.
-        The input strand data is a flat list of pixel values for all fixtures in the strand.
-        Example: {0: [255, 127, 50, 255, 100, 70, ...]}
+        Decodes the HLS-Float data according to client settings
         """
+        strand_settings = self._app.scene.get_strand_settings()
 
-        # TODO: Split into smaller packets so that less-than-ideal networks will be OK
-        packet = array.array('B', [])
+        for client in [client for client in self._app.settings['networking']['clients'] if client["enabled"]]:
+            # TODO: Split into smaller packets so that less-than-ideal networks will be OK
+            packet = array.array('B', [])
+            client_color_mode = client["color-mode"]
 
-        for strand in strand_data.keys():
-            # Temporary: firmware says #0 is all-call
-            # Fixed in FireNode by incrementing strand by one
-            #if strand != 0:
-            #    continue
+            for strand in strand_data.keys():
+                if not strand_settings[strand]["enabled"]:
+                    continue
+                color_mode = strand_settings[strand]["color-mode"]
 
-            data = strand_data[strand][0:(3*160)]
+                if client_color_mode == "RGB8":
+                    data = [colorsys.hls_to_rgb(*pixel) for pixel in strand_data[strand][0:(3*160)]]
+                    data = [clip(0, int(255.0 * item), 255) for sublist in data for item in sublist]
 
-            length = len(data)
-            # HACK: Strand zero has flipped RGB order
-            command = 0x20 if strand == 0 else 0x10
-            #packet = array.array('B', [0x27, (length & 0xFF00) >> 8, (length & 0xFF), strand] + strand_data[strand])
-            packet.extend(array.array('B', [strand, command, (length & 0xFF), (length & 0xFF00) >> 8] + data))
+                length = len(data)
+                command = COMMAND_SET_RGB if color_mode == "RGB8" else COMMAND_SET_BGR
+                packet.extend(array.array('B', [strand, command, (length & 0xFF), (length & 0xFF00) >> 8] + data))
 
-        for client in self._clients:
-            self._socket.sendto(packet, (client[0], client[1]))
+            self._socket.sendto(packet, (client["host"], client["port"]))
 
 
