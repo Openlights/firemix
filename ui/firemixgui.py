@@ -25,7 +25,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.btn_remove_preset.clicked.connect(self.on_btn_remove_preset)
         self.btn_clone_preset.clicked.connect(self.on_btn_clone_preset)
         self.btn_clear_playlist.clicked.connect(self.on_btn_clear_playlist)
-        self.slider_global_dimmer.valueChanged.connect(self.on_global_dimmer)
+        self.slider_global_dimmer.valueChanged.connect(self.on_slider_dimmer)
+        self.slider_speed.valueChanged.connect(self.on_slider_speed)
         self.btn_shuffle_playlist.clicked.connect(self.on_btn_shuffle_playlist)
         self.btn_trigger_onset.clicked.connect(self.on_btn_trigger_onset)
 
@@ -186,8 +187,15 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         shuffle_state = QtCore.Qt.Checked if self._app.settings['mixer']['shuffle'] else QtCore.Qt.Unchecked
         self.btn_shuffle_playlist.setChecked(shuffle_state)
 
-    def on_global_dimmer(self):
-        self._app.mixer.set_global_dimmer(self.slider_global_dimmer.value() / 100.0)
+    def on_slider_dimmer(self):
+        dval = self.slider_global_dimmer.value() / 100.0
+        self._app.mixer.set_global_dimmer(dval)
+        self.lbl_dimmer.setText("Dimmer [%0.2f]" % dval)
+
+    def on_slider_speed(self):
+        sval = round(self.slider_speed.value() / 100.0, 1)
+        self._app.mixer.set_global_speed(sval)
+        self.lbl_speed.setText("Speed [%0.1fx]" % sval)
 
     def update_playlist(self):
         self.lst_presets.clear()
