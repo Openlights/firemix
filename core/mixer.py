@@ -55,6 +55,7 @@ class Mixer(QtCore.QObject):
         self._onset = False
         self._reset_onset = False
         self._global_dimmer = 1.0
+        self._global_speed = 1.0
 
         # Load transitions
         self.set_transition_mode(self._app.settings.get('mixer')['transition'])
@@ -111,6 +112,9 @@ class Mixer(QtCore.QObject):
 
     def set_global_dimmer(self, dimmer):
         self._global_dimmer = dimmer
+
+    def set_global_speed(self, speed):
+        self._global_speed = speed
 
     def set_transition_mode(self, name):
         self._in_transition = False
@@ -234,10 +238,11 @@ class Mixer(QtCore.QObject):
 
     def tick(self):
         self._num_frames += 1
+        dt = (self._global_speed / self._tick_rate)
         if len(self._playlist) > 0:
 
             self._playlist.get_active_preset().clear_commands()
-            self._playlist.get_active_preset().tick()
+            self._playlist.get_active_preset().tick(dt)
             transition_progress = 0.0
 
             # Handle transition by rendering both the active and the next preset, and blending them together
@@ -255,7 +260,7 @@ class Mixer(QtCore.QObject):
                 else:
                     transition_progress = 1.0
                 self._playlist.get_next_preset().clear_commands()
-                self._playlist.get_next_preset().tick()
+                self._playlist.get_next_preset().tick(dt)
 
                 # Exit from transition state after the transition duration has elapsed
                 if transition_progress >= 1.0:

@@ -125,15 +125,15 @@ class Preset:
     def clear_tickers(self):
         self._tickers = []
 
-    def tick(self):
+    def tick(self, dt):
         if self._mixer._enable_profiling:
             start = time.time()
             # TODO: This does not account for varying frame rate
-        dt = self._ticks * (1.0 / self.tick_rate())
+        current_time = self._ticks * dt
         # Assume that self._tickers is already sorted via add_ticker()
         for ticker, priority in self._tickers:
             #b = time.clock()
-            for lights, color in ticker(self._ticks, dt):
+            for lights, color in ticker(self._ticks, current_time):
 
                 if lights is not None:
                     # Made unnecessary by automatic conversion in ColorFade

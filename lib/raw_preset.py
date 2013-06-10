@@ -73,7 +73,7 @@ class RawPreset(Preset):
         """
         return self._pixel_buffer
 
-    def tick(self):
+    def tick(self, dt):
         """
         Unlike tick() in Preset, this method applies pixel_behavior to all pixels.
         """
@@ -81,8 +81,8 @@ class RawPreset(Preset):
         #     start = time.time()
 
         # TODO: This does not account for varying frame rate
-        dt = self._ticks * (1.0 / self.tick_rate())
-        self.draw(dt)
+        current_time = self._ticks * dt
+        self.draw(current_time)
 
         self._ticks += 1
 
