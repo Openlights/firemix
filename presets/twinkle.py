@@ -36,6 +36,7 @@ class Twinkle(RawPreset):
     def reset(self):
         self._fading_up = []
         self._fading_down = []
+        self._idle = self.scene().get_all_pixels()[:]
         self._time = {}
 
     def draw(self, dt):
@@ -49,13 +50,10 @@ class Twinkle(RawPreset):
             nbirth = 1
 
         for i in range(nbirth):
-            if random.random() > (1.0 - pbirth):
-                address = ( random.randint(0, self._max_strand - 1),
-                            random.randint(0, self._max_fixture - 1),
-                            random.randint(0, self._max_pixel - 1))
-                if address not in self._fading_up:
-                    self._fading_up.append(address)
-                    self._time[address] = dt
+            if len(self._idle) > 0 and random.random() > (1.0 - pbirth):
+                address = self._idle.pop(random.randint(0, len(self._idle) - 1))
+                self._fading_up.append(address)
+                self._time[address] = dt
 
         # Growth
         for address in self._fading_up:
@@ -70,6 +68,7 @@ class Twinkle(RawPreset):
         for address in self._fading_down:
             color = self._get_next_color(address, dt, down=True)
             if color == self._down_target:
+                self._idle.append(address)
                 self._fading_down.remove(address)
             self.setPixelHLS(address, color)
 

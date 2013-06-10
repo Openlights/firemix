@@ -22,6 +22,7 @@ class RadialGradient(RawPreset):
         self.add_parameter(FloatParameter('blackout', 0.5))
         self.add_parameter(FloatParameter('whiteout', 0.1))
         self.add_parameter(FloatParameter('luminance-speed', 0.01))
+        self.add_parameter(FloatParameter('luminance-scale', 1.0))
         self.hue_inner = random.random()
         self.wave1_offset = random.random()
         self.wave2_offset = random.random()
@@ -63,7 +64,7 @@ class RadialGradient(RawPreset):
             wave1 = abs(math.cos(self.wave1_offset + self.pixel_angles[pixel] * self.parameter('wave1-period').get()) * self.parameter('wave1-amplitude').get())
             wave2 = abs(math.cos(self.wave2_offset + self.pixel_angles[pixel] * self.parameter('wave2-period').get()) * self.parameter('wave2-amplitude').get())
             hue = self.pixel_distances[pixel] + wave1 + wave2
-            luminance = abs(math.fmod(self.luminance_offset + hue, 1.0))
+            luminance = abs(math.fmod(self.luminance_offset + hue * self.parameter('luminance-scale').get(), 1.0))
             hue = math.fmod(start + hue * self.parameter('hue-width').get(), 1.0)
             brightness = 0 if luminance > self.parameter('blackout').get() else 1.0
             saturation = 0 if luminance < self.parameter('whiteout').get() else 1.0

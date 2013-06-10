@@ -3,12 +3,15 @@ import random
 import math
 
 from lib.raw_preset import RawPreset
-from lib.parameters import FloatParameter
-
+from lib.parameters import FloatParameter, HLSParameter
+from lib.color_fade import ColorFade
 
 class SpiralGradient(RawPreset):
     """Spiral gradient that responds to onsets"""
        
+    _fader = None
+    _fader_resolution = 256
+    
     def setup(self):
         self.add_parameter(FloatParameter('speed', 0.3))
         self.add_parameter(FloatParameter('angle-hue-width', 2.0))
@@ -17,6 +20,8 @@ class SpiralGradient(RawPreset):
         self.add_parameter(FloatParameter('wave-hue-period', 0.1))        
         self.add_parameter(FloatParameter('wave-speed', 0.1))        
         self.add_parameter(FloatParameter('hue-step', 0.1))    
+        self.add_parameter(HLSParameter('color-start', (0.0, 0.5, 1.0)))
+        self.add_parameter(HLSParameter('color-end', (1.0, 0.5, 1.0)))
         self.hue_inner = random.random() + 100
         self.wave_offset = random.random()
 
@@ -38,7 +43,14 @@ class SpiralGradient(RawPreset):
         max_distance = max(self.pixel_distances.values())
         for pixel in self.pixels:
             self.pixel_distances[pixel] /= max_distance
+            
+        self.parameter_changed(None)
 
+    def parameter_changed(self, parameter):
+        fade_colors = [self.parameter('color-start').get(), self.parameter('color-end').get(), self.parameter('color-start').get()]
+   
+        self._fader = ColorFade(fade_colors, self._fader_resolution)
+    
     def reset(self):
         pass
 
@@ -52,4 +64,5 @@ class SpiralGradient(RawPreset):
         for pixel in self.pixels:
             angle = math.fmod(1.0 + self.pixel_angles[pixel] + math.sin(self.wave_offset + self.pixel_distances[pixel] * 2 * math.pi * self.parameter('wave-hue-period').get()) * self.parameter('wave-hue-width').get(), 1.0)
             hue = start + (self.parameter('radius-hue-width').get() * self.pixel_distances[pixel]) + (angle * self.parameter('angle-hue-width').get())
-            self.setPixelHLS(pixel, (math.fmod(hue, 1.0), 0.5, 1.0))
+            hue = math.fmod(math.floor(hue * self._fader_resolution) / self._fader_resolution, 1.0)
+            self.setPixelHLS(pixel, self._fader.get_color(hue))

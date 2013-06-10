@@ -40,6 +40,7 @@ class Fungus(RawPreset):
     _pop_limit = 500
     _alive_color = (1.0, 1.0, 1.0)
     _dead_color = (0.0, 0.5, 1.0)
+    _black_color = (0.0, 0.0, 1.0)
 
     def setup(self):
         self._pop = 0
@@ -56,6 +57,7 @@ class Fungus(RawPreset):
         self.add_parameter(IntParameter('pop-limit', self._pop_limit))
         self.add_parameter(HLSParameter('alive-color', self._alive_color))
         self.add_parameter(HLSParameter('dead-color', self._dead_color))
+        self.add_parameter(HLSParameter('black-color', self._black_color))
         self.parameter_changed(None)
 
     def reset(self):
@@ -83,7 +85,8 @@ class Fungus(RawPreset):
     def _setup_colors(self):
         self._alive_color = self.parameter('alive-color').get()
         self._dead_color = self.parameter('dead-color').get()
-        fade_colors = [(0., 0., 1.), self.parameter('alive-color').get(), self.parameter('dead-color').get(), (0., 0., 1.)]
+        self._black_color = self.parameter('black-color').get()
+        fade_colors = [self._black_color, self._alive_color, self._dead_color, self._black_color]
         self._fader = ColorFade(fade_colors, tick_rate=self._mixer.get_tick_rate())
 
     def draw(self, dt):
