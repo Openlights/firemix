@@ -35,7 +35,11 @@ class Parameter:
 
     def set_from_str(self, value):
         cval = None
-        cval = self._cast_from_str(value)
+        try:
+            cval = self._cast_from_str(value)
+        except ValueError:
+            return False
+    
         if cval is not None:
             return self.set(cval)
         else:
