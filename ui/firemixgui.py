@@ -281,7 +281,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.tbl_preset_parameters.setColumnCount(2)
         self.tbl_preset_parameters.setRowCount(len(parameters))
         i = 0
-        for name, parameter in parameters.iteritems():
+        for name in sorted(parameters, key=lambda x: x):
+            parameter = parameters[name]
             key_item = QtGui.QTableWidgetItem(name)
             key_item.setFlags(QtCore.Qt.ItemIsEnabled)
             value_item = QtGui.QTableWidgetItem(parameter.get_as_str())
@@ -291,6 +292,15 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         self.tbl_preset_parameters.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
         self.tbl_preset_parameters.horizontalHeader().resizeSection(1, 125)
+
+    @QtCore.Slot()
+    def update_preset_parameters(self):
+        """
+        Called from main app when presets programmatically change parameter values
+        """
+        parameters = self._app.playlist.get_active_preset().get_parameters()
+        for item in self.tbl_preset_parameters.items():
+            print item
 
     def on_preset_parameter_changed(self, item):
         if item.column() == 0:
