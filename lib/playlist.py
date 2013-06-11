@@ -44,7 +44,7 @@ class Playlist(JSONDict):
 
                 for _, key in enumerate(entry.get('params', {})):
                     try:
-                        inst.parameter(key).set(entry['params'][key])
+                        inst.parameter(key).set_from_str(str(entry['params'][key]))
                     except AttributeError:
                         log.warn("Parameter %s called out in playlist but not found in plugin.  Perhaps it was renamed?" % key)
                 self._playlist.append(inst)
@@ -100,7 +100,7 @@ class Playlist(JSONDict):
                               'name': preset.get_name()}
             param_dict = {}
             for name, param in preset.get_parameters().iteritems():
-                param_dict[name] = param.get()
+                param_dict[name] = param.get_as_str()
             playlist_entry['params'] = param_dict
             playlist.append(playlist_entry)
         self.data['playlist'] = playlist

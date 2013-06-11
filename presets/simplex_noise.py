@@ -41,6 +41,7 @@ class SimplexNoise(RawPreset):
         self.luminance_scale = self.parameter('luminance-scale').get() / 100.0
 
     def draw(self, dt):
+        self._setup_pars()
         delta = dt * self.speed
         d3 = self.color_speed * dt
         posterization = self.parameter('resolution').get()

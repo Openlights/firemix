@@ -14,7 +14,7 @@ class StripeGradient(RawPreset):
         self.add_parameter(FloatParameter('speed', 0.01))
         self.add_parameter(FloatParameter('angle-speed', 0.1))
         self.add_parameter(FloatParameter('stripe-width', 20))
-        self.add_parameter(FloatParameter('center-orbit-distance', 0.1))
+        self.add_parameter(FloatParameter('center-orbit-distance', 200))
         self.add_parameter(FloatParameter('center-orbit-speed', 0.1))
         self.add_parameter(FloatParameter('hue-step', 0.1))
         self.add_parameter(FloatParameter('posterization', self._fader_resolution))
@@ -61,8 +61,8 @@ class StripeGradient(RawPreset):
             self.hue_inner = self.hue_inner + self.parameter('hue-step').get()
 
         start = self.hue_inner + (dt * self.parameter('speed').get())
-        self._center_rotation += self.parameter('center-orbit-speed').get()
-        self.stripe_angle += self.parameter('angle-speed').get()
+        self._center_rotation = self.parameter('center-orbit-speed').get() * dt
+        self.stripe_angle = self.parameter('angle-speed').get() * dt
         stripe_width = self.parameter('stripe-width').get()
         cx, cy = self.scene().get_centroid()
         cx += math.cos(self._center_rotation) * self.parameter('center-orbit-distance').get()

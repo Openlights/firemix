@@ -284,7 +284,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         for name, parameter in parameters.iteritems():
             key_item = QtGui.QTableWidgetItem(name)
             key_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            value_item = QtGui.QTableWidgetItem(str(parameter.get()))
+            value_item = QtGui.QTableWidgetItem(parameter.get_as_str())
             self.tbl_preset_parameters.setItem(i, 0, key_item)
             self.tbl_preset_parameters.setItem(i, 1, value_item)
             i += 1

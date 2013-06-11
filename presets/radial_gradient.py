@@ -56,9 +56,9 @@ class RadialGradient(RawPreset):
             self.luminance_offset += self.parameter('hue-step').get()
 
         start = self.hue_inner + (dt * self.parameter('speed').get())
-        self.wave1_offset += self.parameter('wave1-speed').get()
-        self.wave2_offset += self.parameter('wave2-speed').get()
-        self.luminance_offset += self.parameter('luminance-speed').get()
+        self.wave1_offset = self.parameter('wave1-speed').get() * dt
+        self.wave2_offset = self.parameter('wave2-speed').get() * dt
+        self.luminance_offset = self.parameter('luminance-speed').get() * dt
         
         for pixel in self.pixels:
             wave1 = abs(math.cos(self.wave1_offset + self.pixel_angles[pixel] * self.parameter('wave1-period').get()) * self.parameter('wave1-amplitude').get())

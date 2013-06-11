@@ -1,5 +1,5 @@
 import ast
-
+from lib.wibbler import Wibbler
 
 class Parameter:
     """
@@ -9,9 +9,15 @@ class Parameter:
         if not isinstance(name, str):
             raise ValueError("Parameter name must be a string.")
         self._name = name
-        self._value = None
-        self._parent = parent
+        self._value = 0
+        self._valueString = None
+        self._parent = parent        
+        self._wibbler = None
 
+    def tick(self, dt):
+        if self._wibbler:
+            self._value = self._wibbler.update(dt, self._value)
+        
     def __repr__(self):
         return self._name
 
@@ -19,27 +25,37 @@ class Parameter:
         return self._value
 
     def get_as_str(self):
-        return str(self._value)
+        return self._valueString
 
     def __cmp__(self, other):
         return (self._value == other._value)
 
     def set(self, value):
         if self.validate(value):
+            self._wibbler = None
             self._value = value
+            self._valueString = str(value)
             if self._parent is not None:
                 self._parent.parameter_changed(self)
             return True
         else:
             return False
 
-    def set_from_str(self, value):
+    def set_from_str(self, valueString):
         cval = None
         try:
-            cval = self._cast_from_str(value)
+            cval = self._cast_from_str(valueString)
         except ValueError:
-            return False
-    
+            try:
+                value = ast.literal_eval(valueString)
+                if len(value) == 3:
+                    self._wibbler = Wibbler(value)
+                    self._valueString = valueString
+                    return True
+                return False
+            except:
+                return False
+
         if cval is not None:
             return self.set(cval)
         else:

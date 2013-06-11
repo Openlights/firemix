@@ -82,6 +82,10 @@ class RawPreset(Preset):
 
         # TODO: This does not account for varying frame rate
         current_time = self._ticks * dt
+
+        for parameter in self._parameters.values():
+            parameter.tick(dt)
+        
         self.draw(current_time)
 
         self._ticks += 1
