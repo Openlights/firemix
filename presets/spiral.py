@@ -24,6 +24,7 @@ class SpiralGradient(RawPreset):
         self.add_parameter(HLSParameter('color-start', (0.0, 0.5, 1.0)))
         self.add_parameter(HLSParameter('color-end', (1.0, 0.5, 1.0)))
         self.hue_inner = 0
+        self.color_offset = 0
         self.wave_offset = random.random()
 
         self.pixels = self.scene().get_all_pixels()
@@ -60,7 +61,8 @@ class SpiralGradient(RawPreset):
             self.hue_inner = self.hue_inner + self.parameter('hue-step').get()
 
         self.hue_inner += dt * self.parameter('hue-speed').get()
-        self.wave_offset += self.parameter('wave-speed').get() * dt
+        self.wave_offset += dt * self.parameter('wave-speed').get()
+        self.color_offset += dt * self.parameter('speed').get()
 
         wave_hue_period = 2 * math.pi * self.parameter('wave-hue-period').get()
         wave_hue_width = self.parameter('wave-hue-width').get()
@@ -69,7 +71,7 @@ class SpiralGradient(RawPreset):
 
         for pixel in self.pixels:
             angle = math.fmod(1.0 + self.pixel_angles[pixel] + math.sin(self.wave_offset + self.pixel_distances[pixel] * wave_hue_period) * wave_hue_width, 1.0)
-            hue = (radius_hue_width * self.pixel_distances[pixel]) + (angle * angle_hue_width)
+            hue = self.color_offset + (radius_hue_width * self.pixel_distances[pixel]) + (angle * angle_hue_width)
             hue = math.fmod(math.floor(hue * self._fader_resolution) / self._fader_resolution, 1.0)
             color = self._fader.get_color(hue)
             self.setPixelHLS(pixel, (color[0] + self.hue_inner, color[1], color[2]))
