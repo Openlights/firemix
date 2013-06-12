@@ -27,12 +27,13 @@
                 "angle-hue-width": "1.0", 
                 "color-end": "[1.13, 0.5, 1.0]", 
                 "color-start": "[0.7, 0.0, 1.0]", 
+                "hue-speed": "0.0", 
                 "hue-step": "0.1", 
                 "radius-hue-width": "0.1", 
-                "speed": "0.1", 
-                "wave-hue-period": "[0.1,2,1]", 
-                "wave-hue-width": "1.0", 
-                "wave-speed": "1.0"
+                "speed": "[0,0.5,0.1]", 
+                "wave-hue-period": "[0.1,1.5,1]", 
+                "wave-hue-width": "[-0.5,1,0.01]", 
+                "wave-speed": "[0,1,0.1]"
             }
         }, 
         {
@@ -42,6 +43,7 @@
                 "angle-hue-width": "1.0", 
                 "color-end": "(2.0, 1.0, 1.0)", 
                 "color-start": "(0.0, 0.0, 0.0)", 
+                "hue-speed": "0.3", 
                 "hue-step": "0.1", 
                 "radius-hue-width": "1.5", 
                 "speed": "[0,10,1]", 
@@ -177,11 +179,12 @@
             "name": "spiral green wave", 
             "params": {
                 "angle-hue-width": "3.0", 
-                "color-end": "[0.15, 1.0, 1.0]", 
+                "color-end": "[1.1, 1.0, 1.0]", 
                 "color-start": "[0.7, 0.0, 1.0]", 
+                "hue-speed": "[-0.05,0.05,0.01]", 
                 "hue-step": "0.1", 
-                "radius-hue-width": "0.0", 
-                "speed": "[-0.2,0.1,0.1]", 
+                "radius-hue-width": "-0.1", 
+                "speed": "0.1", 
                 "wave-hue-period": "[0.5,4,0.1]", 
                 "wave-hue-width": "0.05", 
                 "wave-speed": "1.0"
@@ -220,9 +223,11 @@
             "name": "dragons small red", 
             "params": {
                 "alive-color": "[0.0, 0.5, 1.0]", 
-                "birth-rate": "0.4", 
+                "birth-rate": "0.1", 
                 "dead-color": "[0.0, 0.0, 1.0]", 
-                "growth-time": "2.0", 
+                "explode-color": "(0.0, 1.0, 1.0)", 
+                "growth-rate": "20.0", 
+                "growth-time": "0.5", 
                 "pop-limit": "20", 
                 "tail-color": "[0.2, 0.5, 1.0]", 
                 "tail-persist": "0.5"
@@ -263,12 +268,13 @@
                 "angle-hue-width": "0.5", 
                 "color-end": "[1.0, 0.5, 1.0]", 
                 "color-start": "[0.0, 0.5, 1.0]", 
+                "hue-speed": "0.3", 
                 "hue-step": "0.2", 
                 "radius-hue-width": "0.5", 
-                "speed": "[0,0.2,0.1]", 
-                "wave-hue-period": "5.0", 
-                "wave-hue-width": "[0.1,0.3,0.01]", 
-                "wave-speed": "[0,1,1]"
+                "speed": "[-0.1,0.1,0.01]", 
+                "wave-hue-period": "[2,5,0.1]", 
+                "wave-hue-width": "[-0.2,0.3,0.01]", 
+                "wave-speed": "[-1,1,1]"
             }
         }, 
         {
@@ -278,10 +284,12 @@
                 "alive-color": "[0.4, 0.5, 1.0]", 
                 "birth-rate": "2.0", 
                 "dead-color": "[1.0, 0.0, 1.0]", 
+                "explode-color": "(0.1, 1.0, 1.0)", 
+                "growth-rate": "60.0", 
                 "growth-time": "0.1", 
-                "pop-limit": "2", 
+                "pop-limit": "10", 
                 "tail-color": "[0.0, 0.5, 1.0]", 
-                "tail-persist": "1.0"
+                "tail-persist": "2.0"
             }
         }, 
         {
@@ -310,6 +318,7 @@
                 "angle-hue-width": "1.0", 
                 "color-end": "[0.3, 1.0, 1.0]", 
                 "color-start": "[-0.3, 0.0, 1.0]", 
+                "hue-speed": "0.3", 
                 "hue-step": "0.1", 
                 "radius-hue-width": "[-1,1,1]", 
                 "speed": "[-0.5,0.5,0.1]", 
@@ -325,9 +334,10 @@
                 "angle-hue-width": "1.0", 
                 "color-end": "[1.1, 0.5, 1.0]", 
                 "color-start": "[0.1, 0.5, 1.0]", 
+                "hue-speed": "0.01", 
                 "hue-step": "0.1", 
                 "radius-hue-width": "0.0", 
-                "speed": "0.4", 
+                "speed": "0.1", 
                 "wave-hue-period": "[-1,2.4,0.1]", 
                 "wave-hue-width": "0.2", 
                 "wave-speed": "[0.0,0.6,0.1]"
@@ -423,7 +433,7 @@
                 "mass-destruction-threshold": "40", 
                 "mass-destruction-time": "2.0", 
                 "pop-limit": "500", 
-                "spread-rate": "0.3"
+                "spread-rate": "7.0"
             }
         }, 
         {
@@ -440,9 +450,9 @@
                 "isolated-life-time": "1.0", 
                 "life-time": "0.5", 
                 "mass-destruction-threshold": "40", 
-                "mass-destruction-time": "2.0", 
+                "mass-destruction-time": "1.0", 
                 "pop-limit": "500", 
-                "spread-rate": "0.4"
+                "spread-rate": "6.0"
             }
         }, 
         {
@@ -465,12 +475,14 @@
             "name": "dragons rainbow", 
             "params": {
                 "alive-color": "[1.5, 1.0, 1.0]", 
-                "birth-rate": "0.1", 
+                "birth-rate": "0.005", 
                 "dead-color": "[-1.0, 0.0, 1.0]", 
+                "explode-color": "(1.0, 1.0, 1.0)", 
+                "growth-rate": "60.0", 
                 "growth-time": "1.0", 
-                "pop-limit": "6", 
+                "pop-limit": "2", 
                 "tail-color": "[0.0, 0.5, 1.0]", 
-                "tail-persist": "5.0"
+                "tail-persist": "4.0"
             }
         }, 
         {
@@ -523,7 +535,7 @@
                 "luminance-scale": "0.75", 
                 "resolution": "200", 
                 "scale": "0.3", 
-                "speed": "4.0", 
+                "speed": "1.0", 
                 "whiteout": "0.6"
             }
         }, 
@@ -538,7 +550,7 @@
                 "color-start": "[0.2, 0.5, 1.0]", 
                 "hue-step": "0.1", 
                 "posterization": "20", 
-                "speed": "2.0", 
+                "speed": "-0.1", 
                 "stripe-width": "[300,1000,10]"
             }
         }, 
@@ -565,7 +577,7 @@
                 "color-start": "(0.2, 0.5, 1.0)", 
                 "hue-step": "0.1", 
                 "posterization": "200", 
-                "speed": "0.01", 
+                "speed": "[-0.05,0.05,0.01]", 
                 "stripe-width": "[150,600,100]"
             }
         }, 
@@ -581,7 +593,7 @@
                 "luminance-scale": "0.3", 
                 "resolution": "128", 
                 "scale": "0.25", 
-                "speed": "[0,4,0.1]", 
+                "speed": "[0,10,1]", 
                 "whiteout": "1.0"
             }
         }
