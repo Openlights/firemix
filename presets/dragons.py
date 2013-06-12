@@ -39,10 +39,11 @@ class Dragons(RawPreset):
     _alive_color = _alive_color
     _tail_color = _tail_color
     _dead_color = _dead_color
-    _pop = 0
+    _population = 0
 
     def setup(self):
         random.seed()
+        self._current_time = 0
         self.add_parameter(FloatParameter('growth-time', 2.0))        
         self.add_parameter(FloatParameter('birth-rate', 0.4))
         self.add_parameter(FloatParameter('tail-persist', 0.5))
@@ -65,30 +66,32 @@ class Dragons(RawPreset):
 
     def draw(self, dt):
 
+        self._current_time += dt
+        
         # Ensure that empty displays start up with some dragons
-        p_birth = (1.0 - self._spontaneous_birth_probability) if self._pop > 2 else 0.5
+        p_birth = (1.0 - self._spontaneous_birth_probability) if self._population > 2 else 0.5
 
         # Spontaneous birth: Rare after startup
-        if (self._pop < self.parameter('pop-limit').get()) and random.random() > p_birth:
+        if (self._population < self.parameter('pop-limit').get()) and random.random() > p_birth:
             address = ( random.randint(0, self._max_strand - 1),
                         random.randint(0, self._max_fixture - 1),
                         0)
             if address not in [d.loc for d in self._dragons]:
                 self._dragons.append(self.Dragon(address, 1, dt))
-                self._pop += 1
+                self._population += 1
 
         # Dragon life cycle
         for dragon in self._dragons:
             # Fade in
             if dragon.growing:
-                p = (dt - dragon.lifetime) / self.parameter('growth-time').get()
+                p = (self._current_time - dragon.lifetime) / self.parameter('growth-time').get()
                 if (p > 1):
                     p = 1.0
                 color = self._growth_fader.get_color(p)
                 if p >= 1.0:
                     dragon.growing = False
                     dragon.alive = True
-                    dragon.lifetime = dt
+                    dragon.lifetime = self._current_time
 
                 self.setPixelHLS(dragon.loc, color)
 
@@ -99,7 +102,7 @@ class Dragons(RawPreset):
 
                 # At a vertex: optionally spawn new dragons
                 if dragon.moving and  (p == 0 or p == (self.scene().fixture(s, f).pixels - 1)):
-                    if (self._pop < self.parameter('pop-limit').get()):
+                    if (self._population < self.parameter('pop-limit').get()):
                         neighbors = self.scene().get_pixel_neighbors(dragon.loc)
                         random.shuffle(neighbors)
 
@@ -109,31 +112,31 @@ class Dragons(RawPreset):
                             if num_children == 0:
                                 # Spawn at least one new dragon to replace the old one.  This first one skips the growth.
                                 dir = 1 if candidate[2] == 0 else -1
-                                child = self.Dragon(candidate, dir, dt)
+                                child = self.Dragon(candidate, dir, self._current_time)
                                 child.growing = False
                                 child.alive = True
                                 child.moving = False
                                 self._dragons.append(child)
-                                self._pop += 1
+                                self._population += 1
                                 num_children += 1
                             else:
                                 # Randomly spawn new dragons
                                 if random.random() > (1.0 - self.parameter('birth-rate').get()):
                                     dir = 1 if candidate[2] == 0 else -1
-                                    child = self.Dragon(candidate, dir, dt)
+                                    child = self.Dragon(candidate, dir, self._current_time)
                                     child.moving = False
 
                                     self._dragons.append(child)
-                                    self._pop += 1
+                                    self._population += 1
                                     num_children += 1
                     # Kill dragons that reach the end of a fixture
                     dragon.moving = False
                     if dragon in self._dragons:
                         self._dragons.remove(dragon)
-                        self._pop -= 1
+                        self._population -= 1
                 else:
                     # Move dragons along the fixture
-                    self._tails.append((dragon.loc, dt))
+                    self._tails.append((dragon.loc, self._current_time))
                     new_address = (s, f, p + dragon.dir)
                     if new_address[2] < 0 or new_address[2] > 31:
                         print dragon, "new_address", new_address
@@ -151,13 +154,13 @@ class Dragons(RawPreset):
                         self._dragons.remove(dragon)
                         self._dragons.remove(colliding[0])
                         self.setPixelHLS(dragon.loc, (0, 0, 0))
-                        self._pop -= 2
+                        self._population -= 2
 
         # Draw tails
         for loc, time in self._tails:
-            if (dt - time) > self.parameter('tail-persist').get():
+            if (self._current_time - time) > self.parameter('tail-persist').get():
                 self._tails.remove((loc, time))
                 self.setPixelHLS(loc, (0, 0, 0))
             else:
-                progress = (dt - time) / self.parameter('tail-persist').get()
+                progress = (self._current_time - time) / self.parameter('tail-persist').get()
                 self.setPixelHLS(loc, self._tail_fader.get_color(progress))

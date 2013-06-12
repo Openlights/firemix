@@ -1,5 +1,6 @@
 import colorsys
 import random
+import math
 
 from lib.raw_preset import RawPreset
 from lib.colors import float_to_uint8
@@ -22,7 +23,10 @@ class Twinkle(RawPreset):
         self.add_parameter(FloatParameter('fade-down-time', 4.0))
         self.add_parameter(HLSParameter('on-color', (0.1, 1.0, 1.0)))
         self.add_parameter(HLSParameter('off-color', (1.0, 0.0, 1.0)))
+        self.add_parameter(HLSParameter('beat-color', (1.0, 1.0, 1.0)))
         self._setup_colors()
+        self._nbirth = 0;
+        self._current_time = 0;
 
     def parameter_changed(self, parameter):
         if str(parameter) == 'on-color':
@@ -41,44 +45,48 @@ class Twinkle(RawPreset):
 
     def draw(self, dt):
 
+        self._current_time += dt
+        
         # Birth
         if self._mixer.is_onset():
-            pbirth = 1.0
-            nbirth = 25
-        else:
-            pbirth = self.parameter('birth-rate').get()
-            nbirth = 1
+            self._nbirth += 25
+        
+        self._nbirth += self.parameter('birth-rate').get()
 
-        for i in range(nbirth):
-            if len(self._idle) > 0 and random.random() > (1.0 - pbirth):
+        for i in range(int(self._nbirth)):
+            if (len(self._idle) > 0) and (random.random() < self._nbirth):
                 address = self._idle.pop(random.randint(0, len(self._idle) - 1))
                 self._fading_up.append(address)
-                self._time[address] = dt
+                self._time[address] = self._current_time
+                self._nbirth -= 1
 
         # Growth
         for address in self._fading_up:
-            color = self._get_next_color(address, dt)
+            color = self._get_next_color(address, self._current_time)
             if color == self._up_target:
                 self._fading_up.remove(address)
                 self._fading_down.append(address)
-                self._time[address] = dt
+                self._time[address] = self._current_time
             self.setPixelHLS(address, color)
 
         # Decay
         for address in self._fading_down:
-            color = self._get_next_color(address, dt, down=True)
+            color = self._get_next_color(address, self._current_time, down=True)
             if color == self._down_target:
                 self._idle.append(address)
                 self._fading_down.remove(address)
-            self.setPixelHLS(address, color)
+            if self._mixer.is_onset():
+                self.setPixelHLS(address, self.parameter('beat-color').get())
+            else:
+                self.setPixelHLS(address, color)                
 
-    def _get_next_color(self, address, dt, down=False):
+    def _get_next_color(self, address, time, down=False):
         time_target = float(self.parameter('fade-down-time').get()) if down else float(self.parameter('fade-up-time').get())
-        progress = (dt - self._time[address]) / time_target
+        progress = (time - self._time[address]) / time_target
 
         if progress > 1.0:
             progress = 1.0
-        elif dt == self._time[address]:
+        elif time == self._time[address]:
             progress = 0.0
 
         if down:

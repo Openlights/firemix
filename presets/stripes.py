@@ -3,12 +3,11 @@ import random
 import math
 
 from lib.raw_preset import RawPreset
-from lib.parameters import FloatParameter, HLSParameter
+from lib.parameters import FloatParameter, HLSParameter, IntParameter
 from lib.color_fade import ColorFade
 
 class StripeGradient(RawPreset):
     _fader = None
-    _fader_resolution = 8
     
     def setup(self):
         self.add_parameter(FloatParameter('speed', 0.01))
@@ -17,7 +16,7 @@ class StripeGradient(RawPreset):
         self.add_parameter(FloatParameter('center-orbit-distance', 200))
         self.add_parameter(FloatParameter('center-orbit-speed', 0.1))
         self.add_parameter(FloatParameter('hue-step', 0.1))
-        self.add_parameter(FloatParameter('posterization', self._fader_resolution))
+        self.add_parameter(IntParameter('posterization', 8))
         self.add_parameter(HLSParameter('color-start', (0.0, 0.0, 1.0)))
         self.add_parameter(HLSParameter('color-end', (1.0, 1.0, 1.0)))
         self.hue_inner = random.random() + 100
@@ -46,12 +45,11 @@ class StripeGradient(RawPreset):
         self.parameter_changed(None)
 
     def parameter_changed(self, parameter):
-        _fader_resolution = self.parameter('posterization').get()
         fade_colors = [self.parameter('color-start').get(), self.parameter('color-start').get(), self.parameter('color-end').get(), self.parameter('color-end').get(), self.parameter('color-start').get()]
 #        fade_colors = [self.parameter('color-start').get(), self.parameter('color-end').get(), self.parameter('color-start').get()]
 #        fade_colors = [self.parameter('color-start').get(), self.parameter('color-end').get(), self.parameter('color-start').get()]
    
-        self._fader = ColorFade(fade_colors, self._fader_resolution)
+        self._fader = ColorFade(fade_colors, self.parameter('posterization').get())
     
     def reset(self):
         pass
@@ -60,14 +58,15 @@ class StripeGradient(RawPreset):
         if self._mixer.is_onset():
             self.hue_inner = self.hue_inner + self.parameter('hue-step').get()
 
-        start = self.hue_inner + (dt * self.parameter('speed').get())
-        self._center_rotation = self.parameter('center-orbit-speed').get() * dt
-        self.stripe_angle = self.parameter('angle-speed').get() * dt
+        self.hue_inner += dt * self.parameter('speed').get()
+        self._center_rotation += dt * self.parameter('center-orbit-speed').get()
+        self.stripe_angle += dt * self.parameter('angle-speed').get()
         stripe_width = self.parameter('stripe-width').get()
         cx, cy = self.scene().get_centroid()
         cx += math.cos(self._center_rotation) * self.parameter('center-orbit-distance').get()
         cy += math.sin(self._center_rotation) * self.parameter('center-orbit-distance').get()
 
+        posterization = self.parameter('posterization').get()
         for pixel in self.pixels:
             x, y = self.scene().get_pixel_location(pixel)
             dx = x - cx
@@ -78,6 +77,6 @@ class StripeGradient(RawPreset):
             y = (y / stripe_width) % 1.0
             x = abs(x - 0.5)
             y = abs(y - 0.5)
-            hue = math.floor((x+y) * self._fader_resolution) / self._fader_resolution
+            hue = math.floor((x+y) * posterization) / posterization
             color1 = self._fader.get_color(hue)
-            self.setPixelHLS(pixel, color1)
+            self.setPixelHLS(pixel, ((color1[0] + self.hue_inner) % 1.0, color1[1], color1[2]))

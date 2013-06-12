@@ -55,17 +55,17 @@ class RadialGradient(RawPreset):
             self.hue_inner = math.fmod(self.hue_inner + self.parameter('hue-step').get(), 1.0)
             self.luminance_offset += self.parameter('hue-step').get()
 
-        start = self.hue_inner + (dt * self.parameter('speed').get())
-        self.wave1_offset = self.parameter('wave1-speed').get() * dt
-        self.wave2_offset = self.parameter('wave2-speed').get() * dt
-        self.luminance_offset = self.parameter('luminance-speed').get() * dt
+        self.hue_inner += dt * self.parameter('speed').get()
+        self.wave1_offset += self.parameter('wave1-speed').get() * dt
+        self.wave2_offset += self.parameter('wave2-speed').get() * dt
+        self.luminance_offset += self.parameter('luminance-speed').get() * dt
         
         for pixel in self.pixels:
             wave1 = abs(math.cos(self.wave1_offset + self.pixel_angles[pixel] * self.parameter('wave1-period').get()) * self.parameter('wave1-amplitude').get())
             wave2 = abs(math.cos(self.wave2_offset + self.pixel_angles[pixel] * self.parameter('wave2-period').get()) * self.parameter('wave2-amplitude').get())
             hue = self.pixel_distances[pixel] + wave1 + wave2
             luminance = abs(math.fmod(self.luminance_offset + hue * self.parameter('luminance-scale').get(), 1.0))
-            hue = math.fmod(start + hue * self.parameter('hue-width').get(), 1.0)
+            hue = math.fmod(self.hue_inner + hue * self.parameter('hue-width').get(), 1.0)
             brightness = 0 if luminance > self.parameter('blackout').get() else 1.0
             saturation = 0 if luminance < self.parameter('whiteout').get() else 1.0
             self.setPixelHSV(pixel, (hue, saturation, brightness))

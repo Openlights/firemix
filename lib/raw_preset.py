@@ -86,7 +86,7 @@ class RawPreset(Preset):
         for parameter in self._parameters.values():
             parameter.tick(dt)
         
-        self.draw(current_time)
+        self.draw(dt)
 
         self._ticks += 1
 
