@@ -35,7 +35,7 @@ class Fungus(RawPreset):
     _birth_rate = 0.05
     _spread_rate = 0.25
     _fade_out_time = 2.0
-    _mass_destruction_time = 2.0
+    _mass_destruction_countdown = 2.0
     _mass_destruction_threshold = 150
     _population_limit = 500
     _alive_color = (1.0, 1.0, 1.0)
@@ -52,7 +52,7 @@ class Fungus(RawPreset):
         self.add_parameter(FloatParameter('birth-rate', self._birth_rate))
         self.add_parameter(FloatParameter('spread-rate', self._spread_rate))
         self.add_parameter(FloatParameter('fade-out-time', self._fade_out_time))
-        self.add_parameter(FloatParameter('mass-destruction-time', self._mass_destruction_time))
+        self.add_parameter(FloatParameter('mass-destruction-time', self._mass_destruction_countdown))
         self.add_parameter(IntParameter('mass-destruction-threshold', self._mass_destruction_threshold))
         self.add_parameter(IntParameter('pop-limit', self._population_limit))
         self.add_parameter(HLSParameter('alive-color', self._alive_color))
@@ -79,7 +79,7 @@ class Fungus(RawPreset):
         self._birth_rate = self.parameter('birth-rate').get()
         self._spread_rate = self.parameter('spread-rate').get()
         self._fade_out_time = self.parameter('fade-out-time').get()
-        self._mass_destruction_time = self.parameter('mass-destruction-time').get()
+        self._mass_destruction_countdown = self.parameter('mass-destruction-time').get()
         self._mass_destruction_threshold = self.parameter('mass-destruction-threshold').get()
         self._population_limit = self._population_limit
 
@@ -93,6 +93,7 @@ class Fungus(RawPreset):
     def draw(self, dt):
 
         self._current_time += dt
+        self._mass_destruction_countdown -= dt
     
         # Ensure that empty displays start up with some seeds
         p_birth = (1.0 - self._spontaneous_birth_probability) if self._population > 5 else 0.5
@@ -118,18 +119,18 @@ class Fungus(RawPreset):
             self.setPixelHLS(address, color)
 
             # Spread
-            if (self._population < self._population_limit) and random.random() > (1.0 - self._spread_rate):
-                spread = neighbors[random.randint(0, len(neighbors) - 1)]
-                if spread not in (self._growing + self._alive + self._dying + self._fading_out):
-                    self._growing.append(spread)
-                    self._time[spread] = self._current_time
-                    self._population += 1
+            if (self._population < self._population_limit) and (random.random() < self._spread_rate * dt):
+                for spread in neighbors:
+                    if spread not in (self._growing + self._alive + self._dying + self._fading_out):
+                        self._growing.append(spread)
+                        self._time[spread] = self._current_time
+                        self._population += 1
 
         # Lifetime
         for address in self._alive:
             neighbors = self.scene().get_pixel_neighbors(address)
             live_neighbors = [i for i in neighbors if i in self._alive]
-            lt = self.parameter('life-time').get()
+            lt = self._life_time
             if len(neighbors) < 2:
                 lt = self._isolated_life_time
 
@@ -142,12 +143,12 @@ class Fungus(RawPreset):
             self.setPixelHLS(address, self._alive_color)
 
             # Spread
-            if (self._population < self._population_limit) and random.random() > (1.0 - self._birth_rate):
-                spread = neighbors[random.randint(0, len(neighbors) - 1)]
-                if spread not in (self._growing + self._alive + self._dying + self._fading_out):
-                    self._growing.append(spread)
-                    self._time[spread] = self._current_time
-                    self._population += 1
+            if (self._population < self._population_limit) and random.random() < self._birth_rate * dt:
+                for spread in neighbors:
+                    if spread not in (self._growing + self._alive + self._dying + self._fading_out):
+                        self._growing.append(spread)
+                        self._time[spread] = self._current_time
+                        self._population += 1
 
         # Color decay
         for address in self._dying:
@@ -167,7 +168,7 @@ class Fungus(RawPreset):
 
         # Mass destruction
         if (self._population == self._population_limit) or \
-                (self._population > self._mass_destruction_threshold and ((self._current_time % self._mass_destruction_time) == 0)):
+                (self._population > self._mass_destruction_threshold and self._mass_destruction_countdown <= 0):
             for i in self._alive:
                 if random.random() > 0.95:
                     self._alive.remove(i)
@@ -178,6 +179,7 @@ class Fungus(RawPreset):
                     self._growing.remove(i)
                     self._dying.append(i)
                     self._population -= 1
+            self._mass_destruction_countdown = self.parameter('mass-destruction-time').get()
 
     def _get_next_color(self, address, time_target, current_time):
         """
