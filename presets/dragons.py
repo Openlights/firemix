@@ -34,15 +34,9 @@ class Dragons(RawPreset):
             ds = 'Fwd' if self.dir == 1 else 'Rev'
             return "Dragon (%d, %d, %d) %s: %0.2f" % (self.loc[0], self.loc[1], self.loc[2], ds, self.lifetime)
 
-    _dragons = []
-    _tails = []
-    _alive_color = _alive_color
-    _tail_color = _tail_color
-    _dead_color = _dead_color
-
     def setup(self):
-        _dragons = []
-        _tails = []
+        self._dragons = []
+        self._tails = []
         self.init_pixels()
         random.seed()
         self._current_time = 0
