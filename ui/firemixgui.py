@@ -110,11 +110,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         if self._mixer.is_paused():
             self._mixer.pause(False)
             self.tbl_preset_parameters.setDisabled(True)
-            self.lbl_preset_parameters.setText("Preset Parameters (Pause to Edit)")
+            self.lbl_preset_parameters.setTitle("Preset Parameters (Pause to Edit)")
             self.btn_playpause.setText("Pause")
         else:
             self._mixer.pause()
-            self.lbl_preset_parameters.setText("Preset Parameters")
+            self.lbl_preset_parameters.setTitle("Preset Parameters")
             self.tbl_preset_parameters.setDisabled(False)
             self.btn_playpause.setText("Play")
 
