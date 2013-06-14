@@ -56,13 +56,7 @@ class RawPreset(Preset):
         self.setPixelHLS(location, colorsys.rgb_to_hls(*color))
         
     def setPixelHSV(self, location, color):
-        # colorsys doesn't have hsv to hls direct, so here it is:
-        #L = (2 - color[1]) * color[2]
-        #S = color[1] * color[2]
-        #S /= L  if (L <= 1) else 2 - L
-        #L /= 2
-
-        # Hack cause I'm lazy at the moment
+        # There's probably a more efficient way to do this:
         hls = colorsys.rgb_to_hls(*colorsys.hsv_to_rgb(*color))
 
         self.setPixelHLS(location, hls)

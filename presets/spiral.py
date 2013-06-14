@@ -5,6 +5,7 @@ import math
 from lib.raw_preset import RawPreset
 from lib.parameters import FloatParameter, HLSParameter
 from lib.color_fade import ColorFade
+from lib.colors import clip
 
 class SpiralGradient(RawPreset):
     """Spiral gradient that responds to onsets"""
@@ -71,7 +72,7 @@ class SpiralGradient(RawPreset):
 
         for pixel in self.pixels:
             angle = math.fmod(1.0 + self.pixel_angles[pixel] + math.sin(self.wave_offset + self.pixel_distances[pixel] * wave_hue_period) * wave_hue_width, 1.0)
-            hue = self.color_offset + (radius_hue_width * self.pixel_distances[pixel]) + (angle * angle_hue_width)
+            hue = self.color_offset + (radius_hue_width * self.pixel_distances[pixel]) + (2 * abs(angle - 0.5) * angle_hue_width)
             hue = math.fmod(math.floor(hue * self._fader_resolution) / self._fader_resolution, 1.0)
             color = self._fader.get_color(hue)
             self.setPixelHLS(pixel, (color[0] + self.hue_inner, color[1], color[2]))

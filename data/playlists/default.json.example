@@ -2,13 +2,29 @@
     "file-type": "playlist", 
     "playlist": [
         {
+            "classname": "SpiralGradient", 
+            "name": "SpiralGradient-1", 
+            "params": {
+                "angle-hue-width": "[4,20,10]", 
+                "color-end": "(1.0, 1.0, 0.0)", 
+                "color-start": "(1.0, 0.0, 0.0)", 
+                "hue-speed": "0.0", 
+                "hue-step": "0.1", 
+                "radius-hue-width": "2.0", 
+                "speed": "0.1", 
+                "wave-hue-period": "0.1", 
+                "wave-hue-width": "0.3", 
+                "wave-speed": "0.1"
+            }
+        }, 
+        {
             "classname": "RadialGradient", 
             "name": "radial wibble", 
             "params": {
-                "blackout": "0.8", 
+                "blackout": "[0.1, 0.8, 0.1]", 
                 "hue-step": "0.1", 
                 "hue-width": "1.0", 
-                "luminance-scale": "[1,3,1]", 
+                "luminance-scale": "[0.5,3,1]", 
                 "luminance-speed": "0.5", 
                 "speed": "[-0.2,0.2,0.1]", 
                 "wave1-amplitude": "[-1,1,1]", 
@@ -17,14 +33,14 @@
                 "wave2-amplitude": "[-2,2,1]", 
                 "wave2-period": "0.5", 
                 "wave2-speed": "[-2,2,0.1]", 
-                "whiteout": "0.2"
+                "whiteout": "[0.0,0.8,0.1]"
             }
         }, 
         {
             "classname": "SpiralGradient", 
             "name": "spiral fire", 
             "params": {
-                "angle-hue-width": "1.0", 
+                "angle-hue-width": "[0.5,2,0.5]", 
                 "color-end": "[1.13, 0.5, 1.0]", 
                 "color-start": "[0.7, 0.0, 1.0]", 
                 "hue-speed": "0.0", 
@@ -32,8 +48,8 @@
                 "radius-hue-width": "0.1", 
                 "speed": "[0,0.5,0.1]", 
                 "wave-hue-period": "[0.1,1.5,1]", 
-                "wave-hue-width": "[-0.5,1,0.01]", 
-                "wave-speed": "[0,1,0.1]"
+                "wave-hue-width": "[-0.5,0.9,0.1]", 
+                "wave-speed": "[0,2,0.1]"
             }
         }, 
         {
@@ -92,7 +108,7 @@
                 "hue-max": "3.0", 
                 "hue-min": "0.0", 
                 "luminance-scale": "[0.1,0.5,0.1]", 
-                "resolution": "128", 
+                "resolution": "256", 
                 "scale": "0.1", 
                 "speed": "[-2,2,1]", 
                 "whiteout": "0.7"
@@ -186,7 +202,7 @@
                 "radius-hue-width": "-0.1", 
                 "speed": "0.1", 
                 "wave-hue-period": "[0.5,4,0.1]", 
-                "wave-hue-width": "0.05", 
+                "wave-hue-width": "[0,0.2,1]", 
                 "wave-speed": "1.0"
             }
         }, 
@@ -200,10 +216,10 @@
                 "hue-max": "3.0", 
                 "hue-min": "0.0", 
                 "luminance-scale": "0.75", 
-                "resolution": "20", 
+                "resolution": "16", 
                 "scale": "0.15", 
                 "speed": "0.4", 
-                "whiteout": "0.75"
+                "whiteout": "0.8"
             }
         }, 
         {
@@ -254,8 +270,8 @@
             "name": "twinkle yarn", 
             "params": {
                 "beat-color": "(1.0, 1.0, 1.0)", 
-                "birth-rate": "400.0", 
-                "fade-down-time": "25.0", 
+                "birth-rate": "2.0", 
+                "fade-down-time": "4.0", 
                 "fade-up-time": "0.5", 
                 "off-color": "[0.0, 0.0, 1.0]", 
                 "on-color": "[1.6, 0.7, 1.0]"
@@ -265,12 +281,12 @@
             "classname": "SpiralGradient", 
             "name": "spiral stripey", 
             "params": {
-                "angle-hue-width": "0.5", 
+                "angle-hue-width": "[1,2,1]", 
                 "color-end": "[1.0, 0.5, 1.0]", 
                 "color-start": "[0.0, 0.5, 1.0]", 
                 "hue-speed": "0.3", 
                 "hue-step": "0.2", 
-                "radius-hue-width": "0.5", 
+                "radius-hue-width": "[0,1,0.5]", 
                 "speed": "[-0.1,0.1,0.01]", 
                 "wave-hue-period": "[2,5,0.1]", 
                 "wave-hue-width": "[-0.2,0.3,0.01]", 
@@ -282,7 +298,7 @@
             "name": "dragons long green", 
             "params": {
                 "alive-color": "[0.4, 0.5, 1.0]", 
-                "birth-rate": "2.0", 
+                "birth-rate": "0.1", 
                 "dead-color": "[1.0, 0.0, 1.0]", 
                 "explode-color": "(0.1, 1.0, 1.0)", 
                 "growth-rate": "60.0", 
@@ -315,13 +331,13 @@
             "classname": "SpiralGradient", 
             "name": "spiral red", 
             "params": {
-                "angle-hue-width": "1.0", 
+                "angle-hue-width": "[1,4,1]", 
                 "color-end": "[0.3, 1.0, 1.0]", 
                 "color-start": "[-0.3, 0.0, 1.0]", 
                 "hue-speed": "0.3", 
                 "hue-step": "0.1", 
                 "radius-hue-width": "[-1,1,1]", 
-                "speed": "[-0.5,0.5,0.1]", 
+                "speed": "[-0.1,0.1,0.1]", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "1.0", 
                 "wave-speed": "0.01"
@@ -348,7 +364,7 @@
             "name": "noise poster red", 
             "params": {
                 "angle": "[0,1,1]", 
-                "blackout": "0.4", 
+                "blackout": "0.5", 
                 "color-speed": "0.1", 
                 "hue-max": "1.2", 
                 "hue-min": "0.9", 
@@ -356,7 +372,7 @@
                 "resolution": "3", 
                 "scale": "2.0", 
                 "speed": "0.5", 
-                "whiteout": "0.4"
+                "whiteout": "0.6"
             }
         }, 
         {
@@ -390,7 +406,7 @@
                 "luminance-scale": "0.2", 
                 "resolution": "4", 
                 "scale": "1.0", 
-                "speed": "0.7", 
+                "speed": "0.2", 
                 "whiteout": "0.4"
             }
         }, 
@@ -475,7 +491,7 @@
             "name": "dragons rainbow", 
             "params": {
                 "alive-color": "[1.5, 1.0, 1.0]", 
-                "birth-rate": "0.005", 
+                "birth-rate": "0.003", 
                 "dead-color": "[-1.0, 0.0, 1.0]", 
                 "explode-color": "(1.0, 1.0, 1.0)", 
                 "growth-rate": "60.0", 
@@ -528,15 +544,15 @@
             "name": "noise calm", 
             "params": {
                 "angle": "0.7", 
-                "blackout": "0.0", 
+                "blackout": "0.75", 
                 "color-speed": "0.1", 
-                "hue-max": "0.8", 
-                "hue-min": "0.3", 
-                "luminance-scale": "0.75", 
+                "hue-max": "[0.8,1.0,0.1]", 
+                "hue-min": "[0.2,0.3,0.1]", 
+                "luminance-scale": "0.3", 
                 "resolution": "200", 
                 "scale": "0.3", 
-                "speed": "1.0", 
-                "whiteout": "0.6"
+                "speed": "0.1", 
+                "whiteout": "0.35"
             }
         }, 
         {
@@ -559,9 +575,9 @@
             "name": "twinkle max", 
             "params": {
                 "beat-color": "(1.0, 1.0, 1.0)", 
-                "birth-rate": "20.0", 
-                "fade-down-time": "40.0", 
-                "fade-up-time": "0.5", 
+                "birth-rate": "2.0", 
+                "fade-down-time": "2.0", 
+                "fade-up-time": "2.0", 
                 "off-color": "(1.0, 0.0, 1.0)", 
                 "on-color": "(0.1, 0.6, 1.0)"
             }
@@ -586,15 +602,49 @@
             "name": "noise movement test", 
             "params": {
                 "angle": "[0,1,1]", 
-                "blackout": "0.0", 
-                "color-speed": "[-1,1,0.1]", 
+                "blackout": "2.0", 
+                "color-speed": "[-0.1,0.1,0.1]", 
                 "hue-max": "1.0", 
                 "hue-min": "0.0", 
                 "luminance-scale": "0.3", 
                 "resolution": "128", 
                 "scale": "0.25", 
-                "speed": "[0,10,1]", 
-                "whiteout": "1.0"
+                "speed": "[0,0.2,1]", 
+                "whiteout": "0.4"
+            }
+        }, 
+        {
+            "classname": "Dragons", 
+            "name": "Dragons-1", 
+            "params": {
+                "alive-color": "(0.0, 1.0, 1.0)", 
+                "birth-rate": "0.4", 
+                "dead-color": "(0.0, 0.0, 0.0)", 
+                "explode-color": "(1.0, 1.0, 1.0)", 
+                "growth-rate": "30.0", 
+                "growth-time": "4.0", 
+                "pop-limit": "20", 
+                "tail-color": "(0.2, 0.0, 1.0)", 
+                "tail-persist": "0.5"
+            }
+        }, 
+        {
+            "classname": "RadialGradient", 
+            "name": "radial slow simple", 
+            "params": {
+                "blackout": "0.3", 
+                "hue-step": "0.1", 
+                "hue-width": "0.5", 
+                "luminance-scale": "0.8", 
+                "luminance-speed": "0.04", 
+                "speed": "0.1", 
+                "wave1-amplitude": "0.0", 
+                "wave1-period": "3.0", 
+                "wave1-speed": "0.05", 
+                "wave2-amplitude": "0.0", 
+                "wave2-period": "1.5", 
+                "wave2-speed": "0.1", 
+                "whiteout": "0.1"
             }
         }
     ]

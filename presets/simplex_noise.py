@@ -3,12 +3,15 @@ from noise import snoise3
 from lib.raw_preset import RawPreset
 from lib.parameters import FloatParameter, IntParameter
 import math
+from lib.colors import clip
 
 class SimplexNoise(RawPreset):
     """
     Simplex noise hue map
     """
 
+    _luminance_steps = 256
+    
     def setup(self):
         self.add_parameter(FloatParameter('hue-min', 0.0))
         self.add_parameter(FloatParameter('hue-max', 3.0))
@@ -55,21 +58,24 @@ class SimplexNoise(RawPreset):
             posterization = 2
         else:
             posterization = self.parameter('resolution').get()
+
+        luminance_table = []
+        luminance = 0.0
+        for input in range(self._luminance_steps):
+            if input > self.parameter('blackout').get() * self._luminance_steps:
+                luminance -= 0.01
+            elif input < self.parameter('whiteout').get() * self._luminance_steps:
+                luminance += 0.01
+            else:
+                luminance = 0.5
+            luminance = clip(0, luminance, 1.0)
+            luminance_table.append(math.floor(luminance * posterization) / posterization)
+            
         
         for pixel, location in self.pixel_locations:
-            hue = (1.0 + snoise3(self.scale * location[0] + self._offset_x, self.scale * location[1] + self._offset_y, self._offset_z, 1, 0.5, 0.5)) / 2.0
+            hue = (1.0 + snoise3(self.scale * location[0] + self._offset_x, self.scale * location[1] + self._offset_y, self._offset_z, 1, 0.5, 0.5)) / 2
             hue = self.hue_min + ((math.floor(hue * posterization) / posterization) * (self.hue_max - self.hue_min))
             
-            brightness = (1.0 + snoise3(self.luminance_scale * location[0] + self._offset_x, self.luminance_scale * location[1] + self._offset_y, self._offset_z, 1, 0.5, 0.5)) / 2.0
+            brightness = self._luminance_steps * (1.0 + snoise3(self.luminance_scale * location[0] + self._offset_x, self.luminance_scale * location[1] + self._offset_y, self._offset_z, 1, 0.5, 0.5)) / 2
             
-            if brightness > self.parameter('whiteout').get():
-                saturation = (brightness - self.parameter('whiteout').get()) / (1 - self.parameter('whiteout').get()) * 2
-                if saturation > 1.0: saturation = 1.0
-                saturation = math.floor(saturation * posterization) / posterization
-                brightness = 1.0
-            else:
-                saturation = 1.0
-            
-            brightness = 0 if brightness < self.parameter('blackout').get() else 1.0
-            
-            self.setPixelHSV(pixel, (hue, saturation, brightness))
+            self.setPixelHLS(pixel, (hue, luminance_table[int(brightness)], 1.0))

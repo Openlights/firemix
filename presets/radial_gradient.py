@@ -3,11 +3,12 @@ import random
 import math
 
 from lib.raw_preset import RawPreset
-from lib.colors import hsv_float_to_rgb_uint8
+from lib.colors import clip
 from lib.parameters import FloatParameter
 
 class RadialGradient(RawPreset):
     """Radial gradient that responds to onsets"""
+    _luminance_steps = 256
 
     def setup(self):
         self.add_parameter(FloatParameter('speed', 0.1))
@@ -46,6 +47,7 @@ class RadialGradient(RawPreset):
         max_distance = max(self.pixel_distances.values())
         for pixel in self.pixels:
             self.pixel_distances[pixel] /= max_distance
+        
 
     def reset(self):
         pass
@@ -59,13 +61,31 @@ class RadialGradient(RawPreset):
         self.wave1_offset += self.parameter('wave1-speed').get() * dt
         self.wave2_offset += self.parameter('wave2-speed').get() * dt
         self.luminance_offset += self.parameter('luminance-speed').get() * dt
+
+        luminance_table = []
+        luminance = 0.0
+        for input in range(self._luminance_steps):
+            if input > self.parameter('blackout').get() * self._luminance_steps:
+                luminance -= 0.01
+                luminance = clip(0, luminance, 1.0)
+            elif input < self.parameter('whiteout').get() * self._luminance_steps:
+                luminance += 0.1
+                luminance = clip(0, luminance, 1.0)
+            else:
+                luminance -= 0.01
+                luminance = clip(0.5, luminance, 1.0)
+            luminance_table.append(luminance)
+        
+        wave1_period = self.parameter('wave1-period').get()
+        wave1_amplitude = self.parameter('wave1-amplitude').get()
+        wave2_period = self.parameter('wave2-period').get()
+        wave2_amplitude = self.parameter('wave2-amplitude').get()
+        luminance_scale = self.parameter('luminance-scale').get()
         
         for pixel in self.pixels:
-            wave1 = abs(math.cos(self.wave1_offset + self.pixel_angles[pixel] * self.parameter('wave1-period').get()) * self.parameter('wave1-amplitude').get())
-            wave2 = abs(math.cos(self.wave2_offset + self.pixel_angles[pixel] * self.parameter('wave2-period').get()) * self.parameter('wave2-amplitude').get())
+            wave1 = abs(math.cos(self.wave1_offset + self.pixel_angles[pixel] * wave1_period) * wave1_amplitude)
+            wave2 = abs(math.cos(self.wave2_offset + self.pixel_angles[pixel] * wave2_period) * wave2_amplitude)
             hue = self.pixel_distances[pixel] + wave1 + wave2
-            luminance = abs(math.fmod(self.luminance_offset + hue * self.parameter('luminance-scale').get(), 1.0))
+            luminance = abs(int((self.luminance_offset + hue * luminance_scale) * self._luminance_steps)) % self._luminance_steps
             hue = math.fmod(self.hue_inner + hue * self.parameter('hue-width').get(), 1.0)
-            brightness = 0 if luminance > self.parameter('blackout').get() else 1.0
-            saturation = 0 if luminance < self.parameter('whiteout').get() else 1.0
-            self.setPixelHSV(pixel, (hue, saturation, brightness))
+            self.setPixelHLS(pixel, (hue, luminance_table[luminance], 1.0))
