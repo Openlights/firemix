@@ -327,7 +327,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_file_open_playlist(self):
         paused = self._app.mixer.is_paused()
-        self._app.mixer.pause()
+        self._app.mixer.stop()
         old_name = self._app.playlist.filename
         filename, _ = QtGui.QFileDialog.getOpenFileName(self, 'Open playlist file', os.path.join(os.getcwd(), "data", "playlists"), filter="Playlists (*.json)")
         name = os.path.split(filename)[1].replace(".json", "")
@@ -336,6 +336,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         if not self._app.playlist.open():
             self._app.playlist.set_filename(old_name)
             QtGui.QMessageBox.warning(self, "Error", "Could not open file")
+        self._app.mixer.run()
         self._app.mixer.pause(paused)
         self.on_playlist_changed()
 

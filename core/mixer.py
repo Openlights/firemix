@@ -102,9 +102,6 @@ class Mixer(QtCore.QObject):
         self._paused = pause
         self._app.settings.get('mixer')['paused'] = pause
 
-        while self._render_in_progress:
-            continue
-
     def is_paused(self):
         return self._paused
 

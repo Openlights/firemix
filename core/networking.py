@@ -2,7 +2,7 @@ import socket
 import array
 import struct
 import colorsys
-from time import sleep
+import time
 
 from lib.colors import clip
 
@@ -42,13 +42,23 @@ class Networking:
                     continue
                 color_mode = strand_settings[strand]["color-mode"]
 
-                if client_color_mode == "RGB8":
+                data = []
+
+                if client_color_mode == "HLSF32":
+                    data = [channel for pixel in strand_data[strand][0:(3*160)] for channel in pixel]
+                    data = array.array('B', struct.pack('%sf' % len(data), *data))
+                elif client_color_mode == "RGB8":
                     data = [colorsys.hls_to_rgb(*pixel) for pixel in strand_data[strand][0:(3*160)]]
-                    data = [clip(0, int(255.0 * item), 255) for sublist in data for item in sublist]
+                    data = array.array('B', [clip(0, int(255.0 * item), 255) for sublist in data for item in sublist])
+                elif client_color_mode == "HSVF32":
+                    data = [colorsys.hls_to_rgb(*pixel) for pixel in strand_data[strand][0:(3*160)]]
+                    data = array.array('B', [colorsys.rgb_to_hsv(*pixel) for pixel in data])
 
                 length = len(data)
                 command = COMMAND_SET_RGB if color_mode == "RGB8" else COMMAND_SET_BGR
-                packet.extend(array.array('B', [strand, command, (length & 0xFF), (length & 0xFF00) >> 8] + data))
+                packet.extend(array.array('B', [strand, command, (length & 0xFF), (length & 0xFF00) >> 8]))
+                packet.extend(data)
+
 
             self._socket.sendto(packet, (client["host"], client["port"]))
 
