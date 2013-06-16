@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>940</width>
+    <width>1068</width>
     <height>712</height>
    </rect>
   </property>
@@ -23,16 +23,7 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,2">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
+      <property name="margin">
        <number>0</number>
       </property>
       <item>
@@ -49,16 +40,7 @@
            <property name="spacing">
             <number>3</number>
            </property>
-           <property name="leftMargin">
-            <number>3</number>
-           </property>
-           <property name="topMargin">
-            <number>3</number>
-           </property>
-           <property name="rightMargin">
-            <number>3</number>
-           </property>
-           <property name="bottomMargin">
+           <property name="margin">
             <number>3</number>
            </property>
            <item>
@@ -437,16 +419,7 @@
                <property name="sizeConstraint">
                 <enum>QLayout::SetDefaultConstraint</enum>
                </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
+               <property name="margin">
                 <number>0</number>
                </property>
                <item>
@@ -514,8 +487,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>940</width>
-     <height>21</height>
+     <width>1068</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -523,9 +496,10 @@
      <string>File</string>
     </property>
     <addaction name="action_file_load_scene"/>
-    <addaction name="action_file_reload_presets"/>
+    <addaction name="action_file_open_playlist"/>
     <addaction name="action_file_save_playlist"/>
-    <addaction name="action_file_generate_default_playlist"/>
+    <addaction name="action_file_save_playlist_as"/>
+    <addaction name="separator"/>
     <addaction name="action_file_quit"/>
    </widget>
    <widget class="QMenu" name="menu_edit">
@@ -534,8 +508,17 @@
     </property>
     <addaction name="action_edit_settings"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="action_file_generate_default_playlist"/>
+    <addaction name="action_file_reload_presets"/>
+    <addaction name="action_tools_append_playlist"/>
+   </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_edit"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_file_load_scene">
@@ -562,6 +545,9 @@
   <action name="action_file_save_playlist">
    <property name="text">
     <string>Save Playlist</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="action_settings_networking">
@@ -593,6 +579,27 @@
   <action name="action_edit_settings">
    <property name="text">
     <string>Settings</string>
+   </property>
+  </action>
+  <action name="action_file_save_playlist_as">
+   <property name="text">
+    <string>Save Playlist As...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="action_file_open_playlist">
+   <property name="text">
+    <string>Open Playlist</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="action_tools_append_playlist">
+   <property name="text">
+    <string>Append Playlist</string>
    </property>
   </action>
  </widget>

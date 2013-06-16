@@ -503,7 +503,7 @@
     "name": "Demo", 
     "strand-settings": [
         {
-            "color-mode": "RGB8", 
+            "color-mode": "BGR8", 
             "enabled": true, 
             "id": 0
         }, 
@@ -519,22 +519,22 @@
         }, 
         {
             "color-mode": "BGR8", 
-            "enabled": true, 
+            "enabled": false, 
             "id": 3
         }, 
         {
             "color-mode": "BGR8", 
-            "enabled": true, 
+            "enabled": false, 
             "id": 4
         }, 
         {
             "color-mode": "BGR8", 
-            "enabled": true, 
+            "enabled": false, 
             "id": 5
         }, 
         {
             "color-mode": "BGR8", 
-            "enabled": true, 
+            "enabled": false, 
             "id": 6
         }
     ]
