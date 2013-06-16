@@ -1,4 +1,5 @@
 import time
+import os
 
 from PySide import QtGui, QtCore
 
@@ -32,14 +33,19 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         # File menu
         self.action_file_load_scene.triggered.connect(self.on_file_load_scene)
-        self.action_file_reload_presets.triggered.connect(self.on_file_reload_presets)
+        self.action_file_open_playlist.triggered.connect(self.on_file_open_playlist)
+        self.action_file_save_playlist_as.triggered.connect(self.on_file_save_playlist_as)
         self.action_file_save_playlist.triggered.connect(self.on_file_save_playlist)
         self.action_file_quit.triggered.connect(self.close)
-        self.action_file_generate_default_playlist.triggered.connect(self.on_file_generate_default_playlist)
+
 
         # Edit menu
+        self.action_file_reload_presets.triggered.connect(self.on_file_reload_presets)
         self.action_edit_settings.triggered.connect(self.on_edit_settings)
         #self.action_settings_networking.triggered.connect(self.on_settings_networking)
+
+        # Tools menu
+        self.action_file_generate_default_playlist.triggered.connect(self.on_file_generate_default_playlist)
 
         # Preset list
         self.lst_presets.itemDoubleClicked.connect(self.on_preset_double_clicked)
@@ -104,19 +110,14 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.last_frames = frames
         self.last_time = time.time()
         self.last_frames = frames
-        self.setWindowTitle("FireMix - %0.2f FPS" % fps)
+        self.setWindowTitle("FireMix - %s - %0.2f FPS" % (self._app.playlist.name, fps))
 
     def on_btn_playpause(self):
         if self._mixer.is_paused():
             self._mixer.pause(False)
-            self.tbl_preset_parameters.setDisabled(True)
-            self.lbl_preset_parameters.setTitle("Preset Parameters (Pause to Edit)")
-            self.btn_playpause.setText("Pause")
         else:
             self._mixer.pause()
-            self.lbl_preset_parameters.setTitle("Preset Parameters")
-            self.tbl_preset_parameters.setDisabled(False)
-            self.btn_playpause.setText("Play")
+        self.update_mixer_settings()
 
     def on_btn_runfreeze(self):
         if self._mixer.is_frozen():
@@ -133,9 +134,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self._app.playlist.advance(-1)
 
     def on_btn_reset_preset(self):
+        paused = self._app.mixer.is_paused()
         self._app.mixer.pause()
         self._app.playlist.get_active_preset()._reset()
-        self._app.mixer.pause(False)
+        self._app.mixer.pause(paused)
 
     def on_btn_add_preset(self):
         dlg = DlgAddPreset(self)
@@ -187,6 +189,15 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         shuffle_state = QtCore.Qt.Checked if self._app.settings['mixer']['shuffle'] else QtCore.Qt.Unchecked
         self.btn_shuffle_playlist.setChecked(shuffle_state)
 
+        if not self._mixer.is_paused():
+            self.tbl_preset_parameters.setDisabled(True)
+            self.lbl_preset_parameters.setTitle("Preset Parameters (Pause to Edit)")
+            self.btn_playpause.setText("Pause")
+        else:
+            self.lbl_preset_parameters.setTitle("Preset Parameters")
+            self.tbl_preset_parameters.setDisabled(False)
+            self.btn_playpause.setText("Play")
+
     def on_slider_dimmer(self):
         dval = self.slider_global_dimmer.value() / 100.0
         self._app.mixer.set_global_dimmer(dval)
@@ -215,6 +226,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_playlist_changed(self):
         self.update_playlist()
+        self.update_mixer_settings()
         self.load_preset_parameters_table()
 
     def on_playlist_reorder(self):
@@ -313,8 +325,33 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         except ValueError:
             item.setText(par.get_as_str())
 
+    def on_file_open_playlist(self):
+        paused = self._app.mixer.is_paused()
+        self._app.mixer.pause()
+        old_name = self._app.playlist.filename
+        filename, _ = QtGui.QFileDialog.getOpenFileName(self, 'Open playlist file', os.path.join(os.getcwd(), "data", "playlists"), filter="Playlists (*.json)")
+        name = os.path.split(filename)[1].replace(".json", "")
+
+        self._app.playlist.set_filename(filename)
+        if not self._app.playlist.open():
+            self._app.playlist.set_filename(old_name)
+            QtGui.QMessageBox.warning(self, "Error", "Could not open file")
+        self._app.mixer.pause(paused)
+        self.on_playlist_changed()
+
     def on_file_save_playlist(self):
-        pass
+        self._app.playlist.save()
+
+    def on_file_save_playlist_as(self):
+        paused = self._app.mixer.is_paused()
+        self._app.mixer.pause()
+        filename = self._app.playlist.filename
+        filename, _ = QtGui.QFileDialog.getSaveFileName(self, 'Save playlist file as', os.path.join(os.getcwd(), "data", "playlists"), filter="Playlists (*.json)")
+
+        if len(filename) > 0:
+            self._app.playlist.set_filename(filename)
+            self._app.playlist.save()
+        self._app.mixer.pause(paused)
 
     def on_file_generate_default_playlist(self):
         dlg = QtGui.QMessageBox()

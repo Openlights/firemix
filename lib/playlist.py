@@ -16,9 +16,24 @@ class Playlist(JSONDict):
 
     def __init__(self, app):
         self._app = app
-        self._name = app.args.playlist
-        self._filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self._name, ".json"]))
-        JSONDict.__init__(self, 'playlist', self._filepath, True)
+        self.name = app.args.playlist
+        if self.name is None:
+            self.name = self._app.settings.get("mixer").get("last_playlist", "default")
+        filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self.name, ".json"]))
+        JSONDict.__init__(self, 'playlist', filepath, True)
+
+        self.open()
+
+    def set_filename(self, filename):
+        self.name = os.path.split(filename)[1].replace(".json", "")
+        self.filename = filename
+
+    def open(self):
+        try:
+            self.load(False)
+        except ValueError:
+            print "Error loading %s" % self.filename
+            return False
 
         self._loader = PresetLoader()
         self._preset_classes = self._loader.load()
@@ -31,6 +46,7 @@ class Playlist(JSONDict):
         self._shuffle_list = []
 
         self.generate_playlist()
+        return True
 
     def generate_playlist(self):
         if len(self._playlist_data) == 0:
@@ -105,6 +121,7 @@ class Playlist(JSONDict):
             playlist.append(playlist_entry)
         self.data['playlist'] = playlist
         # Superclass write to file
+        self._app.settings.get("mixer")["last_playlist"] = self.name
         JSONDict.save(self)
 
     def get(self):
