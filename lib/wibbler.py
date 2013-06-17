@@ -18,6 +18,16 @@ class Wibbler:
         self._acceleration += (numpy.random.random() - 0.5) * self._jerk * dt
         self._velocity += self._acceleration * dt
         value += self._velocity * dt
+        
+        _easeFactor = 0.7
+        if value + self._velocity * 5 > self._max:
+            self._acceleration *= _easeFactor
+            self._velocity *= _easeFactor
+            
+        if value + self._velocity * 5 < self._min:
+            self._acceleration *= _easeFactor
+            self._velocity *= _easeFactor
+            
         if value > self._max:
             self._velocity = 0
             self._acceleration = 0

@@ -202,9 +202,6 @@ class HLSParameter(Parameter):
         if (type(value[0]) != float) or (type(value[1]) != float) or (type(value[2]) != float):
             return False
 
-        if (value[1] < 0. or value[1] > 1.) or (value[2] < 0. or value[2] > 1.):
-            return False
-
         return True
 
     def _cast_from_str(self, value):
