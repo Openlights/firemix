@@ -519,22 +519,22 @@
         }, 
         {
             "color-mode": "BGR8", 
-            "enabled": false, 
+            "enabled": true, 
             "id": 3
         }, 
         {
             "color-mode": "BGR8", 
-            "enabled": false, 
+            "enabled": true, 
             "id": 4
         }, 
         {
             "color-mode": "BGR8", 
-            "enabled": false, 
+            "enabled": true, 
             "id": 5
         }, 
         {
             "color-mode": "BGR8", 
-            "enabled": false, 
+            "enabled": true, 
             "id": 6
         }
     ]
