@@ -52,12 +52,17 @@ class Scene(JSONDict):
         """
         return tuple(self.data.get("extents", (0, 0)))
 
-    def get_centroid(self):
+    def center_point(self):
         """
         Returns the (x, y) centroid of all fixtures in the scene
         """
-        bb = self.get_fixture_bounding_box()
-        return ([bb[0] + (bb[2] - bb[0]) / 2.0, bb[1] + (bb[3] - bb[1]) / 2.0])
+        center = self.data.get("center", None)
+        if center is None:
+            bb = self.get_fixture_bounding_box()
+            center = ((bb[0] + bb[2]) / 2.0, (bb[1] + bb[3]) / 2.0)
+        else:
+            center = tuple(center)
+        return center
 
     def name(self):
         return self.data.get("name", "")
