@@ -503,7 +503,7 @@
     "name": "Demo", 
     "strand-settings": [
         {
-            "color-mode": "RGB8", 
+            "color-mode": "BGR8", 
             "enabled": true, 
             "id": 0
         }, 

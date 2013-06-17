@@ -47,7 +47,7 @@ class Mixer(QtCore.QObject):
         self._stop_time = 0.0
         self._strand_keys = list()
         self._enable_profiling = self._app.args.profile
-        self._paused = False
+        self._paused = self._app.settings.get('mixer').get('paused', False)
         self._frozen = False
         self._random_transition = False
         self._last_onset_time = 0.0
@@ -56,6 +56,7 @@ class Mixer(QtCore.QObject):
         self._reset_onset = False
         self._global_dimmer = 1.0
         self._global_speed = 1.0
+        self._render_in_progress = False
 
         # Load transitions
         self.set_transition_mode(self._app.settings.get('mixer')['transition'])
@@ -99,6 +100,7 @@ class Mixer(QtCore.QObject):
 
     def pause(self, pause=True):
         self._paused = pause
+        self._app.settings.get('mixer')['paused'] = pause
 
     def is_paused(self):
         return self._paused
@@ -185,7 +187,9 @@ class Mixer(QtCore.QObject):
             delay = 1.0 / self._tick_rate
         else:
             start = time.clock()
+            self._render_in_progress = True
             self.tick()
+            self._render_in_progress = False
             #self._onset = False
             dt = (time.clock() - start)
             delay = max(0, (1.0 / self._tick_rate) - dt)
@@ -346,7 +350,8 @@ class Mixer(QtCore.QObject):
                 self._main_buffer = self._transition.get(self._main_buffer, self._secondary_buffer, transition_progress)
 
         if self._global_dimmer < 1.0:
-            self._main_buffer *= self._global_dimmer
+            #print self._main_buffer.shape
+            self._main_buffer *= (1.0, self._global_dimmer, 1.0)
 
         if self._net is not None:
             data = dict()
