@@ -15,13 +15,13 @@ class Fuzz(Transition):
         return "Fuzz"
 
     def setup(self):
+        self.num_strands, self.num_pixels = BufferUtils.get_buffer_size(self._app)
         self.reset()
 
     def reset(self):
-        x, y = BufferUtils.get_buffer_size(self._app)
-        self.mask = np.tile(False, (x, y, 3))
+        self.mask = np.tile(False, (self.num_strands, self.num_pixels, 3))
 
-        num_elements = np.ndarray.flatten(self.mask).size
+        num_elements = np.ndarray.flatten(self.mask).size / 3
         np.random.seed()
         self.rand_index = np.arange(num_elements)
         np.random.shuffle(self.rand_index)
@@ -35,7 +35,10 @@ class Fuzz(Transition):
 
         idx = int(progress * len(self.rand_index))
         for i in range(self.last_idx, idx):
-            self.mask.flat[self.rand_index[i]] = True
+            offset = self.rand_index[i] * 3
+            self.mask.flat[offset] = True
+            self.mask.flat[offset + 1] = True
+            self.mask.flat[offset + 2] = True
         self.last_idx = idx
 
         return (start) + (end)
