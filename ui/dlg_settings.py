@@ -27,7 +27,7 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
 
         # Setup validation and acceptance methods for all panes
         self.validators = [self.validate_networking, self.validate_mixer]
-        self.acceptors = [self.accept_networking, self.accept_strands, self.accept_mixer]
+        self.acceptors = [self.accept_networking, self.accept_strands, self.accept_mixer, self.save_settings]
 
         # Initialize settings panes
         self.populate_mixer_settings()
@@ -101,6 +101,10 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             strand = {"id": idx, "enabled": enabled, "color-mode": color_mode}
             strands.append(strand)
         self.app.scene.set_strand_settings(strands)
+
+    def save_settings(self):
+        self.app.settings.save()
+        self.app.scene.save()
 
     def populate_networking_clients_table(self):
         clients = self.app.settings['networking']['clients']
