@@ -155,11 +155,12 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.update_playlist()
 
     def on_btn_clone_preset(self):
-        cname = self.lst_presets.currentItem().text()
-        current = self._app.playlist.get_preset_by_name(cname)
-        classname = current.__class__.__name__
-        nname = self._app.playlist.suggest_preset_name(classname)
-        self._app.playlist.add_preset(classname, nname)
+        if self.lst_presets.currentItem() is None:
+            return
+
+        old_name = self.lst_presets.currentItem().text()
+
+        self._app.playlist.clone_preset(old_name)
         self.update_playlist()
 
     def on_btn_clear_playlist(self):

@@ -350,7 +350,6 @@ class Mixer(QtCore.QObject):
                 self._main_buffer = self._transition.get(self._main_buffer, self._secondary_buffer, transition_progress)
 
         if self._global_dimmer < 1.0:
-            #print self._main_buffer.shape
             self._main_buffer *= (1.0, self._global_dimmer, 1.0)
 
         if self._net is not None:

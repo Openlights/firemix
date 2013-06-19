@@ -249,6 +249,16 @@ class Playlist(JSONDict):
         self._next_index = self._next_index % len(self._playlist)
         self._active_index = self._active_index % len(self._playlist)
 
+    def clone_preset(self, old_name):
+        old = self.get_preset_by_name(old_name)
+        classname = old.__class__.__name__
+        new_name = self.suggest_preset_name(classname)
+        self.add_preset(classname, new_name)
+        new = self.get_preset_by_name(new_name)
+
+        for name, param in old.get_parameters().iteritems():
+            new.parameter(name).set(param.get())
+
     def clear_playlist(self):
         self._playlist = []
         self._active_index = 0
