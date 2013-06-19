@@ -75,4 +75,4 @@ class SpiralGradient(RawPreset):
             hue = self.color_offset + (radius_hue_width * self.pixel_distances[pixel]) + (2 * abs(angle - 0.5) * angle_hue_width)
             hue = math.fmod(math.floor(hue * self._fader_resolution) / self._fader_resolution, 1.0)
             color = self._fader.get_color(hue)
-            self.setPixelHLS(pixel, (color[0] + self.hue_inner, color[1], color[2]))
+            self.setPixelHLS(pixel, ((color[0] + self.hue_inner) % 1.0, color[1], color[2]))

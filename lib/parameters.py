@@ -95,6 +95,18 @@ class BoolParameter(Parameter):
         return True if value == 'True' else False
 
 
+class StringParameter(Parameter):
+    def __init__(self, name, value=""):
+        Parameter.__init__(self, name)
+        self.set(value)
+
+    def validate(self, value):
+        return True
+
+    def _cast_from_str(self, value):
+        return str(value)
+
+
 class IntParameter(Parameter):
     """
     Parameter holding an integer value

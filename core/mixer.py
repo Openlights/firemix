@@ -49,7 +49,6 @@ class Mixer(QtCore.QObject):
         self._enable_profiling = self._app.args.profile
         self._paused = self._app.settings.get('mixer').get('paused', False)
         self._frozen = False
-        self._random_transition = False
         self._last_onset_time = 0.0
         self._onset_holdoff = self._app.settings.get('mixer')['onset-holdoff']
         self._onset = False
@@ -118,31 +117,29 @@ class Mixer(QtCore.QObject):
     def set_global_speed(self, speed):
         self._global_speed = speed
 
+    def get_transition_by_name(self, name):
+        if not name or name == "Cut":
+            return None
+
+        if name == "Random":
+            self.build_random_transition_list()
+            return self.get_next_transition()
+
+        tl = [c for c in self._app.plugins.get('Transition') if str(c(None)) == name]
+        
+        if len(tl) == 1:
+            return tl[0](self._app)
+        else:
+            log.error("Transition %s is not loaded!" % name)
+            return None
+    
     def set_transition_mode(self, name):
         self._in_transition = False
         self._start_transition = False
-
-        if not name or name == "Cut":
-            self._transition = None
-            self._random_transition = False
-            return True
-
-        if name == "Random":
-            self._random_transition = True
-            self.build_random_transition_list()
-            self.get_next_transition()
-            return True
-        else:
-            self._random_transition = False
-
-        tl = [c for c in self._app.plugins.get('Transition') if str(c(None)) == name]
-        if len(tl) == 1:
-            self._transition = tl[0](self._app)
+        self._transition = self.get_transition_by_name(name)
+        if self._transition:
             self._transition.setup()
-            return True
-        else:
-            log.error("Transition %s is not loaded!" % name)
-            return False
+        return True
 
     def build_random_transition_list(self):
         self._transition_list = [c for c in self._app.plugins.get('Transition')]
@@ -253,7 +250,7 @@ class Mixer(QtCore.QObject):
             if self._in_transition:
                 if self._start_transition:
                     self._start_transition = False
-                    if self._random_transition:
+                    if self._app.settings.get('mixer')['transition'] == "Random":
                         self.get_next_transition()
                     if self._transition:
                         self._transition.reset()

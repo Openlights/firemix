@@ -2,12 +2,119 @@
     "file-type": "playlist", 
     "playlist": [
         {
+            "classname": "CombinePresets", 
+            "name": "ridiculous", 
+            "params": {
+                "first-preset": "spiral warp", 
+                "second-preset": "spiral wiggle", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "add b", 
+            "params": {
+                "angle-hue-width": "1.0", 
+                "color-end": "(1.0, 1.0, 1.0)", 
+                "color-start": "(0.0, 0.0, 0.5)", 
+                "hue-speed": "0.0", 
+                "hue-step": "0.1", 
+                "radius-hue-width": "0.0", 
+                "speed": "0.1", 
+                "wave-hue-period": "0.1", 
+                "wave-hue-width": "0.0", 
+                "wave-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "additive bug", 
+            "params": {
+                "first-preset": "add a", 
+                "second-preset": "add b", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "add a", 
+            "params": {
+                "angle-hue-width": "0.0", 
+                "color-end": "(0.6, 0.6, 1.0)", 
+                "color-start": "(0.0, 0.0, 0.2)", 
+                "hue-speed": "0.02", 
+                "hue-step": "0.1", 
+                "radius-hue-width": "0.5", 
+                "speed": "0.0", 
+                "wave-hue-period": "0.1", 
+                "wave-hue-width": "0.0", 
+                "wave-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "combine gray + colors", 
+            "params": {
+                "first-preset": "spiral fire", 
+                "second-preset": "spiral gray", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "combine colors", 
+            "params": {
+                "first-preset": "spiral gray", 
+                "second-preset": "spiral warp", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "mushroom hunting dragons", 
+            "params": {
+                "first-preset": "dragons small red", 
+                "second-preset": "fungi normal", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "twinkle galaxy", 
+            "params": {
+                "first-preset": "twinkle max", 
+                "second-preset": "galaxy", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.15"
+            }
+        }, 
+        {
+            "classname": "StripeGradient", 
+            "name": "stripe test", 
+            "params": {
+                "angle-speed": "0.1", 
+                "center-orbit-distance": "0.0", 
+                "center-orbit-speed": "0.1", 
+                "color-end": "(1.0, 1.0, 1.0)", 
+                "color-start": "(0.0, 0.0, 1.0)", 
+                "hue-step": "0.1", 
+                "posterization": "8", 
+                "speed": "0.01", 
+                "stripe-width": "300.0"
+            }
+        }, 
+        {
             "classname": "SpiralGradient", 
             "name": "spiral gray", 
             "params": {
                 "angle-hue-width": "[-4,10,1]", 
-                "color-end": "(1.0, 1.0, 0.0)", 
-                "color-start": "(1.0, 0.0, 0.0)", 
+                "color-end": "(0.5, 1.2, 0.0)", 
+                "color-start": "(0.5, -1.0, 0.0)", 
                 "hue-speed": "0.0", 
                 "hue-step": "0.1", 
                 "radius-hue-width": "2.0", 
@@ -15,6 +122,38 @@
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.3", 
                 "wave-speed": "0.05"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "spiral warp", 
+            "params": {
+                "angle-hue-width": "[0.6,1.1,1]", 
+                "color-end": "[0.7, 0.5, 1.0]", 
+                "color-start": "[0.1, 0.5, 1.0]", 
+                "hue-speed": "0.02", 
+                "hue-step": "0.1", 
+                "radius-hue-width": "0.0", 
+                "speed": "0.1", 
+                "wave-hue-period": "[-1,1,0.1]", 
+                "wave-hue-width": "[0.2,0.3,0.3]", 
+                "wave-speed": "[0.0,0.6,0.1]"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "spiral wiggle", 
+            "params": {
+                "angle-hue-width": "0.4", 
+                "color-end": "(1.0, 0.5, 1.0)", 
+                "color-start": "(0.0, 0.5, 1.0)", 
+                "hue-speed": "0.1", 
+                "hue-step": "0.05", 
+                "radius-hue-width": "0.0", 
+                "speed": "[0,0.1,0.1]", 
+                "wave-hue-period": "0.1", 
+                "wave-hue-width": "1.0", 
+                "wave-speed": "0.2"
             }
         }, 
         {
@@ -83,38 +222,6 @@
         }, 
         {
             "classname": "SpiralGradient", 
-            "name": "spiral warp", 
-            "params": {
-                "angle-hue-width": "[0.6,1.1,1]", 
-                "color-end": "[0.7, 0.5, 1.0]", 
-                "color-start": "[0.1, 0.5, 1.0]", 
-                "hue-speed": "0.02", 
-                "hue-step": "0.1", 
-                "radius-hue-width": "0.0", 
-                "speed": "0.1", 
-                "wave-hue-period": "[-1,1,0.1]", 
-                "wave-hue-width": "[0.2,0.3,0.3]", 
-                "wave-speed": "[0.0,0.6,0.1]"
-            }
-        }, 
-        {
-            "classname": "SpiralGradient", 
-            "name": "spiral wiggle", 
-            "params": {
-                "angle-hue-width": "0.4", 
-                "color-end": "(1.0, 0.5, 1.0)", 
-                "color-start": "(0.0, 0.5, 1.0)", 
-                "hue-speed": "0.1", 
-                "hue-step": "0.05", 
-                "radius-hue-width": "0.0", 
-                "speed": "[0,0.1,0.1]", 
-                "wave-hue-period": "0.1", 
-                "wave-hue-width": "1.0", 
-                "wave-speed": "0.2"
-            }
-        }, 
-        {
-            "classname": "SpiralGradient", 
             "name": "when the strobe hurts your eyes", 
             "params": {
                 "angle-hue-width": "1.0", 
@@ -133,15 +240,15 @@
             "classname": "StripeGradient", 
             "name": "like a big soccer ball", 
             "params": {
-                "angle-speed": "0.1", 
-                "center-orbit-distance": "[-100,100,100]", 
-                "center-orbit-speed": "[-0.1,0.1,0.1]", 
-                "color-end": "[0.3, 0.6, 1.0]", 
+                "angle-speed": "[-0.1,0.1,0.01]", 
+                "center-orbit-distance": "[-100,100,10]", 
+                "center-orbit-speed": "[-0.1,0.1,0.01]", 
+                "color-end": "[0.3, 1.6, 2.0]", 
                 "color-start": "[0.0, 0.2, 1.0]", 
                 "hue-step": "0.1", 
                 "posterization": "100", 
-                "speed": "0.01", 
-                "stripe-width": "[100,400,100]"
+                "speed": "0.002", 
+                "stripe-width": "[100,400,2]"
             }
         }, 
         {
@@ -384,7 +491,7 @@
             "name": "twinkle to blue", 
             "params": {
                 "beat-color": "(1.0, 1.0, 1.0)", 
-                "birth-rate": "0.02", 
+                "birth-rate": "0.05", 
                 "fade-down-time": "4.0", 
                 "fade-up-time": "0.5", 
                 "off-color": "[0.6, 0.2, 1.0]", 
@@ -397,7 +504,7 @@
             "params": {
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "2.0", 
-                "fade-down-time": "20.0", 
+                "fade-down-time": "5.0", 
                 "fade-up-time": "0.5", 
                 "off-color": "[0.0, 0.0, 1.0]", 
                 "on-color": "[1.6, 0.7, 1.0]"
@@ -422,7 +529,7 @@
                 "alive-color": "[0.0, 0.5, 1.0]", 
                 "birth-rate": "0.1", 
                 "dead-color": "[0.8, 0.5, 1.0]", 
-                "explode-color": "(0.5, 1.0, 1.0)", 
+                "explode-color": "(0.5, 2.0, 1.0)", 
                 "growth-rate": "20.0", 
                 "growth-time": "0.5", 
                 "pop-limit": "20", 
@@ -658,6 +765,22 @@
             "params": {
                 "speed": "[0,31,1]", 
                 "width": "[24,48,1]"
+            }
+        }, 
+        {
+            "classname": "SimplexNoise", 
+            "name": "galaxy", 
+            "params": {
+                "angle": "0.125", 
+                "blackout": "0.2", 
+                "color-speed": "0.02", 
+                "hue-max": "0.9", 
+                "hue-min": "0.6", 
+                "luminance-scale": "1.2", 
+                "resolution": "128", 
+                "scale": "1.0", 
+                "speed": "0.05", 
+                "whiteout": "0.2"
             }
         }
     ]
