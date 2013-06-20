@@ -33,7 +33,7 @@ class RadialGradient(RawPreset):
         self.pixels = self.scene().get_all_pixels()
         cx, cy = self.scene().center_point()
 
-        self.locations = np.asarray(zip(*self.scene().get_all_pixel_locations())[1])
+        self.locations = np.asarray(self.scene().get_all_pixel_locations())
         x,y = self.locations.T
         x -= cx
         y -= cy

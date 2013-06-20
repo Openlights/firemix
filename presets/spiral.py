@@ -41,7 +41,7 @@ class SpiralGradient(RawPreset):
             self.locations.concatenate(f_locations)
         """
 
-        self.locations = np.asarray(zip(*self.scene().get_all_pixel_locations())[1])
+        self.locations = np.asarray(self.scene().get_all_pixel_locations())
         x,y = self.locations.T
         x -= cx
         y -= cy
