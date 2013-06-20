@@ -14,11 +14,8 @@ class Fuzz(Transition):
     def __str__(self):
         return "Fuzz"
 
-    def setup(self):
-        self.buffer_size = BufferUtils.get_buffer_size()
-        self.reset()
-
     def reset(self):
+        self.buffer_size = BufferUtils.get_buffer_size()
         self.mask = np.tile(False, (self.buffer_size, 3))
 
         num_elements = np.ndarray.flatten(self.mask).size / 3
