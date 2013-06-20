@@ -22,12 +22,12 @@ class AdditiveBlend(Transition):
         return "Additive Blend"
 
     def setup(self):
-        self.x, self.y = BufferUtils.get_buffer_size()
+        self.buffer_len = BufferUtils.get_buffer_size()
 
         self.reset()
 
     def reset(self):
-        self.frame = np.tile(np.array([0.0], dtype=np.float), (self.x, self.y, 3))
+        self.frame = np.tile(np.array([0.0], dtype=np.float), (self.buffer_len, 3))
 
     def get(self, start, end, progress):
 

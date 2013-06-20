@@ -12,7 +12,7 @@ class BufferUtils:
     _max_pixels_per_strand = 0
     _buffer_length = 0
     _app = None
-    _strand_lengths = []
+    _strand_lengths = {}
     _fixture_lengths = {}
     _fixture_extents = {}
     _fixture_pixels = {}
@@ -32,11 +32,16 @@ class BufferUtils:
         fh = app.scene.fixture_hierarchy()
 
         for strand in fh:
+            cls._strand_lengths[strand] = 0
             for fixture in fh[strand]:
-                cls._fixture_lengths[(strand, fixture)] = app.scene.fixture(strand, fixture).pixels
-                for pixel in range(app.scene.fixture(strand, fixture).pixels):
-                    cls.get_buffer_address((strand, fixture, pixel))
-                    cls.logical_to_index((strand, fixture, pixel))
+                fixture_length = app.scene.fixture(strand, fixture).pixels
+                cls._strand_lengths[strand] += fixture_length
+                cls._fixture_lengths[(strand, fixture)] = fixture_length
+
+        for strand in fh:
+            for fixture in fh[strand]:
+                for offset in range(app.scene.fixture(strand, fixture).pixels):
+                    cls.logical_to_index((strand, fixture, offset))
 
     @classmethod
     def logical_to_index(cls, logical_address, scene=None):
@@ -53,9 +58,11 @@ class BufferUtils:
 
             strand, fixture, offset = logical_address
             fh = scene.fixture_hierarchy()
+            index = 0
 
             # (1) Skip to the start of the strand
-            index = (strand * cls._max_pixels_per_strand)
+            for i in range(strand):
+                index += cls._strand_lengths[i]
 
             # (2) Skip to the fixture in question
             for i in range(fixture):
@@ -70,6 +77,8 @@ class BufferUtils:
             cls._pixel_index_cache[logical_address] = index
             cls._pixel_logical_cache[index] = logical_address
             cls._fixture_extents[(strand, fixture)] = (fixture_start, fixture_end)
+
+            print logical_address, index
 
         return index
 

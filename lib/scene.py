@@ -44,8 +44,8 @@ class Scene(JSONDict):
         self.get_fixture_bounding_box()
         self.get_intersection_points()
         self.get_all_pixels_logical()
-        self.get_all_pixels()
-        self.get_all_pixel_locations()
+        #self.get_all_pixels()
+        #self.get_all_pixel_locations()
         log.info("Done")
 
     def extents(self):
