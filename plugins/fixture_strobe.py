@@ -23,7 +23,7 @@ class FixtureStrobe(Transition):
         self.reset()
 
     def reset(self):
-        x, y = BufferUtils.get_buffer_size(self._app)
+        x, y = BufferUtils.get_buffer_size()
         self.mask = np.tile(False, (x, y, 3))
 
         np.random.seed()
