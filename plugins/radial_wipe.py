@@ -16,8 +16,8 @@ class RadialWipe(Transition):
     def __str__(self):
         return "Radial Wipe"
 
-    def setup(self):
-        self.num_strands, self.num_pixels = BufferUtils.get_buffer_size()
+    def reset(self):
+        self.buffer_size = BufferUtils.get_buffer_size()
 
         self.scene_bb = self._app.scene.get_fixture_bounding_box()
         self.scene_center = (self.scene_bb[0] + (self.scene_bb[2] - self.scene_bb[0]) / 2, self.scene_bb[1] + (self.scene_bb[3] - self.scene_bb[1]) / 2)
@@ -25,22 +25,16 @@ class RadialWipe(Transition):
         dy = self.scene_bb[3] - self.scene_center[1]
         self.radius = math.sqrt(math.pow(dx,2) + math.pow(dy, 2))
 
-    def reset(self):
-        self.mask = np.tile(False, (self.num_strands, self.num_pixels, 3))
-
-        self.locations = []
-        for f in self._app.scene.fixtures():
-            for p in range(f.pixels):
-                self.locations.append((f.strand, f.address, p, self._app.scene.get_pixel_location((f.strand, f.address, p))))
+        self.mask = np.tile(False, (self.buffer_size, 3))
+        self.locations = self._app.scene.get_all_pixel_locations()
 
     def get(self, start, end, progress):
 
-        for strand, address, pixel, location in self.locations:
+        for pixel, location in enumerate(self.locations):
             dy = math.fabs(location[1] - self.scene_center[1])
             dx = math.fabs(location[0] - self.scene_center[0])
             if math.sqrt(math.pow(dx,2) + math.pow(dy, 2)) < (self.radius * progress):
-                _, pixel = BufferUtils.get_buffer_address(self._app, (strand, address, pixel))
-                self.mask[strand][pixel][:] = True
+                self.mask[pixel][:] = True
 
         start[self.mask] = 0.0
         end[np.invert(self.mask)] = 0.0

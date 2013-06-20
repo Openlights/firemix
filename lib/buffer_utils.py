@@ -21,26 +21,29 @@ class BufferUtils:
     _pixel_logical_cache = {}
 
     @classmethod
-    def init(cls, app):
+    def set_app(cls, app):
+        cls._app = app
+
+    @classmethod
+    def init(cls):
         """
         Generates the caches and initializes local storage.  Must be called before any other methods.
         """
-        cls._app = app
-        cls._num_strands, cls._max_fixtures, cls._max_pixels_per_fixture = app.scene.get_matrix_extents()
+        cls._num_strands, cls._max_fixtures, cls._max_pixels_per_fixture = cls._app.scene.get_matrix_extents()
         cls._max_pixels_per_strand = cls._max_fixtures * cls._max_pixels_per_fixture
         cls._buffer_length = cls._num_strands * cls._max_pixels_per_strand
-        fh = app.scene.fixture_hierarchy()
+        fh = cls._app.scene.fixture_hierarchy()
 
         for strand in fh:
             cls._strand_lengths[strand] = 0
             for fixture in fh[strand]:
-                fixture_length = app.scene.fixture(strand, fixture).pixels
+                fixture_length = cls._app.scene.fixture(strand, fixture).pixels
                 cls._strand_lengths[strand] += fixture_length
                 cls._fixture_lengths[(strand, fixture)] = fixture_length
 
         for strand in fh:
             for fixture in fh[strand]:
-                for offset in range(app.scene.fixture(strand, fixture).pixels):
+                for offset in range(cls._app.scene.fixture(strand, fixture).pixels):
                     cls.logical_to_index((strand, fixture, offset))
 
     @classmethod

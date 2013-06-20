@@ -10,6 +10,7 @@ from lib.settings import Settings
 from lib.scene import Scene
 from lib.plugin_loader import PluginLoader
 from lib.aubio_connector import AubioConnector
+from lib.buffer_utils import BufferUtils
 
 
 log = logging.getLogger("firemix")
@@ -26,6 +27,7 @@ class FireMixApp(QtCore.QThread):
         self.args = args
         self.settings = Settings()
         self.net = Networking(self)
+        BufferUtils.set_app(self)
         self.scene = Scene(self)
         self.plugins = PluginLoader()
         self.mixer = Mixer(self)

@@ -76,7 +76,7 @@ class Mixer(QtCore.QObject):
             self._enable_rendering = False
         else:
             log.info("Warming up BufferUtils cache...")
-            BufferUtils.init(self._app)
+            BufferUtils.init()
             log.info("Completed BufferUtils cache warmup")
 
             log.info("Initializing preset rendering buffer")
@@ -150,8 +150,6 @@ class Mixer(QtCore.QObject):
         self._in_transition = False
         self._start_transition = False
         self._transition = self.get_transition_by_name(name)
-        if self._transition:
-            self._transition.setup()
         return True
 
     def build_random_transition_list(self):
@@ -396,21 +394,22 @@ class Mixer(QtCore.QObject):
 
             elif isinstance(command, SetStrand):
                 strand = command.get_strand()
-                buffer[strand,:] = color
+                start, end = BufferUtils.get_strand_extents(strand)
+                buffer[start:end] = color
 
             elif isinstance(command, SetFixture):
                 strand = command.get_strand()
-                address = command.get_address()
-                _, start = BufferUtils.get_buffer_address(self._app, (strand, address, 0))
-                end = start + self._scene.fixture(strand, address).pixels
-                buffer[strand,start:end] = color
+                fixture = command.get_address()
+                start = BufferUtils.logical_to_index((strand, fixture, 0))
+                end = start + self._scene.fixture(strand, fixture).pixels
+                buffer[start:end] = color
 
             elif isinstance(command, SetPixel):
                 strand = command.get_strand()
-                address = command.get_address()
-                pixel = command.get_pixel()
-                (strand, pixel_offset) = BufferUtils.get_buffer_address(self._app, (strand, address, pixel))
-                buffer[strand][pixel_offset] = color
+                fixture = command.get_address()
+                offset = command.get_pixel()
+                pixel = BufferUtils.logical_to_index((strand, fixture, offset))
+                buffer[pixel] = color
 
     def get_buffer_shape(self):
         return self._main_buffer.shape
