@@ -263,6 +263,7 @@ class Scene(JSONDict):
             for s, a, p in self.get_all_pixels_logical():
                 #pxs.append(BufferUtils.get_buffer_address((s, a, p), scene=self))
                 all_pixels.append(BufferUtils.logical_to_index((s, a, p), scene=self))
+            all_pixels = sorted(all_pixels)
             self._all_pixels_raw = all_pixels
 
         return self._all_pixels_raw

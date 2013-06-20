@@ -163,7 +163,8 @@ class Dragons(RawPreset):
         # Draw tails
         for loc, time, fader in self._tails:
             if (self._current_time - time) > self.parameter('tail-persist').get():
-                self._tails.remove((loc, time, fader))
+                if (loc, time, fader) in self._tails:
+                    self._tails.remove((loc, time, fader))
                 self.setPixelHLS(loc, (0, 0, 0))
             else:
                 progress = (self._current_time - time) / self.parameter('tail-persist').get()
