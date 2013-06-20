@@ -87,8 +87,6 @@ class Mixer(QtCore.QObject):
             self._max_fixtures = maxf
             self._max_pixels = maxp
 
-
-
     def run(self):
         if not self._running:
             if self._app.args.profile and USE_YAPPI:
@@ -377,20 +375,7 @@ class Mixer(QtCore.QObject):
             self._main_buffer *= (1.0, self._global_dimmer, 1.0)
 
         if self._net is not None:
-            data = dict()
-            for k, v in enumerate(self._strand_keys):
-                data[v] = self.get_strand_data(k, v)
-            self._net.write_strand(data)
-
-    def get_strand_data(self, strand_key, strand_id):
-        """
-        Returns an optimized list of strand data, in fixture order, using the scene map
-        """
-        len_strand = sum([fix.pixels for fix in self._scene.fixtures() if fix.strand == strand_id])
-        data = self._main_buffer[strand_key].tolist()
-
-        #data_flat = [item for sublist in data for item in sublist]
-        return data
+            self._net.write(self._main_buffer)
 
     def create_buffers(self):
         """

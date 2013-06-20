@@ -5,6 +5,7 @@ import colorsys
 import time
 
 from lib.colors import clip
+from lib.buffer_utils import BufferUtils
 
 
 COMMAND_SET_BGR = 0x10
@@ -21,11 +22,7 @@ class Networking:
     def open_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def write(self, data):
-        data = [item for sublist in data for item in sublist]
-        self._socket.sendto(array.array('B', data), (self._ip, self._port))
-
-    def write_strand(self, strand_data):
+    def write(self, buffer):
         """
         Performs a bulk strand write.
         Decodes the HLS-Float data according to client settings
@@ -37,21 +34,22 @@ class Networking:
             packet = array.array('B', [])
             client_color_mode = client["color-mode"]
 
-            for strand in strand_data.keys():
+            for strand in range(len(strand_settings)):
                 if not strand_settings[strand]["enabled"]:
                     continue
                 color_mode = strand_settings[strand]["color-mode"]
 
+                start, end = BufferUtils.get_strand_extents(strand)
                 data = []
 
                 if client_color_mode == "HLSF32":
-                    data = [channel for pixel in strand_data[strand][0:(3*160)] for channel in pixel]
+                    data = [channel for pixel in buffer[start:end] for channel in pixel]
                     data = array.array('B', struct.pack('%sf' % len(data), *data))
                 elif client_color_mode == "RGB8":
-                    data = [colorsys.hls_to_rgb(*pixel) for pixel in strand_data[strand][0:(3*160)]]
+                    data = [colorsys.hls_to_rgb(*pixel) for pixel in buffer[start:end]]
                     data = array.array('B', [clip(0, int(255.0 * item), 255) for sublist in data for item in sublist])
                 elif client_color_mode == "HSVF32":
-                    data = [colorsys.hls_to_rgb(*pixel) for pixel in strand_data[strand][0:(3*160)]]
+                    data = [colorsys.hls_to_rgb(*pixel) for pixel in buffer[start:end]]
                     data = array.array('B', [colorsys.rgb_to_hsv(*pixel) for pixel in data])
 
                 length = len(data)

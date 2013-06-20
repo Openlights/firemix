@@ -78,8 +78,6 @@ class BufferUtils:
             cls._pixel_logical_cache[index] = logical_address
             cls._fixture_extents[(strand, fixture)] = (fixture_start, fixture_end)
 
-            print logical_address, index
-
         return index
 
     @classmethod
@@ -148,3 +146,11 @@ class BufferUtils:
         Returns the length of a strand (in pixels)
         """
         return cls._strand_lengths[strand]
+
+    @classmethod
+    def get_strand_extents(cls, strand):
+        start = 0
+        for i in range(strand):
+            start += cls._strand_lengths[i]
+
+        return (start, start + cls._strand_lengths[strand])
