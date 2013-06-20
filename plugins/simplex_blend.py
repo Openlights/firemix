@@ -17,23 +17,15 @@ class SimplexBlend(Transition):
     def __str__(self):
         return "Simplex Blend"
 
-    def setup(self):
-        self.reset()
-
-        self.pixel_locations = self._app.scene.get_all_pixel_locations()
-        self.pixel_addr = {}
-        for pixel, _ in self.pixel_locations:
-            self.pixel_addr[pixel] = BufferUtils.get_buffer_address(self._app, pixel)
-
     def reset(self):
-        x, y = BufferUtils.get_buffer_size()
-        self.frame = np.tile(0.0, (x, y, 3))
+        buffer_size = BufferUtils.get_buffer_size()
+        self.frame = np.tile(0.0, (buffer_size, 3))
+        self.pixel_locations = self._app.scene.get_all_pixel_locations()
 
     def get(self, start, end, progress):
-        for pixel, loc in self.pixel_locations:
+        for pixel, loc in enumerate(self.pixel_locations):
             blend = (1.0 + snoise3(0.01 * loc[0], 0.01 * loc[1], progress, 1, 0.5, 0.5)) / 2.0
-            a, b = self.pixel_addr[pixel]
-            self.frame[a][b] = blend * start[a][b] + ((1.0 - blend) * end[a][b])
+            self.frame[pixel] = blend * start[pixel] + ((1.0 - blend) * end[pixel])
 
         # Mix = 1.0 when progress = 0.5, 0.0 at either extreme
         mix = 1.0 - fabs(2.0 * (progress - 0.5))
