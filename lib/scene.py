@@ -31,16 +31,21 @@ class Scene(JSONDict):
         self._all_pixel_locations = None
         self._all_pixels_raw = None
 
+    def warmup(self):
+        """
+        Warms up caches
+        """
         log.info("Warming up scene caches...")
         fh = self.fixture_hierarchy()
         for strand in fh:
             for fixture in fh[strand]:
                 self.get_colliding_fixtures(strand, fixture)
                 for pixel in range(self.fixture(strand, fixture).pixels):
-                    neighbors = self.get_pixel_neighbors((strand, fixture, pixel))
-                    self.get_pixel_location((strand, fixture, pixel))
+                    index = BufferUtils.logical_to_index((strand, fixture, pixel))
+                    neighbors = self.get_pixel_neighbors(index)
+                    self.get_pixel_location(index)
                     for neighbor in neighbors:
-                        self.get_pixel_distance((strand, fixture, pixel), neighbor)
+                        self.get_pixel_distance(index, neighbor)
         self.get_fixture_bounding_box()
         self.get_intersection_points()
         self.get_all_pixels_logical()
@@ -168,19 +173,18 @@ class Scene(JSONDict):
 
         return colliding
 
-    def get_pixel_neighbors(self, addr):
+    def get_pixel_neighbors(self, index):
         """
         Returns a list of pixel addresses that are adjacent to the given address.
-        An address is a tuple of (strand, fixture, pixel).
         """
 
-        neighbors = self._pixel_neighbors_cache.get(addr, None)
+        neighbors = self._pixel_neighbors_cache.get(index, None)
 
         if neighbors is None:
             neighbors = []
-            strand, address, pixel = addr
+            strand, address, pixel = BufferUtils.index_to_logical(index)
             f = self.fixture(strand, address)
-            neighbors = [(strand, address, p) for p in f.pixel_neighbors(pixel)]
+            neighbors = [BufferUtils.logical_to_index((strand, address, p)) for p in f.pixel_neighbors(pixel)]
 
             if (pixel == 0) or (pixel == f.pixels - 1):
                 # If this pixel is on the end of a fixture, consider the neighboring fixtures
@@ -188,20 +192,22 @@ class Scene(JSONDict):
                 if pixel == 0:
                     loc = 'start'
 
-                neighbors += self.get_colliding_fixtures(strand, address, loc)
+                logical_neighbors = self.get_colliding_fixtures(strand, address, loc)
+                neighbors += [BufferUtils.logical_to_index(n) for n in logical_neighbors]
 
-            self._pixel_neighbors_cache[addr] = neighbors
+            self._pixel_neighbors_cache[index] = neighbors
 
         return neighbors
 
-    def get_pixel_location(self, addr):
+    def get_pixel_location(self, index):
         """
         Returns a given pixel's location in scene coordinates.
         """
-        loc = self._pixel_locations_cache.get(addr, None)
+        loc = self._pixel_locations_cache.get(index, None)
 
         if loc is None:
-            strand, address, pixel = addr
+
+            strand, address, pixel = BufferUtils.index_to_logical(index)
             f = self.fixture(strand, address)
 
             if pixel == 0:
@@ -215,7 +221,7 @@ class Scene(JSONDict):
                 relx, rely = ((x2 - x1) * scale, (y2 - y1) * scale)
                 loc = (x1 + relx, y1 + rely)
 
-            self._pixel_locations_cache[addr] = loc
+            self._pixel_locations_cache[index] = loc
 
         return loc
 
@@ -266,10 +272,10 @@ class Scene(JSONDict):
         Returns a list of ((strand, address, pixel), (x, y)) tuples
         """
         if self._all_pixel_locations is None:
-            pixels = self.get_all_pixels_logical()
+            pixels = self.get_all_pixels()
             pixel_location_list = []
             for pixel in pixels:
-                pixel_location_list.append((pixel, self.get_pixel_location(pixel)))
+                pixel_location_list.append(self.get_pixel_location(pixel))
 
             self._all_pixel_locations = pixel_location_list
         return self._all_pixel_locations
@@ -289,7 +295,7 @@ class Scene(JSONDict):
         for strand in fh:
             for fixture in fh[strand]:
                 for pixel in range(self.fixture(strand, fixture).pixels):
-                    x, y = self.get_pixel_location((strand, fixture, pixel))
+                    x, y = self.get_pixel_location(BufferUtils.logical_to_index((strand, fixture, pixel)))
                     if x < xmin:
                         xmin = x
                     if x > xmax:

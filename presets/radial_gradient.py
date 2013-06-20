@@ -29,7 +29,7 @@ class RadialGradient(RawPreset):
         self.wave2_offset = random.random()
         self.luminance_offset = random.random()
 
-        self.pixels = self.scene().get_all_pixels_logical()
+        self.pixels = self.scene().get_all_pixels()
         cx, cy = self.scene().center_point()
 
         # Find radius to each pixel

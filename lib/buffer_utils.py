@@ -87,7 +87,7 @@ class BufferUtils:
         """
         logical = cls._pixel_logical_cache.get(index, None)
         if logical is None:
-            raise ValueError("Index out of range")
+            raise ValueError("Index out of range: %s" % repr(index))
         return logical
 
     @classmethod

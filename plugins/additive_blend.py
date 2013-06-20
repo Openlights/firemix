@@ -59,12 +59,6 @@ class AdditiveBlend(Transition):
         endWeight = (1.0 - 2 * np.abs(0.5 - endLums)) * end_transpose[2] + 0.01
         totalWeight = startWeight + endWeight
 
-        if totalWeight == 0:
-            totalWeight = 0.0001
-
-        if totalPower == 0:
-            totalPower = 0.0001
-        
         hues = np.mod((startHues * startPower * startWeight + endHues * endPower * endWeight) / totalWeight / totalPower * 2, 1.0)
 
         # strongly opposing vibrant colors increase **luminance**

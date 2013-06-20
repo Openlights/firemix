@@ -48,18 +48,17 @@ class RawPreset(Preset):
         """
         return self._pixel_buffer[address]
 
-    def setPixelHLS(self, location, color):
-        index = BufferUtils.logical_to_index(location)
+    def setPixelHLS(self, index, color):
         self._pixel_buffer[index] = color
         
-    def setPixelRGB(self, location, color):
-        self.setPixelHLS(location, colorsys.rgb_to_hls(*color))
+    def setPixelRGB(self, index, color):
+        self.setPixelHLS(index, colorsys.rgb_to_hls(*color))
         
-    def setPixelHSV(self, location, color):
+    def setPixelHSV(self, index, color):
         # There's probably a more efficient way to do this:
         hls = colorsys.rgb_to_hls(*colorsys.hsv_to_rgb(*color))
 
-        self.setPixelHLS(location, hls)
+        self.setPixelHLS(index, hls)
  
     def get_buffer(self):
         """

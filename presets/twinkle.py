@@ -41,7 +41,7 @@ class Twinkle(RawPreset):
     def reset(self):
         self._fading_up = []
         self._fading_down = []
-        self._idle = self.scene().get_all_pixels_logical()[:]
+        self._idle = self.scene().get_all_pixels()[:]
         self._time = {}
 
     def draw(self, dt):

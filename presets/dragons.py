@@ -3,6 +3,7 @@ import random
 
 from lib.raw_preset import RawPreset
 from lib.colors import uint8_to_float, float_to_uint8
+from lib.buffer_utils import BufferUtils
 from lib.color_fade import ColorFade
 from lib.parameters import FloatParameter, IntParameter, HLSParameter
 
@@ -70,9 +71,9 @@ class Dragons(RawPreset):
         
         # Spontaneous birth: Rare after startup
         if (len(self._dragons) < self.parameter('pop-limit').get()) and random.random() < self.parameter('birth-rate').get():
-            address = ( random.randint(0, self._max_strand - 1),
+            address = BufferUtils.logical_to_index((random.randint(0, self._max_strand - 1),
                         random.randint(0, self._max_fixture - 1),
-                        0)
+                        0))
             if address not in [d.loc for d in self._dragons]:
                 self._dragons.append(self.Dragon(address, 1, self._current_time))
 
@@ -98,7 +99,7 @@ class Dragons(RawPreset):
 
                 dragon.growth += dt * growth_rate
                 for times in range(int(dragon.growth)):
-                    s, f, p = dragon.loc
+                    s, f, p = BufferUtils.index_to_logical(dragon.loc)
                     self.setPixelHLS(dragon.loc, (0, 0, 0))
 
                     if random.random() < dragon.growth:
@@ -107,6 +108,7 @@ class Dragons(RawPreset):
                         # At a vertex: optionally spawn new dragons
                         if dragon.moving and (p == 0 or p == (self.scene().fixture(s, f).pixels - 1)):
                             neighbors = self.scene().get_pixel_neighbors(dragon.loc)
+                            neighbors = [BufferUtils.index_to_logical(n) for n in neighbors]
                             random.shuffle(neighbors)
 
                             # Kill dragons that reach the end of a fixture
@@ -117,10 +119,11 @@ class Dragons(RawPreset):
                             # Iterate over candidate pixels that aren't on the current fixture
                             num_children = 0
                             for candidate in [n for n in neighbors if n[1] != f]:
+                                child_index = BufferUtils.logical_to_index(candidate)
                                 if num_children == 0:
                                     # Spawn at least one new dragon to replace the old one.  This first one skips the growth.
                                     dir = 1 if candidate[2] == 0 else -1
-                                    child = self.Dragon(candidate, dir, self._current_time)
+                                    child = self.Dragon(child_index, dir, self._current_time)
                                     child.growing = False
                                     child.alive = True
                                     child.moving = False
@@ -130,7 +133,7 @@ class Dragons(RawPreset):
                                     # Randomly spawn new dragons
                                     if random.random() < self.parameter('birth-rate').get():
                                         dir = 1 if candidate[2] == 0 else -1
-                                        child = self.Dragon(candidate, dir, self._current_time)
+                                        child = self.Dragon(child_index, dir, self._current_time)
                                         child.moving = False
 
                                         self._dragons.append(child)
@@ -139,10 +142,7 @@ class Dragons(RawPreset):
                         else:
                             # Move dragons along the fixture
                             self._tails.append((dragon.loc, self._current_time, self._tail_fader))
-                            new_address = (s, f, p + dragon.dir)
-                            if new_address[2] < 0 or new_address[2] > 31:
-                                print dragon, "new_address", new_address
-                                assert(False)
+                            new_address = BufferUtils.logical_to_index((s, f, p + dragon.dir))
                             dragon.loc = new_address
                             dragon.moving = True
                             self.setPixelHLS(new_address, self._alive_color)
