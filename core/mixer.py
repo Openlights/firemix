@@ -268,7 +268,7 @@ class Mixer(QtCore.QObject):
                     if self._transition:
                         self._transition.reset()
                     self._playlist.get_next_preset()._reset()
-                    self._secondary_buffer = BufferUtils.create_buffer(self._app)
+                    self._secondary_buffer = BufferUtils.create_buffer()
                 if self._transition_duration > 0.0 and self._transition is not None:
                     transition_progress = self._elapsed / self._transition_duration
                 else:
