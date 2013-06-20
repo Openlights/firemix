@@ -1,6 +1,7 @@
 import colorsys
 import random
 import math
+import numpy as np
 
 from lib.raw_preset import RawPreset
 from lib.colors import clip
@@ -32,21 +33,13 @@ class RadialGradient(RawPreset):
         self.pixels = self.scene().get_all_pixels_logical()
         cx, cy = self.scene().center_point()
 
-        # Find radius to each pixel
-        self.pixel_distances = {}
-        self.pixel_angles = {}
-        for pixel in self.pixels:
-            x, y = self.scene().get_pixel_location(pixel)
-            dx = x - cx
-            dy = y - cy
-            d = math.sqrt(math.pow(dx, 2) + math.pow(dy, 2))
-            self.pixel_distances[pixel] = d
-            self.pixel_angles[pixel] = (math.pi + math.atan2(dy, dx))
-
-        # Normalize
-        max_distance = max(self.pixel_distances.values())
-        for pixel in self.pixels:
-            self.pixel_distances[pixel] /= max_distance
+        self.locations = np.asarray(zip(*self.scene().get_all_pixel_locations())[1])
+        x,y = self.locations.T
+        x -= cx
+        y -= cy
+        self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
+        self.pixel_angles = np.arctan2(y, x) / (2.0 * math.pi)
+        self.pixel_distances /= max(self.pixel_distances)
         
 
     def reset(self):
@@ -75,17 +68,20 @@ class RadialGradient(RawPreset):
                 luminance -= 0.01
                 luminance = clip(0.5, luminance, 1.0)
             luminance_table.append(luminance)
-        
+        luminance_table = np.asarray(luminance_table)
+
         wave1_period = self.parameter('wave1-period').get()
         wave1_amplitude = self.parameter('wave1-amplitude').get()
         wave2_period = self.parameter('wave2-period').get()
         wave2_amplitude = self.parameter('wave2-amplitude').get()
         luminance_scale = self.parameter('luminance-scale').get()
-        
-        for pixel in self.pixels:
-            wave1 = abs(math.cos(self.wave1_offset + self.pixel_angles[pixel] * wave1_period) * wave1_amplitude)
-            wave2 = abs(math.cos(self.wave2_offset + self.pixel_angles[pixel] * wave2_period) * wave2_amplitude)
-            hue = self.pixel_distances[pixel] + wave1 + wave2
-            luminance = abs(int((self.luminance_offset + hue * luminance_scale) * self._luminance_steps)) % self._luminance_steps
-            hue = math.fmod(self.hue_inner + hue * self.parameter('hue-width').get(), 1.0)
-            self.setPixelHLS(pixel, (hue, luminance_table[luminance], 1.0))
+
+        wave1 = np.abs(np.cos(self.wave1_offset + self.pixel_angles * wave1_period) * wave1_amplitude)
+        wave2 = np.abs(np.cos(self.wave2_offset + self.pixel_angles * wave2_period) * wave2_amplitude)
+        hues = self.pixel_distances + wave1 + wave2
+        luminance_indices = np.mod(np.abs(np.int_((self.luminance_offset + hues * luminance_scale) * self._luminance_steps)), self._luminance_steps)
+        luminances = luminance_table[luminance_indices]
+        hues = np.fmod(self.hue_inner + hues * self.parameter('hue-width').get(), 1.0)
+
+        for i in range(len(self.pixels)):
+            self.setPixelHLS(self.pixels[i], (hues[i], luminances[i], 1.0))
