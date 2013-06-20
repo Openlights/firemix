@@ -2,7 +2,7 @@
     "backdrop_enable": true, 
     "backdrop_filename": "light_dome.png", 
     "center": [
-        320,
+        320, 
         320
     ], 
     "extents": [

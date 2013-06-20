@@ -59,6 +59,14 @@ class RawPreset(Preset):
         hls = colorsys.rgb_to_hls(*colorsys.hsv_to_rgb(*color))
 
         self.setPixelHLS(index, hls)
+
+    def setAllHLS(self, hues, luminances, saturations):
+        """
+        Sets the entire buffer, assuming an input list.
+        """
+        self._pixel_buffer[:,0] = hues
+        self._pixel_buffer[:,1] = luminances
+        self._pixel_buffer[:,2] = saturations
  
     def get_buffer(self):
         """

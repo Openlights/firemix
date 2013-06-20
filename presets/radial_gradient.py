@@ -83,5 +83,7 @@ class RadialGradient(RawPreset):
         luminances = luminance_table[luminance_indices]
         hues = np.fmod(self.hue_inner + hues * self.parameter('hue-width').get(), 1.0)
 
-        for i in range(len(self.pixels)):
-            self.setPixelHLS(self.pixels[i], (hues[i], luminances[i], 1.0))
+        self.setAllHLS(hues, luminances, 1.0)
+
+        #for i in range(len(self.pixels)):
+        #    self.setPixelHLS(self.pixels[i], (hues[i], luminances[i], 1.0))
