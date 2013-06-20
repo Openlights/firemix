@@ -11,7 +11,7 @@ class SpiralGradient(RawPreset):
     """Spiral gradient that responds to onsets"""
        
     _fader = None
-    _fader_resolution = 256
+    _fader_steps = 256
     
     def setup(self):
         self.add_parameter(FloatParameter('speed', 0.3))
@@ -52,7 +52,7 @@ class SpiralGradient(RawPreset):
     def parameter_changed(self, parameter):
         fade_colors = [self.parameter('color-start').get(), self.parameter('color-end').get(), self.parameter('color-start').get()]
    
-        self._fader = ColorFade(fade_colors, self._fader_resolution)
+        self._fader = ColorFade(fade_colors, self._fader_steps)
     
     def reset(self):
         pass
@@ -73,6 +73,6 @@ class SpiralGradient(RawPreset):
         for pixel in self.pixels:
             angle = math.fmod(1.0 + self.pixel_angles[pixel] + math.sin(self.wave_offset + self.pixel_distances[pixel] * wave_hue_period) * wave_hue_width, 1.0)
             hue = self.color_offset + (radius_hue_width * self.pixel_distances[pixel]) + (2 * abs(angle - 0.5) * angle_hue_width)
-            hue = math.fmod(math.floor(hue * self._fader_resolution) / self._fader_resolution, 1.0)
-            color = self._fader.get_color(hue)
+            hue = math.fmod(hue, 1.0)
+            color = self._fader.get_color(hue * self._fader_steps)
             self.setPixelHLS(pixel, ((color[0] + self.hue_inner) % 1.0, color[1], color[2]))

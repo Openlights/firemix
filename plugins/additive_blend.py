@@ -55,8 +55,8 @@ class AdditiveBlend(Transition):
         useAlternatePath = np.floor(hueDelta * 2) # path between two colors is 0.5 maximum
         startHues += useAlternatePath # if path too long, go the other way
 
-        startWeight = (1.0 - 0.99 * 2 * np.abs(0.5 - startLums)) * start_transpose[2]
-        endWeight = (1.0 - 0.99 * 2 * np.abs(0.5 - endLums)) * end_transpose[2]
+        startWeight = (1.0 - 2 * np.abs(0.5 - startLums)) * start_transpose[2] + 0.01
+        endWeight = (1.0 - 2 * np.abs(0.5 - endLums)) * end_transpose[2] + 0.01
         totalWeight = startWeight + endWeight
         
         hues = np.mod((startHues * startPower * startWeight + endHues * endPower * endWeight) / totalWeight / totalPower * 2, 1.0)
@@ -66,18 +66,18 @@ class AdditiveBlend(Transition):
         opposition = 2.0 * np.abs(useAlternatePath - hueDelta) # 0 to 1
         opposition = 1.0 - np.power(1.0 - opposition, 2.0) # 0 to 1 but closer to 1
         opposition *= startWeight * endWeight
-        #opposition = (opposition * 3 - 1.5)
-        opposition.clip(0, 1, opposition)
+        opposition = (opposition * 2.0) - 1.0 # increase contrast on addition whiteouts
+        #opposition.clip(0, 1, opposition)
         lums = np.maximum(np.maximum(startLums,endLums), opposition)
 
-        sats = (start_transpose[2] * startWeight + end_transpose[2] * endWeight)
-          
+        sats = (start_transpose[2] * startWeight + end_transpose[2] * endWeight).clip(0,1)
+
         self.frame = np.asarray([hues, lums, sats]).T
 
         """
         if np.random.random() > 0.95:
-            print '%.2f' % start[0][0][0], '%.2f' % start[0][0][1], '%.2f' % start[0][0][2], "+", '%.2f' % end[0][0][0], '%.2f' % end[0][0][1], '%.2f' % end[0][0][2], "=", '%.2f' % self.frame[0][0][0], '%.2f' % self.frame[0][0][1], '%.2f' % self.frame[0][0][2]
+            print "progress %.2f," % progress, '%.2f' % start[0][0][0], '%.2f' % start[0][0][1], '%.2f' % start[0][0][2], "+", '%.2f' % end[0][0][0], '%.2f' % end[0][0][1], '%.2f' % end[0][0][2], "=", '%.2f' % self.frame[0][0][0], '%.2f' % self.frame[0][0][1], '%.2f' % self.frame[0][0][2]
             print "    delta %.2f" % hueDelta[0][0], useAlternatePath[0][0], "oppo %.2f" % opposition[0][0], "sW %.2f" % startWeight[0][0], "eW %.2f" % endWeight[0][0], "sP %.2f" % startPower, "eP %.2f" % endPower
         """
-        
+
         return self.frame
