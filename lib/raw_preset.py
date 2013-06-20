@@ -32,7 +32,7 @@ class RawPreset(Preset):
         Sets up the pixel array
         """
         (self._max_strand, self._max_fixture, self._max_pixel) = self.scene().get_matrix_extents()
-        self._pixel_buffer = BufferUtils.create_buffer(self._mixer._app)
+        self._pixel_buffer = BufferUtils.create_buffer()
 
     def draw(self, dt):
         """
@@ -49,7 +49,8 @@ class RawPreset(Preset):
         return self._pixel_buffer[address]
 
     def setPixelHLS(self, location, color):
-        x, y = BufferUtils.get_buffer_address(self._mixer._app, location)
+        #x, y = location
+        x, y = BufferUtils.get_buffer_address(location)
         self._pixel_buffer[x][y] = color
         
     def setPixelRGB(self, location, color):

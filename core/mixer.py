@@ -71,6 +71,10 @@ class Mixer(QtCore.QObject):
             self._transition_duration = 0.0
             self._enable_rendering = False
         else:
+            log.info("Warming up BufferUtils cache...")
+            BufferUtils.init(self._app)
+            log.info("Completed BufferUtils cache warmup")
+
             log.info("Initializing preset rendering buffer")
             fh = self._scene.fixture_hierarchy()
             for strand in fh:
@@ -78,14 +82,12 @@ class Mixer(QtCore.QObject):
 
             (maxs, maxf, maxp) = self._scene.get_matrix_extents()
 
-            self._main_buffer = BufferUtils.create_buffer(self._app)
-            self._secondary_buffer = BufferUtils.create_buffer(self._app)
+            self._main_buffer = BufferUtils.create_buffer()
+            self._secondary_buffer = BufferUtils.create_buffer()
             self._max_fixtures = maxf
             self._max_pixels = maxp
 
-            log.info("Warming up BufferUtils cache...")
-            BufferUtils.warmup(self._app)
-            log.info("Completed BufferUtils cache warmup")
+
 
     def run(self):
         if not self._running:
@@ -400,8 +402,8 @@ class Mixer(QtCore.QObject):
         """
         Clears the output buffer
         """
-        self._main_buffer = BufferUtils.create_buffer(self._app)
-        self._secondary_buffer = BufferUtils.create_buffer(self._app)
+        self._main_buffer = BufferUtils.create_buffer()
+        self._secondary_buffer = BufferUtils.create_buffer()
 
     def render_command_list(self, list, buffer):
         """

@@ -23,7 +23,7 @@ class StripeGradient(RawPreset):
         self._center_rotation = random.random()
         self.stripe_angle = random.random()
 
-        self.pixels = self.scene().get_all_pixels()
+        self.pixels = self.scene().get_all_pixels_logical()
         cx, cy = self.scene().center_point()
 
         # Find radius to each pixel

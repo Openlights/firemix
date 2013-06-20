@@ -4,6 +4,7 @@ import logging
 
 from lib.json_dict import JSONDict
 from lib.fixture import Fixture
+from lib.buffer_utils import BufferUtils
 
 log = logging.getLogger("firemix.lib.scene")
 
@@ -28,6 +29,7 @@ class Scene(JSONDict):
         self._intersection_points = None
         self._all_pixels = None
         self._all_pixel_locations = None
+        self._all_pixels_raw = None
 
         log.info("Warming up scene caches...")
         fh = self.fixture_hierarchy()
@@ -41,6 +43,7 @@ class Scene(JSONDict):
                         self.get_pixel_distance((strand, fixture, pixel), neighbor)
         self.get_fixture_bounding_box()
         self.get_intersection_points()
+        self.get_all_pixels_logical()
         self.get_all_pixels()
         self.get_all_pixel_locations()
         log.info("Done")
@@ -232,9 +235,9 @@ class Scene(JSONDict):
     def get_point_distance(self, first, second):
         return math.fabs(math.sqrt(math.pow(second[0] - first[0], 2) + math.pow(second[1] - first[1], 2)))
 
-    def get_all_pixels(self):
+    def get_all_pixels_logical(self):
         """
-        Returns all the pixel addresses in the scene
+        Returns all the pixel addresses in the scene (in logical strand, fixture, offset tuples)
         """
         if self._all_pixels is None:
             addresses = []
@@ -245,12 +248,24 @@ class Scene(JSONDict):
             self._all_pixels = addresses
         return self._all_pixels
 
+    def get_all_pixels(self):
+        """
+        Returns a list of all pixels in buffer address format (strand, offset)
+        """
+        if self._all_pixels_raw is None:
+            pxs = []
+            for s, a, p in self.get_all_pixels_logical():
+                pxs.append(BufferUtils.get_buffer_address((s, a, p), scene=self))
+            self._all_pixels_raw = pxs
+
+        return self._all_pixels_raw
+
     def get_all_pixel_locations(self):
         """
         Returns a list of ((strand, address, pixel), (x, y)) tuples
         """
         if self._all_pixel_locations is None:
-            pixels = self.get_all_pixels()
+            pixels = self.get_all_pixels_logical()
             pixel_location_list = []
             for pixel in pixels:
                 pixel_location_list.append((pixel, self.get_pixel_location(pixel)))

@@ -8,24 +8,72 @@ class BufferUtils:
     _first_time = True
     _num_strands = 0
     _max_fixtures = 0
-    _max_pixels = 0
+    _max_pixels_per_fixture = 0
+    _max_pixels_per_strand = 0
+    _app = None
     _strand_lengths = []
+    _fixture_lengths = {}
     _fixture_pixels = {}
     _pixel_offset_cache = {}
+    _pixel_index_cache = {}
+    _pixel_logical_cache = {}
 
     @classmethod
-    def warmup(cls, app):
+    def init(cls, app):
         """
-        Generates the caches
+        Generates the caches and initializes local storage.  Must be called before any other methods.
         """
+        cls._app = app
+        cls._num_strands, cls._max_fixtures, cls._max_pixels_per_fixture = app.scene.get_matrix_extents()
+        cls._max_pixels_per_strand = cls._max_fixtures * cls._max_pixels_per_fixture
         fh = app.scene.fixture_hierarchy()
+
         for strand in fh:
             for fixture in fh[strand]:
+                cls._fixture_lengths[(strand, fixture)] = app.scene.fixture(strand, fixture).pixels
                 for pixel in range(app.scene.fixture(strand, fixture).pixels):
-                    cls.get_buffer_address(app, (strand, fixture, pixel))
+                    cls.get_buffer_address((strand, fixture, pixel))
+                    cls.logical_to_index((strand, fixture, pixel))
 
     @classmethod
-    def create_buffer(cls, app):
+    def logical_to_index(cls, logical_address):
+        """
+        Given a logical (strand, fixture, offset) pixel address, returns the index
+        into a 1-dimensional pixel list (the storage type for frames, locations, etc).
+        """
+        index = cls._pixel_index_cache.get(logical_address, None)
+
+        if index is None:
+            strand, fixture, offset = logical_address
+            fh = cls._app.scene.fixture_hierarchy()
+
+            # (1) Skip to the start of the strand
+            index = (strand * cls._max_pixels_per_strand)
+
+            # (2) Skip to the fixture in question
+            for i in range(fixture):
+                index += cls._app.scene.fixture(strand, fixture).pixels
+
+            # (3) Add the offset along the fixture
+            index += offset
+
+            cls._pixel_index_cache[logical_address] = index
+            cls._pixel_logical_cache[index] = logical_address
+
+        return index
+
+    @classmethod
+    def index_to_logical(cls, index):
+        """
+        Given an index into a 1-dimensional pixel buffer, returns a (strand, fixture, offset) address.
+        """
+        logical = cls._pixel_logical_cache.get(index, None)
+        if logical is None:
+            raise ValueError("Index out of range")
+        return logical
+
+    @classmethod
+    def create_buffer(cls):
         """
         Pixel buffers are 3D numpy arrays.  The axes are strand, pixel, and color.
         The "y" axis (pixel) uses expanded pixel addressing, "flattening" the fixture addresses.
@@ -35,23 +83,20 @@ class BufferUtils:
         The reference to the app is required to lookup the required dimensions, in order
         to figure out the total y-axis length required.
         """
-        if cls._first_time:
-            cls._num_strands, cls._max_fixtures, cls._max_pixels = app.scene.get_matrix_extents()
-
-        return np.zeros((cls._num_strands, cls._max_fixtures * cls._max_pixels, 3), dtype=np.float32)
+        return np.zeros((cls._num_strands, cls._max_pixels_per_strand, 3), dtype=np.float32)
 
     @classmethod
-    def get_buffer_size(cls, app):
-        if cls._first_time:
-            cls._num_strands, cls._max_fixtures, cls._max_pixels = app.scene.get_matrix_extents()
-
-        return (cls._num_strands, cls._max_fixtures * cls._max_pixels)
+    def get_buffer_size(cls):
+        return (cls._num_strands, cls._max_pixels_per_strand)
 
     @classmethod
-    def get_buffer_address(cls, app, location):
+    def get_buffer_address(cls, location, scene=None):
         """
         Calculates the in-buffer address for a given [s:f:p] address (see above)
         """
+
+        if scene is None:
+            scene = cls._app.scene
 
         pixel_offset = cls._pixel_offset_cache.get(location, None)
         if pixel_offset is None:
@@ -60,7 +105,7 @@ class BufferUtils:
             for fixture_id in range(fixture):
                 num_fixture_pixels = cls._fixture_pixels.get((strand, fixture), None)
                 if num_fixture_pixels is None:
-                    num_fixture_pixels = app.scene.fixture(strand, fixture).pixels
+                    num_fixture_pixels = scene.fixture(strand, fixture).pixels
                     cls._fixture_pixels[(strand, fixture)] = num_fixture_pixels
                 pixel_offset += num_fixture_pixels
             cls._pixel_offset_cache[location] = pixel_offset
@@ -68,20 +113,20 @@ class BufferUtils:
         return (location[0], pixel_offset)
 
     @classmethod
-    def get_fixture_extents(cls, app, strand, fixture):
+    def get_fixture_extents(cls, strand, fixture):
         """
         Returns a tuple of (start, end) containing the buffer pixel addresses on a given fixtures
         """
-        _, start_offset = cls.get_buffer_address(app, (strand, fixture, 0))
-        num_pixels = app.scene.fixture(strand, fixture).pixels
+        _, start_offset = cls.get_buffer_address((strand, fixture, 0))
+        num_pixels = cls._app.scene.fixture(strand, fixture).pixels
         return (start_offset, start_offset + num_pixels)
 
     @classmethod
-    def get_strand_length(cls, app, strand):
+    def get_strand_length(cls, strand):
         """
         Returns the length of a strand (in pixels)
         """
-        fixtures = [f for f in app.scene.fixtures() if f.strand == strand]
+        fixtures = [f for f in cls._app.scene.fixtures() if f.strand == strand]
 
         num_pixels = 0
         for f in fixtures:

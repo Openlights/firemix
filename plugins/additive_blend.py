@@ -22,7 +22,7 @@ class AdditiveBlend(Transition):
         return "Additive Blend"
 
     def setup(self):
-        self.x, self.y = BufferUtils.get_buffer_size(self._app)
+        self.x, self.y = BufferUtils.get_buffer_size()
 
         self.reset()
 
