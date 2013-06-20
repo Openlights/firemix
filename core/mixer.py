@@ -2,7 +2,13 @@ import logging
 import threading
 import time
 import random
-import numpy as np
+import math
+
+USE_YAPPI = True
+try:
+    import yappi
+except ImportError:
+    USE_YAPPI = False
 
 from PySide import QtCore
 
@@ -83,6 +89,9 @@ class Mixer(QtCore.QObject):
 
     def run(self):
         if not self._running:
+            if self._app.args.profile and USE_YAPPI:
+                yappi.start()
+
             self._tick_rate = self._app.settings.get('mixer')['tick-rate']
             self._tick_timer = threading.Timer(1.0 / self._tick_rate, self.on_tick_timer)
             self._tick_timer.start()
@@ -96,6 +105,9 @@ class Mixer(QtCore.QObject):
         self._running = False
         self._tick_timer.cancel()
         self._stop_time = time.time()
+
+        if self._app.args.profile and USE_YAPPI:
+            yappi.print_stats(sort_type=yappi.SORTTYPE_TTOT, limit=15, thread_stats_on=False)
 
     def pause(self, pause=True):
         self._paused = pause
@@ -318,6 +330,11 @@ class Mixer(QtCore.QObject):
 
         if isinstance(self._playlist.get_preset_by_index(first), RawPreset):
             self._main_buffer = self._playlist.get_preset_by_index(first).get_buffer()
+            if self._app.args.profile:
+                for item in self._main_buffer.flat:
+                    if math.isnan(item):
+                        raise ValueError
+
         else:
             commands = self._playlist.get_preset_by_index(first).get_commands()
             #print commands
@@ -334,6 +351,10 @@ class Mixer(QtCore.QObject):
 
             if isinstance(self._playlist.get_preset_by_index(second), RawPreset):
                 self._secondary_buffer = self._playlist.get_preset_by_index(second).get_buffer()
+                if self._app.args.profile:
+                    for item in self._main_buffer.flat:
+                        if math.isnan(item):
+                            raise ValueError
             else:
                 second_commands = self._playlist.get_preset_by_index(second).get_commands()
                 self.render_command_list(second_commands, self._secondary_buffer)
@@ -345,6 +366,10 @@ class Mixer(QtCore.QObject):
 
             if self._in_transition:
                 self._main_buffer = self._transition.get(self._main_buffer, self._secondary_buffer, transition_progress)
+                if self._app.args.profile:
+                    for item in self._main_buffer.flat:
+                        if math.isnan(item):
+                            raise ValueError
 
         if self._global_dimmer < 1.0:
             self._main_buffer *= (1.0, self._global_dimmer, 1.0)
