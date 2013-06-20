@@ -21,7 +21,7 @@ class Spiral(Transition):
         return "Spiral"
 
     def setup(self):
-        self.num_strands, self.num_pixels = BufferUtils.get_buffer_size(self._app)
+        self.num_strands, self.num_pixels = BufferUtils.get_buffer_size()
 
         self.scene_bb = self._app.scene.get_fixture_bounding_box()
         self.scene_center = (self.scene_bb[0] + (self.scene_bb[2] - self.scene_bb[0]) / 2, self.scene_bb[1] + (self.scene_bb[3] - self.scene_bb[1]) / 2)

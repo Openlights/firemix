@@ -26,7 +26,7 @@ class SimplexBlend(Transition):
             self.pixel_addr[pixel] = BufferUtils.get_buffer_address(self._app, pixel)
 
     def reset(self):
-        x, y = BufferUtils.get_buffer_size(self._app)
+        x, y = BufferUtils.get_buffer_size()
         self.frame = np.tile(0.0, (x, y, 3))
 
     def get(self, start, end, progress):

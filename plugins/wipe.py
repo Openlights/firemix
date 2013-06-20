@@ -17,7 +17,7 @@ class Wipe(Transition):
         return "Wipe"
 
     def setup(self):
-        self.num_strands, self.num_pixels = BufferUtils.get_buffer_size(self._app)
+        self.num_strands, self.num_pixels = BufferUtils.get_buffer_size()
 
         bb = self._app.scene.get_fixture_bounding_box()
         self.scene_center = np.asarray([bb[0] + (bb[2] - bb[0]) / 2, bb[1] + (bb[3] - bb[1]) / 2])
