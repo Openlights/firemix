@@ -18,6 +18,7 @@ class Dragons(RawPreset):
     _tail_color = (0.5, 0.0, 1.0)
     _dead_color = (0.0, 0.0, 0.0)
     _explode_color = (1.0, 1.0, 1.0)
+    _fader_steps = 256
 
     # Internal parameters
     class Dragon:
@@ -56,9 +57,9 @@ class Dragons(RawPreset):
         self._dead_color = self.parameter('dead-color').get()
         self._tail_color = self.parameter('tail-color').get()
         self._explode_color = self.parameter('explode-color').get()
-        self._growth_fader = ColorFade([(0., 0., 0.), self._alive_color], tick_rate=self._mixer.get_tick_rate())
-        self._tail_fader = ColorFade([self._alive_color, self._tail_color, (0., 0., 0.)], tick_rate=self._mixer.get_tick_rate())
-        self._explode_fader = ColorFade([self._explode_color, (0., 0., 0.)], tick_rate=self._mixer.get_tick_rate())
+        self._growth_fader = ColorFade([(0., 0., 0.), self._alive_color], self._fader_steps)
+        self._tail_fader = ColorFade([self._alive_color, self._tail_color, (0., 0., 0.)], self._fader_steps)
+        self._explode_fader = ColorFade([self._explode_color, (0., 0., 0.)], self._fader_steps)
 
     def parameter_changed(self, parameter):
         self._setup_colors()
@@ -84,7 +85,7 @@ class Dragons(RawPreset):
                 p = (self._current_time - dragon.lifetime) / self.parameter('growth-time').get()
                 if (p > 1):
                     p = 1.0
-                color = self._growth_fader.get_color(p)
+                color = self._growth_fader.get_color(p * self._fader_steps)
                 if p >= 1.0:
                     dragon.growing = False
                     dragon.alive = True
@@ -166,4 +167,4 @@ class Dragons(RawPreset):
                 self.setPixelHLS(loc, (0, 0, 0))
             else:
                 progress = (self._current_time - time) / self.parameter('tail-persist').get()
-                self.setPixelHLS(loc, fader.get_color(progress))
+                self.setPixelHLS(loc, fader.get_color(progress * self._fader_steps))

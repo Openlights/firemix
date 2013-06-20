@@ -77,6 +77,6 @@ class StripeGradient(RawPreset):
             y = (y / stripe_width) % 1.0
             x = abs(x - 0.5)
             y = abs(y - 0.5)
-            hue = math.floor((x+y) * posterization) / posterization
+            hue = (x+y) * posterization
             color1 = self._fader.get_color(hue)
             self.setPixelHLS(pixel, ((color1[0] + self.hue_inner) % 1.0, color1[1], color1[2]))

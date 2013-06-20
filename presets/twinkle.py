@@ -15,6 +15,7 @@ class Twinkle(RawPreset):
     _fading_down = []
     _time = {}
     _fader = None
+    _fader_steps = 256
 
     def setup(self):
         random.seed()
@@ -35,7 +36,7 @@ class Twinkle(RawPreset):
     def _setup_colors(self):
         self._up_target = self.parameter('on-color').get()
         self._down_target = self.parameter('off-color').get()
-        self._fader = ColorFade([self.parameter('off-color').get(), self.parameter('on-color').get()])
+        self._fader = ColorFade([self.parameter('off-color').get(), self.parameter('on-color').get()], self._fader_steps)
 
     def reset(self):
         self._fading_up = []
@@ -62,7 +63,8 @@ class Twinkle(RawPreset):
 
         # Growth
         for address in self._fading_up:
-            color = self._get_next_color(address, self._current_time)
+            progress = (self._current_time - self._time[address]) / float(self.parameter('fade-up-time').get()) * self._fader_steps
+            color = self._fader.get_color(progress)
             if color == self._up_target:
                 self._fading_up.remove(address)
                 self._fading_down.append(address)
@@ -71,7 +73,8 @@ class Twinkle(RawPreset):
 
         # Decay
         for address in self._fading_down:
-            color = self._get_next_color(address, self._current_time, down=True)
+            progress = (1.0 - (self._current_time - self._time[address]) / float(self.parameter('fade-down-time').get())) * self._fader_steps
+            color = self._fader.get_color(progress)
             if color == self._down_target:
                 self._idle.append(address)
                 self._fading_down.remove(address)
@@ -79,17 +82,3 @@ class Twinkle(RawPreset):
                 self.setPixelHLS(address, self.parameter('beat-color').get())
             else:
                 self.setPixelHLS(address, color)                
-
-    def _get_next_color(self, address, time, down=False):
-        time_target = float(self.parameter('fade-down-time').get()) if down else float(self.parameter('fade-up-time').get())
-        progress = (time - self._time[address]) / time_target
-
-        if progress > 1.0:
-            progress = 1.0
-        elif time == self._time[address]:
-            progress = 0.0
-
-        if down:
-            progress = 1.0 - progress
-
-        return self._fader.get_color(progress)

@@ -3,6 +3,58 @@
     "playlist": [
         {
             "classname": "CombinePresets", 
+            "name": "combine radial", 
+            "params": {
+                "first-preset": "radial darting rainbows", 
+                "second-preset": "radial combine", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "radial combine", 
+            "params": {
+                "angle-hue-width": "3.0", 
+                "color-end": "(1.0, 2.0, 1.0)", 
+                "color-start": "(0.0, -2.0, 1.0)", 
+                "hue-speed": "-1.0", 
+                "hue-step": "0.1", 
+                "radius-hue-width": "1.0", 
+                "speed": "0.1", 
+                "wave-hue-period": "1.0", 
+                "wave-hue-width": "0.1", 
+                "wave-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "combine high lum", 
+            "params": {
+                "first-preset": "radial complement stars", 
+                "second-preset": "high lum test", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "high lum test", 
+            "params": {
+                "angle-hue-width": "0.0", 
+                "color-end": "(1.0, 2.0, 1.0)", 
+                "color-start": "(0.0, -4.0, 1.0)", 
+                "hue-speed": "0.3", 
+                "hue-step": "0.1", 
+                "radius-hue-width": "1.5", 
+                "speed": "0.1", 
+                "wave-hue-period": "1.0", 
+                "wave-hue-width": "0.0", 
+                "wave-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
             "name": "ridiculous", 
             "params": {
                 "first-preset": "spiral warp", 
@@ -15,7 +67,7 @@
             "classname": "SpiralGradient", 
             "name": "add b", 
             "params": {
-                "angle-hue-width": "1.0", 
+                "angle-hue-width": "0.2", 
                 "color-end": "(1.0, 1.0, 1.0)", 
                 "color-start": "(0.0, 0.0, 0.5)", 
                 "hue-speed": "0.0", 
@@ -29,7 +81,7 @@
         }, 
         {
             "classname": "CombinePresets", 
-            "name": "additive bug", 
+            "name": "additive continuity test", 
             "params": {
                 "first-preset": "add a", 
                 "second-preset": "add b", 
@@ -60,7 +112,7 @@
                 "first-preset": "spiral fire", 
                 "second-preset": "spiral gray", 
                 "transition-mode": "Additive Blend", 
-                "transition-progress": "0.5"
+                "transition-progress": "[0.0,1.0,0.1]"
             }
         }, 
         {
@@ -85,12 +137,22 @@
         }, 
         {
             "classname": "CombinePresets", 
+            "name": "twinkle galaxy comet", 
+            "params": {
+                "first-preset": "dragons comet", 
+                "second-preset": "twinkle galaxy", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "[0.75,2,1]"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
             "name": "twinkle galaxy", 
             "params": {
                 "first-preset": "twinkle max", 
                 "second-preset": "galaxy", 
                 "transition-mode": "Additive Blend", 
-                "transition-progress": "0.15"
+                "transition-progress": "0.5"
             }
         }, 
         {
@@ -131,13 +193,13 @@
                 "angle-hue-width": "[0.6,1.1,1]", 
                 "color-end": "[0.7, 0.5, 1.0]", 
                 "color-start": "[0.1, 0.5, 1.0]", 
-                "hue-speed": "0.02", 
+                "hue-speed": "0.06", 
                 "hue-step": "0.1", 
                 "radius-hue-width": "0.0", 
-                "speed": "0.1", 
+                "speed": "0.3", 
                 "wave-hue-period": "[-1,1,0.1]", 
                 "wave-hue-width": "[0.2,0.3,0.3]", 
-                "wave-speed": "[0.0,0.6,0.1]"
+                "wave-speed": "[0.0,1.8,0.3]"
             }
         }, 
         {
@@ -450,7 +512,7 @@
         }, 
         {
             "classname": "RadialGradient", 
-            "name": "radial in", 
+            "name": "radial glitchy", 
             "params": {
                 "blackout": "[0.1,0.6,0.1]", 
                 "hue-step": "0.1", 
@@ -781,6 +843,21 @@
                 "scale": "1.0", 
                 "speed": "0.05", 
                 "whiteout": "0.2"
+            }
+        }, 
+        {
+            "classname": "Dragons", 
+            "name": "dragons comet", 
+            "params": {
+                "alive-color": "(0.0, 1.0, 1.0)", 
+                "birth-rate": "0.001", 
+                "dead-color": "(0.0, 0.0, 0.0)", 
+                "explode-color": "(1.0, 1.0, 1.0)", 
+                "growth-rate": "7.0", 
+                "growth-time": "2.0", 
+                "pop-limit": "1", 
+                "tail-color": "(0.5, 0.0, 1.0)", 
+                "tail-persist": "2.0"
             }
         }
     ]

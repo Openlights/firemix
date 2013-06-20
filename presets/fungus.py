@@ -19,6 +19,7 @@ class Fungus(RawPreset):
     _alive = []
     _dying = []
     _fading_out = []
+    _fader_steps = 256
 
     # Configurable parameters
     _spontaneous_birth_probability = 0.0001
@@ -88,7 +89,7 @@ class Fungus(RawPreset):
         self._dead_color = self.parameter('dead-color').get()
         self._black_color = self.parameter('black-color').get()
         fade_colors = [self._black_color, self._alive_color, self._dead_color, self._black_color]
-        self._fader = ColorFade(fade_colors, tick_rate=self._mixer.get_tick_rate())
+        self._fader = ColorFade(fade_colors, self._fader_steps)
 
     def draw(self, dt):
 
@@ -198,4 +199,4 @@ class Fungus(RawPreset):
         elif time_target == self._fade_out_time:
             idx += (2.0 / 3.0)
 
-        return (progress, self._fader.get_color(idx))
+        return (progress, self._fader.get_color(idx * self._fader_steps))

@@ -25,7 +25,7 @@ def fade(lights, colorfade, mod=1):
     """
 
     def ret(ticks, elapsed_time):
-        yield(lights, colorfade.get_color(elapsed_time % mod))
+        yield(lights, colorfade.get_color(elapsed_time * colorfade._steps % colorfade._steps))
 
     return ret
 
