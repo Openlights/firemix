@@ -3,6 +3,7 @@ import random
 
 from lib.raw_preset import RawPreset
 from lib.colors import uint8_to_float, float_to_uint8
+from lib.buffer_utils import BufferUtils
 from lib.color_fade import ColorFade
 from lib.parameters import FloatParameter, IntParameter, HLSParameter
 
@@ -101,9 +102,9 @@ class Fungus(RawPreset):
 
         # Spontaneous birth: Rare after startup
         if (self._population < self._population_limit) and random.random() > p_birth:
-            address = ( random.randint(0, self._max_strand - 1),
-                        random.randint(0, self._max_fixture - 1),
-                        random.randint(0, self._max_pixel - 1))
+            address = BufferUtils.logical_to_index((random.randint(0, self._max_strand - 1),
+                                                    random.randint(0, self._max_fixture - 1),
+                                                    random.randint(0, self._max_pixel - 1)))
             if address not in (self._growing + self._alive + self._dying + self._fading_out):
                 self._growing.append(address)
                 self._time[address] = self._current_time
