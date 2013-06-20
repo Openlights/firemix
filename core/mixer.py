@@ -3,6 +3,7 @@ import threading
 import time
 import random
 import math
+import numpy as np
 
 USE_YAPPI = True
 try:
@@ -63,6 +64,9 @@ class Mixer(QtCore.QObject):
         self._global_speed = 1.0
         self._render_in_progress = False
 
+        if self._app.args.profile and USE_YAPPI:
+            yappi.start()
+
         # Load transitions
         self.set_transition_mode(self._app.settings.get('mixer')['transition'])
 
@@ -89,9 +93,6 @@ class Mixer(QtCore.QObject):
 
     def run(self):
         if not self._running:
-            if self._app.args.profile and USE_YAPPI:
-                yappi.start()
-
             self._tick_rate = self._app.settings.get('mixer')['tick-rate']
             self._tick_timer = threading.Timer(1.0 / self._tick_rate, self.on_tick_timer)
             self._tick_timer.start()
@@ -337,13 +338,7 @@ class Mixer(QtCore.QObject):
 
         else:
             commands = self._playlist.get_preset_by_index(first).get_commands()
-            #print commands
             self.render_command_list(commands, self._main_buffer)
-
-        if self._enable_profiling:
-            dt = 1000.0 * (time.time() - start)
-            if dt > 10.0:
-                log.info("rendered first preset in %0.2f ms (%d commands)" % (dt, len(commands)))
 
         if second is not None:
             if self._enable_profiling:
@@ -359,11 +354,6 @@ class Mixer(QtCore.QObject):
                 second_commands = self._playlist.get_preset_by_index(second).get_commands()
                 self.render_command_list(second_commands, self._secondary_buffer)
 
-            if self._enable_profiling:
-                dt = 1000.0 * (time.time() - start)
-                if dt > 10.0:
-                    log.info("rendered second preset in %0.2f ms (%d commands)" % (dt, len(second_commands)))
-
             if self._in_transition:
                 self._main_buffer = self._transition.get(self._main_buffer, self._secondary_buffer, transition_progress)
                 if self._app.args.profile:
@@ -375,7 +365,7 @@ class Mixer(QtCore.QObject):
             self._main_buffer *= (1.0, self._global_dimmer, 1.0)
 
         if self._net is not None:
-            self._net.write(self._main_buffer)
+            self._net.write(np.clip(self._main_buffer, 0.0, 1.0))
 
     def create_buffers(self):
         """

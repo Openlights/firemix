@@ -45,9 +45,16 @@ class Networking:
                 if client_color_mode == "HLSF32":
                     data = [channel for pixel in buffer[start:end] for channel in pixel]
                     data = array.array('B', struct.pack('%sf' % len(data), *data))
+
+                #elif client_color_mode == "HLS16":
+                #    data = [int(65535.0 * item) for sublist in buffer for item in sublist]
+                #    data = array.array('H', data)
+
                 elif client_color_mode == "RGB8":
                     data = [colorsys.hls_to_rgb(*pixel) for pixel in buffer[start:end]]
-                    data = array.array('B', [clip(0, int(255.0 * item), 255) for sublist in data for item in sublist])
+                    data = [int(255.0 * item) for sublist in data for item in sublist]
+                    data = array.array('B', data)
+
                 elif client_color_mode == "HSVF32":
                     data = [colorsys.hls_to_rgb(*pixel) for pixel in buffer[start:end]]
                     data = array.array('B', [colorsys.rgb_to_hsv(*pixel) for pixel in data])

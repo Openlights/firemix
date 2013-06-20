@@ -68,7 +68,7 @@ class Playlist(JSONDict):
                 self._playlist_data.remove(entry)
 
         self._active_index = 0
-        if self._shuffle:
+        if self._shuffle and len(self._playlist) > 1:
             self.generate_shuffle()
             self._next_index = self._shuffle_list.pop()
         else:
