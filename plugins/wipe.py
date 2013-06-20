@@ -16,34 +16,27 @@ class Wipe(Transition):
     def __str__(self):
         return "Wipe"
 
-    def setup(self):
-        self.num_strands, self.num_pixels = BufferUtils.get_buffer_size()
+    def reset(self):
+        self.buffer_size = BufferUtils.get_buffer_size()
 
         bb = self._app.scene.get_fixture_bounding_box()
         self.scene_center = np.asarray([bb[0] + (bb[2] - bb[0]) / 2, bb[1] + (bb[3] - bb[1]) / 2])
         self.bb = bb
-
-        self.reset()
-
-    def reset(self):
-        self.mask = np.tile(False, (self.num_strands, self.num_pixels, 3))
+        self.mask = np.tile(False, (self.buffer_size, 3))
         angle = np.random.random() * np.pi * 2.0
         self.wipe_vector = np.zeros((2))
 
         self.wipe_vector[0] = math.cos(angle)
         self.wipe_vector[1] = math.sin(angle)
 
-        self.locations = []
-        for f in self._app.scene.fixtures():
-            for p in range(f.pixels):
-                self.locations.append((f.strand, f.address, p, np.asarray(self._app.scene.get_pixel_location((f.strand, f.address, p)))))
+        self.locations = self._app.scene.get_all_pixel_locations()
 
         # Determine the endpoints of the wipe line
         self.wipe_start = np.copy(self.scene_center)
         wipe_end = np.copy(self.scene_center)
         neg_d = 999999
         pos_d = -999999
-        for s, a, p, location in self.locations:
+        for location in self.locations:
             # Project vector from the center to the pixel with the wipe vector
             pixel_vector = location - self.scene_center
             dp = np.dot(pixel_vector, self.wipe_vector)
@@ -64,10 +57,9 @@ class Wipe(Transition):
         wipe_point = self.wipe_start + (progress * self.wipe_line_vector)
 
         # Mask based on the wipe point
-        for strand, address, pixel, location in self.locations:
+        for offset, location in enumerate(self.locations):
             if np.dot(location - wipe_point, self.wipe_vector) < 0:
-                _, pixel = BufferUtils.get_buffer_address(self._app, (strand, address, pixel))
-                self.mask[strand][pixel][:] = True
+                self.mask[offset][:] = True
 
         start[self.mask] = 0.0
         end[np.invert(self.mask)] = 0.0
