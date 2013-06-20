@@ -72,7 +72,7 @@ class SimplexNoise(RawPreset):
             luminance_table.append(math.floor(luminance * posterization) / posterization)
             
         
-        for pixel, location in self.pixel_locations:
+        for pixel, location in enumerate(self.pixel_locations):
             hue = (1.0 + snoise3(self.scale * location[0] + self._offset_x, self.scale * location[1] + self._offset_y, self._offset_z, 1, 0.5, 0.5)) / 2
             hue = self.hue_min + ((math.floor(hue * posterization) / posterization) * (self.hue_max - self.hue_min))
             
