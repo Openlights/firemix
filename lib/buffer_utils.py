@@ -10,9 +10,11 @@ class BufferUtils:
     _max_fixtures = 0
     _max_pixels_per_fixture = 0
     _max_pixels_per_strand = 0
+    _buffer_length = 0
     _app = None
     _strand_lengths = []
     _fixture_lengths = {}
+    _fixture_extents = {}
     _fixture_pixels = {}
     _pixel_offset_cache = {}
     _pixel_index_cache = {}
@@ -26,6 +28,7 @@ class BufferUtils:
         cls._app = app
         cls._num_strands, cls._max_fixtures, cls._max_pixels_per_fixture = app.scene.get_matrix_extents()
         cls._max_pixels_per_strand = cls._max_fixtures * cls._max_pixels_per_fixture
+        cls._buffer_length = cls._num_strands * cls._max_pixels_per_strand
         fh = app.scene.fixture_hierarchy()
 
         for strand in fh:
@@ -36,7 +39,7 @@ class BufferUtils:
                     cls.logical_to_index((strand, fixture, pixel))
 
     @classmethod
-    def logical_to_index(cls, logical_address):
+    def logical_to_index(cls, logical_address, scene=None):
         """
         Given a logical (strand, fixture, offset) pixel address, returns the index
         into a 1-dimensional pixel list (the storage type for frames, locations, etc).
@@ -44,21 +47,29 @@ class BufferUtils:
         index = cls._pixel_index_cache.get(logical_address, None)
 
         if index is None:
+
+            if scene is None:
+                scene = cls._app.scene
+
             strand, fixture, offset = logical_address
-            fh = cls._app.scene.fixture_hierarchy()
+            fh = scene.fixture_hierarchy()
 
             # (1) Skip to the start of the strand
             index = (strand * cls._max_pixels_per_strand)
 
             # (2) Skip to the fixture in question
             for i in range(fixture):
-                index += cls._app.scene.fixture(strand, fixture).pixels
+                index += scene.fixture(strand, i).pixels
+
+            fixture_start = index
+            fixture_end = index + scene.fixture(strand, fixture).pixels
 
             # (3) Add the offset along the fixture
             index += offset
 
             cls._pixel_index_cache[logical_address] = index
             cls._pixel_logical_cache[index] = logical_address
+            cls._fixture_extents[(strand, fixture)] = (fixture_start, fixture_end)
 
         return index
 
@@ -83,18 +94,20 @@ class BufferUtils:
         The reference to the app is required to lookup the required dimensions, in order
         to figure out the total y-axis length required.
         """
-        return np.zeros((cls._num_strands, cls._max_pixels_per_strand, 3), dtype=np.float32)
+        return np.zeros((cls._buffer_length, 3), dtype=np.float32)
 
     @classmethod
     def get_buffer_size(cls):
-        return (cls._num_strands, cls._max_pixels_per_strand)
+        """
+        Returns the length of a pixel index buffer
+        """
+        return (cls._buffer_length)
 
     @classmethod
     def get_buffer_address(cls, location, scene=None):
         """
         Calculates the in-buffer address for a given [s:f:p] address (see above)
         """
-
         if scene is None:
             scene = cls._app.scene
 
@@ -110,6 +123,7 @@ class BufferUtils:
                 pixel_offset += num_fixture_pixels
             cls._pixel_offset_cache[location] = pixel_offset
 
+        raise DeprecationWarning
         return (location[0], pixel_offset)
 
     @classmethod
@@ -117,19 +131,11 @@ class BufferUtils:
         """
         Returns a tuple of (start, end) containing the buffer pixel addresses on a given fixtures
         """
-        _, start_offset = cls.get_buffer_address((strand, fixture, 0))
-        num_pixels = cls._app.scene.fixture(strand, fixture).pixels
-        return (start_offset, start_offset + num_pixels)
+        return cls._fixture_extents[(strand, fixture)]
 
     @classmethod
     def get_strand_length(cls, strand):
         """
         Returns the length of a strand (in pixels)
         """
-        fixtures = [f for f in cls._app.scene.fixtures() if f.strand == strand]
-
-        num_pixels = 0
-        for f in fixtures:
-            num_pixels += f.pixels
-
-        return num_pixels
+        return cls._strand_lengths[strand]

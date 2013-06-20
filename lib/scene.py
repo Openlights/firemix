@@ -253,10 +253,11 @@ class Scene(JSONDict):
         Returns a list of all pixels in buffer address format (strand, offset)
         """
         if self._all_pixels_raw is None:
-            pxs = []
+            all_pixels = []
             for s, a, p in self.get_all_pixels_logical():
-                pxs.append(BufferUtils.get_buffer_address((s, a, p), scene=self))
-            self._all_pixels_raw = pxs
+                #pxs.append(BufferUtils.get_buffer_address((s, a, p), scene=self))
+                all_pixels.append(BufferUtils.logical_to_index((s, a, p), scene=self))
+            self._all_pixels_raw = all_pixels
 
         return self._all_pixels_raw
 
