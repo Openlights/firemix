@@ -1,6 +1,7 @@
 import colorsys
 import random
 import math
+import numpy as np
 
 from lib.raw_preset import RawPreset
 from lib.parameters import FloatParameter, HLSParameter, IntParameter
@@ -19,28 +20,22 @@ class StripeGradient(RawPreset):
         self.add_parameter(IntParameter('posterization', 8))
         self.add_parameter(HLSParameter('color-start', (0.0, 0.0, 1.0)))
         self.add_parameter(HLSParameter('color-end', (1.0, 1.0, 1.0)))
+        self.add_parameter(FloatParameter('stripe-x-center', 0.5))
+        self.add_parameter(FloatParameter('stripe-y-center', 0.5))
         self.hue_inner = random.random() + 100
         self._center_rotation = random.random()
         self.stripe_angle = random.random()
 
-        self.pixels = self.scene().get_all_pixels()
+        self.locations = self.scene().get_all_pixel_locations()
         cx, cy = self.scene().center_point()
 
-        # Find radius to each pixel
-        self.pixel_distances = {}
-        self.pixel_angles = {}
-        for pixel in self.pixels:
-            x, y = self.scene().get_pixel_location(pixel)
-            dx = x - cx
-            dy = y - cy
-            d = math.sqrt(math.pow(dx, 2) + math.pow(dy, 2))
-            self.pixel_distances[pixel] = d
-            self.pixel_angles[pixel] = (math.pi + math.atan2(dy, dx)) / (2.0 * math.pi)
-
-        # Normalize
-        max_distance = max(self.pixel_distances.values())
-        for pixel in self.pixels:
-            self.pixel_distances[pixel] /= max_distance
+        self.locations = np.asarray(self.scene().get_all_pixel_locations())
+        x,y = self.locations.T
+        x -= cx
+        y -= cy
+        self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
+        self.pixel_angles = (math.pi + np.arctan2(y, x)) / (2 * math.pi)
+        self.pixel_distances /= max(self.pixel_distances)
             
         self.parameter_changed(None)
 
@@ -65,18 +60,20 @@ class StripeGradient(RawPreset):
         cx, cy = self.scene().center_point()
         cx += math.cos(self._center_rotation) * self.parameter('center-orbit-distance').get()
         cy += math.sin(self._center_rotation) * self.parameter('center-orbit-distance').get()
+        sx = self.parameter('stripe-x-center').get()
+        sy = self.parameter('stripe-y-center').get()
 
         posterization = self.parameter('posterization').get()
-        for pixel in self.pixels:
-            x, y = self.scene().get_pixel_location(pixel)
-            dx = x - cx
-            dy = y - cy
-            x = dx * math.cos(self.stripe_angle) - dy * math.sin(self.stripe_angle)
-            y = dx * math.sin(self.stripe_angle) + dy * math.cos(self.stripe_angle)
-            x = (x / stripe_width) % 1.0
-            y = (y / stripe_width) % 1.0
-            x = abs(x - 0.5)
-            y = abs(y - 0.5)
-            hue = (x+y) * posterization
-            color1 = self._fader.get_color(hue)
-            self.setPixelHLS(pixel, ((color1[0] + self.hue_inner) % 1.0, color1[1], color1[2]))
+        x, y = self.locations.T
+        dx = x - cx
+        dy = y - cy
+        x = dx * math.cos(self.stripe_angle) - dy * math.sin(self.stripe_angle)
+        y = dx * math.sin(self.stripe_angle) + dy * math.cos(self.stripe_angle)
+        x = (x / stripe_width) % 1.0
+        y = (y / stripe_width) % 1.0
+        x = np.abs(x - sx)
+        y = np.abs(y - sy)
+        hues = np.int_(np.mod(x+y, 1.0) * posterization)
+        colors = self._fader.color_cache[hues]
+        colors.T[0] += self.hue_inner
+        self._pixel_buffer = colors

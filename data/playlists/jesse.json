@@ -137,37 +137,22 @@
         }, 
         {
             "classname": "CombinePresets", 
-            "name": "twinkle galaxy comet", 
+            "name": "galaxy comet", 
             "params": {
                 "first-preset": "dragons comet", 
-                "second-preset": "twinkle galaxy", 
+                "second-preset": "galaxy", 
                 "transition-mode": "Additive Blend", 
-                "transition-progress": "[0.75,2,1]"
+                "transition-progress": "[0.5,2.0,0.1]"
             }
         }, 
         {
             "classname": "CombinePresets", 
-            "name": "twinkle galaxy", 
+            "name": "twinkle galaxy comet", 
             "params": {
-                "first-preset": "twinkle max", 
-                "second-preset": "galaxy", 
+                "first-preset": "twinkle stars", 
+                "second-preset": "galaxy comet", 
                 "transition-mode": "Additive Blend", 
-                "transition-progress": "0.5"
-            }
-        }, 
-        {
-            "classname": "StripeGradient", 
-            "name": "stripe test", 
-            "params": {
-                "angle-speed": "0.1", 
-                "center-orbit-distance": "0.0", 
-                "center-orbit-speed": "0.1", 
-                "color-end": "(1.0, 1.0, 1.0)", 
-                "color-start": "(0.0, 0.0, 1.0)", 
-                "hue-step": "0.1", 
-                "posterization": "8", 
-                "speed": "0.01", 
-                "stripe-width": "300.0"
+                "transition-progress": "[0.15,0.5,1]"
             }
         }, 
         {
@@ -175,15 +160,15 @@
             "name": "spiral gray", 
             "params": {
                 "angle-hue-width": "[-4,10,1]", 
-                "color-end": "(0.5, 1.2, 0.0)", 
+                "color-end": "(1.5, 1.2, 0.0)", 
                 "color-start": "(0.5, -1.0, 0.0)", 
-                "hue-speed": "0.0", 
+                "hue-speed": "1.0", 
                 "hue-step": "0.1", 
-                "radius-hue-width": "2.0", 
+                "radius-hue-width": "1.0", 
                 "speed": "0.1", 
                 "wave-hue-period": "0.1", 
-                "wave-hue-width": "0.3", 
-                "wave-speed": "0.05"
+                "wave-hue-width": "0.2", 
+                "wave-speed": "0.3"
             }
         }, 
         {
@@ -310,7 +295,9 @@
                 "hue-step": "0.1", 
                 "posterization": "100", 
                 "speed": "0.002", 
-                "stripe-width": "[100,400,2]"
+                "stripe-width": "[100,400,2]", 
+                "stripe-x-center": "0.5", 
+                "stripe-y-center": "0.5"
             }
         }, 
         {
@@ -325,7 +312,53 @@
                 "hue-step": "0.1", 
                 "posterization": "100", 
                 "speed": "0.05", 
-                "stripe-width": "[25.0,100,1]"
+                "stripe-width": "[25.0,100,1]", 
+                "stripe-x-center": "0.5", 
+                "stripe-y-center": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "combine stripes", 
+            "params": {
+                "first-preset": "stripe test", 
+                "second-preset": "stripe zigzag", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "StripeGradient", 
+            "name": "stripe test", 
+            "params": {
+                "angle-speed": "[-0.5,0.5,10]", 
+                "center-orbit-distance": "[0,100,100]", 
+                "center-orbit-speed": "[-2,2,2]", 
+                "color-end": "(0.4, 0.5, 1.0)", 
+                "color-start": "(0.0, -2.0, 1.0)", 
+                "hue-step": "0.1", 
+                "posterization": "200", 
+                "speed": "0.01", 
+                "stripe-width": "200.0", 
+                "stripe-x-center": "1.0", 
+                "stripe-y-center": "0.0"
+            }
+        }, 
+        {
+            "classname": "StripeGradient", 
+            "name": "stripe zigzag", 
+            "params": {
+                "angle-speed": "[-0.2,0.2,1]", 
+                "center-orbit-distance": "94.2870646943", 
+                "center-orbit-speed": "[0.1,1.1,1.1]", 
+                "color-end": "(0.4, 0.6, 1.0)", 
+                "color-start": "(0.8, -2.0, 1.0)", 
+                "hue-step": "0.1", 
+                "posterization": "200", 
+                "speed": "0.1", 
+                "stripe-width": "200.0", 
+                "stripe-x-center": "1.0", 
+                "stripe-y-center": "0.5"
             }
         }, 
         {
@@ -340,7 +373,9 @@
                 "hue-step": "0.1", 
                 "posterization": "200", 
                 "speed": "[-0.05,0.05,0.01]", 
-                "stripe-width": "[150,600,100]"
+                "stripe-width": "[150,600,100]", 
+                "stripe-x-center": "0.5", 
+                "stripe-y-center": "0.5"
             }
         }, 
         {
@@ -355,7 +390,9 @@
                 "hue-step": "0.1", 
                 "posterization": "20", 
                 "speed": "-0.1", 
-                "stripe-width": "[300,1000,10]"
+                "stripe-width": "[300,1000,10]", 
+                "stripe-x-center": "0.5", 
+                "stripe-y-center": "0.5"
             }
         }, 
         {
@@ -579,7 +616,7 @@
             "name": "twinkle max", 
             "params": {
                 "beat-color": "(1.0, 1.0, 1.0)", 
-                "birth-rate": "400.0", 
+                "birth-rate": "300.0", 
                 "black-color": "(0.0, 0.0, 1.0)", 
                 "fade-down-time": "2.0", 
                 "fade-up-time": "0.1", 
@@ -853,14 +890,14 @@
             "name": "dragons comet", 
             "params": {
                 "alive-color": "(0.0, 1.0, 1.0)", 
-                "birth-rate": "0.001", 
+                "birth-rate": "0.01", 
                 "dead-color": "(0.0, 0.0, 0.0)", 
                 "explode-color": "(1.0, 1.0, 1.0)", 
-                "growth-rate": "7.0", 
+                "growth-rate": "100.0", 
                 "growth-time": "2.0", 
                 "pop-limit": "1", 
                 "tail-color": "(0.5, 0.0, 1.0)", 
-                "tail-persist": "2.0"
+                "tail-persist": "0.2"
             }
         }, 
         {
@@ -868,12 +905,28 @@
             "name": "twinkle stars", 
             "params": {
                 "beat-color": "(1.0, 1.0, 1.0)", 
-                "birth-rate": "20.0", 
-                "black-color": "(1.0, 1.0, 1.0)", 
+                "birth-rate": "10.0", 
+                "black-color": "(0.0, 0.0, 1.0)", 
                 "fade-down-time": "2.0", 
                 "fade-up-time": "2.0", 
                 "off-color": "(1.0, 0.0, 1.0)", 
                 "on-color": "(0.1, 0.6, 1.0)"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "spiral test", 
+            "params": {
+                "angle-hue-width": "[0,10,1]", 
+                "color-end": "(1.0, 0.5, 1.0)", 
+                "color-start": "(0.0, 0.5, 1.0)", 
+                "hue-speed": "0.1", 
+                "hue-step": "0.1", 
+                "radius-hue-width": "0.0", 
+                "speed": "0.1", 
+                "wave-hue-period": "0.1", 
+                "wave-hue-width": "0.0", 
+                "wave-speed": "0.1"
             }
         }
     ]
