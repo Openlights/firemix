@@ -363,7 +363,10 @@ class Mixer(QtCore.QObject):
             self._main_buffer *= (1.0, self._global_dimmer, 1.0)
 
         if self._net is not None:
-            self._net.write(np.clip(self._main_buffer, 0.0, 1.0))
+            self._main_buffer.T[0] = np.mod(self._main_buffer.T[0], 1.0)
+            np.clip(self._main_buffer.T[1], 0.0, 1.0, self._main_buffer.T[1])
+            np.clip(self._main_buffer.T[2], 0.0, 1.0, self._main_buffer.T[2])
+            self._net.write(self._main_buffer)
 
     def create_buffers(self):
         """
