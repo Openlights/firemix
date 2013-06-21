@@ -40,44 +40,28 @@ class RadialGradient(RawPreset):
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
         self.pixel_angles = np.arctan2(y, x) / (2.0 * math.pi)
         self.pixel_distances /= max(self.pixel_distances)
-
-        self.parameter_changed(None)
         
 
     def reset(self):
         pass
 
-    def parameter_changed(self, p):
-        self._hue_step = self.parameter('hue-step').get()
-        self._speed = self.parameter('speed').get()
-        self._wave1_speed = self.parameter('wave1-speed').get()
-        self._wave2_speed = self.parameter('wave2-speed').get()
-        self._luminance_speed = self.parameter('luminance-speed').get()
-        self._blackout = self.parameter('blackout').get()
-        self._whiteout = self.parameter('whiteout').get()
-        self._wave1_period = self.parameter('wave1-period').get()
-        self._wave1_amplitude = self.parameter('wave1-amplitude').get()
-        self._wave2_period = self.parameter('wave2-period').get()
-        self._wave2_amplitude = self.parameter('wave2-amplitude').get()
-        self._luminance_scale = self.parameter('luminance-scale').get()
-
     def draw(self, dt):
         if self._mixer.is_onset():
-            self.hue_inner = math.fmod(self.hue_inner + self._hue_step, 1.0)
-            self.luminance_offset += self._hue_step
+            self.hue_inner = math.fmod(self.hue_inner + self.parameter('hue-step').get(), 1.0)
+            self.luminance_offset += self.parameter('hue-step').get()
 
-        self.hue_inner += dt * self._speed
-        self.wave1_offset += self._wave1_speed * dt
-        self.wave2_offset += self._wave2_speed * dt
-        self.luminance_offset += self._luminance_speed * dt
+        self.hue_inner += dt * self.parameter('speed').get()
+        self.wave1_offset += self.parameter('wave1-speed').get() * dt
+        self.wave2_offset += self.parameter('wave2-speed').get() * dt
+        self.luminance_offset += self.parameter('luminance-speed').get() * dt
 
         luminance_table = []
         luminance = 0.0
         for input in range(self._luminance_steps):
-            if input > self._blackout * self._luminance_steps:
+            if input > self.parameter('blackout').get() * self._luminance_steps:
                 luminance -= 0.01
                 luminance = clip(0, luminance, 1.0)
-            elif input < self._whiteout * self._luminance_steps:
+            elif input < self.parameter('whiteout').get() * self._luminance_steps:
                 luminance += 0.1
                 luminance = clip(0, luminance, 1.0)
             else:
@@ -86,12 +70,16 @@ class RadialGradient(RawPreset):
             luminance_table.append(luminance)
         luminance_table = np.asarray(luminance_table)
 
+        wave1_period = self.parameter('wave1-period').get()
+        wave1_amplitude = self.parameter('wave1-amplitude').get()
+        wave2_period = self.parameter('wave2-period').get()
+        wave2_amplitude = self.parameter('wave2-amplitude').get()
+        luminance_scale = self.parameter('luminance-scale').get()
 
-
-        wave1 = np.abs(np.cos(self.wave1_offset + self.pixel_angles * self._wave1_period) * self._wave1_amplitude)
-        wave2 = np.abs(np.cos(self.wave2_offset + self.pixel_angles * self._wave2_period) * self._wave2_amplitude)
+        wave1 = np.abs(np.cos(self.wave1_offset + self.pixel_angles * wave1_period) * wave1_amplitude)
+        wave2 = np.abs(np.cos(self.wave2_offset + self.pixel_angles * wave2_period) * wave2_amplitude)
         hues = self.pixel_distances + wave1 + wave2
-        luminance_indices = np.mod(np.abs(np.int_((self.luminance_offset + hues * self._luminance_scale) * self._luminance_steps)), self._luminance_steps)
+        luminance_indices = np.mod(np.abs(np.int_((self.luminance_offset + hues * luminance_scale) * self._luminance_steps)), self._luminance_steps)
         luminances = luminance_table[luminance_indices]
         hues = np.fmod(self.hue_inner + hues * self.parameter('hue-width').get(), 1.0)
 
