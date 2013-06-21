@@ -6,7 +6,6 @@ import math
 from lib.raw_preset import RawPreset
 from lib.parameters import FloatParameter, HLSParameter
 from lib.color_fade import ColorFade
-from lib.colors import clip
 
 class SpiralGradient(RawPreset):
     """Spiral gradient that responds to onsets"""
@@ -74,18 +73,10 @@ class SpiralGradient(RawPreset):
 
         angles = np.mod(1.0 + self.pixel_angles + np.sin(self.wave_offset + self.pixel_distances * wave_hue_period) * wave_hue_width, 1.0)
         hues = self.color_offset + (radius_hue_width * self.pixel_distances) + (2 * np.abs(angles - 0.5) * angle_hue_width)
-        hues = np.mod(hues, 1.0) * self._fader_steps
-        colors = map(self._fader.get_color, hues)
+        hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
+        colors = self._fader.color_cache[hues]
+        colors = colors.T
+        colors[0] = np.mod(colors[0] + self.hue_inner, 1.0)
+        colors = colors.T
 
-        """
-        # Do we prefer numpy function math? So far seems to be harder to read with no benefit.
-        angles = np.mod(np.add(np.sin(np.add(np.multiply(self.pixel_distances, wave_hue_period),self.wave_offset)) * wave_hue_width, self.pixel_angles), 1.0)
-        stuff = np.add(np.multiply(np.abs(np.subtract(angles, 0.5)), 2 * angle_hue_width), self.color_offset)
-        hues = np.add(np.multiply(self.pixel_distances, radius_hue_width), stuff)
-        hues = np.multiply(np.mod(hues, 1.0), self._fader_steps)
-        colors = map(self._fader.get_color, hues)
-        """
-
-        for i in range(len(self.pixels)):
-            color = colors[i]
-            self.setPixelHLS(self.pixels[i], ((color[0] + self.hue_inner) % 1.0, color[1], color[2]))
+        self._pixel_buffer = colors

@@ -1,3 +1,4 @@
+import numpy as np
 import socket
 import array
 import struct
@@ -11,6 +12,26 @@ from lib.buffer_utils import BufferUtils
 COMMAND_SET_BGR = 0x10
 COMMAND_SET_RGB = 0x20
 
+"""
+Hacking some color conversion here for Firefly
+This wraps colorsys's conversion with some type conversion and caching
+It's not nice enough to keep.
+"""
+
+cache = {}
+cache_steps = 128
+
+def getRGB(h,l,s):
+    color = cache.get((h,l,s), None)
+
+    if color == None:
+        color = colorsys.hls_to_rgb(float(h) / cache_steps, float(l) / cache_steps, float(s) / cache_steps)
+        color = (int(color[0]*255),int(color[1]*255),int(color[2]*255))
+        cache[(h,l,s)] = color
+        #print "cache miss", h,l,s,color
+
+    return color
+
 
 class Networking:
 
@@ -18,6 +39,11 @@ class Networking:
         self._socket = None
         self._app = app
         self.open_socket()
+
+#        for h in range(cache_steps + 1):
+#            for l in range(cache_steps + 1):
+#                for s in range(cache_steps + 1):
+#                    getRGB(h,l,s)
 
     def open_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -34,36 +60,34 @@ class Networking:
             packet = array.array('B', [])
             client_color_mode = client["color-mode"]
 
+            if client_color_mode == "RGB8":
+                intbuffer = np.int_(buffer * cache_steps)
+                alldata = [getRGB(*pixel) for pixel in intbuffer]
+                alldata = [item for sublist in alldata for item in sublist]
+
             for strand in range(len(strand_settings)):
                 if not strand_settings[strand]["enabled"]:
                     continue
                 color_mode = strand_settings[strand]["color-mode"]
 
                 start, end = BufferUtils.get_strand_extents(strand)
-                data = []
 
-                if client_color_mode == "HLSF32":
+                if client_color_mode == "RGB8":
+                    data = array.array('B', alldata[start*3:end*3])
+                else:
                     data = [channel for pixel in buffer[start:end] for channel in pixel]
                     data = array.array('B', struct.pack('%sf' % len(data), *data))
-
-                #elif client_color_mode == "HLS16":
-                #    data = [int(65535.0 * item) for sublist in buffer for item in sublist]
-                #    data = array.array('H', data)
-
-                elif client_color_mode == "RGB8":
-                    data = [colorsys.hls_to_rgb(*pixel) for pixel in buffer[start:end]]
-                    data = [int(255.0 * item) for sublist in data for item in sublist]
-                    data = array.array('B', data)
-
-                elif client_color_mode == "HSVF32":
-                    data = [colorsys.hls_to_rgb(*pixel) for pixel in buffer[start:end]]
-                    data = array.array('B', [colorsys.rgb_to_hsv(*pixel) for pixel in data])
 
                 length = len(data)
                 command = COMMAND_SET_RGB if color_mode == "RGB8" else COMMAND_SET_BGR
                 packet.extend(array.array('B', [strand, command, (length & 0xFF), (length & 0xFF00) >> 8]))
                 packet.extend(data)
 
+# Is the strand packing above slow? I wonder...
+# Does it mean anything if this is faster?
+#            length = len(alldata)
+#            packet.extend(array.array('B', [0, 0, (length & 0xFF), (length & 0xFF00) >> 8]))
+#            packet.extend(array.array('B', alldata))
 
             self._socket.sendto(packet, (client["host"], client["port"]))
 

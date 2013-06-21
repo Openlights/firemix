@@ -25,18 +25,16 @@ class Twinkle(RawPreset):
         self.add_parameter(HLSParameter('on-color', (0.1, 1.0, 1.0)))
         self.add_parameter(HLSParameter('off-color', (1.0, 0.0, 1.0)))
         self.add_parameter(HLSParameter('beat-color', (1.0, 1.0, 1.0)))
+        self.add_parameter(HLSParameter('black-color', (0.0, 0.0, 1.0)))
         self._setup_colors()
         self._nbirth = 0;
         self._current_time = 0;
 
     def parameter_changed(self, parameter):
-        if str(parameter) == 'on-color':
-            self._setup_colors()
+        self._setup_colors()
 
     def _setup_colors(self):
-        self._up_target = self.parameter('on-color').get()
-        self._down_target = self.parameter('off-color').get()
-        self._fader = ColorFade([self.parameter('off-color').get(), self.parameter('on-color').get()], self._fader_steps)
+        self._fader = ColorFade([self.parameter('black-color').get(), self.parameter('off-color').get(), self.parameter('on-color').get()], self._fader_steps)
 
     def reset(self):
         self._fading_up = []
@@ -47,12 +45,12 @@ class Twinkle(RawPreset):
     def draw(self, dt):
 
         self._current_time += dt
-        
+
         # Birth
         if self._mixer.is_onset():
             self._nbirth += 25
         
-        self._nbirth += self.parameter('birth-rate').get()
+        self._nbirth += self.parameter('birth-rate').get() * dt
 
         for i in range(int(self._nbirth)):
             if (len(self._idle) > 0) and (random.random() < self._nbirth):
@@ -65,7 +63,7 @@ class Twinkle(RawPreset):
         for address in self._fading_up:
             progress = (self._current_time - self._time[address]) / float(self.parameter('fade-up-time').get()) * self._fader_steps
             color = self._fader.get_color(progress)
-            if color == self._up_target:
+            if progress >= self._fader_steps:
                 self._fading_up.remove(address)
                 self._fading_down.append(address)
                 self._time[address] = self._current_time
@@ -75,10 +73,9 @@ class Twinkle(RawPreset):
         for address in self._fading_down:
             progress = (1.0 - (self._current_time - self._time[address]) / float(self.parameter('fade-down-time').get())) * self._fader_steps
             color = self._fader.get_color(progress)
-            if color == self._down_target:
+            if progress <= 0:
                 self._idle.append(address)
                 self._fading_down.remove(address)
-            if self._mixer.is_onset():
-                self.setPixelHLS(address, self.parameter('beat-color').get())
-            else:
-                self.setPixelHLS(address, color)                
+            elif self._mixer.is_onset():
+                color = self.parameter('beat-color').get()
+            self.setPixelHLS(address, color)

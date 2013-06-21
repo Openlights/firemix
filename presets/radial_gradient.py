@@ -38,7 +38,7 @@ class RadialGradient(RawPreset):
         x -= cx
         y -= cy
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-        self.pixel_angles = np.arctan2(y, x) / (2.0 * math.pi)
+        self.pixel_angles = math.pi + np.arctan2(y, x)
         self.pixel_distances /= max(self.pixel_distances)
         
 
@@ -85,5 +85,5 @@ class RadialGradient(RawPreset):
 
         self.setAllHLS(hues, luminances, 1.0)
 
-        #for i in range(len(self.pixels)):
-        #    self.setPixelHLS(self.pixels[i], (hues[i], luminances[i], 1.0))
+        #colors = np.array([hues, luminances, 1.0]).T
+        #self._pixel_buffer = colors

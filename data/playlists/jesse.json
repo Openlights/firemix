@@ -404,7 +404,7 @@
                 "hue-step": "0.4", 
                 "hue-width": "0.5", 
                 "luminance-scale": "0.7", 
-                "luminance-speed": "-0.01", 
+                "luminance-speed": "-0.05", 
                 "speed": "0.1", 
                 "wave1-amplitude": "[-1,1,0.1]", 
                 "wave1-period": "[0.5,1,0.5]", 
@@ -553,10 +553,11 @@
             "name": "twinkle to blue", 
             "params": {
                 "beat-color": "(1.0, 1.0, 1.0)", 
-                "birth-rate": "0.05", 
+                "birth-rate": "2.0", 
+                "black-color": "[0.6, 0.2, 1.0]", 
                 "fade-down-time": "4.0", 
                 "fade-up-time": "0.5", 
-                "off-color": "[0.6, 0.2, 1.0]", 
+                "off-color": "[0.6, 0.0, 1.0]", 
                 "on-color": "[0.1, 1.0, 1.0]"
             }
         }, 
@@ -565,11 +566,12 @@
             "name": "twinkle yarn", 
             "params": {
                 "beat-color": "(1.0, 1.0, 1.0)", 
-                "birth-rate": "2.0", 
-                "fade-down-time": "5.0", 
-                "fade-up-time": "0.5", 
-                "off-color": "[0.0, 0.0, 1.0]", 
-                "on-color": "[1.6, 0.7, 1.0]"
+                "birth-rate": "400.0", 
+                "black-color": "(0.0, 0.0, 1.0)", 
+                "fade-down-time": "2.0", 
+                "fade-up-time": "0.1", 
+                "off-color": "[0.5, 0.5, 1.0]", 
+                "on-color": "[2.9, 0.5, 1.0]"
             }
         }, 
         {
@@ -577,11 +579,12 @@
             "name": "twinkle max", 
             "params": {
                 "beat-color": "(1.0, 1.0, 1.0)", 
-                "birth-rate": "2.0", 
+                "birth-rate": "400.0", 
+                "black-color": "(0.0, 0.0, 1.0)", 
                 "fade-down-time": "2.0", 
-                "fade-up-time": "2.0", 
-                "off-color": "(1.0, 0.0, 1.0)", 
-                "on-color": "(0.1, 0.6, 1.0)"
+                "fade-up-time": "0.1", 
+                "off-color": "(10.0, 0.0, 1.0)", 
+                "on-color": "(20.0, 0.6, 1.0)"
             }
         }, 
         {
@@ -858,6 +861,19 @@
                 "pop-limit": "1", 
                 "tail-color": "(0.5, 0.0, 1.0)", 
                 "tail-persist": "2.0"
+            }
+        }, 
+        {
+            "classname": "Twinkle", 
+            "name": "twinkle stars", 
+            "params": {
+                "beat-color": "(1.0, 1.0, 1.0)", 
+                "birth-rate": "20.0", 
+                "black-color": "(1.0, 1.0, 1.0)", 
+                "fade-down-time": "2.0", 
+                "fade-up-time": "2.0", 
+                "off-color": "(1.0, 0.0, 1.0)", 
+                "on-color": "(0.1, 0.6, 1.0)"
             }
         }
     ]
