@@ -30,7 +30,6 @@ class RadialGradient(RawPreset):
         self.wave2_offset = random.random()
         self.luminance_offset = random.random()
 
-        self.pixels = self.scene().get_all_pixels()
         cx, cy = self.scene().center_point()
 
         self.locations = np.asarray(self.scene().get_all_pixel_locations())

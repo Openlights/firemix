@@ -20,11 +20,11 @@ class Wibbler:
         value += self._velocity * dt
         
         _easeFactor = 0.7
-        if value + self._velocity * 5 > self._max:
+        if value + self._velocity * dt * 10 > self._max:
             self._acceleration *= _easeFactor
             self._velocity *= _easeFactor
             
-        if value + self._velocity * 5 < self._min:
+        if value + self._velocity * dt * 10 < self._min:
             self._acceleration *= _easeFactor
             self._velocity *= _easeFactor
             
