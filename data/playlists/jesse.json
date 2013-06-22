@@ -2,12 +2,68 @@
     "file-type": "playlist", 
     "playlist": [
         {
+            "classname": "StripeGradient", 
+            "name": "stripe white", 
+            "params": {
+                "angle-speed": "[-0.4,0.4,1]", 
+                "center-orbit-distance": "[20,30,10]", 
+                "center-orbit-speed": "[-0.1,0.1,1]", 
+                "color-gradient": "[(0,0,1), (0,1,1)]", 
+                "hue-step": "0.1", 
+                "posterization": "200", 
+                "speed": "0.02", 
+                "stripe-width": "[150,300,200]", 
+                "stripe-x-center": "1.0", 
+                "stripe-y-center": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "combine ripples", 
+            "params": {
+                "first-preset": "ripple 1", 
+                "second-preset": "ripple 2", 
+                "transition-mode": "Linear Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "twinkle spiral", 
+            "params": {
+                "first-preset": "twinkle max rainbow", 
+                "second-preset": "spiral warp", 
+                "transition-mode": "Linear Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "combine stripey", 
+            "params": {
+                "first-preset": "spiral stripey", 
+                "second-preset": "stripe test", 
+                "transition-mode": "Linear Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "gradient yarn", 
+            "params": {
+                "first-preset": "twinkle yarn", 
+                "second-preset": "radial splotch", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.15"
+            }
+        }, 
+        {
             "classname": "CombinePresets", 
             "name": "combine radial", 
             "params": {
                 "first-preset": "radial darting rainbows", 
                 "second-preset": "radial combine", 
-                "transition-mode": "Additive Blend", 
+                "transition-mode": "Linear Blend", 
                 "transition-progress": "0.5"
             }
         }, 
@@ -16,6 +72,8 @@
             "name": "radial combine", 
             "params": {
                 "angle-hue-width": "3.0", 
+                "center-distance": "0.0", 
+                "center-speed": "0.0", 
                 "color-end": "(1.0, 2.0, 1.0)", 
                 "color-start": "(0.0, -2.0, 1.0)", 
                 "hue-speed": "-1.0", 
@@ -42,6 +100,8 @@
             "name": "high lum test", 
             "params": {
                 "angle-hue-width": "0.0", 
+                "center-distance": "0.0", 
+                "center-speed": "0.0", 
                 "color-end": "(1.0, 2.0, 1.0)", 
                 "color-start": "(0.0, -4.0, 1.0)", 
                 "hue-speed": "0.3", 
@@ -59,17 +119,19 @@
             "params": {
                 "first-preset": "spiral warp", 
                 "second-preset": "spiral wiggle", 
-                "transition-mode": "Additive Blend", 
-                "transition-progress": "0.5"
+                "transition-mode": "Linear Blend", 
+                "transition-progress": "[0.2,0.8,2]"
             }
         }, 
         {
             "classname": "SpiralGradient", 
             "name": "add b", 
             "params": {
-                "angle-hue-width": "0.2", 
+                "angle-hue-width": "0.5", 
+                "center-distance": "0.0", 
+                "center-speed": "0.0", 
                 "color-end": "(1.0, 1.0, 1.0)", 
-                "color-start": "(0.0, 0.0, 0.5)", 
+                "color-start": "(0.0, 0.5, 1.0)", 
                 "hue-speed": "0.0", 
                 "hue-step": "0.1", 
                 "radius-hue-width": "0.0", 
@@ -83,10 +145,10 @@
             "classname": "CombinePresets", 
             "name": "additive continuity test", 
             "params": {
-                "first-preset": "add a", 
+                "first-preset": "radial splotch", 
                 "second-preset": "add b", 
-                "transition-mode": "Additive Blend", 
-                "transition-progress": "0.5"
+                "transition-mode": "Linear Blend", 
+                "transition-progress": "[0.2,0.8,1]"
             }
         }, 
         {
@@ -94,12 +156,14 @@
             "name": "add a", 
             "params": {
                 "angle-hue-width": "0.0", 
-                "color-end": "(0.6, 0.6, 1.0)", 
-                "color-start": "(0.0, 0.0, 0.2)", 
-                "hue-speed": "0.02", 
+                "center-distance": "[0,100,10]", 
+                "center-speed": "[-0.1,0.1,0.1]", 
+                "color-end": "(0.6, 1.2, 1.0)", 
+                "color-start": "(0.0, 0.0, 1.0)", 
+                "hue-speed": "0.04", 
                 "hue-step": "0.1", 
-                "radius-hue-width": "0.5", 
-                "speed": "0.0", 
+                "radius-hue-width": "0.6", 
+                "speed": "0.1", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.0", 
                 "wave-speed": "0.1"
@@ -112,7 +176,7 @@
                 "first-preset": "spiral fire", 
                 "second-preset": "spiral gray", 
                 "transition-mode": "Additive Blend", 
-                "transition-progress": "[0.0,1.0,0.1]"
+                "transition-progress": "[0.0,1.0,0.5]"
             }
         }, 
         {
@@ -160,6 +224,8 @@
             "name": "spiral gray", 
             "params": {
                 "angle-hue-width": "[-4,10,1]", 
+                "center-distance": "[-200,200,10]", 
+                "center-speed": "[-0.1,0.1,1]", 
                 "color-end": "(1.5, 1.2, 0.0)", 
                 "color-start": "(0.5, -1.0, 0.0)", 
                 "hue-speed": "1.0", 
@@ -176,6 +242,8 @@
             "name": "spiral warp", 
             "params": {
                 "angle-hue-width": "[0.6,1.1,1]", 
+                "center-distance": "[0,300,300]", 
+                "center-speed": "[-0.5,0.5,1]", 
                 "color-end": "[0.7, 0.5, 1.0]", 
                 "color-start": "[0.1, 0.5, 1.0]", 
                 "hue-speed": "0.06", 
@@ -192,6 +260,8 @@
             "name": "spiral wiggle", 
             "params": {
                 "angle-hue-width": "0.4", 
+                "center-distance": "0.0", 
+                "center-speed": "0.0", 
                 "color-end": "(1.0, 0.5, 1.0)", 
                 "color-start": "(0.0, 0.5, 1.0)", 
                 "hue-speed": "0.1", 
@@ -208,6 +278,8 @@
             "name": "spiral fire", 
             "params": {
                 "angle-hue-width": "[0.2,1,0.5]", 
+                "center-distance": "0.0", 
+                "center-speed": "0.0", 
                 "color-end": "[1.13, 0.5, 1.0]", 
                 "color-start": "[0.7, 0.0, 1.0]", 
                 "hue-speed": "0.0", 
@@ -224,6 +296,8 @@
             "name": "spiral sunflower", 
             "params": {
                 "angle-hue-width": "2.0", 
+                "center-distance": "0.0", 
+                "center-speed": "0.0", 
                 "color-end": "[1.1, 1.0, 1.0]", 
                 "color-start": "[0.7, 0.0, 1.0]", 
                 "hue-speed": "[-0.05,0.05,0.01]", 
@@ -240,6 +314,8 @@
             "name": "spiral stripey", 
             "params": {
                 "angle-hue-width": "1.0", 
+                "center-distance": "0.0", 
+                "center-speed": "0.0", 
                 "color-end": "[1.0, 0.5, 1.0]", 
                 "color-start": "[0.0, 0.5, 1.0]", 
                 "hue-speed": "0.1", 
@@ -256,6 +332,8 @@
             "name": "spiral red", 
             "params": {
                 "angle-hue-width": "[1,3,1]", 
+                "center-distance": "0.0", 
+                "center-speed": "0.0", 
                 "color-end": "[0.3, 1.0, 1.0]", 
                 "color-start": "[-0.1, 0.0, 1.0]", 
                 "hue-speed": "0.02", 
@@ -272,6 +350,8 @@
             "name": "when the strobe hurts your eyes", 
             "params": {
                 "angle-hue-width": "1.0", 
+                "center-distance": "0.0", 
+                "center-speed": "0.0", 
                 "color-end": "(2.0, 1.0, 1.0)", 
                 "color-start": "(0.0, 0.0, 0.0)", 
                 "hue-speed": "0.3", 
@@ -290,8 +370,7 @@
                 "angle-speed": "[-0.1,0.1,0.01]", 
                 "center-orbit-distance": "[-100,100,10]", 
                 "center-orbit-speed": "[-0.1,0.1,0.01]", 
-                "color-end": "[0.3, 1.6, 2.0]", 
-                "color-start": "[0.0, 0.2, 1.0]", 
+                "color-gradient": "[(0,0,1), (0,0,1), (0,1,1), (0,1,1), (0,0,1)]", 
                 "hue-step": "0.1", 
                 "posterization": "100", 
                 "speed": "0.002", 
@@ -307,8 +386,7 @@
                 "angle-speed": "[-0.1,0.1,0.1]", 
                 "center-orbit-distance": "[0,100,1]", 
                 "center-orbit-speed": "-0.01", 
-                "color-end": "[1.0, 1.0, 1.0]", 
-                "color-start": "[0.0, 0.0, 1.0]", 
+                "color-gradient": "[(0,0,1), (0,0,1), (0,1,1), (0,1,1), (0,0,1)]", 
                 "hue-step": "0.1", 
                 "posterization": "100", 
                 "speed": "0.05", 
@@ -319,11 +397,21 @@
         }, 
         {
             "classname": "CombinePresets", 
+            "name": "comcine soccer stripes", 
+            "params": {
+                "first-preset": "combine stripes", 
+                "second-preset": "stripe rainbow", 
+                "transition-mode": "Linear Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
             "name": "combine stripes", 
             "params": {
                 "first-preset": "stripe test", 
                 "second-preset": "stripe zigzag", 
-                "transition-mode": "Additive Blend", 
+                "transition-mode": "Linear Blend", 
                 "transition-progress": "0.5"
             }
         }, 
@@ -334,8 +422,7 @@
                 "angle-speed": "[-0.5,0.5,10]", 
                 "center-orbit-distance": "[0,100,100]", 
                 "center-orbit-speed": "[-2,2,2]", 
-                "color-end": "(0.4, 0.5, 1.0)", 
-                "color-start": "(0.0, -2.0, 1.0)", 
+                "color-gradient": "[(0.4,0.5,1.0), (0.4,0.5,1.0), (0.0,-2.0,1.0), (0.0,-2.0,1.0), (0.4,0.5,1.0)]", 
                 "hue-step": "0.1", 
                 "posterization": "200", 
                 "speed": "0.01", 
@@ -351,8 +438,7 @@
                 "angle-speed": "[-0.2,0.2,1]", 
                 "center-orbit-distance": "94.2870646943", 
                 "center-orbit-speed": "[0.1,1.1,1.1]", 
-                "color-end": "(0.4, 0.6, 1.0)", 
-                "color-start": "(0.8, -2.0, 1.0)", 
+                "color-gradient": "[(0.8,-2.0,1.0), (0.8,-2.0,1.0), (0.4,0.6,1.0), (0.4,0.6,1.0), (0.8,-2.0,1.0)]", 
                 "hue-step": "0.1", 
                 "posterization": "200", 
                 "speed": "0.1", 
@@ -365,11 +451,10 @@
             "classname": "StripeGradient", 
             "name": "stripe rainbow", 
             "params": {
-                "angle-speed": "[0,1,1]", 
+                "angle-speed": "[-0.1,0.1,1]", 
                 "center-orbit-distance": "[100,300,100]", 
-                "center-orbit-speed": "0.1", 
-                "color-end": "(0.7, 0.5, 1.0)", 
-                "color-start": "(0.2, 0.5, 1.0)", 
+                "center-orbit-speed": "[0,0.1,2]", 
+                "color-gradient": "[(0.2, 0.5, 1.0), (0.2, 0.5, 1.0), (0.7, 0.5, 1.0), (0.7, 0.5, 1.0), (0.2, 0.5, 1.0)]", 
                 "hue-step": "0.1", 
                 "posterization": "200", 
                 "speed": "[-0.05,0.05,0.01]", 
@@ -385,8 +470,7 @@
                 "angle-speed": "0.1", 
                 "center-orbit-distance": "[-1000,1000,10]", 
                 "center-orbit-speed": "[-0.5,0.5,0.1]", 
-                "color-end": "[0.75, 0.5, 1.0]", 
-                "color-start": "[0.2, 0.5, 1.0]", 
+                "color-gradient": "[(0.2,0.5,1), (0.2,0.5,1), (0.75,0.5,1), (0.75,0.5,1), (0.2,0.5,1)]", 
                 "hue-step": "0.1", 
                 "posterization": "20", 
                 "speed": "-0.1", 
@@ -603,12 +687,12 @@
             "name": "twinkle yarn", 
             "params": {
                 "beat-color": "(1.0, 1.0, 1.0)", 
-                "birth-rate": "400.0", 
-                "black-color": "(0.0, 0.0, 1.0)", 
-                "fade-down-time": "2.0", 
+                "birth-rate": "150.0", 
+                "black-color": "(-0.0, 0.0, 1.0)", 
+                "fade-down-time": "10.0", 
                 "fade-up-time": "0.1", 
-                "off-color": "[0.5, 0.5, 1.0]", 
-                "on-color": "[2.9, 0.5, 1.0]"
+                "off-color": "[0.0, 0.5, 1.0]", 
+                "on-color": "[1.0, 0.5, 1.0]"
             }
         }, 
         {
@@ -616,11 +700,24 @@
             "name": "twinkle max", 
             "params": {
                 "beat-color": "(1.0, 1.0, 1.0)", 
-                "birth-rate": "300.0", 
-                "black-color": "(0.0, 0.0, 1.0)", 
-                "fade-down-time": "2.0", 
+                "birth-rate": "200.0", 
+                "black-color": "(0.8, 0.0, 1.0)", 
+                "fade-down-time": "10.0", 
                 "fade-up-time": "0.1", 
-                "off-color": "(10.0, 0.0, 1.0)", 
+                "off-color": "(1.0, 0.5, 1.0)", 
+                "on-color": "(2.0, 0.5, 1.0)"
+            }
+        }, 
+        {
+            "classname": "Twinkle", 
+            "name": "twinkle max rainbow", 
+            "params": {
+                "beat-color": "(1.0, 1.0, 1.0)", 
+                "birth-rate": "200.0", 
+                "black-color": "(10.5, 0.0, 1.0)", 
+                "fade-down-time": "10.0", 
+                "fade-up-time": "0.1", 
+                "off-color": "(10.0, 0.5, 1.0)", 
                 "on-color": "(20.0, 0.6, 1.0)"
             }
         }, 
@@ -660,13 +757,13 @@
             "params": {
                 "alive-color": "(0.0, 1.0, 1.0)", 
                 "birth-rate": "0.4", 
-                "dead-color": "(0.0, 0.0, 0.0)", 
-                "explode-color": "(1.0, 1.0, 1.0)", 
+                "dead-color": "(0.1, 0.0, 1.0)", 
+                "explode-color": "(0.3, 2.0, 2.0)", 
                 "growth-rate": "30.0", 
                 "growth-time": "4.0", 
                 "pop-limit": "20", 
                 "tail-color": "(0.2, 0.0, 1.0)", 
-                "tail-persist": "0.2"
+                "tail-persist": "0.5"
             }
         }, 
         {
@@ -914,16 +1011,64 @@
             }
         }, 
         {
-            "classname": "SpiralGradient", 
-            "name": "spiral test", 
+            "classname": "CombinePresets", 
+            "name": "rising rippes", 
             "params": {
-                "angle-hue-width": "[0,10,1]", 
-                "color-end": "(1.0, 0.5, 1.0)", 
-                "color-start": "(0.0, 0.5, 1.0)", 
-                "hue-speed": "0.1", 
+                "first-preset": "rising sun", 
+                "second-preset": "ripple 1", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.1"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "ripple 1", 
+            "params": {
+                "angle-hue-width": "0.0", 
+                "center-distance": "[-200,200,50]", 
+                "center-speed": "[-0.1,0.1,0.1]", 
+                "color-end": "(1.0, 1.2, 1.0)", 
+                "color-start": "(1.0, 0.02, 1.0)", 
+                "hue-speed": "[-0.1,0.1,0.1]", 
+                "hue-step": "0.1", 
+                "radius-hue-width": "[1,4,2]", 
+                "speed": "-0.4", 
+                "wave-hue-period": "0.1", 
+                "wave-hue-width": "0.0", 
+                "wave-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "ripple 2", 
+            "params": {
+                "angle-hue-width": "0.0", 
+                "center-distance": "[-200,200,50]", 
+                "center-speed": "[-0.1,0.1,0.1]", 
+                "color-end": "(1.0, 2.0, 1.0)", 
+                "color-start": "(1.0, 0.1, 1.0)", 
+                "hue-speed": "[-0.1,0.1,0.1]", 
+                "hue-step": "0.1", 
+                "radius-hue-width": "[1,4,0.5]", 
+                "speed": "-0.3", 
+                "wave-hue-period": "0.1", 
+                "wave-hue-width": "0.0", 
+                "wave-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "rising sun", 
+            "params": {
+                "angle-hue-width": "8.0", 
+                "center-distance": "[350,600,100]", 
+                "center-speed": "[-0.1,0.3,0.3]", 
+                "color-end": "(0.0, 1.2, 1.0)", 
+                "color-start": "(0.0, -1.0, 1.0)", 
+                "hue-speed": "0.01", 
                 "hue-step": "0.1", 
                 "radius-hue-width": "0.0", 
-                "speed": "0.1", 
+                "speed": "[-0.2,1,1]", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.0", 
                 "wave-speed": "0.1"
