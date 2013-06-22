@@ -320,8 +320,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.tbl_preset_parameters.setItem(i, 2, current_state_item)
             i += 1
 
-        self.tbl_preset_parameters.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
-        self.tbl_preset_parameters.horizontalHeader().resizeSection(1, 125)
+        self.tbl_preset_parameters.horizontalHeader().resizeSection(1, 400)
+        self.tbl_preset_parameters.setHorizontalHeaderLabels(('Parameter', 'Value', 'Current'))
 
     @QtCore.Slot()
     def update_preset_parameters(self):
