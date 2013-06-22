@@ -2,9 +2,10 @@ import colorsys
 import random
 import math
 import numpy as np
+import ast
 
 from lib.raw_preset import RawPreset
-from lib.parameters import FloatParameter, HLSParameter, IntParameter
+from lib.parameters import FloatParameter, IntParameter, StringParameter
 from lib.color_fade import ColorFade
 
 class StripeGradient(RawPreset):
@@ -18,8 +19,7 @@ class StripeGradient(RawPreset):
         self.add_parameter(FloatParameter('center-orbit-speed', 0.1))
         self.add_parameter(FloatParameter('hue-step', 0.1))
         self.add_parameter(IntParameter('posterization', 8))
-        self.add_parameter(HLSParameter('color-start', (0.0, 0.0, 1.0)))
-        self.add_parameter(HLSParameter('color-end', (1.0, 1.0, 1.0)))
+        self.add_parameter(StringParameter('color-gradient', "[(0,0,1), (0,0,1), (0,1,1), (0,1,1), (0,0,1)]"))
         self.add_parameter(FloatParameter('stripe-x-center', 0.5))
         self.add_parameter(FloatParameter('stripe-y-center', 0.5))
         self.hue_inner = random.random() + 100
@@ -40,10 +40,7 @@ class StripeGradient(RawPreset):
         self.parameter_changed(None)
 
     def parameter_changed(self, parameter):
-        fade_colors = [self.parameter('color-start').get(), self.parameter('color-start').get(), self.parameter('color-end').get(), self.parameter('color-end').get(), self.parameter('color-start').get()]
-#        fade_colors = [self.parameter('color-start').get(), self.parameter('color-end').get(), self.parameter('color-start').get()]
-#        fade_colors = [self.parameter('color-start').get(), self.parameter('color-end').get(), self.parameter('color-start').get()]
-   
+        fade_colors = ast.literal_eval(self.parameter('color-gradient').get())
         self._fader = ColorFade(fade_colors, self.parameter('posterization').get())
     
     def reset(self):
