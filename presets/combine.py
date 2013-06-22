@@ -23,14 +23,15 @@ class CombinePresets(RawPreset):
         self.parameter_changed(None)
 
     def draw(self, dt):
-        # this is here because many transitions are set up to only play from start to end :(
-        # Combine renders arbitrary transition frames
-        self._transition.setup()
-    
+
         preset1 = self._mixer._playlist.get_preset_by_name(self.parameter('first-preset').get())
         preset2 = self._mixer._playlist.get_preset_by_name(self.parameter('second-preset').get())
 
         if preset1 and preset2 and self._transition:
+            # this is here because many transitions are set up to only play from start to end :(
+            # Combine renders arbitrary transition frames
+            self._transition.reset()
+
             preset1.tick(dt)
             preset2.tick(dt)
             self._pixel_buffer = self._transition.get(preset1._pixel_buffer, preset2._pixel_buffer, self.parameter('transition-progress').get())
