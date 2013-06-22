@@ -17,7 +17,7 @@ class CombinePresets(RawPreset):
     def parameter_changed(self, parameter):
         self._transition = self._mixer.get_transition_by_name(self.parameter('transition-mode').get())
         if self._transition:
-            self._transition.setup()
+            self._transition.reset()
 
     def reset(self):
         self.parameter_changed(None)
