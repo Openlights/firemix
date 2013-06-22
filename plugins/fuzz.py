@@ -27,9 +27,6 @@ class Fuzz(Transition):
 
 
     def get(self, start, end, progress):
-        start[self.mask] = 0.0
-        end[np.invert(self.mask)] = 0.0
-
         idx = int(progress * len(self.rand_index))
         for i in range(self.last_idx, idx):
             offset = self.rand_index[i] * 3
@@ -37,5 +34,8 @@ class Fuzz(Transition):
             self.mask.flat[offset + 1] = True
             self.mask.flat[offset + 2] = True
         self.last_idx = idx
+
+        start[self.mask] = 0.0
+        end[np.invert(self.mask)] = 0.0
 
         return (start) + (end)
