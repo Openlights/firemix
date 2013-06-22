@@ -24,22 +24,15 @@ class SpiralGradient(RawPreset):
         self.add_parameter(FloatParameter('hue-step', 0.1))    
         self.add_parameter(HLSParameter('color-start', (0.0, 0.5, 1.0)))
         self.add_parameter(HLSParameter('color-end', (1.0, 0.5, 1.0)))
+        self.add_parameter(FloatParameter('center-distance', 0.0))
+        self.add_parameter(FloatParameter('center-speed', 0.0))
         self.hue_inner = 0
         self.color_offset = 0
         self.wave_offset = random.random()
 
-        self.pixels = self.scene().get_all_pixels()
         cx, cy = self.scene().center_point()
 
-        """
-        self.locations = np.zeros((cls._num_strands, self.scene().fixtures() * cls._max_pixels, 3), dtype=np.float32)
-        for f in self.scene().fixtures():
-            f_locations = np.array([])
-            for p in range(f.pixels):
-                f_locations.concatenate(self.scene().get_pixel_location((f.strand, f.address, p)))
-            self.locations.concatenate(f_locations)
-        """
-
+        self.center_angle = 0
         self.locations = np.asarray(self.scene().get_all_pixel_locations())
         x,y = self.locations.T
         x -= cx
@@ -61,6 +54,17 @@ class SpiralGradient(RawPreset):
     def draw(self, dt):
         if self._mixer.is_onset():
             self.hue_inner = self.hue_inner + self.parameter('hue-step').get()
+
+        self.center_angle += dt * self.parameter('center-speed').get()
+
+        cx, cy = self.scene().center_point()
+        self.locations = np.asarray(self.scene().get_all_pixel_locations())
+        x,y = self.locations.T
+        x -= cx + math.cos(self.center_angle) * self.parameter('center-distance').get()
+        y -= cy + math.sin(self.center_angle) * self.parameter('center-distance').get()
+        self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
+        self.pixel_angles = np.arctan2(y, x) / (2.0 * math.pi)
+        self.pixel_distances /= max(self.pixel_distances)
 
         self.hue_inner += dt * self.parameter('hue-speed').get()
         self.wave_offset += dt * self.parameter('wave-speed').get()
