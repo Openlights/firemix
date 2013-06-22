@@ -72,12 +72,14 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self._app.aubio_connector.onset_detected.connect(self.onset_detected)
 
         # Mixer FPS update
+        self._update_interval = 500
+        self._mixer_frame_counts = []
         self.last_frames = 0
         self.last_time = time.time()
-        self.mixer_fps_update_timer = QtCore.QTimer()
-        self.mixer_fps_update_timer.setInterval(1000)
-        self.mixer_fps_update_timer.timeout.connect(self.update_mixer_fps)
-        self.mixer_fps_update_timer.start()
+        self.mixer_update_timer = QtCore.QTimer()
+        self.mixer_update_timer.setInterval(self._update_interval)
+        self.mixer_update_timer.timeout.connect(self.update_mixer)
+        self.mixer_update_timer.start()
 
         self.update_mixer_settings()
 
@@ -101,16 +103,28 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self._app.mixer.onset_detected()
         self.onset_detected()
 
-    def update_mixer_fps(self):
-        frames = self._mixer._num_frames
-        if self._mixer._running and frames > self.last_frames:
-            fps = float(frames - self.last_frames) / (time.time() - self.last_time)
-        else:
+    def update_mixer(self):
+        if len(self._mixer_frame_counts) < 4:
+            self._mixer_frame_counts.append(self._mixer._num_frames)
             fps = 0.0
-            self.last_frames = frames
-        self.last_time = time.time()
-        self.last_frames = frames
+        else:
+            self._mixer_frame_counts.append(self._mixer._num_frames)
+            self._mixer_frame_counts.pop(0)
+            frames = self._mixer_frame_counts[3] - self._mixer_frame_counts[0]
+            dt = (3 * self._update_interval) / 1000.0
+            fps = float(frames) / dt
+
         self.setWindowTitle("FireMix - %s - %0.2f FPS" % (self._app.playlist.name, fps))
+
+        # Update wibblers
+        for name, parameter in self._app.playlist.get_active_preset().get_parameters().iteritems():
+            if parameter._wibbler is not None:
+                pval = parameter.get()
+                for i in range(self.tbl_preset_parameters.rowCount()):
+                    if self.tbl_preset_parameters.item(i, 0).text() == name:
+                        # TODO: For now, all wibblers are float values.  Maybe they should be allowed to be others?
+                        self.tbl_preset_parameters.item(i, 2).setText("= %0.2f" % pval)
+                        self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(200, 255, 255))
 
     def on_btn_playpause(self):
         if self._mixer.is_paused():
@@ -291,7 +305,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             return
 
         parameters = self._app.playlist.get_active_preset().get_parameters()
-        self.tbl_preset_parameters.setColumnCount(2)
+        self.tbl_preset_parameters.setColumnCount(3)
         self.tbl_preset_parameters.setRowCount(len(parameters))
         i = 0
         for name in sorted(parameters, key=lambda x: x):
@@ -299,8 +313,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             key_item = QtGui.QTableWidgetItem(name)
             key_item.setFlags(QtCore.Qt.ItemIsEnabled)
             value_item = QtGui.QTableWidgetItem(parameter.get_as_str())
+            current_state_item = QtGui.QTableWidgetItem("")
+            current_state_item.setFlags(QtCore.Qt.ItemIsEnabled)
             self.tbl_preset_parameters.setItem(i, 0, key_item)
             self.tbl_preset_parameters.setItem(i, 1, value_item)
+            self.tbl_preset_parameters.setItem(i, 2, current_state_item)
             i += 1
 
         self.tbl_preset_parameters.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
@@ -316,8 +333,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             print item
 
     def on_preset_parameter_changed(self, item):
-        if item.column() == 0:
+        if item.column() != 1:
             return
+
         key = self.tbl_preset_parameters.item(item.row(), 0)
         par = self._app.playlist.get_active_preset().parameter(key.text())
         try:

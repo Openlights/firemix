@@ -17,7 +17,7 @@ class Parameter:
     def tick(self, dt):
         if self._wibbler:
             self._value = self._wibbler.update(dt, self._value)
-        
+
     def __repr__(self):
         return self._name
 

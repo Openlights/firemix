@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 
 
 class Command:
@@ -106,7 +107,7 @@ class SetFixture(Command):
 
     def __init__(self, strand, address, color, priority):
         Command.__init__(self)
-        if not isinstance(color, tuple):
+        if not isinstance(color, tuple) and not isinstance(color, np.ndarray):
             raise ValueError("SetFixture() expects a 3-tuple for color")
         self._strand = strand
         self._address = address
