@@ -53,10 +53,11 @@ class Twinkle(RawPreset):
         self._nbirth += self.parameter('birth-rate').get() * dt
 
         for i in range(int(self._nbirth)):
-            if (len(self._idle) > 0) and (random.random() < self._nbirth):
-                address = self._idle.pop(random.randint(0, len(self._idle) - 1))
-                self._fading_up.append(address)
-                self._time[address] = self._current_time
+            if random.random() < self._nbirth:
+                if (len(self._idle) > 0):
+                    address = self._idle.pop(random.randint(0, len(self._idle) - 1))
+                    self._fading_up.append(address)
+                    self._time[address] = self._current_time
                 self._nbirth -= 1
 
         # Growth
