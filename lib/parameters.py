@@ -1,4 +1,5 @@
 import ast
+import numpy
 from lib.wibbler import Wibbler
 
 class Parameter:
@@ -50,6 +51,7 @@ class Parameter:
                 value = ast.literal_eval(valueString)
                 if len(value) == 3:
                     self._wibbler = Wibbler(value)
+                    self._value = numpy.random.random() * (self._wibbler._max - self._wibbler._min) + self._wibbler._min
                     self._valueString = valueString
                     return True
                 return False
