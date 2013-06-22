@@ -257,7 +257,7 @@ class Playlist(JSONDict):
         new = self.get_preset_by_name(new_name)
 
         for name, param in old.get_parameters().iteritems():
-            new.parameter(name).set(param.get())
+            new.parameter(name).set_from_str(param.get_as_str())
 
     def clear_playlist(self):
         self._playlist = []
