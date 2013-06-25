@@ -1,8 +1,10 @@
 from noise import snoise3
 import numpy as np
+import ast
 
+from lib.color_fade import ColorFade
 from lib.raw_preset import RawPreset
-from lib.parameters import FloatParameter, IntParameter
+from lib.parameters import FloatParameter, IntParameter, StringParameter
 import math
 from lib.colors import clip
 
@@ -22,9 +24,8 @@ class SimplexNoise(RawPreset):
         self.add_parameter(IntParameter('resolution', 128))
         self.add_parameter(FloatParameter('scale', 0.25))
         self.add_parameter(FloatParameter('stretch', 1.0))
-        self.add_parameter(FloatParameter('blackout', 0.25))
-        self.add_parameter(FloatParameter('whiteout', 0.5))
         self.add_parameter(FloatParameter('luminance-scale', 0.75))
+        self.add_parameter(StringParameter('luminance-map', "[(0,0,1), (0,0,1), (0,1,1)]"))
         self._offset_x = 0
         self._offset_y = 0
         self._offset_z = 0
@@ -46,6 +47,8 @@ class SimplexNoise(RawPreset):
         self.color_speed = self.parameter('color-speed').get()
         self.scale = self.parameter('scale').get() / 100.0
         self.luminance_scale = self.parameter('luminance-scale').get() / 100.0
+        fade_colors = ast.literal_eval(self.parameter('luminance-map').get())
+        self._falum_fader = ColorFade(fade_colors, self._luminance_steps)
 
     def draw(self, dt):
         if self._mixer.is_onset():
@@ -53,32 +56,17 @@ class SimplexNoise(RawPreset):
             
         self._setup_pars()
         angle = self.parameter('angle').get()
-        #self._offset_x += dt * self.parameter('speed').get() * math.cos(angle) * 2 * math.pi
-        #self._offset_y += dt * self.parameter('speed').get() * math.sin(angle) * 2 * math.pi
-        self._offset_x += dt * self.parameter('speed').get()
+        self._offset_x += dt * self.parameter('speed').get() * math.cos(angle) * 2 * math.pi
+        self._offset_y += dt * self.parameter('speed').get() * math.sin(angle) * 2 * math.pi
+        #self._offset_x += dt * self.parameter('speed').get()
         self._offset_z += dt * self.parameter('color-speed').get()
         if self._mixer.is_onset():
             posterization = 2
         else:
             posterization = self.parameter('resolution').get()
 
-        luminance_table = np.zeros(self._luminance_steps)
-        luminance = 0.0
-        for input in range(self._luminance_steps):
-            if input > self.parameter('blackout').get() * self._luminance_steps:
-                luminance -= 0.01
-            elif input < self.parameter('whiteout').get() * self._luminance_steps:
-                luminance += 0.01
-            else:
-                luminance = 0.5
-            luminance = clip(0, luminance, 1.0)
-            luminance_table[input] = math.floor(luminance * posterization) / posterization
-
-        x, y = self.pixel_locations.T
-        dx = x
-        dy = y
-        x = dx * math.cos(angle) - dy * math.sin(angle)
-        y = dx * math.sin(angle) + dy * math.cos(angle)
+        rotMatrix = np.array([(math.cos(angle), -math.sin(angle)), (math.sin(angle),  math.cos(angle))])
+        x,y = rotMatrix.T.dot(self.pixel_locations.T)
         x *= self.parameter('stretch').get()
         x += self._offset_x
         y += self._offset_y
@@ -92,6 +80,7 @@ class SimplexNoise(RawPreset):
         brights = np.asarray([snoise3(self.luminance_scale * location[0], self.luminance_scale * location[1], self._offset_z, 1, 0.5, 0.5) for location in locations])
         brights = (1.0 + brights) / 2
         brights *= self._luminance_steps
-        luminances = luminance_table[np.int_(brights)]
+        luminances = self._fader.color_cache[np.int_(brights)].T[1]
 
         self.setAllHLS(hues, luminances, 1.0)
+
