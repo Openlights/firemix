@@ -17,28 +17,15 @@ class RadialWipe(Transition):
         return "Radial Wipe"
 
     def reset(self):
-        self.buffer_size = BufferUtils.get_buffer_size()
-
-        self.scene_bb = self._app.scene.get_fixture_bounding_box()
-        self.scene_center = (self.scene_bb[0] + (self.scene_bb[2] - self.scene_bb[0]) / 2, self.scene_bb[1] + (self.scene_bb[3] - self.scene_bb[1]) / 2)
-        dx = self.scene_bb[2] - self.scene_center[0]
-        dy = self.scene_bb[3] - self.scene_center[1]
-        self.radius = math.sqrt(math.pow(dx,2) + math.pow(dy, 2))
-
-        self.mask = np.tile(False, (self.buffer_size, 3))
-        self.locations = self._app.scene.get_all_pixel_locations()
+        locations = np.asarray(self._app.scene.get_all_pixel_locations())
+        locations -= self._app.scene.center_point()
+        #locations -= locations[np.random.randint(0, len(locations) - 1)]
+        locations = np.square(locations)
+        self.distances = locations.T[0] + locations.T[1]
+        self.distances /= max(self.distances)
 
     def get(self, start, end, progress):
+        buffer = np.where(self.distances < progress, end.T, start.T)
+        buffer[1][np.abs(self.distances - progress) < 0.02] += 0.5 # we can apply effects to transition line here
 
-        for pixel, location in enumerate(self.locations):
-            dy = math.fabs(location[1] - self.scene_center[1])
-            dx = math.fabs(location[0] - self.scene_center[0])
-            if math.sqrt(math.pow(dx,2) + math.pow(dy, 2)) < (self.radius * progress):
-                self.mask[pixel][:] = True
-
-        start[self.mask] = 0.0
-        end[np.invert(self.mask)] = 0.0
-        return start + end
-
-    def _is_point_inside_wipe(self, point, progress):
-        return np.dot((point - self.wipe_point), self.wipe_vector) >= 0
+        return buffer.T
