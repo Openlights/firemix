@@ -36,7 +36,7 @@ class FireMixApp(QtCore.QThread):
         self.scene.warmup()
 
         self.aubio_connector = None
-        if self.args.audio:
+        if not self.args.noaudio:
             self.aubio_connector = AubioConnector()
             self.aubio_connector.onset_detected.connect(self.mixer.onset_detected)
 
