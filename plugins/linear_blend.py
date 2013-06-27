@@ -21,15 +21,15 @@ class LinearBlend(Transition):
         self.buffer_len = BufferUtils.get_buffer_size()
         self.frame = np.tile(np.array([0.0], dtype=np.float), (self.buffer_len, 3))
 
-    def get(self, start, end, progress):
+    def get(self, start, end, progress, fade_length=0.5):
 
-        fade_length = 0.25
         ease_power = 2.0
-        
-        startPower = (1.0 - progress) / fade_length if progress >= (1 - fade_length) else 1.0
+
+        p = abs(progress)
+        startPower = (1.0 - p) / fade_length if p >= (1 - fade_length) else 1.0
         startPower = 1.0 - pow(1.0 - startPower, ease_power)
 
-        endPower = (progress / fade_length) if progress <= fade_length else 1.0
+        endPower = (p / fade_length) if p <= fade_length else 1.0
         endPower = 1.0 - pow(1.0 - endPower, ease_power)
 
         h1,l1,s1 = start.T
@@ -45,11 +45,19 @@ class LinearBlend(Transition):
         startWeight = (1.0 - 2 * np.abs(0.5 - l1)) * s1
         endWeight = (1.0 - 2 * np.abs(0.5 - l2)) * s2
 
-        s = 0.5 * (s1 + s2)
-        #l = 0.5 * (l1 + l2)
-        x = np.cos(2 * np.pi * h1) * startPower * startWeight + np.cos(2 * np.pi * h2) * endPower * endWeight
-        y = np.sin(2 * np.pi * h1) * startPower * startWeight + np.sin(2 * np.pi * h2) * endPower * endWeight
-        l = np.sqrt(np.square(x) + np.square(y))
+        s = (s1 * startPower + s2 * endPower)
+        x1 = np.cos(2 * np.pi * h1) * startPower * startWeight
+        x2 = np.cos(2 * np.pi * h2) * endPower * endWeight
+        y1 = np.sin(2 * np.pi * h1) * startPower * startWeight
+        y2 = np.sin(2 * np.pi * h2) * endPower * endWeight
+        x = x1 + x2
+        y = y1 + y2
+        if progress >= 0:
+            l = np.sqrt(np.square((x1-x2)/2) + np.square((y1-y2)/2))
+            l = np.maximum(l, l1 * startPower, l)
+            l = np.maximum(l, l2 * endPower, l)
+        else: # hacky support for old blend
+            l = np.sqrt(np.square(x) + np.square(y)) / 2
 
         h = np.arctan2(y, x) / (2*np.pi)
 
@@ -57,7 +65,7 @@ class LinearBlend(Transition):
         np.where(nocolor, h, 0)
         np.where(nocolor, s, 0)
 
-        np.clip(l / 2, 0, 1, l)
+        np.clip(l, 0, 1, l)
 
         self.frame = np.asarray([h, l, s]).T
 
