@@ -178,7 +178,8 @@
                 "color-gradient": "[(0,0,1), (0,0,1), (0,0.2,1), (0,1,1)]", 
                 "hue-step": "[0,0.5,0.1]", 
                 "posterization": "200", 
-                "speed": "0.023", 
+                "skew": "1.0",
+                "speed": "0.023",
                 "stripe-width": "[150,300,200]", 
                 "stripe-x-center": "1.0", 
                 "stripe-y-center": "0.5"
@@ -194,7 +195,8 @@
                 "color-gradient": "[(0,0,1), (0,1,1)]", 
                 "hue-step": "[0,-0.5,0.1]", 
                 "posterization": "200", 
-                "speed": "0.02", 
+                "skew": "1.0",
+                "speed": "0.02",
                 "stripe-width": "[50,300,50]", 
                 "stripe-x-center": "1.0", 
                 "stripe-y-center": "0.5"
@@ -606,7 +608,8 @@
                 "color-gradient": "[(0,0,1), (0,0,1), (0,1,1), (0,1,1), (0,0,1)]", 
                 "hue-step": "0.1", 
                 "posterization": "100", 
-                "speed": "0.002", 
+                "skew": "0.01",
+                "speed": "0.002",
                 "stripe-width": "[100,400,2]", 
                 "stripe-x-center": "0.5", 
                 "stripe-y-center": "0.5"
@@ -622,7 +625,8 @@
                 "color-gradient": "[(0,0,1), (0,0,1), (0,1,1), (0,1,1), (0,0,1)]", 
                 "hue-step": "0.1", 
                 "posterization": "100", 
-                "speed": "0.05", 
+                "skew": "0.01",
+                "speed": "0.05",
                 "stripe-width": "[25.0,100,1]", 
                 "stripe-x-center": "0.5", 
                 "stripe-y-center": "0.5"
@@ -658,7 +662,8 @@
                 "color-gradient": "[(0.4,0.5,1.0), (0.4,0.5,1.0), (0.0,-2.0,1.0), (0.0,-2.0,1.0), (0.4,0.5,1.0)]", 
                 "hue-step": "0.1", 
                 "posterization": "200", 
-                "speed": "0.01", 
+                "skew": "0.01",
+                "speed": "0.01",
                 "stripe-width": "200.0", 
                 "stripe-x-center": "1.0", 
                 "stripe-y-center": "0.0"
@@ -674,7 +679,8 @@
                 "color-gradient": "[(0.8,-2.0,1.0), (0.8,-2.0,1.0), (0.4,0.6,1.0), (0.4,0.6,1.0), (0.8,-2.0,1.0)]", 
                 "hue-step": "0.1", 
                 "posterization": "200", 
-                "speed": "0.1", 
+                "skew": "[0,1,10]",
+                "speed": "0.1",
                 "stripe-width": "200.0", 
                 "stripe-x-center": "0.0", 
                 "stripe-y-center": "0.5"
@@ -690,7 +696,8 @@
                 "color-gradient": "[(0.2, 0.5, 1.0), (0.2, 0.5, 1.0), (0.7, 0.5, 1.0), (0.7, 0.5, 1.0), (0.2, 0.5, 1.0)]", 
                 "hue-step": "0.1", 
                 "posterization": "200", 
-                "speed": "[-0.05,0.05,0.01]", 
+                "skew": "0.01",
+                "speed": "[-0.05,0.05,0.01]",
                 "stripe-width": "[150,600,100]", 
                 "stripe-x-center": "0.5", 
                 "stripe-y-center": "0.5"
@@ -706,7 +713,8 @@
                 "color-gradient": "[(0.2,0.5,1), (0.2,0.5,1), (0.75,0.5,1), (0.75,0.5,1), (0.2,0.5,1)]", 
                 "hue-step": "0.1", 
                 "posterization": "20", 
-                "speed": "-0.1", 
+                "skew": "0.01",
+                "speed": "-0.1",
                 "stripe-width": "[300,1000,10]", 
                 "stripe-x-center": "0.5", 
                 "stripe-y-center": "0.5"
