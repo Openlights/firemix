@@ -26,7 +26,7 @@ def getRGB(h,l,s):
 
     if color == None:
         color = colorsys.hls_to_rgb(float(h) / cache_steps, float(l) / cache_steps, float(s) / cache_steps)
-        color = (int(color[0]*255),int(color[1]*255),int(color[2]*255))
+        color = (clip(0, int(color[0]*255), 255), clip(0, int(color[1]*255), 255), clip(0, int(color[2]*255), 255))
         cache[(h,l,s)] = color
         #print "cache miss", h,l,s,color
 

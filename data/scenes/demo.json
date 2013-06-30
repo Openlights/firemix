@@ -517,7 +517,7 @@
             "id": 1
         }, 
         {
-            "color-mode": "BGR8", 
+            "color-mode": "RGB8", 
             "enabled": true, 
             "id": 2
         }, 
