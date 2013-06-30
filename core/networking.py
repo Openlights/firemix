@@ -12,16 +12,15 @@ from lib.buffer_utils import BufferUtils
 COMMAND_SET_BGR = 0x10
 COMMAND_SET_RGB = 0x20
 
-"""
-Hacking some color conversion here for Firefly
-This wraps colorsys's conversion with some type conversion and caching
-It's not nice enough to keep.
-"""
-
 cache = {}
-cache_steps = 128
+cache_steps = 256
 
 def getRGB(h,l,s):
+    """
+    Hacking some color conversion here for Firefly
+    This wraps colorsys's conversion with some type conversion and caching
+    It's not nice enough to keep.
+    """
     color = cache.get((h,l,s), None)
 
     if color == None:
@@ -55,15 +54,15 @@ class Networking:
         """
         strand_settings = self._app.scene.get_strand_settings()
 
+        # Hack: assume that at least one client will be RGB mode
+        intbuffer = np.int_(buffer * cache_steps)
+        alldata = [getRGB(*pixel) for pixel in intbuffer]
+        alldata = [item for sublist in alldata for item in sublist]
+
         for client in [client for client in self._app.settings['networking']['clients'] if client["enabled"]]:
             # TODO: Split into smaller packets so that less-than-ideal networks will be OK
             packet = array.array('B', [])
             client_color_mode = client["color-mode"]
-
-            if client_color_mode == "RGB8":
-                intbuffer = np.int_(buffer * cache_steps)
-                alldata = [getRGB(*pixel) for pixel in intbuffer]
-                alldata = [item for sublist in alldata for item in sublist]
 
             for strand in range(len(strand_settings)):
                 if not strand_settings[strand]["enabled"]:
