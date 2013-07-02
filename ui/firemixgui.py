@@ -242,7 +242,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_playlist_changed(self):
         self.update_playlist()
         self.update_mixer_settings()
-        self.load_preset_parameters_table()
+        #self.load_preset_parameters_table()
 
     def on_playlist_reorder(self):
         names = [self.lst_presets.item(i).text() for i in range(self.lst_presets.count())]
