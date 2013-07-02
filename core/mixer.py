@@ -151,6 +151,7 @@ class Mixer(QtCore.QObject):
     def set_transition_mode(self, name):
         if not self._in_transition:
             self._transition = self.get_transition_by_name(name)
+        return True
 
     def build_random_transition_list(self):
         self._transition_list = [c for c in self._app.plugins.get('Transition')]
@@ -201,7 +202,8 @@ class Mixer(QtCore.QObject):
             #self._onset = False
             dt = (time.clock() - start)
             delay = max(0, (1.0 / self._tick_rate) - dt)
-            self._elapsed += (1.0 / self._tick_rate)
+            if not self._paused:
+                self._elapsed += (1.0 / self._tick_rate)
         self._running = self._app._running
         if self._running:
             self._tick_timer = threading.Timer(delay, self.on_tick_timer)
