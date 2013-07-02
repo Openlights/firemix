@@ -158,6 +158,13 @@ class Playlist(JSONDict):
         else:
             return self._playlist[self._active_index]
 
+    def get_preset_relative_to_active(self, pos):
+        """
+        Returns the preset name of a preset relative to the active preset by an offset of pos
+        For exapmle, get_preset_relative_to_active(1) would return the next in the playlist
+        """
+        return self._playlist[(self._active_index + pos) % len(self._playlist)].get_name()
+
     def get_next_preset(self):
         if len(self._playlist) == 0:
             return None
@@ -189,6 +196,11 @@ class Playlist(JSONDict):
                 preset._reset()
                 self._active_index = i
                 self._app.mixer._elapsed = 0.0  # Hack
+
+    def set_next_preset_by_name(self, name):
+        for i, preset in enumerate(self._playlist):
+            if preset.get_name() == name:
+                self._next_index = i
 
     def reorder_playlist_by_names(self, names):
         """

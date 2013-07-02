@@ -170,10 +170,12 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.btn_runfreeze.setText("Unfreeze")
 
     def on_btn_next_preset(self):
-        self._app.playlist.advance()
+        self._mixer.start_transition(self._app.playlist.get_preset_relative_to_active(1))
+        self.update_playlist()
 
     def on_btn_prev_preset(self):
-        self._app.playlist.advance(-1)
+        self._mixer.start_transition(self._app.playlist.get_preset_relative_to_active(-1))
+        self.update_playlist()
 
     def on_btn_reset_preset(self):
         paused = self._app.mixer.is_paused()
@@ -307,7 +309,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         pass
 
     def on_preset_double_clicked(self, preset_item):
-        self._app.playlist.set_active_preset_by_name(preset_item.text())
+        self._app.mixer.start_transition(preset_item.text())
         self.update_playlist()
         self.load_preset_parameters_table()
 

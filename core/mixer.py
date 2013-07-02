@@ -245,7 +245,12 @@ class Mixer(QtCore.QObject):
         self.start_transition((self._playlist.get_active_index() - 1) % len(self._playlist))
 
     def start_transition(self, next=None):
-        #TODO: Fix this after the Playlist merge
+        """
+        Starts a transition.  If a name is given for Next, it will be the endpoint of the transition
+        """
+        if next is not None:
+            self._playlist.set_next_preset_by_name(next)
+
         self._in_transition = True
         self._start_transition = True
         self._elapsed = 0.0
