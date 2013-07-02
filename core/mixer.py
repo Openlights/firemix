@@ -149,10 +149,8 @@ class Mixer(QtCore.QObject):
             return None
     
     def set_transition_mode(self, name):
-        self._in_transition = False
-        self._start_transition = False
-        self._transition = self.get_transition_by_name(name)
-        return True
+        if not self._in_transition:
+            self._transition = self.get_transition_by_name(name)
 
     def build_random_transition_list(self):
         self._transition_list = [c for c in self._app.plugins.get('Transition')]
@@ -268,20 +266,22 @@ class Mixer(QtCore.QObject):
 
             self._playlist.get_active_preset().clear_commands()
             self._playlist.get_active_preset().tick(dt)
-            self.transition_progress = 0.0
 
             # Handle transition by rendering both the active and the next preset, and blending them together
             if self._in_transition:
                 if self._start_transition:
                     self._start_transition = False
+                    self.transition_progress
                     if self._app.settings.get('mixer')['transition'] == "Random":
                         self.get_next_transition()
                     if self._transition:
                         self._transition.reset()
                     self._playlist.get_next_preset()._reset()
                     self._secondary_buffer = BufferUtils.create_buffer()
+
                 if self._transition_duration > 0.0 and self._transition is not None:
-                    self.transition_progress = self._elapsed / self._transition_duration
+                    if not self._paused:
+                        self.transition_progress = self._elapsed / self._transition_duration
                 else:
                     self.transition_progress = 1.0
                 self._playlist.get_next_preset().clear_commands()
@@ -322,8 +322,6 @@ class Mixer(QtCore.QObject):
             if tick_time > 0.0:
                 index = int((1.0 / tick_time))
                 self._tick_time_data[index] = self._tick_time_data.get(index, 0) + 1
-
-
 
     def scene(self):
         return self._scene
