@@ -81,6 +81,12 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.mixer_update_timer.timeout.connect(self.update_mixer)
         self.mixer_update_timer.start()
 
+        self.transition_update_toggle = False
+        self.transition_update_timer = QtCore.QTimer()
+        self.transition_update_timer.setInterval(300)
+        self.transition_update_timer.timeout.connect(self.on_transition_update_timer)
+        self._mixer.transition_starting.connect(self.transition_update_start)
+
         self.update_mixer_settings()
 
     def closeEvent(self, event):
@@ -102,6 +108,28 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_btn_trigger_onset(self):
         self._app.mixer.onset_detected()
         self.onset_detected()
+
+    def transition_update_start(self):
+        self.progress_transition.setValue(0)
+        self.lbl_transition_progress.setStyleSheet("QLabel { color: #22f; }")
+        self.transition_update_timer.start()
+
+    def on_transition_update_timer(self):
+        p = self._mixer.transition_progress
+
+        if self.transition_update_toggle and not self._mixer.is_paused:
+            self.lbl_transition_progress.setStyleSheet("QLabel { color: #000; }")
+            self.transition_update_toggle = False
+        else:
+            self.lbl_transition_progress.setStyleSheet("QLabel { color: #22f; }")
+            self.transition_update_toggle = True
+
+        if p >= 1.0:
+            self.lbl_transition_progress.setStyleSheet("QLabel { color: #000; }")
+            self.progress_transition.setValue(0)
+            self.transition_update_timer.stop()
+        else:
+            self.progress_transition.setValue(p * 100)
 
     def update_mixer(self):
         if len(self._mixer_frame_counts) < 4:
@@ -142,10 +170,12 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.btn_runfreeze.setText("Unfreeze")
 
     def on_btn_next_preset(self):
-        self._app.playlist.advance()
+        self._mixer.start_transition(self._app.playlist.get_preset_relative_to_active(1))
+        self.update_playlist()
 
     def on_btn_prev_preset(self):
-        self._app.playlist.advance(-1)
+        self._mixer.start_transition(self._app.playlist.get_preset_relative_to_active(-1))
+        self.update_playlist()
 
     def on_btn_reset_preset(self):
         paused = self._app.mixer.is_paused()
@@ -279,7 +309,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         pass
 
     def on_preset_double_clicked(self, preset_item):
-        self._app.playlist.set_active_preset_by_name(preset_item.text())
+        self._app.mixer.start_transition(preset_item.text())
         self.update_playlist()
         self.load_preset_parameters_table()
 
