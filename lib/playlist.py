@@ -264,8 +264,8 @@ class Playlist(JSONDict):
     def clone_preset(self, old_name):
         old = self.get_preset_by_name(old_name)
         classname = old.__class__.__name__
-        new_name = self.suggest_preset_name(classname)
-        self.add_preset(classname, new_name)
+        new_name = old_name + " clone"
+        self.add_preset(classname, new_name, self.get_active_index())
         new = self.get_preset_by_name(new_name)
 
         for name, param in old.get_parameters().iteritems():
