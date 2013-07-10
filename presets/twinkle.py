@@ -25,6 +25,7 @@ class Twinkle(RawPreset):
         self.add_parameter(HLSParameter('on-color', (0.1, 1.0, 1.0)))
         self.add_parameter(HLSParameter('off-color', (1.0, 0.0, 1.0)))
         self.add_parameter(HLSParameter('beat-color', (1.0, 1.0, 1.0)))
+        self.add_parameter(FloatParameter('beat-births', 25.0))
         self.add_parameter(HLSParameter('black-color', (0.0, 0.0, 1.0)))
         self._setup_colors()
         self._nbirth = 0;
@@ -48,7 +49,7 @@ class Twinkle(RawPreset):
 
         # Birth
         if self._mixer.is_onset():
-            self._nbirth += 25
+            self._nbirth += self.parameter('beat-births').get()
         
         self._nbirth += self.parameter('birth-rate').get() * dt
 

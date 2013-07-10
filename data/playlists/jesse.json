@@ -2,16 +2,26 @@
     "file-type": "playlist", 
     "playlist": [
         {
+            "classname": "CombinePresets", 
+            "name": "combine rain drops", 
+            "params": {
+                "first-preset": "noise rain 2", 
+                "second-preset": "ripple 1", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
             "classname": "ImagePreset", 
             "name": "image sunflower", 
             "params": {
-                "beat-lum-boost": "1.0", 
-                "beat-lum-time": "1.0", 
+                "beat-lum-boost": "0.1", 
+                "beat-lum-time": "0.1", 
                 "center-orbit-distance": "[0,300,100]", 
                 "center-orbit-speed": "0.3", 
                 "center-x": "[-900,800,100]", 
                 "center-y": "[-300,300,100]", 
-                "ghost": "0.5", 
+                "ghost": "[0.6,1.02,1]", 
                 "image-file": "data/images/sunflower.png", 
                 "scale": "[0.8,1.5,1]", 
                 "speed-hue": "0.05", 
@@ -23,7 +33,7 @@
             "name": "radial snakes", 
             "params": {
                 "blackout": "0.6", 
-                "hue-step": "0.1", 
+                "hue-step": "-0.04", 
                 "hue-width": "0.2", 
                 "luminance-scale": "8.0", 
                 "luminance-speed": "0.01", 
@@ -41,8 +51,8 @@
             "classname": "ImagePreset", 
             "name": "image snow", 
             "params": {
-                "beat-lum-boost": "1.0", 
-                "beat-lum-time": "1.0", 
+                "beat-lum-boost": "0.1", 
+                "beat-lum-time": "0.1", 
                 "center-orbit-distance": "400.0", 
                 "center-orbit-speed": "0.2", 
                 "center-x": "0.0", 
@@ -75,7 +85,7 @@
             "classname": "ImagePreset", 
             "name": "image voronoi", 
             "params": {
-                "beat-lum-boost": "0.5", 
+                "beat-lum-boost": "0.1", 
                 "beat-lum-time": "0.1", 
                 "center-orbit-distance": "0.0", 
                 "center-orbit-speed": "0.2", 
@@ -123,16 +133,6 @@
             }
         }, 
         {
-            "classname": "CombinePresets", 
-            "name": "combine rain drops", 
-            "params": {
-                "first-preset": "noise rain 2", 
-                "second-preset": "ripple 1", 
-                "transition-mode": "Linear Blend", 
-                "transition-progress": "0.5"
-            }
-        }, 
-        {
             "classname": "SimplexNoise", 
             "name": "noise rains", 
             "params": {
@@ -154,8 +154,8 @@
             "params": {
                 "first-preset": "spiral warp", 
                 "second-preset": "spiral wiggle", 
-                "transition-mode": "Linear Blend", 
-                "transition-progress": "-0.5"
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
             }
         }, 
         {
@@ -206,7 +206,7 @@
             "params": {
                 "first-preset": "ripple 1", 
                 "second-preset": "ripple 2", 
-                "transition-mode": "Linear Blend", 
+                "transition-mode": "Multiply Blend", 
                 "transition-progress": "0.5"
             }
         }, 
@@ -300,6 +300,25 @@
         }, 
         {
             "classname": "SpiralGradient", 
+            "name": "add a", 
+            "params": {
+                "angle-hue-width": "0.0", 
+                "center-distance": "[0,100,10]", 
+                "center-speed": "[-0.1,0.1,0.1]", 
+                "color-end": "(0.6, 1.2, 1.0)", 
+                "color-start": "(0.0, 0.0, 1.0)", 
+                "hue-speed": "0.04", 
+                "onset-speed-boost": "5.0", 
+                "onset-speed-decay": "1.0", 
+                "radius-hue-width": "0.6", 
+                "speed": "0.1", 
+                "wave-hue-period": "0.1", 
+                "wave-hue-width": "0.0", 
+                "wave-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
             "name": "add b", 
             "params": {
                 "angle-hue-width": "0.5", 
@@ -324,26 +343,7 @@
                 "first-preset": "radial splotch", 
                 "second-preset": "add b", 
                 "transition-mode": "Linear Blend", 
-                "transition-progress": "[0.2,0.8,1]"
-            }
-        }, 
-        {
-            "classname": "SpiralGradient", 
-            "name": "add a", 
-            "params": {
-                "angle-hue-width": "0.0", 
-                "center-distance": "[0,100,10]", 
-                "center-speed": "[-0.1,0.1,0.1]", 
-                "color-end": "(0.6, 1.2, 1.0)", 
-                "color-start": "(0.0, 0.0, 1.0)", 
-                "hue-speed": "0.04", 
-                "onset-speed-boost": "5.0", 
-                "onset-speed-decay": "1.0", 
-                "radius-hue-width": "0.6", 
-                "speed": "0.1", 
-                "wave-hue-period": "0.1", 
-                "wave-hue-width": "0.0", 
-                "wave-speed": "0.1"
+                "transition-progress": "[-2,2,10]"
             }
         }, 
         {
@@ -352,7 +352,7 @@
             "params": {
                 "first-preset": "spiral fire", 
                 "second-preset": "spiral gray", 
-                "transition-mode": "Linear Blend", 
+                "transition-mode": "Multiply Blend", 
                 "transition-progress": "[-0.05,0.5,0.2]"
             }
         }, 
@@ -425,7 +425,7 @@
                 "color-end": "[0.7, 0.5, 1.0]", 
                 "color-start": "[0.1, 0.5, 1.0]", 
                 "hue-speed": "0.08", 
-                "onset-speed-boost": "5.0", 
+                "onset-speed-boost": "3.0", 
                 "onset-speed-decay": "1.0", 
                 "radius-hue-width": "0.0", 
                 "speed": "0.3", 
@@ -906,6 +906,7 @@
             "classname": "Twinkle", 
             "name": "twinkle to blue", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "2.0", 
                 "black-color": "[0.6, 0.2, 1.0]", 
@@ -919,6 +920,7 @@
             "classname": "Twinkle", 
             "name": "twinkle yarn", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "150.0", 
                 "black-color": "(-0.0, 0.0, 1.0)", 
@@ -932,6 +934,7 @@
             "classname": "Twinkle", 
             "name": "twinkle max", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "300.0", 
                 "black-color": "(0.8, 0.0, 1.0)", 
@@ -945,13 +948,14 @@
             "classname": "Twinkle", 
             "name": "twinkle max rainbow", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "300.0", 
                 "black-color": "(11.5, 1.0, 1.0)", 
-                "fade-down-time": "10.0", 
+                "fade-down-time": "5.0", 
                 "fade-up-time": "0.1", 
-                "off-color": "(10.0, 0.5, 1.0)", 
-                "on-color": "(20.0, 0.5, 1.0)"
+                "off-color": "(1.0, 0.5, 1.0)", 
+                "on-color": "(2.0, 0.5, 1.0)"
             }
         }, 
         {
@@ -1069,11 +1073,11 @@
                 "angle": "[0,1,1]", 
                 "color-speed": "0.1", 
                 "hue-max": "1.2", 
-                "hue-min": "0.9", 
-                "luminance-map": "[(0,0,1), (0,0,1), (0,1,1), (0,0.5,1), (0,0.5,1)]", 
+                "hue-min": "0.0", 
+                "luminance-map": "[(0,-1,1), (0,0.5,1), (0,0.5,1), (0,2,1)]", 
                 "luminance-scale": "0.75", 
-                "resolution": "4", 
-                "scale": "2.0", 
+                "resolution": "100", 
+                "scale": "0.04", 
                 "speed": "0.1", 
                 "stretch": "1.0"
             }
@@ -1084,13 +1088,13 @@
             "params": {
                 "angle": "[0,1,0.2]", 
                 "color-speed": "0.04", 
-                "hue-max": "1.4", 
+                "hue-max": "1.2", 
                 "hue-min": "0.0", 
-                "luminance-map": "[(0,0,1), (0,0,1), (0,1.2,1), (0,0,1)]", 
-                "luminance-scale": "0.3", 
-                "resolution": "256", 
-                "scale": "0.2", 
-                "speed": "[-0.01,0.01,0.01]", 
+                "luminance-map": "[(0,-1,1), (0,0.5,1), (0,0.5,1), (0,2,1)]", 
+                "luminance-scale": "0.75", 
+                "resolution": "100", 
+                "scale": "0.04", 
+                "speed": "0.1", 
                 "stretch": "1.0"
             }
         }, 
@@ -1132,17 +1136,17 @@
             "params": {
                 "alive-color": "[0.0, 1.0, 1.0]", 
                 "birth-rate": "0.3", 
-                "black-color": "[0.5, 0.0, 1.0]", 
-                "dead-color": "[0.5, 0.5, 1.0]", 
+                "black-color": "[-0.5, 0.0, 1.0]", 
+                "dead-color": "[0.0, 0.5, 1.0]", 
                 "death-time": "3.0", 
-                "fade-out-time": "5.0", 
-                "growth-time": "2.0", 
-                "isolated-life-time": "0.2", 
-                "life-time": "0.3", 
-                "mass-destruction-threshold": "20", 
-                "mass-destruction-time": "5.0", 
+                "fade-out-time": "2.0", 
+                "growth-time": "1.0", 
+                "isolated-life-time": "1.0", 
+                "life-time": "0.5", 
+                "mass-destruction-threshold": "40", 
+                "mass-destruction-time": "2.0", 
                 "pop-limit": "500", 
-                "spread-rate": "2.0"
+                "spread-rate": "10.0"
             }
         }, 
         {
@@ -1234,6 +1238,7 @@
             "classname": "Twinkle", 
             "name": "twinkle stars", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "20.0", 
                 "black-color": "(0.0, 0.0, 1.0)", 
@@ -1263,8 +1268,8 @@
                 "color-end": "(1.0, 0.8, 1.0)", 
                 "color-start": "(1.0, -0.3, 1.0)", 
                 "hue-speed": "[-0.1,0.2,0.1]", 
-                "onset-speed-boost": "5.0", 
-                "onset-speed-decay": "1.0", 
+                "onset-speed-boost": "20.0", 
+                "onset-speed-decay": "2.0", 
                 "radius-hue-width": "[2,8,2]", 
                 "speed": "-0.4", 
                 "wave-hue-period": "1.0", 
@@ -1282,8 +1287,8 @@
                 "color-end": "(1.0, 0.5, 1.0)", 
                 "color-start": "(1.0, -0.1, 1.0)", 
                 "hue-speed": "[-0.2,0.1,0.1]", 
-                "onset-speed-boost": "5.0", 
-                "onset-speed-decay": "1.0", 
+                "onset-speed-boost": "-20.0", 
+                "onset-speed-decay": "2.0", 
                 "radius-hue-width": "[1,5,0.5]", 
                 "speed": "-0.3", 
                 "wave-hue-period": "0.1", 
@@ -1366,8 +1371,8 @@
             "classname": "ImagePreset", 
             "name": "ImagePreset-2", 
             "params": {
-                "beat-lum-boost": "0.5", 
-                "beat-lum-time": "0.2", 
+                "beat-lum-boost": "0.06", 
+                "beat-lum-time": "0.1", 
                 "center-orbit-distance": "[-350,350,100]", 
                 "center-orbit-speed": "0.1", 
                 "center-x": "[-350,350,100]", 
@@ -1383,7 +1388,8 @@
             "classname": "Twinkle", 
             "name": "twinkle calm", 
             "params": {
-                "beat-color": "(1.0, 1.0, 1.0)", 
+                "beat-births": "25.0", 
+                "beat-color": "(0.8, 0.6, 1.0)", 
                 "birth-rate": "[1,15,10]", 
                 "black-color": "(0.5, 0.0, 1.0)", 
                 "fade-down-time": "[4,12,3]", 
@@ -1407,6 +1413,23 @@
                 "scale": "[0.24,5,2]", 
                 "speed-hue": "0.08", 
                 "speed-rotation": "[-0.1,0.1,1]"
+            }
+        }, 
+        {
+            "classname": "ImagePreset", 
+            "name": "ImagePreset-4", 
+            "params": {
+                "beat-lum-boost": "0.1", 
+                "beat-lum-time": "0.1", 
+                "center-orbit-distance": "100.0", 
+                "center-orbit-speed": "0.1", 
+                "center-x": "[-300,300,100]", 
+                "center-y": "0.0", 
+                "ghost": "0.5", 
+                "image-file": "data/images/lattice", 
+                "scale": "[1,5,10]", 
+                "speed-hue": "0.1", 
+                "speed-rotation": "0.1"
             }
         }
     ]
