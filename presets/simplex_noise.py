@@ -26,6 +26,9 @@ class SimplexNoise(RawPreset):
         self.add_parameter(FloatParameter('stretch', 1.0))
         self.add_parameter(FloatParameter('luminance-scale', 0.75))
         self.add_parameter(StringParameter('luminance-map', "[(0,0,1), (0,0,1), (0,1,1)]"))
+        self.add_parameter(FloatParameter('beat-lum-boost', 0.05))
+        self.add_parameter(FloatParameter('beat-lum-time', 0.1))
+        self.add_parameter(FloatParameter('beat-color-boost', 0.0))
         self._offset_x = 0
         self._offset_y = 0
         self._offset_z = 0
@@ -52,7 +55,7 @@ class SimplexNoise(RawPreset):
 
     def draw(self, dt):
         if self._mixer.is_onset():
-            self._offset_z = -self._offset_z
+            self._offset_z += self.parameter('beat-color-boost').get()
             
         self._setup_pars()
         angle = self.parameter('angle').get()
@@ -60,10 +63,7 @@ class SimplexNoise(RawPreset):
         #self._offset_y += dt * self.parameter('speed').get() * math.sin(angle) * 2 * math.pi
         self._offset_x += dt * self.parameter('speed').get()
         self._offset_z += dt * self.parameter('color-speed').get()
-        if self._mixer.is_onset():
-            posterization = 2
-        else:
-            posterization = self.parameter('resolution').get()
+        posterization = self.parameter('resolution').get()
 
         rotMatrix = np.array([(math.cos(angle), -math.sin(angle)), (math.sin(angle),  math.cos(angle))])
         x,y = rotMatrix.T.dot(self.pixel_locations.T)

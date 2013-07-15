@@ -31,8 +31,6 @@ class SpiralGradient(RawPreset):
         self.color_offset = 0
         self.wave_offset = random.random()
 
-        cx, cy = self.scene().center_point()
-
         self.center_offset_angle = 0
 
         self.onset_speed_boost = 1

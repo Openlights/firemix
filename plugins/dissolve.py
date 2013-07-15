@@ -1,4 +1,4 @@
-from lib.colors import hsl_blend
+from lib.colors import hls_blend
 from lib.transition import Transition
 
 class Dissolve(Transition):
@@ -11,4 +11,4 @@ class Dissolve(Transition):
 
     def get(self, start, end, progress, fade_length = 1.0):
 
-        return hsl_blend(start, end, progress, 'multiply', fade_length)
+        return hls_blend(start, end, progress, 'add', fade_length, 1.0)

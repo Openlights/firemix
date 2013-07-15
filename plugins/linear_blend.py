@@ -1,4 +1,4 @@
-from lib.colors import hsl_blend
+from lib.colors import hls_blend
 from lib.transition import Transition
 
 class LinearBlend(Transition):
@@ -13,6 +13,6 @@ class LinearBlend(Transition):
     def __str__(self):
         return "Linear Blend"
 
-    def get(self, start, end, progress, fade_length=0.5):
+    def get(self, start, end, progress, fade_length=0.6):
 
-        return hsl_blend(start, end, progress, 'add', fade_length)
+        return hls_blend(start, end, progress, 'add', fade_length, 0.3)
