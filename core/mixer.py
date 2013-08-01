@@ -415,16 +415,18 @@ class Mixer(QtCore.QObject):
 
             elif isinstance(command, SetFixture):
                 strand = command.get_strand()
-                fixture = command.get_address()
-                start = BufferUtils.logical_to_index((strand, fixture, 0))
-                end = start + self._scene.fixture(strand, fixture).pixels
+                address = command.get_address()
+                fixture = self._scene.fixture(strand, address)
+
+                start = BufferUtils.logical_to_index((strand, address, 0))
+                end = start + fixture.pixels
                 buffer[start:end] = color
 
             elif isinstance(command, SetPixel):
                 strand = command.get_strand()
-                fixture = command.get_address()
+                address = command.get_address()
                 offset = command.get_pixel()
-                pixel = BufferUtils.logical_to_index((strand, fixture, offset))
+                pixel = BufferUtils.logical_to_index((strand, address, offset))
                 buffer[pixel] = color
 
     def get_buffer_shape(self):
