@@ -418,6 +418,10 @@ class Mixer(QtCore.QObject):
                 address = command.get_address()
                 fixture = self._scene.fixture(strand, address)
 
+                if fixture is None:
+                    log.error("SetFixture command setting invalid fixture: %s", (strand,address))
+                    continue
+
                 start = BufferUtils.logical_to_index((strand, address, 0))
                 end = start + fixture.pixels
                 buffer[start:end] = color
