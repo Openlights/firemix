@@ -57,8 +57,9 @@ class SetAll(Command):
 
     def __init__(self, color, priority):
         Command.__init__(self)
-        if not isinstance(color, tuple):
-            raise ValueError("SetAll() expects a 3-tuple for color")
+        tuple_color = tuple(color)
+        if len(tuple_color) != 3:
+            raise ValueError("SetAll() expects a 3-tuple for color, got:", color)
         self._color = color
         self._priority = priority
 
