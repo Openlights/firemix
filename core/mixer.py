@@ -66,7 +66,7 @@ class Mixer(QtCore.QObject):
         self._render_in_progress = False
         self.transition_progress = 0.0
 
-        if self._app.args.profile and USE_YAPPI:
+        if self._app.args.yappi and USE_YAPPI:
             yappi.start()
 
         # Load transitions
@@ -109,7 +109,7 @@ class Mixer(QtCore.QObject):
         self._tick_timer.cancel()
         self._stop_time = time.time()
 
-        if self._app.args.profile and USE_YAPPI:
+        if self._app.args.yappi and USE_YAPPI:
             yappi.print_stats(sort_type=yappi.SORTTYPE_TSUB, limit=15, thread_stats_on=False)
 
     def pause(self, pause=True):
