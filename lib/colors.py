@@ -119,3 +119,75 @@ def rgb_to_hls(arr):
     out[np.isnan(out)] = 0
 
     return out
+
+def hls_to_rgb(hls):
+    """
+    Converts HLS color array [[H,L,S]] to RGB array.
+
+    http://en.wikipedia.org/wiki/HSL_and_HSV#From_HSL
+
+    Returns [[R,G,B]] in [0..1]
+
+    Adapted from: http://stackoverflow.com/questions/4890373/detecting-thresholds-in-hsv-color-space-from-rgb-using-python-pil/4890878#4890878
+    """
+
+    H = hls[:, 0]
+    L = hls[:, 1]
+    S = hls[:, 2]
+
+    C = (1 - np.absolute(2 * L - 1)) * S
+
+    #Hp = H * 6.0
+    i = (H * 6.0).astype(np.int)
+    f = (H * 6.0) - i  # |H' mod 2|  ?
+
+    #X = C * (1 - np.absolute(np.mod(Hp, 2) - 1))
+    X = C * (1 - f)
+
+    # initialize with zero
+    R = np.zeros(H.shape, float)
+    G = np.zeros(H.shape, float)
+    B = np.zeros(H.shape, float)
+
+    # handle each case:
+
+    #mask = (Hp >= 0) == ( Hp < 1)
+    mask = i % 6 == 0
+    R[mask] = C[mask]
+    G[mask] = X[mask]
+
+    #mask = (Hp >= 1) == ( Hp < 2)
+    mask = i == 1
+    R[mask] = X[mask]
+    G[mask] = C[mask]
+
+    #mask = (Hp >= 2) == ( Hp < 3)
+    mask = i == 2
+    G[mask] = C[mask]
+    B[mask] = X[mask]
+
+    #mask = (Hp >= 3) == ( Hp < 4)
+    mask = i == 3
+    G[mask] = X[mask]
+    B[mask] = C[mask]
+
+    #mask = (Hp >= 4) == ( Hp < 5)
+    mask = i == 4
+    R[mask] = X[mask]
+    B[mask] = C[mask]
+
+    #mask = (Hp >= 5) == ( Hp < 6)
+    mask = i == 5
+    R[mask] = C[mask]
+    B[mask] = X[mask]
+
+    m = L - 0.5*C
+    R += m
+    G += m
+    B += m
+
+    rgb = np.empty_like(hls)
+    rgb[:, 0] = R
+    rgb[:, 1] = G
+    rgb[:, 2] = B
+    return rgb

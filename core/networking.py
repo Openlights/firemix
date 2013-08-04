@@ -3,37 +3,15 @@ import numpy as np
 import socket
 import array
 import struct
-import colorsys
 import time
 
 from profilehooks import profile
 
-from lib.colors import clip
+from lib.colors import hls_to_rgb
 from lib.buffer_utils import BufferUtils
-
 
 COMMAND_SET_BGR = 0x10
 COMMAND_SET_RGB = 0x20
-
-cache = {}
-cache_steps = 256
-
-def getRGB(h,l,s):
-    """
-    Hacking some color conversion here for Firefly
-    This wraps colorsys's conversion with some type conversion and caching
-    It's not nice enough to keep.
-    """
-    color = cache.get((h,l,s), None)
-
-    if color == None:
-        color = colorsys.hls_to_rgb(float(h) / cache_steps, float(l) / cache_steps, float(s) / cache_steps)
-        color = (clip(0, int(color[0]*255), 255), clip(0, int(color[1]*255), 255), clip(0, int(color[2]*255), 255))
-        cache[(h,l,s)] = color
-        #print "cache miss", h,l,s,color
-
-    return color
-
 
 class Networking:
 
@@ -41,11 +19,7 @@ class Networking:
         self._socket = None
         self._app = app
         self.open_socket()
-
-#        for h in range(cache_steps + 1):
-#            for l in range(cache_steps + 1):
-#                for s in range(cache_steps + 1):
-#                    getRGB(h,l,s)
+        self._packet_cache = {}
 
     def open_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -58,10 +32,19 @@ class Networking:
         """
         strand_settings = self._app.scene.get_strand_settings()
 
-        # Hack: assume that at least one client will be RGB mode
-        intbuffer = np.int_(buffer * cache_steps)
-        alldata = [getRGB(*pixel) for pixel in intbuffer]
-        alldata = [item for sublist in alldata for item in sublist]
+        buffer_rgb = hls_to_rgb(buffer) * 255
+
+        def fill_packet(intbuffer, start, end, offset, packet, swap_order=False):
+            for pixel_index, pixel in enumerate(intbuffer[start:end]):
+                buffer_index = offset + pixel_index * 3
+                if swap_order:
+                    packet[buffer_index] = pixel[2]
+                    packet[buffer_index + 1] = pixel[1]
+                    packet[buffer_index + 2] = pixel[0]
+                else:
+                    packet[buffer_index] = pixel[0]
+                    packet[buffer_index + 1] = pixel[1]
+                    packet[buffer_index + 2] = pixel[2]
 
         for client in (client for client in self._app.settings['networking']['clients'] if client["enabled"]):
             # TODO: Split into smaller packets so that less-than-ideal networks will be OK
@@ -76,23 +59,28 @@ class Networking:
                 color_mode = strand_settings[strand]["color-mode"]
                 start, end = BufferUtils.get_strand_extents(strand)
 
-                if client_color_mode == "RGB8":
-                    data = array.array('B', alldata[start*3:end*3])
-                else:
-                    data = [channel for pixel in buffer[start:end] for channel in pixel]
-                    data = array.array('B', struct.pack('%sf' % len(data), *data))
+                packet_header_size = 4
+                packet_size = (end-start) * 3 + packet_header_size
 
-                length = len(data)
+                packet = self._packet_cache.get(packet_size, None)
+                if packet is None:
+                    packet = [0,] * packet_size
+                    self._packet_cache[packet_size] = packet
+
                 command = COMMAND_SET_RGB if color_mode == "RGB8" else COMMAND_SET_BGR
-                packet.extend(array.array('B', [strand, command, (length & 0xFF), (length & 0xFF00) >> 8]))
-                packet.extend(data)
+                packet[0] = strand
+                packet[1] = command
+                length = packet_size - packet_header_size
+                packet[2] = length & 0x00FF
+                packet[3] = (length & 0xFF00) >> 8
 
-# Is the strand packing above slow? I wonder...
-# Does it mean anything if this is faster?
-#            length = len(alldata)
-#            packet.extend(array.array('B', [0, 0, (length & 0xFF), (length & 0xFF00) >> 8]))
-#            packet.extend(array.array('B', alldata))
+                # TODO(rryan): Are there other color modes?
+                swap_order = client_color_mode == 'BGR8'
+                fill_packet(buffer_rgb, start, end, packet_header_size, packet, swap_order)
+                packet = array.array('B', packet)
+
                 try:
+                    #print "Sending packet of length %i for strand %i", (len(packet), strand)
                     self._socket.sendto(packet, client_host_port)
                 except IOError as (errno, strerror):
                     print "I/O error({0}): {1}".format(errno, strerror)
