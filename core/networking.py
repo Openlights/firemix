@@ -63,16 +63,17 @@ class Networking:
         alldata = [getRGB(*pixel) for pixel in intbuffer]
         alldata = [item for sublist in alldata for item in sublist]
 
-        for client in [client for client in self._app.settings['networking']['clients'] if client["enabled"]]:
+        for client in (client for client in self._app.settings['networking']['clients'] if client["enabled"]):
             # TODO: Split into smaller packets so that less-than-ideal networks will be OK
-            packet = array.array('B', [])
             client_color_mode = client["color-mode"]
+            client_host_port = (client["host"], client["port"])
 
-            for strand in range(len(strand_settings)):
+            for strand in xrange(len(strand_settings)):
                 if not strand_settings[strand]["enabled"]:
                     continue
-                color_mode = strand_settings[strand]["color-mode"]
+                packet = array.array('B', [])
 
+                color_mode = strand_settings[strand]["color-mode"]
                 start, end = BufferUtils.get_strand_extents(strand)
 
                 if client_color_mode == "RGB8":
@@ -92,6 +93,12 @@ class Networking:
 #            packet.extend(array.array('B', [0, 0, (length & 0xFF), (length & 0xFF00) >> 8]))
 #            packet.extend(array.array('B', alldata))
 
-            self._socket.sendto(packet, (client["host"], client["port"]))
-
-
+                    self._socket.sendto(packet, client_host_port)
+                except IOError as (errno, strerror):
+                    print "I/O error({0}): {1}".format(errno, strerror)
+                    #print "On strand %i with length %i" % (strand, len(packet))
+                except ValueError:
+                    print "Could not convert data to an integer."
+                except:
+                    print "Unexpected error:", sys.exc_info()[0]
+                    raise
