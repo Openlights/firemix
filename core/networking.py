@@ -5,6 +5,8 @@ import struct
 import colorsys
 import time
 
+from profilehooks import profile
+
 from lib.colors import clip
 from lib.buffer_utils import BufferUtils
 
@@ -47,6 +49,7 @@ class Networking:
     def open_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+    @profile
     def write(self, buffer):
         """
         Performs a bulk strand write.
