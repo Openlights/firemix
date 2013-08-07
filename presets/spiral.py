@@ -43,7 +43,7 @@ class SpiralGradient(RawPreset):
         self._fader = ColorFade(fade_colors, self._fader_steps)
 
     def reset(self):
-        pass
+        self.locations = self.scene().get_all_pixel_locations()
 
     def draw(self, dt):
         if self._mixer.is_onset():
@@ -62,7 +62,7 @@ class SpiralGradient(RawPreset):
         angle_hue_width = self.parameter('angle-hue-width').get()
 
         cx, cy = self.scene().center_point()
-        self.locations = self.scene().get_all_pixel_locations()
+
         x,y = self.locations.T
         x -= cx + math.cos(self.center_offset_angle) * self.parameter('center-distance').get()
         y -= cy + math.sin(self.center_offset_angle) * self.parameter('center-distance').get()
