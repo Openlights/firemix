@@ -24,6 +24,10 @@ class PluginLoader:
         for f in os.listdir(os.path.join(os.getcwd(), "plugins")):
             module_name, ext = os.path.splitext(f)
             if ext == ".py":
+                # Skip emacs lock files.
+                if f.startswith('.#'):
+                    continue
+
                 module = __import__("plugins." + module_name, fromlist=['dummy'])
                 for name, obj in inspect.getmembers(module, inspect.isclass):
                     bases = inspect.getmro(obj)

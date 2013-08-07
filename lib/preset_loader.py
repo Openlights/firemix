@@ -26,6 +26,10 @@ class PresetLoader:
         for f in os.listdir(os.path.join(os.getcwd(), "presets")):
             module_name, ext = os.path.splitext(f)
             if ext == ".py":
+                # Skip emacs lock files.
+                if f.startswith('.#'):
+                    continue
+
                 module = __import__("presets." + module_name, fromlist=['dummy'])
                 self._modules.append(module)
                 self._load_presets_from_modules(module)
