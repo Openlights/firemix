@@ -43,7 +43,7 @@ class BufferUtils:
 
         for strand in fh:
             for fixture in fh[strand]:
-                for offset in range(cls._app.scene.fixture(strand, fixture).pixels):
+                for offset in xrange(cls._app.scene.fixture(strand, fixture).pixels):
                     cls.logical_to_index((strand, fixture, offset))
 
     @classmethod
@@ -64,11 +64,11 @@ class BufferUtils:
             index = 0
 
             # (1) Skip to the start of the strand
-            for i in range(strand):
+            for i in xrange(strand):
                 index += cls._strand_lengths[i]
 
             # (2) Skip to the fixture in question
-            for i in range(fixture):
+            for i in xrange(fixture):
                 index += scene.fixture(strand, i).pixels
 
             fixture_start = index

@@ -248,8 +248,7 @@ class Scene(JSONDict):
         if self._all_pixels is None:
             addresses = []
             for f in self.fixtures():
-                pixels = range(f.pixels)
-                for pixel in pixels:
+                for pixel in xrange(f.pixels):
                     addresses.append((f.strand, f.address, pixel))
             self._all_pixels = addresses
         return self._all_pixels
