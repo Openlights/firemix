@@ -137,12 +137,12 @@ def hls_to_rgb(hls):
 
     C = (1 - np.absolute(2 * L - 1)) * S
 
-    #Hp = H * 6.0
-    i = (H * 6.0).astype(np.int)
-    f = (H * 6.0) - i  # |H' mod 2|  ?
+    Hp = H * 6.0
+    i = Hp.astype(np.int)
+    #f = Hp - i  # |H' mod 2|  ?
 
-    #X = C * (1 - np.absolute(np.mod(Hp, 2) - 1))
-    X = C * (1 - f)
+    X = C * (1 - np.absolute(np.mod(Hp, 2) - 1))
+    #X = C * (1 - f)
 
     # initialize with zero
     R = np.zeros(H.shape, float)
