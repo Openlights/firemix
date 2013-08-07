@@ -26,10 +26,8 @@ class StripeGradient(RawPreset):
         self._center_rotation = random.random()
         self.stripe_angle = random.random()
 
-        self.locations = self.scene().get_all_pixel_locations()
         cx, cy = self.scene().center_point()
-
-        self.locations = np.asarray(self.scene().get_all_pixel_locations())
+        self.locations = self.scene().get_all_pixel_locations()
         x,y = self.locations.T
         x -= cx
         y -= cy

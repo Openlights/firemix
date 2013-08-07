@@ -17,7 +17,7 @@ class RadialWipe(Transition):
         return "Radial Wipe"
 
     def reset(self):
-        locations = np.asarray(self._app.scene.get_all_pixel_locations())
+        locations = self._app.scene.get_all_pixel_locations()
         locations -= self._app.scene.center_point()
         #locations -= locations[np.random.randint(0, len(locations) - 1)]
         locations = np.square(locations)

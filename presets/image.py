@@ -23,7 +23,7 @@ class ImagePreset(RawPreset):
         self.add_parameter(FloatParameter('beat-lum-boost', 0.1))
         self.add_parameter(FloatParameter('beat-lum-time', 0.05))
 
-        self.pixel_locations = np.asarray(self.scene().get_all_pixel_locations())
+        self.pixel_locations = self.scene().get_all_pixel_locations()
         self.hue_inner = random.random() + 100
         self._center_rotation = random.random()
         self.angle = 0
