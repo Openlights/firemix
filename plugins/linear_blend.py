@@ -1,3 +1,5 @@
+import numpy as np
+
 from lib.colors import hls_blend
 from lib.transition import Transition
 
