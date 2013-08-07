@@ -5,6 +5,8 @@ import random
 import math
 import numpy as np
 
+from profilehooks import profile
+
 USE_YAPPI = True
 try:
     import yappi
@@ -192,6 +194,7 @@ class Mixer(QtCore.QObject):
     def get_transition_duration(self):
         return self._transition_duration
 
+    @profile
     def on_tick_timer(self):
         if self._frozen:
             delay = 1.0 / self._tick_rate
