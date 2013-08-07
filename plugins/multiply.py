@@ -8,10 +8,12 @@ class MultiplyBlend(Transition):
 
     def __init__(self, app):
         Transition.__init__(self, app)
+        self._buffer = None
 
     def __str__(self):
         return "Multiply Blend"
 
     def get(self, start, end, progress, fade_length=0.5):
-
-        return hls_blend(start, end, progress, 'multiply', fade_length, 0.5)
+        if self._buffer is None:
+            self._buffer = np.empty_like(start)
+        return hls_blend(start, end, self._buffer, progress, 'multiply', fade_length, 0.5)

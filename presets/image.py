@@ -31,6 +31,7 @@ class ImagePreset(RawPreset):
         self.hue_offset = 0
         self.imagename = None
         self.image = None
+        self._buffer = None
 
         self.parameter_changed(None)
 
@@ -106,7 +107,9 @@ class ImagePreset(RawPreset):
             ghost = self.parameter('ghost').get()
             if abs(ghost) > 0:
                 if self.lastFrame != None:
-                    colors = hls_blend(colors, self.lastFrame, ghost, "add", 1.0, 0.1)
+                    if self._buffer is None:
+                        self._buffer = np.empty_like(self.lastFrame)
+                    colors = hls_blend(colors, self.lastFrame, self._buffer, ghost, "add", 1.0, 0.1)
                 self.lastFrame = colors
 
             lum_time = self.parameter('beat-lum-time').get()
