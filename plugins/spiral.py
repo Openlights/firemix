@@ -42,7 +42,7 @@ class Spiral(Transition):
         self.mask = np.tile(False, (self.buffer_size, 3))
         self.angle = 0.0
         self.radius = 0.0
-        self.active = deepcopy(self.locations)
+        self.active = [True,] * len(self.locations)
 
     def get(self, start, end, progress):
 
@@ -50,13 +50,15 @@ class Spiral(Transition):
         distance_progress = self.scene_radius * progress
         distance_cutoff = (1.0 / self.revolutions) * self.scene_radius * progress
 
-        for pixel, location in enumerate(self.active):
+        for pixel in xrange(len(self.active)):
+            if not self.active[pixel]:
+                continue
             angle = self.angles[pixel]
             distance = self.radii[pixel]
 
             if distance < distance_cutoff or (distance < distance_progress and angle < radius_progress):
                 self.mask[pixel][:] = True
-                self.active.remove(location)
+                self.active[pixel] = False
 
         start[self.mask] = 0.0
         end[np.invert(self.mask)] = 0.0
