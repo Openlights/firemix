@@ -56,8 +56,7 @@ class SimplexNoise(RawPreset):
     def draw(self, dt):
         if self._mixer.is_onset():
             self._offset_z += self.parameter('beat-color-boost').get()
-            
-        self._setup_pars()
+
         angle = self.parameter('angle').get()
         #self._offset_x += dt * self.parameter('speed').get() * math.cos(angle) * 2 * math.pi
         #self._offset_y += dt * self.parameter('speed').get() * math.sin(angle) * 2 * math.pi
