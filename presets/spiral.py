@@ -63,9 +63,9 @@ class SpiralGradient(RawPreset):
 
         cx, cy = self.scene().center_point()
 
-        x,y = self.locations.T
-        x -= cx + math.cos(self.center_offset_angle) * self.parameter('center-distance').get()
-        y -= cy + math.sin(self.center_offset_angle) * self.parameter('center-distance').get()
+        center_distance = self.parameter('center-distance').get()
+        x,y = (self.locations - (cx + math.cos(self.center_offset_angle) * center_distance,
+                                  cy + math.sin(self.center_offset_angle) * center_distance)).T
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
         self.pixel_angles = np.arctan2(y, x) / (2.0 * math.pi)
         self.pixel_distances /= max(self.pixel_distances)
