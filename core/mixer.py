@@ -290,7 +290,6 @@ class Mixer(QtCore.QObject):
             if self._in_transition:
                 if self._start_transition:
                     self._start_transition = False
-                    self.transition_progress
                     if self._app.settings.get('mixer')['transition'] == "Random":
                         self.get_next_transition()
                     if self._transition:
@@ -331,15 +330,15 @@ class Mixer(QtCore.QObject):
                 if self._net is not None:
                     self._net.write(active_preset.get_commands_packed())
 
-            if not self._paused and (self._elapsed >= self._duration) and self._playlist.get_active_preset().can_transition() and not self._in_transition:
+            if not self._paused and (self._elapsed >= self._duration) and active_preset.can_transition() and not self._in_transition:
                 if (self._elapsed >= (self._duration + self._transition_slop)) or self._onset:
                     if len(self._playlist) > 1:
                         self.start_transition()
                     self._elapsed = 0.0
 
-            if self._reset_onset:
-                self._onset = False
-                self._reset_onset = False
+        if self._reset_onset:
+            self._onset = False
+            self._reset_onset = False
 
         if self._enable_profiling:
             tick_time = (time.time() - self._last_frame_time)
