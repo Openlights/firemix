@@ -270,6 +270,9 @@ class Mixer(QtCore.QObject):
         now = time.time()
         dt = now - self._last_tick_time
         self._last_tick_time = now
+
+        dt *= self._global_speed
+
         if len(self._playlist) > 0:
 
             active_preset = self._playlist.get_active_preset()
