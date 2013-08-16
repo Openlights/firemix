@@ -31,7 +31,8 @@ class Networking:
         """
         strand_settings = self._app.scene.get_strand_settings()
 
-        buffer_rgb = hls_to_rgb(buffer) * 255
+        # Protect against presets or transitions that write float data.
+        buffer_rgb = np.int_(hls_to_rgb(buffer) * 255)
 
         def fill_packet(intbuffer, start, end, offset, packet, swap_order=False):
             for pixel_index, pixel in enumerate(intbuffer[start:end]):
