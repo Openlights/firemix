@@ -240,13 +240,14 @@ class Mixer(QtCore.QObject):
         #TODO: Fix this after the Playlist merge
         if len(self._playlist) == 0:
             return
-        self.start_transition((self._playlist.get_active_index() + 1) % len(self._playlist))
+
+        self.start_transition(self._playlist.get_preset_relative_to_active(1))
 
     def prev(self):
         #TODO: Fix this after the Playlist merge
         if len(self._playlist) == 0:
             return
-        self.start_transition((self._playlist.get_active_index() - 1) % len(self._playlist))
+        self.start_transition(self._playlist.get_preset_relative_to_active(-1))
 
     def start_transition(self, next=None):
         """
