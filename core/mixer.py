@@ -399,7 +399,7 @@ class Mixer(QtCore.QObject):
             if isinstance(second_preset, RawPreset):
                 self._secondary_buffer = second_preset.get_buffer()
                 if self._app.args.profile:
-                    for item in self._main_buffer.flat:
+                    for item in self._secondary_buffer.flat:
                         if math.isnan(item):
                             raise ValueError
             else:
