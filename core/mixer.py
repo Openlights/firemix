@@ -425,6 +425,3 @@ class Mixer(QtCore.QObject):
         """
         self._main_buffer = BufferUtils.create_buffer()
         self._secondary_buffer = BufferUtils.create_buffer()
-
-    def get_buffer_shape(self):
-        return self._main_buffer.shape
