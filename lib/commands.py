@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 
+from lib.buffer_utils import BufferUtils
 
 class Command:
     """
