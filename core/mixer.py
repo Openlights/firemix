@@ -320,12 +320,14 @@ class Mixer(QtCore.QObject):
             # If not, a tree would need to be constructed on-the-fly.
             # TODO: Support mixing without a scene tree available
             if self._enable_rendering:
+                first_preset = self._playlist.get_preset_by_index(active_index)
                 if self._in_transition:
-                    self.render_presets(active_index,
-                                        next_index,
+                    second_preset = self._playlist.get_preset_by_index(next_index)
+                    self.render_presets(first_preset,
+                                        second_preset,
                                         self.transition_progress)
                 else:
-                    self.render_presets(active_index)
+                    self.render_presets(first_preset)
 
                 # render_presets writes all the desired pixels to
                 # self._main_buffer.
@@ -367,7 +369,7 @@ class Mixer(QtCore.QObject):
     def scene(self):
         return self._scene
 
-    def render_presets(self, first, second=None, transition_progress=0.0):
+    def render_presets(self, first_preset, second_preset=None, transition_progress=0.0):
         """
         Grabs the command output from a preset with the index given by first.
         If a second preset index is given, render_preset will use a Transition class to generate the output
@@ -379,7 +381,6 @@ class Mixer(QtCore.QObject):
 
         commands = []
 
-        first_preset = self._playlist.get_preset_by_index(first)
         if isinstance(first_preset, RawPreset):
             self._main_buffer = first_preset.get_buffer()
             if self._app.args.profile:
@@ -391,11 +392,10 @@ class Mixer(QtCore.QObject):
             commands = first_preset.get_commands()
             render_command_list(self._scene, commands, self._main_buffer)
 
-        if second is not None:
+        if second_preset is not None:
             if self._enable_profiling:
                 start = time.time()
 
-            second_preset = self._playlist.get_preset_by_index(second)
             if isinstance(second_preset, RawPreset):
                 self._secondary_buffer = second_preset.get_buffer()
                 if self._app.args.profile:
