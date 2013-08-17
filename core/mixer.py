@@ -326,9 +326,26 @@ class Mixer(QtCore.QObject):
                                         self.transition_progress)
                 else:
                     self.render_presets(active_index)
+
+                # render_presets writes all the desired pixels to
+                # self._main_buffer.
+
+                # Apply the global dimmer to _main_buffer.
+                if self._global_dimmer < 1.0:
+                    self._main_buffer *= (1.0, self._global_dimmer, 1.0)
+
+                # Mod hue by 1 (to allow wrap-around) and clamp lightness and
+                # saturation to [0, 1].
+                self._main_buffer.T[0] = np.mod(self._main_buffer.T[0], 1.0)
+                np.clip(self._main_buffer.T[1], 0.0, 1.0, self._main_buffer.T[1])
+                np.clip(self._main_buffer.T[2], 0.0, 1.0, self._main_buffer.T[2])
+
+                # Write this buffer to enabled clients.
+                if self._net is not None:
+                    self._net.write_buffer(self._main_buffer)
             else:
                 if self._net is not None:
-                    self._net.write(active_preset.get_commands_packed())
+                    self._net.write_commands(active_preset.get_commands_packed())
 
             if not self._paused and (self._elapsed >= self._duration) and active_preset.can_transition() and not self._in_transition:
                 if (self._elapsed >= (self._duration + self._transition_slop)) or self._onset:
@@ -395,15 +412,6 @@ class Mixer(QtCore.QObject):
                     for item in self._main_buffer.flat:
                         if math.isnan(item):
                             raise ValueError
-
-        if self._global_dimmer < 1.0:
-            self._main_buffer *= (1.0, self._global_dimmer, 1.0)
-
-        if self._net is not None:
-            self._main_buffer.T[0] = np.mod(self._main_buffer.T[0], 1.0)
-            np.clip(self._main_buffer.T[1], 0.0, 1.0, self._main_buffer.T[1])
-            np.clip(self._main_buffer.T[2], 0.0, 1.0, self._main_buffer.T[2])
-            self._net.write(self._main_buffer)
 
     def create_buffers(self):
         """
