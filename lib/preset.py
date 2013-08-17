@@ -16,6 +16,7 @@ class Preset:
         self._commands = []
         self._tickers = []
         self._ticks = 0
+        self._elapsed_time = 0
         self._parameters = {}
         self._instance_name = name
         self.setup()
@@ -128,8 +129,6 @@ class Preset:
     def tick(self, dt):  
         if self._mixer._enable_profiling:
             start = time.time()
-            # TODO: This does not account for varying frame rate
-        current_time = self._ticks * dt
 
         for parameter in self._parameters.values():
             parameter.tick(dt)
@@ -137,7 +136,7 @@ class Preset:
         # Assume that self._tickers is already sorted via add_ticker()
         for ticker, priority in self._tickers:
 
-            for lights, color in ticker(self._ticks, current_time):
+            for lights, color in ticker(self._ticks, self._elapsed_time):
 
                 if lights is not None:
 
@@ -155,6 +154,7 @@ class Preset:
                             self.add_command(SetPixel(light[0], light[1], light[2], color, priority))
 
         self._ticks += 1
+        self._elapsed_time += dt
         if self._mixer._enable_profiling:
             tick_time = 1000.0 * (time.time() - start)
             if tick_time > 30.0:
