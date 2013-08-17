@@ -197,3 +197,43 @@ def blend_commands(first, second, amount):
     SetAll command with its original priority, and a SetFixture command with a higher priority
     containing the blended color.
     """
+
+def render_command_list(scene, list, buffer):
+    """
+    Renders the output of a command list to the output buffer.
+    Commands are rendered in FIFO overlap style.  Run the list through
+    filter_and_sort_commands() beforehand.
+    If the output buffer is not zero (black) at a command's target,
+    the output will be additively blended according to the blend_state
+    (0.0 = 100% original, 1.0 = 100% new)
+    """
+
+    for command in list:
+        color = command.get_color()
+        if isinstance(command, SetAll):
+            buffer[:,:] = color
+
+        elif isinstance(command, SetStrand):
+            strand = command.get_strand()
+            start, end = BufferUtils.get_strand_extents(strand)
+            buffer[start:end] = color
+
+        elif isinstance(command, SetFixture):
+            strand = command.get_strand()
+            address = command.get_address()
+            fixture = scene.fixture(strand, address)
+
+            if fixture is None:
+                log.error("SetFixture command setting invalid fixture: %s", (strand,address))
+                continue
+
+            start = BufferUtils.logical_to_index((strand, address, 0))
+            end = start + fixture.pixels
+            buffer[start:end] = color
+
+        elif isinstance(command, SetPixel):
+            strand = command.get_strand()
+            address = command.get_address()
+            offset = command.get_pixel()
+            pixel = BufferUtils.logical_to_index((strand, address, offset))
+            buffer[pixel] = color

@@ -15,7 +15,7 @@ except ImportError:
 
 from PySide import QtCore
 
-from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
+from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands, render_command_list
 from lib.raw_preset import RawPreset
 from lib.buffer_utils import BufferUtils
 
@@ -372,7 +372,7 @@ class Mixer(QtCore.QObject):
 
         else:
             commands = first_preset.get_commands()
-            self.render_command_list(commands, self._main_buffer)
+            render_command_list(self._scene, commands, self._main_buffer)
 
         if second is not None:
             if self._enable_profiling:
@@ -387,7 +387,7 @@ class Mixer(QtCore.QObject):
                             raise ValueError
             else:
                 second_commands = second_preset.get_commands()
-                self.render_command_list(second_commands, self._secondary_buffer)
+                render_command_list(self._scene, second_commands, self._secondary_buffer)
 
             if self._in_transition:
                 self._main_buffer = self._transition.get(self._main_buffer, self._secondary_buffer, transition_progress)
@@ -417,46 +417,6 @@ class Mixer(QtCore.QObject):
         """
         self._main_buffer = BufferUtils.create_buffer()
         self._secondary_buffer = BufferUtils.create_buffer()
-
-    def render_command_list(self, list, buffer):
-        """
-        Renders the output of a command list to the output buffer.
-        Commands are rendered in FIFO overlap style.  Run the list through
-        filter_and_sort_commands() beforehand.
-        If the output buffer is not zero (black) at a command's target,
-        the output will be additively blended according to the blend_state
-        (0.0 = 100% original, 1.0 = 100% new)
-        """
-
-        for command in list:
-            color = command.get_color()
-            if isinstance(command, SetAll):
-                buffer[:,:] = color
-
-            elif isinstance(command, SetStrand):
-                strand = command.get_strand()
-                start, end = BufferUtils.get_strand_extents(strand)
-                buffer[start:end] = color
-
-            elif isinstance(command, SetFixture):
-                strand = command.get_strand()
-                address = command.get_address()
-                fixture = self._scene.fixture(strand, address)
-
-                if fixture is None:
-                    log.error("SetFixture command setting invalid fixture: %s", (strand,address))
-                    continue
-
-                start = BufferUtils.logical_to_index((strand, address, 0))
-                end = start + fixture.pixels
-                buffer[start:end] = color
-
-            elif isinstance(command, SetPixel):
-                strand = command.get_strand()
-                address = command.get_address()
-                offset = command.get_pixel()
-                pixel = BufferUtils.logical_to_index((strand, address, offset))
-                buffer[pixel] = color
 
     def get_buffer_shape(self):
         return self._main_buffer.shape
