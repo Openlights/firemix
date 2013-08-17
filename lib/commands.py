@@ -1,7 +1,10 @@
 import unittest
 import numpy as np
+import logging
 
 from lib.buffer_utils import BufferUtils
+
+log = logging.getLogger('firemix.lib.command')
 
 class Command:
     """
