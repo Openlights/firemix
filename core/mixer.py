@@ -407,12 +407,6 @@ class Mixer(QtCore.QObject):
 
         return first_buffer
 
-    def create_buffers(self):
-        """
-        Pixel buffers are 3D numpy arrays.  The axes are strand, pixel, and color.
-        The "y" axis (pixel) is an expanded pixel address
-        """
-
     def reset_output_buffer(self):
         """
         Clears the output buffer
