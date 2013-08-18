@@ -3,7 +3,7 @@ import time
 import logging
 import numpy as np
 
-from lib.commands import SetAll, SetStrand, SetFixture, SetPixel
+from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, render_command_list
 
 log = logging.getLogger("firemix.lib.preset")
 
@@ -159,6 +159,11 @@ class Preset:
             tick_time = 1000.0 * (time.time() - start)
             if tick_time > 30.0:
                 log.info("%s slow frame: %d ms" % (self.__class__, tick_time))
+
+    def draw_to_buffer(self, buffer):
+        commands = self.get_commands()
+        render_command_list(self.scene(), commands, buffer)
+        return buffer
 
     def tick_rate(self):
         return self._mixer.get_tick_rate()

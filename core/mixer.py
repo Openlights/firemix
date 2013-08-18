@@ -323,28 +323,30 @@ class Mixer(QtCore.QObject):
                 first_preset = self._playlist.get_preset_by_index(active_index)
                 if self._in_transition:
                     second_preset = self._playlist.get_preset_by_index(next_index)
-                    self.render_presets(first_preset,
-                                        second_preset,
-                                        self.transition_progress)
+                    mixed_buffer = self.render_presets(first_preset,
+                                                       second_preset,
+                                                       self._in_transition,
+                                                       self._transition,
+                                                       self.transition_progress)
                 else:
-                    self.render_presets(first_preset)
+                    mixed_buffer = self.render_presets(first_preset)
 
                 # render_presets writes all the desired pixels to
                 # self._main_buffer.
 
                 # Apply the global dimmer to _main_buffer.
                 if self._global_dimmer < 1.0:
-                    self._main_buffer *= (1.0, self._global_dimmer, 1.0)
+                    mixed_buffer *= (1.0, self._global_dimmer, 1.0)
 
                 # Mod hue by 1 (to allow wrap-around) and clamp lightness and
                 # saturation to [0, 1].
-                self._main_buffer.T[0] = np.mod(self._main_buffer.T[0], 1.0)
-                np.clip(self._main_buffer.T[1], 0.0, 1.0, self._main_buffer.T[1])
-                np.clip(self._main_buffer.T[2], 0.0, 1.0, self._main_buffer.T[2])
+                mixed_buffer.T[0] = np.mod(mixed_buffer.T[0], 1.0)
+                np.clip(mixed_buffer.T[1], 0.0, 1.0, mixed_buffer.T[1])
+                np.clip(mixed_buffer.T[2], 0.0, 1.0, mixed_buffer.T[2])
 
                 # Write this buffer to enabled clients.
                 if self._net is not None:
-                    self._net.write_buffer(self._main_buffer)
+                    self._net.write_buffer(mixed_buffer)
             else:
                 if self._net is not None:
                     self._net.write_commands(active_preset.get_commands_packed())
@@ -369,7 +371,8 @@ class Mixer(QtCore.QObject):
     def scene(self):
         return self._scene
 
-    def render_presets(self, first_preset, second_preset=None, transition_progress=0.0):
+    def render_presets(self, first_preset, second_preset=None,
+                       in_transition=False, transition=None, transition_progress=0.0):
         """
         Grabs the command output from a preset with the index given by first.
         If a second preset index is given, render_preset will use a Transition class to generate the output
@@ -379,39 +382,32 @@ class Mixer(QtCore.QObject):
         if self._enable_profiling:
             start = time.time()
 
-        commands = []
 
-        if isinstance(first_preset, RawPreset):
-            self._main_buffer = first_preset.get_buffer()
-            if self._app.args.profile:
-                for item in self._main_buffer.flat:
-                    if math.isnan(item):
-                        raise ValueError
-
-        else:
-            commands = first_preset.get_commands()
-            render_command_list(self._scene, commands, self._main_buffer)
+        first_buffer = first_preset.draw_to_buffer(self._main_buffer)
+        if self._app.args.profile:
+            for item in first_buffer.flat:
+                if math.isnan(item):
+                    raise ValueError
 
         if second_preset is not None:
             if self._enable_profiling:
                 start = time.time()
 
-            if isinstance(second_preset, RawPreset):
-                self._secondary_buffer = second_preset.get_buffer()
-                if self._app.args.profile:
-                    for item in self._secondary_buffer.flat:
-                        if math.isnan(item):
-                            raise ValueError
-            else:
-                second_commands = second_preset.get_commands()
-                render_command_list(self._scene, second_commands, self._secondary_buffer)
+            second_buffer = second_preset.draw_to_buffer(self._secondary_buffer)
+            if self._app.args.profile:
+                for item in second_buffer.flat:
+                    if math.isnan(item):
+                        raise ValueError
 
-            if self._in_transition:
-                self._main_buffer = self._transition.get(self._main_buffer, self._secondary_buffer, transition_progress)
+            if in_transition and transition is not None:
+                first_buffer = transition.get(first_buffer, second_buffer,
+                                              transition_progress)
                 if self._app.args.profile:
-                    for item in self._main_buffer.flat:
+                    for item in first_buffer.flat:
                         if math.isnan(item):
                             raise ValueError
+
+        return first_buffer
 
     def create_buffers(self):
         """
