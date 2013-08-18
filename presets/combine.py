@@ -38,8 +38,8 @@ class CombinePresets(RawPreset):
             preset1.tick(dt)
             preset2.tick(dt)
 
-            preset1_buffer = preset1.render_to_buffer(self._preset1_buffer)
-            preset2_buffer = preset2.render_to_buffer(self._preset2_buffer)
+            preset1_buffer = preset1.draw_to_buffer(self._preset1_buffer)
+            preset2_buffer = preset2.draw_to_buffer(self._preset2_buffer)
 
             self._pixel_buffer = self._transition.get(
                 preset1_buffer, preset2_buffer,
