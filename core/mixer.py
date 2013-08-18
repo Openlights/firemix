@@ -339,7 +339,7 @@ class Mixer(QtCore.QObject):
 
                 # Apply the global dimmer to _main_buffer.
                 if self._global_dimmer < 1.0:
-                    mixed_buffer *= (1.0, self._global_dimmer, 1.0)
+                    mixed_buffer.T[1] *= self._global_dimmer
 
                 # Mod hue by 1 (to allow wrap-around) and clamp lightness and
                 # saturation to [0, 1].
