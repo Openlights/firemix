@@ -323,13 +323,16 @@ class Mixer(QtCore.QObject):
                 first_preset = self._playlist.get_preset_by_index(active_index)
                 if self._in_transition:
                     second_preset = self._playlist.get_preset_by_index(next_index)
-                    mixed_buffer = self.render_presets(first_preset,
-                                                       second_preset,
-                                                       self._in_transition,
-                                                       self._transition,
-                                                       self.transition_progress)
+                    mixed_buffer = self.render_presets(
+                        first_preset, self._main_buffer,
+                        second_preset, self._secondary_buffer,
+                        self._in_transition, self._transition,
+                        self.transition_progress,
+                        check_for_nan=self._enable_profiling)
                 else:
-                    mixed_buffer = self.render_presets(first_preset)
+                    mixed_buffer = self.render_presets(
+                        first_preset, self._main_buffer,
+                        check_for_nan=self._enable_profiling)
 
                 # render_presets writes all the desired pixels to
                 # self._main_buffer.
@@ -371,30 +374,25 @@ class Mixer(QtCore.QObject):
     def scene(self):
         return self._scene
 
-    def render_presets(self, first_preset, second_preset=None,
-                       in_transition=False, transition=None, transition_progress=0.0):
+    def render_presets(self, first_preset, first_buffer,
+                       second_preset=None, second_buffer=None,
+                       in_transition=False, transition=None,
+                       transition_progress=0.0, check_for_nan=False):
         """
         Grabs the command output from a preset with the index given by first.
         If a second preset index is given, render_preset will use a Transition class to generate the output
         according to transition_progress (0.0 = 100% first, 1.0 = 100% second)
         """
 
-        if self._enable_profiling:
-            start = time.time()
-
-
-        first_buffer = first_preset.draw_to_buffer(self._main_buffer)
-        if self._app.args.profile:
+        first_buffer = first_preset.draw_to_buffer(first_buffer)
+        if check_for_nan:
             for item in first_buffer.flat:
                 if math.isnan(item):
                     raise ValueError
 
         if second_preset is not None:
-            if self._enable_profiling:
-                start = time.time()
-
-            second_buffer = second_preset.draw_to_buffer(self._secondary_buffer)
-            if self._app.args.profile:
+            second_buffer = second_preset.draw_to_buffer(second_buffer)
+            if check_for_nan:
                 for item in second_buffer.flat:
                     if math.isnan(item):
                         raise ValueError
@@ -402,7 +400,7 @@ class Mixer(QtCore.QObject):
             if in_transition and transition is not None:
                 first_buffer = transition.get(first_buffer, second_buffer,
                                               transition_progress)
-                if self._app.args.profile:
+                if check_for_nan:
                     for item in first_buffer.flat:
                         if math.isnan(item):
                             raise ValueError
