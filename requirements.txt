@@ -2,3 +2,4 @@ numpy>=1.6.2
 PySide>=1.1.2
 noise>=1.2.1
 yappi>=0.62
+profilehooks>=1.7

@@ -92,7 +92,7 @@ class Networking:
 #            length = len(alldata)
 #            packet.extend(array.array('B', [0, 0, (length & 0xFF), (length & 0xFF00) >> 8]))
 #            packet.extend(array.array('B', alldata))
-
+                try:
                     self._socket.sendto(packet, client_host_port)
                 except IOError as (errno, strerror):
                     print "I/O error({0}): {1}".format(errno, strerror)
