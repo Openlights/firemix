@@ -30,6 +30,7 @@ class Scene(JSONDict):
         self._all_pixels = None
         self._all_pixel_locations = None
         self._all_pixels_raw = None
+        self._strand_settings = None
 
     def warmup(self):
         """
@@ -76,7 +77,9 @@ class Scene(JSONDict):
         return self.data.get("name", "")
 
     def get_strand_settings(self):
-        return self.data.get("strand-settings", [])
+        if self._strand_settings is None:
+            self._strand_settings = self.data.get("strand-settings")
+        return self._strand_settings
 
     def set_strand_settings(self, settings):
         self.data["strand-settings"] = settings
@@ -99,6 +102,8 @@ class Scene(JSONDict):
                 if f.strand == strand and f.address == address:
                     fix = f
                     self._fixture_dict[(strand, address)] = f
+        if fix is None:
+            raise ValueError("Fixture [%d,%d] is out of range" % (strand, address))
         return fix
 
     def fixture_hierarchy(self):
