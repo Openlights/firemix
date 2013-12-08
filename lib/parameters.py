@@ -145,6 +145,33 @@ class FloatParameter(Parameter):
         return float(value)
 
 
+class FloatTupleParameter(Parameter):
+    """
+    Parameter holding a float value
+    """
+
+    def __init__(self, name, size, value=None):
+        Parameter.__init__(self, name)
+        self.size = size
+        if (value is not None):
+            self.set(value)
+        else:
+            self.set(tuple([0.] * self.size))
+
+    def validate(self, value):
+        if not isinstance(value, tuple):
+            return False
+        if (len(value) != self.size):
+            return False
+        for item in value:
+            if not isinstance(item, float):
+                return False
+        return True
+
+    def _cast_from_str(self, value):
+        return tuple(ast.literal_eval(value))
+
+
 class RGBParameter(Parameter):
     """
     Parameter holding an RGB tuple (in 8-bit integer)
