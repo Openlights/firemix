@@ -41,8 +41,9 @@ class JSONDict(collections.MutableMapping):
         else:
             with open(self.filename, 'r') as f:
                 try:
-                    self.data = json.load(f)
-                    if self.data.get('file-type', None) != unicode(self.filetype):
+                    self.data = self._unicode_to_str(json.load(f))
+                    print self.data
+                    if self.data.get('file-type', None) != self.filetype:
                         raise ValueError("Error loading settings from %s: file-type mismatch." % self.filename)
                 except:
                     raise
@@ -50,3 +51,13 @@ class JSONDict(collections.MutableMapping):
     def save(self):
         with open(self.filename, 'w') as f:
             json.dump(self.data, f, indent=4, sort_keys=True)
+
+    def _unicode_to_str(self, data):
+        if isinstance(data, basestring):
+            return str(data)
+        elif isinstance(data, collections.Mapping):
+            return dict(map(self._unicode_to_str, data.iteritems()))
+        elif isinstance(data, collections.Iterable):
+            return type(data)(map(self._unicode_to_str, data))
+        else:
+            return data
