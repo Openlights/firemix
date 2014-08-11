@@ -286,8 +286,10 @@ class Mixer(QtCore.QObject):
                         self.transition_progress = self._elapsed / self._transition_duration
                 else:
                     self.transition_progress = 1.0
-                self._playlist.get_next_preset().clear_commands()
-                self._playlist.get_next_preset().tick(dt)
+
+                if self._playlist.get_next_preset() is not None:
+                    self._playlist.get_next_preset().clear_commands()
+                    self._playlist.get_next_preset().tick(dt)
 
                 # Exit from transition state after the transition duration has elapsed
                 if self.transition_progress >= 1.0:
@@ -414,11 +416,12 @@ class Mixer(QtCore.QObject):
                 buffer[start:end] = color
 
             elif isinstance(command, SetFixture):
-                strand = command.get_strand()
-                fixture = command.get_address()
-                start = BufferUtils.logical_to_index((strand, fixture, 0))
-                end = start + self._scene.fixture(strand, fixture).pixels
-                buffer[start:end] = color
+                pass
+                # strand = command.get_strand()
+                # fixture = command.get_address()
+                # start = BufferUtils.logical_to_index((strand, fixture, 0))
+                # end = start + self._scene.fixture(strand, fixture).pixels
+                # buffer[start:end] = color
 
             elif isinstance(command, SetPixel):
                 strand = command.get_strand()

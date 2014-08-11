@@ -42,7 +42,6 @@ class JSONDict(collections.MutableMapping):
             with open(self.filename, 'r') as f:
                 try:
                     self.data = self._unicode_to_str(json.load(f))
-                    print self.data
                     if self.data.get('file-type', None) != self.filetype:
                         raise ValueError("Error loading settings from %s: file-type mismatch." % self.filename)
                 except:

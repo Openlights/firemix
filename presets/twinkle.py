@@ -1,9 +1,6 @@
-import colorsys
 import random
-import math
 
 from lib.raw_preset import RawPreset
-from lib.colors import float_to_uint8
 from lib.color_fade import ColorFade
 from lib.parameters import FloatParameter, HLSParameter
 
@@ -27,8 +24,8 @@ class Twinkle(RawPreset):
         self.add_parameter(HLSParameter('beat-color', (1.0, 1.0, 1.0)))
         self.add_parameter(HLSParameter('black-color', (0.0, 0.0, 1.0)))
         self._setup_colors()
-        self._nbirth = 0;
-        self._current_time = 0;
+        self._nbirth = 0
+        self._current_time = 0
 
     def parameter_changed(self, parameter):
         self._setup_colors()

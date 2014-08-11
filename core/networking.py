@@ -61,15 +61,17 @@ class Networking:
 
         for client in [client for client in self._app.settings['networking']['clients'] if client["enabled"]]:
             # TODO: Split into smaller packets so that less-than-ideal networks will be OK
-            packet = array.array('B', [])
+            #packet = array.array('B', [])
             client_color_mode = client["color-mode"]
 
             for strand in range(len(strand_settings)):
+                packet = array.array('B', [])
                 if not strand_settings[strand]["enabled"]:
                     continue
                 color_mode = strand_settings[strand]["color-mode"]
 
                 start, end = BufferUtils.get_strand_extents(strand)
+                #print strand, start, end
 
                 if client_color_mode == "RGB8":
                     data = array.array('B', alldata[start*3:end*3])
@@ -81,6 +83,8 @@ class Networking:
                 command = COMMAND_SET_RGB if color_mode == "RGB8" else COMMAND_SET_BGR
                 packet.extend(array.array('B', [strand, command, (length & 0xFF), (length & 0xFF00) >> 8]))
                 packet.extend(data)
+                #print len(packet)
+            #print packet
 
 # Is the strand packing above slow? I wonder...
 # Does it mean anything if this is faster?
@@ -88,6 +92,6 @@ class Networking:
 #            packet.extend(array.array('B', [0, 0, (length & 0xFF), (length & 0xFF00) >> 8]))
 #            packet.extend(array.array('B', alldata))
 
-            self._socket.sendto(packet, (client["host"], client["port"]))
+                self._socket.sendto(packet, (client["host"], client["port"]))
 
 
