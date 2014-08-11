@@ -14,6 +14,13 @@ class Playlist(JSONDict):
     Manages the available presets and the current playlist of presets.
     """
 
+    def changed(self):
+        # Ugh. At boot-up the emit() method isn't present on Qt signals. This is
+        # a hack around that.
+        emit = getattr(self._app.playlist_changed, 'emit', None)
+        if emit is not None:
+            emit()
+
     def __init__(self, app):
         self._app = app
         self.name = app.args.playlist
@@ -46,6 +53,8 @@ class Playlist(JSONDict):
         self._shuffle_list = []
 
         self.generate_playlist()
+
+        self.changed()
         return True
 
     def generate_playlist(self):
@@ -105,6 +114,7 @@ class Playlist(JSONDict):
         self.generate_playlist()
         self._active_index = old_active % len(self._playlist)
         self._next_index = old_next % len(self._playlist)
+        self.changed()
 
     def save(self):
         log.info("Saving playlist")
@@ -141,7 +151,7 @@ class Playlist(JSONDict):
         else:
             self._next_index = (self._next_index + direction) % len(self._playlist)
 
-        self._app.playlist_changed.emit()
+        self.changed()
 
     def __len__(self):
         return len(self._playlist)
@@ -187,7 +197,7 @@ class Playlist(JSONDict):
         self._active_index = idx % len(self._playlist)
         self._next_index = (self._active_index + 1) % len(self._playlist)
         self.get_active_preset()._reset()
-        self._app.playlist_changed.emit()
+        self.changed()
 
     def set_active_preset_by_name(self, name):
         #TODO: Support transitions other than jump cut
@@ -196,11 +206,15 @@ class Playlist(JSONDict):
                 preset._reset()
                 self._active_index = i
                 self._app.mixer._elapsed = 0.0  # Hack
+                self.changed()
+                return
 
     def set_next_preset_by_name(self, name):
         for i, preset in enumerate(self._playlist):
             if preset.get_name() == name:
                 self._next_index = i
+                self.changed()
+                return
 
     def reorder_playlist_by_names(self, names):
         """
@@ -213,6 +227,7 @@ class Playlist(JSONDict):
             new.append(current[name])
 
         self._playlist = new
+        self.changed()
 
     def get_available_presets(self):
         return self._preset_classes.keys()
@@ -244,6 +259,7 @@ class Playlist(JSONDict):
         if self._active_index == self._next_index:
             self._next_index = (self._next_index + 1) % len(self._playlist)
 
+        self.changed()
         return True
 
     def remove_preset(self, name):
@@ -260,27 +276,32 @@ class Playlist(JSONDict):
 
         self._next_index = self._next_index % len(self._playlist)
         self._active_index = self._active_index % len(self._playlist)
+        self.changed()
+        return True
 
     def clone_preset(self, old_name):
         old = self.get_preset_by_name(old_name)
         classname = old.__class__.__name__
-        new_name = self.suggest_preset_name(classname)
-        self.add_preset(classname, new_name)
+        new_name = old_name + " clone"
+        self.add_preset(classname, new_name, self.get_active_index())
         new = self.get_preset_by_name(new_name)
 
         for name, param in old.get_parameters().iteritems():
             new.parameter(name).set_from_str(param.get_as_str())
+        self.changed()
 
     def clear_playlist(self):
         self._playlist = []
         self._active_index = 0
         self._next_index = 0
+        self.changed()
 
     def rename_preset(self, old_name, new_name):
         pl = [i for i, p in enumerate(self._playlist) if p.get_name() == old_name]
         if len(pl) != 1:
             return False
         self._playlist[pl[0]].set_name(new_name)
+        self.changed()
 
     def generate_default_playlist(self):
         """
@@ -292,6 +313,7 @@ class Playlist(JSONDict):
             inst = self._preset_classes[cn](self._app.mixer, name=name)
             inst.setup()
             self._playlist.append(inst)
+        self.changed()
 
     def suggest_preset_name(self, classname):
         """

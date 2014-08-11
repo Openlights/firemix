@@ -170,11 +170,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.btn_runfreeze.setText("Unfreeze")
 
     def on_btn_next_preset(self):
-        self._mixer.start_transition(self._app.playlist.get_preset_relative_to_active(1))
+        self._mixer.next()
         self.update_playlist()
 
     def on_btn_prev_preset(self):
-        self._mixer.start_transition(self._app.playlist.get_preset_relative_to_active(-1))
+        self._mixer.prev()
         self.update_playlist()
 
     def on_btn_reset_preset(self):
@@ -190,13 +190,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             classname = dlg.cb_preset_type.currentText()
             name = dlg.edit_preset_name.text()
             self._app.playlist.add_preset(classname, name)
-            self.update_playlist()
 
     def on_btn_remove_preset(self):
         ci = self.lst_presets.currentItem()
         if ci is not None:
             self._app.playlist.remove_preset(ci.text())
-            self.update_playlist()
 
     def on_btn_clone_preset(self):
         if self.lst_presets.currentItem() is None:
@@ -272,12 +270,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_playlist_changed(self):
         self.update_playlist()
         self.update_mixer_settings()
-        self.load_preset_parameters_table()
+        #self.load_preset_parameters_table()
 
     def on_playlist_reorder(self):
         names = [self.lst_presets.item(i).text() for i in range(self.lst_presets.count())]
         self._app.playlist.reorder_playlist_by_names(names)
-        self.update_playlist()
 
     def on_file_load_scene(self):
         pass
@@ -285,7 +282,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_file_reload_presets(self):
         self._app.mixer.freeze(True)
         self._app.playlist.reload_presets()
-        self.on_playlist_changed()
         self._app.mixer.freeze(False)
 
     def preset_list_context_menu(self, point):
@@ -303,7 +299,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         if ok and new_name:
             if not self._app.playlist.preset_name_exists(new_name):
                 self._app.playlist.rename_preset(old_name, new_name)
-                self.update_playlist()
 
     def on_preset_name_changed(self, item):
         pass
@@ -387,7 +382,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             QtGui.QMessageBox.warning(self, "Error", "Could not open file")
         self._app.mixer.run()
         self._app.mixer.pause(paused)
-        self.on_playlist_changed()
 
     def on_file_save_playlist(self):
         self._app.playlist.save()

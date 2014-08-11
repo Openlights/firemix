@@ -1,6 +1,7 @@
 import os
 import math
 import logging
+import numpy as np
 
 from lib.json_dict import JSONDict
 from lib.fixture import Fixture
@@ -253,8 +254,7 @@ class Scene(JSONDict):
         if self._all_pixels is None:
             addresses = []
             for f in self.fixtures():
-                pixels = range(f.pixels)
-                for pixel in pixels:
+                for pixel in xrange(f.pixels):
                     addresses.append((f.strand, f.address, pixel))
             self._all_pixels = addresses
         return self._all_pixels
@@ -275,7 +275,7 @@ class Scene(JSONDict):
 
     def get_all_pixel_locations(self):
         """
-        Returns a list of ((strand, address, pixel), (x, y)) tuples
+        Returns a numpy array of (x, y) pairs.
         """
         if self._all_pixel_locations is None:
             pixels = self.get_all_pixels()
@@ -283,8 +283,8 @@ class Scene(JSONDict):
             for pixel in pixels:
                 pixel_location_list.append(self.get_pixel_location(pixel))
 
-            self._all_pixel_locations = pixel_location_list
-        return self._all_pixel_locations
+            self._all_pixel_locations = np.asarray(pixel_location_list)
+        return np.copy(self._all_pixel_locations)
 
 
     def get_fixture_bounding_box(self):

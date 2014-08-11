@@ -1,9 +1,7 @@
 import numpy as np
-import math
 
+from lib.colors import hls_blend
 from lib.transition import Transition
-from lib.buffer_utils import BufferUtils
-
 
 class LinearBlend(Transition):
     """
@@ -13,60 +11,12 @@ class LinearBlend(Transition):
 
     def __init__(self, app):
         Transition.__init__(self, app)
+        self._buffer = None
 
     def __str__(self):
         return "Linear Blend"
 
-    def reset(self):
-        self.buffer_len = BufferUtils.get_buffer_size()
-        self.frame = np.tile(np.array([0.0], dtype=np.float), (self.buffer_len, 3))
-
-    def get(self, start, end, progress, fade_length=0.5):
-
-        ease_power = 2.0
-
-        p = abs(progress)
-        startPower = (1.0 - p) / fade_length if p >= (1 - fade_length) else 1.0
-        startPower = 1.0 - pow(1.0 - startPower, ease_power)
-
-        endPower = (p / fade_length) if p <= fade_length else 1.0
-        endPower = 1.0 - pow(1.0 - endPower, ease_power)
-
-        h1,l1,s1 = start.T
-        h2,l2,s2 = end.T
-
-        np.clip(l1,0,1,l1)
-        np.clip(l2,0,1,l2)
-        np.clip(s1,0,1,s1)
-        np.clip(s2,0,1,s2)
-        h1 = np.mod(h1, 1.0)
-        h2 = np.mod(h2, 1.0)
-
-        startWeight = (1.0 - 2 * np.abs(0.5 - l1)) * s1
-        endWeight = (1.0 - 2 * np.abs(0.5 - l2)) * s2
-
-        s = (s1 * startPower + s2 * endPower)
-        x1 = np.cos(2 * np.pi * h1) * startPower * startWeight
-        x2 = np.cos(2 * np.pi * h2) * endPower * endWeight
-        y1 = np.sin(2 * np.pi * h1) * startPower * startWeight
-        y2 = np.sin(2 * np.pi * h2) * endPower * endWeight
-        x = x1 + x2
-        y = y1 + y2
-        if progress >= 0:
-            l = np.sqrt(np.square((x1-x2)/2) + np.square((y1-y2)/2))
-            l = np.maximum(l, l1 * startPower, l)
-            l = np.maximum(l, l2 * endPower, l)
-        else: # hacky support for old blend
-            l = np.sqrt(np.square(x) + np.square(y)) / 2
-
-        h = np.arctan2(y, x) / (2*np.pi)
-
-        nocolor = (x * y == 0)
-        np.where(nocolor, h, 0)
-        np.where(nocolor, s, 0)
-
-        np.clip(l, 0, 1, l)
-
-        self.frame = np.asarray([h, l, s]).T
-
-        return self.frame
+    def get(self, start, end, progress, fade_length=0.6):
+        if self._buffer is None:
+            self._buffer = np.empty_like(start)
+        return hls_blend(start, end, self._buffer, progress, 'add', fade_length, 0.3)

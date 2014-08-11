@@ -35,6 +35,9 @@
             "name": "noise rains", 
             "params": {
                 "angle": "[0,3,1]", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "0.2", 
                 "hue-max": "1.0", 
                 "hue-min": "0.0", 
@@ -775,6 +778,7 @@
             "classname": "Twinkle", 
             "name": "twinkle to blue", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "6.0", 
                 "black-color": "[0.6, 0.2, 1.0]", 
@@ -788,6 +792,7 @@
             "classname": "Twinkle", 
             "name": "twinkle yarn", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "150.0", 
                 "black-color": "(-0.0, 0.0, 1.0)", 
@@ -801,6 +806,7 @@
             "classname": "Twinkle", 
             "name": "twinkle max", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "300.0", 
                 "black-color": "(0.8, 0.0, 1.0)", 
@@ -814,6 +820,7 @@
             "classname": "Twinkle", 
             "name": "twinkle max rainbow", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "300.0", 
                 "black-color": "(0.8, 0.0, 1.0)", 
@@ -888,6 +895,9 @@
             "name": "noise calm", 
             "params": {
                 "angle": "0.7", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "0.1", 
                 "hue-max": "[0.8,1.0,0.1]", 
                 "hue-min": "[0.2,0.3,0.1]", 
@@ -904,6 +914,9 @@
             "name": "noise big", 
             "params": {
                 "angle": "0.7", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "0.02", 
                 "hue-max": "1.0", 
                 "hue-min": "0.0", 
@@ -920,6 +933,9 @@
             "name": "noise rainbow", 
             "params": {
                 "angle": "0.7", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "0.1", 
                 "hue-max": "3.0", 
                 "hue-min": "0.0", 
@@ -936,6 +952,9 @@
             "name": "noise poster red", 
             "params": {
                 "angle": "[0,1,1]", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "0.1", 
                 "hue-max": "1.2", 
                 "hue-min": "0.9", 
@@ -952,6 +971,9 @@
             "name": "noise slow", 
             "params": {
                 "angle": "[0,1,0.2]", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "0.04", 
                 "hue-max": "1.4", 
                 "hue-min": "0.0", 
@@ -968,6 +990,9 @@
             "name": "noise poster purple", 
             "params": {
                 "angle": "0.7", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "0.1", 
                 "hue-max": "1.0", 
                 "hue-min": "0.5", 
@@ -984,6 +1009,9 @@
             "name": "noise movement test", 
             "params": {
                 "angle": "[0,1,1]", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "[-0.1,0.1,0.1]", 
                 "hue-max": "1.0", 
                 "hue-min": "0.0", 
@@ -1057,6 +1085,9 @@
             "name": "galaxy", 
             "params": {
                 "angle": "0.125", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "0.02", 
                 "hue-max": "0.9", 
                 "hue-min": "0.6", 
@@ -1072,6 +1103,7 @@
             "classname": "Twinkle", 
             "name": "twinkle stars", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "20.0", 
                 "black-color": "(0.0, 0.0, 1.0)", 
@@ -1172,6 +1204,9 @@
             "name": "noise rain 2", 
             "params": {
                 "angle": "[0,3,1]", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "0.2", 
                 "hue-max": "1.0", 
                 "hue-min": "0.0", 
@@ -1187,6 +1222,7 @@
             "classname": "Twinkle", 
             "name": "twinkle calm", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 0.5, 1.0)", 
                 "birth-rate": "[1,15,10]", 
                 "black-color": "(0.5, 0.0, 1.0)", 
@@ -1228,6 +1264,7 @@
             "classname": "Twinkle", 
             "name": "Twinkle-1", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "300.0", 
                 "black-color": "(0.8, 0.0, 1.0)", 
@@ -1241,6 +1278,7 @@
             "classname": "Twinkle", 
             "name": "Twinkle-2", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "300.0", 
                 "black-color": "(0.8, 0.0, 1.0)", 
@@ -1254,6 +1292,7 @@
             "classname": "Twinkle", 
             "name": "Twinkle-3", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "150.0", 
                 "black-color": "(-0.0, 0.0, 1.0)", 
@@ -1267,6 +1306,7 @@
             "classname": "Twinkle", 
             "name": "Twinkle-4", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "0.9", 
                 "black-color": "[0.6, 0.2, 1.0]", 

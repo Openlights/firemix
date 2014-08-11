@@ -5,6 +5,8 @@ import random
 import math
 import numpy as np
 
+from profilehooks import profile
+
 USE_YAPPI = True
 try:
     import yappi
@@ -13,7 +15,7 @@ except ImportError:
 
 from PySide import QtCore
 
-from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands
+from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands, render_command_list
 from lib.raw_preset import RawPreset
 from lib.buffer_utils import BufferUtils
 
@@ -64,9 +66,10 @@ class Mixer(QtCore.QObject):
         self._global_dimmer = 1.0
         self._global_speed = 1.0
         self._render_in_progress = False
+        self._last_tick_time = time.time()
         self.transition_progress = 0.0
 
-        if self._app.args.profile and USE_YAPPI:
+        if self._app.args.yappi and USE_YAPPI:
             yappi.start()
 
         # Load transitions
@@ -109,7 +112,7 @@ class Mixer(QtCore.QObject):
         self._tick_timer.cancel()
         self._stop_time = time.time()
 
-        if self._app.args.profile and USE_YAPPI:
+        if self._app.args.yappi and USE_YAPPI:
             yappi.print_stats(sort_type=yappi.SORTTYPE_TSUB, limit=15, thread_stats_on=False)
 
     def pause(self, pause=True):
@@ -141,13 +144,13 @@ class Mixer(QtCore.QObject):
             return self.get_next_transition()
 
         tl = [c for c in self._app.plugins.get('Transition') if str(c(None)) == name]
-        
+
         if len(tl) == 1:
             return tl[0](self._app)
         else:
             log.error("Transition %s is not loaded!" % name)
             return None
-    
+
     def set_transition_mode(self, name):
         if not self._in_transition:
             self._transition = self.get_transition_by_name(name)
@@ -191,6 +194,7 @@ class Mixer(QtCore.QObject):
     def get_transition_duration(self):
         return self._transition_duration
 
+    @profile
     def on_tick_timer(self):
         if self._frozen:
             delay = 1.0 / self._tick_rate
@@ -236,13 +240,14 @@ class Mixer(QtCore.QObject):
         #TODO: Fix this after the Playlist merge
         if len(self._playlist) == 0:
             return
-        self.start_transition((self._playlist.get_active_index() + 1) % len(self._playlist))
+
+        self.start_transition(self._playlist.get_preset_relative_to_active(1))
 
     def prev(self):
         #TODO: Fix this after the Playlist merge
         if len(self._playlist) == 0:
             return
-        self.start_transition((self._playlist.get_active_index() - 1) % len(self._playlist))
+        self.start_transition(self._playlist.get_preset_relative_to_active(-1))
 
     def start_transition(self, next=None):
         """
@@ -263,22 +268,33 @@ class Mixer(QtCore.QObject):
 
     def tick(self):
         self._num_frames += 1
-        dt = (self._global_speed / self._tick_rate)
+        now = time.time()
+        dt = now - self._last_tick_time
+        self._last_tick_time = now
+
+        dt *= self._global_speed
+
         if len(self._playlist) > 0:
 
-            self._playlist.get_active_preset().clear_commands()
-            self._playlist.get_active_preset().tick(dt)
+            active_preset = self._playlist.get_active_preset()
+            active_index = self._playlist.get_active_index()
 
-            # Handle transition by rendering both the active and the next preset, and blending them together
+            next_preset = self._playlist.get_next_preset()
+            next_index = self._playlist.get_next_index()
+
+            active_preset.clear_commands()
+            active_preset.tick(dt)
+
+            # Handle transition by rendering both the active and the next
+            # preset, and blending them together
             if self._in_transition:
                 if self._start_transition:
                     self._start_transition = False
-                    self.transition_progress
                     if self._app.settings.get('mixer')['transition'] == "Random":
                         self.get_next_transition()
                     if self._transition:
                         self._transition.reset()
-                    self._playlist.get_next_preset()._reset()
+                    next_preset._reset()
                     self._secondary_buffer = BufferUtils.create_buffer()
 
                 if self._transition_duration > 0.0 and self._transition is not None:
@@ -291,34 +307,64 @@ class Mixer(QtCore.QObject):
                     self._playlist.get_next_preset().clear_commands()
                     self._playlist.get_next_preset().tick(dt)
 
-                # Exit from transition state after the transition duration has elapsed
+                # Exit from transition state after the transition duration has
+                # elapsed
                 if self.transition_progress >= 1.0:
                     self._in_transition = False
-                    # Reset the elapsed time counter so the preset runs for the full duration after the transition
+                    # Reset the elapsed time counter so the preset runs for the
+                    # full duration after the transition
                     self._elapsed = 0.0
                     self._playlist.advance()
+                    active_preset = next_preset
+                    active_index = next_index
 
             # If the scene tree is available, we can do efficient mixing of presets.
             # If not, a tree would need to be constructed on-the-fly.
             # TODO: Support mixing without a scene tree available
             if self._enable_rendering:
+                first_preset = self._playlist.get_preset_by_index(active_index)
                 if self._in_transition:
-                    self.render_presets(self._playlist.get_active_index(), self._playlist.get_next_index(), self.transition_progress)
+                    second_preset = self._playlist.get_preset_by_index(next_index)
+                    mixed_buffer = self.render_presets(
+                        first_preset, self._main_buffer,
+                        second_preset, self._secondary_buffer,
+                        self._in_transition, self._transition,
+                        self.transition_progress,
+                        check_for_nan=self._enable_profiling)
                 else:
-                    self.render_presets(self._playlist.get_active_index())
+                    mixed_buffer = self.render_presets(
+                        first_preset, self._main_buffer,
+                        check_for_nan=self._enable_profiling)
+
+                # render_presets writes all the desired pixels to
+                # self._main_buffer.
+
+                # Apply the global dimmer to _main_buffer.
+                if self._global_dimmer < 1.0:
+                    mixed_buffer.T[1] *= self._global_dimmer
+
+                # Mod hue by 1 (to allow wrap-around) and clamp lightness and
+                # saturation to [0, 1].
+                mixed_buffer.T[0] = np.mod(mixed_buffer.T[0], 1.0)
+                np.clip(mixed_buffer.T[1], 0.0, 1.0, mixed_buffer.T[1])
+                np.clip(mixed_buffer.T[2], 0.0, 1.0, mixed_buffer.T[2])
+
+                # Write this buffer to enabled clients.
+                if self._net is not None:
+                    self._net.write_buffer(mixed_buffer)
             else:
                 if self._net is not None:
-                    self._net.write(self._playlist.get_active_preset().get_commands_packed())
+                    self._net.write_commands(active_preset.get_commands_packed())
 
-            if not self._paused and (self._elapsed >= self._duration) and self._playlist.get_active_preset().can_transition() and not self._in_transition:
+            if not self._paused and (self._elapsed >= self._duration) and active_preset.can_transition() and not self._in_transition:
                 if (self._elapsed >= (self._duration + self._transition_slop)) or self._onset:
                     if len(self._playlist) > 1:
                         self.start_transition()
                     self._elapsed = 0.0
 
-            if self._reset_onset:
-                self._onset = False
-                self._reset_onset = False
+        if self._reset_onset:
+            self._onset = False
+            self._reset_onset = False
 
         if self._enable_profiling:
             tick_time = (time.time() - self._last_frame_time)
@@ -330,64 +376,38 @@ class Mixer(QtCore.QObject):
     def scene(self):
         return self._scene
 
-    def render_presets(self, first, second=None, transition_progress=0.0):
+    def render_presets(self, first_preset, first_buffer,
+                       second_preset=None, second_buffer=None,
+                       in_transition=False, transition=None,
+                       transition_progress=0.0, check_for_nan=False):
         """
         Grabs the command output from a preset with the index given by first.
         If a second preset index is given, render_preset will use a Transition class to generate the output
         according to transition_progress (0.0 = 100% first, 1.0 = 100% second)
         """
 
-        if self._enable_profiling:
-            start = time.time()
+        first_buffer = first_preset.draw_to_buffer(first_buffer)
+        if check_for_nan:
+            for item in first_buffer.flat:
+                if math.isnan(item):
+                    raise ValueError
 
-        commands = []
-
-        if isinstance(self._playlist.get_preset_by_index(first), RawPreset):
-            self._main_buffer = self._playlist.get_preset_by_index(first).get_buffer()
-            if self._app.args.profile:
-                for item in self._main_buffer.flat:
+        if second_preset is not None:
+            second_buffer = second_preset.draw_to_buffer(second_buffer)
+            if check_for_nan:
+                for item in second_buffer.flat:
                     if math.isnan(item):
                         raise ValueError
 
-        else:
-            commands = self._playlist.get_preset_by_index(first).get_commands()
-            self.render_command_list(commands, self._main_buffer)
-
-        if second is not None:
-            if self._enable_profiling:
-                start = time.time()
-
-            if isinstance(self._playlist.get_preset_by_index(second), RawPreset):
-                self._secondary_buffer = self._playlist.get_preset_by_index(second).get_buffer()
-                if self._app.args.profile:
-                    for item in self._main_buffer.flat:
-                        if math.isnan(item):
-                            raise ValueError
-            else:
-                second_commands = self._playlist.get_preset_by_index(second).get_commands()
-                self.render_command_list(second_commands, self._secondary_buffer)
-
-            if self._in_transition:
-                self._main_buffer = self._transition.get(self._main_buffer, self._secondary_buffer, transition_progress)
-                if self._app.args.profile:
-                    for item in self._main_buffer.flat:
+            if in_transition and transition is not None:
+                first_buffer = transition.get(first_buffer, second_buffer,
+                                              transition_progress)
+                if check_for_nan:
+                    for item in first_buffer.flat:
                         if math.isnan(item):
                             raise ValueError
 
-        if self._global_dimmer < 1.0:
-            self._main_buffer *= (1.0, self._global_dimmer, 1.0)
-
-        if self._net is not None:
-            self._main_buffer.T[0] = np.mod(self._main_buffer.T[0], 1.0)
-            np.clip(self._main_buffer.T[1], 0.0, 1.0, self._main_buffer.T[1])
-            np.clip(self._main_buffer.T[2], 0.0, 1.0, self._main_buffer.T[2])
-            self._net.write(self._main_buffer)
-
-    def create_buffers(self):
-        """
-        Pixel buffers are 3D numpy arrays.  The axes are strand, pixel, and color.
-        The "y" axis (pixel) is an expanded pixel address
-        """
+        return first_buffer
 
     def reset_output_buffer(self):
         """
@@ -395,6 +415,7 @@ class Mixer(QtCore.QObject):
         """
         self._main_buffer = BufferUtils.create_buffer()
         self._secondary_buffer = BufferUtils.create_buffer()
+
 
     def render_command_list(self, list, buffer):
         """

@@ -17,7 +17,7 @@ class ColorFade:
         self.color_cache = np.zeros((steps + 1, 3), dtype=np.float32)
 
         # Warmup the cache
-        for i in range(steps + 1):
+        for i in xrange(steps + 1):
             overall_progress = float(i) * (len(self.keyframes) - 1) / self._steps
             stage = int(overall_progress)
             stage_progress = overall_progress - stage # 0 to 1 float

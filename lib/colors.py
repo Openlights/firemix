@@ -22,7 +22,6 @@ def hsv_float_to_rgb_uint8(hsv_color):
 def clip(low, input, high):
     return min(max(input, low), high)
 
-
 def blend_to_buffer(source, destination, progress, mode):
     h1,l1,s1 = source.T
     h2,l2,s2 = destination.T
@@ -35,8 +34,8 @@ def blend_to_buffer(source, destination, progress, mode):
 
     return destination
 
-def hls_blend(start, end, output_buffer, progress, mode, fade_length=1.0, ease_power=0.5):
 
+def hls_blend(start, end, temporary_buffer, progress, mode, fade_length=1.0, ease_power=0.5):
     p = abs(progress)
 
     startPower = (1.0 - p) / fade_length
@@ -84,8 +83,8 @@ def hls_blend(start, end, output_buffer, progress, mode, fade_length=1.0, ease_p
 
     np.clip(l, 0, 1, l)
 
-    if output_buffer is not None:
-        frame = output_buffer
+    if temporary_buffer is not None:
+        frame = temporary_buffer
         frame[:, 0] = h
         frame[:, 1] = l
         frame[:, 2] = s

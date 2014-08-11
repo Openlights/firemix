@@ -85,3 +85,6 @@ class RawPreset(Preset):
         self.draw(dt)
 
         self._ticks += 1
+
+    def draw_to_buffer(self, buffer):
+        return self.get_buffer()

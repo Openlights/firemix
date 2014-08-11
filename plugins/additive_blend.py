@@ -9,10 +9,7 @@ class AdditiveBlend(Transition):
     """
     Additive HLS blender:
     This approximates color addition for the HLS color space.
-    Adding opposite colors produces white.
-    Adding other colors aims for a hue midpoint.
-    Adding black to a color has no effect
-    Adding anything to white is still white.    
+    This class is pretty glitchy. Use Linear Blend instead if you want smooth results.
     """
 
     def __init__(self, app):
