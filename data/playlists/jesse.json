@@ -126,6 +126,7 @@
                 "center-orbit-speed": "60.0", 
                 "center-x": "[-180,180,120]", 
                 "center-y": "[-60,60,80]", 
+                "edge-mode": "clamp", 
                 "ghost": "[-0.6,1.03,3.0]", 
                 "image-file": "data/images/snowbigger.png", 
                 "scale": "[0.6,1.2,0.5]", 
@@ -1505,37 +1506,10 @@
             }
         }, 
         {
-            "classname": "Mandelbrot", 
-            "name": "Mandelbrot-1", 
-            "params": {
-                "center": "(0.001643721971153, 0.822467633298876)", 
-                "color-speed": "0.02", 
-                "duration": "20.0", 
-                "iterations": "300", 
-                "max-color": "(0.0, 1.0, 0.0)", 
-                "scale": "0.1", 
-                "scale-target": "1e-08", 
-                "shrink-duration": "3.0"
-            }
-        }, 
-        {
-            "classname": "Mandelbrot", 
-            "name": "Mandelbrot-2", 
-            "params": {
-                "center": "(0.001643721971153, 0.822467633298876)", 
-                "color-speed": "0.005", 
-                "duration": "20.0", 
-                "iterations": "300", 
-                "max-color": "(0.0, 1.0, 0.0)", 
-                "scale": "0.01", 
-                "scale-target": "1e-09", 
-                "shrink-duration": "3.0"
-            }
-        }, 
-        {
             "classname": "Twinkle", 
             "name": "Twinkle-1", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "300.0", 
                 "black-color": "(0.8, 0.0, 1.0)", 
@@ -1549,6 +1523,7 @@
             "classname": "Twinkle", 
             "name": "Twinkle-2", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "300.0", 
                 "black-color": "(0.8, 0.0, 1.0)", 
@@ -1562,6 +1537,7 @@
             "classname": "Twinkle", 
             "name": "Twinkle-3", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "150.0", 
                 "black-color": "(-0.0, 0.0, 1.0)", 
@@ -1575,6 +1551,7 @@
             "classname": "Twinkle", 
             "name": "Twinkle-4", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "0.9", 
                 "black-color": "[0.6, 0.2, 1.0]", 
