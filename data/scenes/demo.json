@@ -1,6 +1,10 @@
 {
-    "backdrop_enable": true, 
+    "backdrop_enable": false, 
     "backdrop_filename": "light_dome.png", 
+    "bounding_box": [
+        640, 
+        640
+    ], 
     "center": [
         320, 
         320
@@ -15,12 +19,12 @@
             "address": 4, 
             "pixels": 32, 
             "pos1": [
-                320, 
-                321
-            ], 
-            "pos2": [
                 260, 
                 403
+            ], 
+            "pos2": [
+                320, 
+                321
             ], 
             "strand": 4, 
             "type": "linear"
@@ -43,12 +47,12 @@
             "address": 4, 
             "pixels": 32, 
             "pos1": [
-                321, 
-                323
-            ], 
-            "pos2": [
                 221, 
                 288
+            ], 
+            "pos2": [
+                321, 
+                323
             ], 
             "strand": 6, 
             "type": "linear"
@@ -71,12 +75,12 @@
             "address": 1, 
             "pixels": 32, 
             "pos1": [
-                323, 
-                321
-            ], 
-            "pos2": [
                 417, 
                 289
+            ], 
+            "pos2": [
+                323, 
+                321
             ], 
             "strand": 6, 
             "type": "linear"
@@ -85,12 +89,12 @@
             "address": 4, 
             "pixels": 32, 
             "pos1": [
-                321, 
-                318
-            ], 
-            "pos2": [
                 382, 
                 405
+            ], 
+            "pos2": [
+                321, 
+                318
             ], 
             "strand": 2, 
             "type": "linear"
@@ -99,12 +103,12 @@
             "address": 3, 
             "pixels": 32, 
             "pos1": [
-                257, 
-                402
-            ], 
-            "pos2": [
                 221, 
                 288
+            ], 
+            "pos2": [
+                257, 
+                402
             ], 
             "strand": 4, 
             "type": "linear"
@@ -141,12 +145,12 @@
             "address": 3, 
             "pixels": 32, 
             "pos1": [
-                222, 
-                289
-            ], 
-            "pos2": [
                 213, 
                 169
+            ], 
+            "pos2": [
+                222, 
+                289
             ], 
             "strand": 5, 
             "type": "linear"
@@ -183,12 +187,12 @@
             "address": 1, 
             "pixels": 32, 
             "pos1": [
-                324, 
-                215
-            ], 
-            "pos2": [
                 433, 
                 170
+            ], 
+            "pos2": [
+                324, 
+                215
             ], 
             "strand": 0, 
             "type": "linear"
@@ -225,12 +229,12 @@
             "address": 3, 
             "pixels": 32, 
             "pos1": [
-                225, 
-                282
+                322, 
+                215
             ], 
             "pos2": [
-                321, 
-                215
+                226, 
+                282
             ], 
             "strand": 6, 
             "type": "linear"
@@ -254,11 +258,11 @@
             "pixels": 32, 
             "pos1": [
                 323, 
-                109
+                110
             ], 
             "pos2": [
                 429, 
-                167
+                168
             ], 
             "strand": 0, 
             "type": "linear"
@@ -323,12 +327,12 @@
             "address": 0, 
             "pixels": 32, 
             "pos1": [
-                431, 
-                167
-            ], 
-            "pos2": [
                 521, 
                 253
+            ], 
+            "pos2": [
+                431, 
+                167
             ], 
             "strand": 1, 
             "type": "linear"
@@ -365,12 +369,12 @@
             "address": 2, 
             "pixels": 32, 
             "pos1": [
-                422, 
-                286
-            ], 
-            "pos2": [
                 497, 
                 374
+            ], 
+            "pos2": [
+                422, 
+                286
             ], 
             "strand": 2, 
             "type": "linear"
@@ -379,12 +383,12 @@
             "address": 1, 
             "pixels": 32, 
             "pos1": [
-                498, 
-                377
-            ], 
-            "pos2": [
                 383, 
                 406
+            ], 
+            "pos2": [
+                498, 
+                377
             ], 
             "strand": 2, 
             "type": "linear"
@@ -407,12 +411,12 @@
             "address": 0, 
             "pixels": 32, 
             "pos1": [
-                256, 
-                405
-            ], 
-            "pos2": [
                 196, 
                 493
+            ], 
+            "pos2": [
+                256, 
+                405
             ], 
             "strand": 4, 
             "type": "linear"
@@ -435,12 +439,12 @@
             "address": 3, 
             "pixels": 32, 
             "pos1": [
-                322, 
-                503
-            ], 
-            "pos2": [
                 259, 
                 405
+            ], 
+            "pos2": [
+                322, 
+                503
             ], 
             "strand": 3, 
             "type": "linear"
@@ -449,12 +453,12 @@
             "address": 1, 
             "pixels": 32, 
             "pos1": [
-                381, 
-                407
-            ], 
-            "pos2": [
                 322, 
                 505
+            ], 
+            "pos2": [
+                381, 
+                407
             ], 
             "strand": 3, 
             "type": "linear"
@@ -477,12 +481,12 @@
             "address": 0, 
             "pixels": 32, 
             "pos1": [
-                383, 
-                406
-            ], 
-            "pos2": [
                 443, 
                 487
+            ], 
+            "pos2": [
+                383, 
+                406
             ], 
             "strand": 2, 
             "type": "linear"
@@ -503,7 +507,7 @@
         }
     ], 
     "labels_enable": true, 
-    "locked": true, 
+    "locked": false, 
     "name": "Demo", 
     "strand-settings": [
         {
@@ -517,7 +521,7 @@
             "id": 1
         }, 
         {
-            "color-mode": "RGB8", 
+            "color-mode": "BGR8", 
             "enabled": true, 
             "id": 2
         }, 
@@ -527,7 +531,7 @@
             "id": 3
         }, 
         {
-            "color-mode": "BGR8", 
+            "color-mode": "RGB8", 
             "enabled": true, 
             "id": 4
         }, 

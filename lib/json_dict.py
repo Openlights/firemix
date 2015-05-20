@@ -1,3 +1,20 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import collections
 import json
 import os
@@ -41,15 +58,22 @@ class JSONDict(collections.MutableMapping):
         else:
             with open(self.filename, 'r') as f:
                 try:
-                    self.data = json.load(f)
-                    if self.data.get('file-type', '') != self.filetype:
+                    self.data = self._unicode_to_str(json.load(f))
+                    if self.data.get('file-type', None) != self.filetype:
                         raise ValueError("Error loading settings from %s: file-type mismatch." % self.filename)
-                        self.data = None
-                        return None
                 except:
-                    self.data = None
-                    return None
+                    raise
 
     def save(self):
         with open(self.filename, 'w') as f:
             json.dump(self.data, f, indent=4, sort_keys=True)
+
+    def _unicode_to_str(self, data):
+        if isinstance(data, basestring):
+            return str(data)
+        elif isinstance(data, collections.Mapping):
+            return dict(map(self._unicode_to_str, data.iteritems()))
+        elif isinstance(data, collections.Iterable):
+            return type(data)(map(self._unicode_to_str, data))
+        else:
+            return data

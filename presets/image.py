@@ -1,3 +1,20 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import random
 import math
 import numpy as np
@@ -23,7 +40,7 @@ class ImagePreset(RawPreset):
         self.add_parameter(FloatParameter('beat-lum-boost', 0.1))
         self.add_parameter(FloatParameter('beat-lum-time', 0.05))
 
-        self.pixel_locations = np.asarray(self.scene().get_all_pixel_locations())
+        self.pixel_locations = self.scene().get_all_pixel_locations()
         self.hue_inner = random.random() + 100
         self._center_rotation = random.random()
         self.angle = 0
@@ -31,6 +48,7 @@ class ImagePreset(RawPreset):
         self.hue_offset = 0
         self.imagename = None
         self.image = None
+        self._buffer = None
 
         self.parameter_changed(None)
 
@@ -106,7 +124,9 @@ class ImagePreset(RawPreset):
             ghost = self.parameter('ghost').get()
             if abs(ghost) > 0:
                 if self.lastFrame != None:
-                    colors = hls_blend(colors, self.lastFrame, ghost, "add", 1.0, 0.1)
+                    if self._buffer is None:
+                        self._buffer = np.empty_like(self.lastFrame)
+                    colors = hls_blend(colors, self.lastFrame, self._buffer, ghost, "add", 1.0, 0.1)
                 self.lastFrame = colors
 
             lum_time = self.parameter('beat-lum-time').get()

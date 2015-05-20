@@ -1,3 +1,20 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import ast
 import numpy
 from lib.wibbler import Wibbler
@@ -143,6 +160,33 @@ class FloatParameter(Parameter):
 
     def _cast_from_str(self, value):
         return float(value)
+
+
+class FloatTupleParameter(Parameter):
+    """
+    Parameter holding a float value
+    """
+
+    def __init__(self, name, size, value=None):
+        Parameter.__init__(self, name)
+        self.size = size
+        if (value is not None):
+            self.set(value)
+        else:
+            self.set(tuple([0.] * self.size))
+
+    def validate(self, value):
+        if not isinstance(value, tuple):
+            return False
+        if (len(value) != self.size):
+            return False
+        for item in value:
+            if not isinstance(item, float):
+                return False
+        return True
+
+    def _cast_from_str(self, value):
+        return tuple(ast.literal_eval(value))
 
 
 class RGBParameter(Parameter):

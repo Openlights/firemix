@@ -1,3 +1,20 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import sys
 import logging
 import argparse
@@ -23,6 +40,7 @@ if __name__ == "__main__":
     parser.add_argument("scene", type=str, help="Scene file to load (create scenes with FireSim)")
     parser.add_argument("--playlist", type=str, help="Playlist file to load", default=None)
     parser.add_argument("--profile", action='store_const', const=True, default=False, help="Enable profiling")
+    parser.add_argument("--yappi", action='store_const', const=True, default=False, help="Enable YAPPI")
     parser.add_argument("--nogui", action='store_const', const=True, default=False, help="Disable GUI")
     parser.add_argument("--preset", type=str, help="Specify a preset name to run only that preset (useful for debugging)")
     parser.add_argument("--verbose", action='store_const', const=True, default=False, help="Enable verbose log output")

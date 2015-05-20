@@ -1,3 +1,20 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import numpy as np
 import colorsys
 import random
@@ -43,7 +60,7 @@ class SpiralGradient(RawPreset):
         self._fader = ColorFade(fade_colors, self._fader_steps)
 
     def reset(self):
-        pass
+        self.locations = self.scene().get_all_pixel_locations()
 
     def draw(self, dt):
         if self._mixer.is_onset():
@@ -62,10 +79,10 @@ class SpiralGradient(RawPreset):
         angle_hue_width = self.parameter('angle-hue-width').get()
 
         cx, cy = self.scene().center_point()
-        self.locations = np.asarray(self.scene().get_all_pixel_locations())
-        x,y = self.locations.T
-        x -= cx + math.cos(self.center_offset_angle) * self.parameter('center-distance').get()
-        y -= cy + math.sin(self.center_offset_angle) * self.parameter('center-distance').get()
+
+        center_distance = self.parameter('center-distance').get()
+        x,y = (self.locations - (cx + math.cos(self.center_offset_angle) * center_distance,
+                                  cy + math.sin(self.center_offset_angle) * center_distance)).T
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
         self.pixel_angles = np.arctan2(y, x) / (2.0 * math.pi)
         self.pixel_distances /= max(self.pixel_distances)

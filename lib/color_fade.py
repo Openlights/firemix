@@ -1,3 +1,20 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import unittest
 import colorsys
 import numpy as np
@@ -17,7 +34,7 @@ class ColorFade:
         self.color_cache = np.zeros((steps + 1, 3), dtype=np.float32)
 
         # Warmup the cache
-        for i in range(steps + 1):
+        for i in xrange(steps + 1):
             overall_progress = float(i) * (len(self.keyframes) - 1) / self._steps
             stage = int(overall_progress)
             stage_progress = overall_progress - stage # 0 to 1 float

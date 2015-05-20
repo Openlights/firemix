@@ -1,3 +1,20 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import os
 import logging
 import inspect
@@ -24,6 +41,10 @@ class PluginLoader:
         for f in os.listdir(os.path.join(os.getcwd(), "plugins")):
             module_name, ext = os.path.splitext(f)
             if ext == ".py":
+                # Skip emacs lock files.
+                if f.startswith('.#'):
+                    continue
+
                 module = __import__("plugins." + module_name, fromlist=['dummy'])
                 for name, obj in inspect.getmembers(module, inspect.isclass):
                     bases = inspect.getmro(obj)

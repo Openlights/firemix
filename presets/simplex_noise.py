@@ -1,3 +1,20 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 from noise import snoise3
 import numpy as np
 import ast
@@ -56,8 +73,7 @@ class SimplexNoise(RawPreset):
     def draw(self, dt):
         if self._mixer.is_onset():
             self._offset_z += self.parameter('beat-color-boost').get()
-            
-        self._setup_pars()
+
         angle = self.parameter('angle').get()
         #self._offset_x += dt * self.parameter('speed').get() * math.cos(angle) * 2 * math.pi
         #self._offset_y += dt * self.parameter('speed').get() * math.sin(angle) * 2 * math.pi

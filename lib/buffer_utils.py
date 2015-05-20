@@ -1,3 +1,20 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import numpy as np
 
 
@@ -43,7 +60,7 @@ class BufferUtils:
 
         for strand in fh:
             for fixture in fh[strand]:
-                for offset in range(cls._app.scene.fixture(strand, fixture).pixels):
+                for offset in xrange(cls._app.scene.fixture(strand, fixture).pixels):
                     cls.logical_to_index((strand, fixture, offset))
 
     @classmethod
@@ -64,11 +81,11 @@ class BufferUtils:
             index = 0
 
             # (1) Skip to the start of the strand
-            for i in range(strand):
+            for i in xrange(strand):
                 index += cls._strand_lengths[i]
 
             # (2) Skip to the fixture in question
-            for i in range(fixture):
+            for i in xrange(fixture):
                 index += scene.fixture(strand, i).pixels
 
             fixture_start = index

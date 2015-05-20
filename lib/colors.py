@@ -1,3 +1,20 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import colorsys
 import numpy as np
 
@@ -22,8 +39,20 @@ def hsv_float_to_rgb_uint8(hsv_color):
 def clip(low, input, high):
     return min(max(input, low), high)
 
-def hls_blend(start, end, progress, mode, fade_length=1.0, ease_power=0.5):
+def blend_to_buffer(source, destination, progress, mode):
+    h1,l1,s1 = source.T
+    h2,l2,s2 = destination.T
 
+    if mode == 'overwrite':
+        not_dark = l1 > 0.0
+        destination[not_dark] = source[not_dark]
+    else:
+        raise NotImplementedError
+
+    return destination
+
+
+def hls_blend(start, end, temporary_buffer, progress, mode, fade_length=1.0, ease_power=0.5):
     p = abs(progress)
 
     startPower = (1.0 - p) / fade_length
@@ -71,7 +100,13 @@ def hls_blend(start, end, progress, mode, fade_length=1.0, ease_power=0.5):
 
     np.clip(l, 0, 1, l)
 
-    frame = np.asarray([h, l, s]).T
+    if temporary_buffer is not None:
+        frame = temporary_buffer
+        frame[:, 0] = h
+        frame[:, 1] = l
+        frame[:, 2] = s
+    else:
+        frame = np.asarray([h, l, s]).T
 
     return frame
 
@@ -119,3 +154,75 @@ def rgb_to_hls(arr):
     out[np.isnan(out)] = 0
 
     return out
+
+def hls_to_rgb(hls):
+    """
+    Converts HLS color array [[H,L,S]] to RGB array.
+
+    http://en.wikipedia.org/wiki/HSL_and_HSV#From_HSL
+
+    Returns [[R,G,B]] in [0..1]
+
+    Adapted from: http://stackoverflow.com/questions/4890373/detecting-thresholds-in-hsv-color-space-from-rgb-using-python-pil/4890878#4890878
+    """
+
+    H = hls[:, 0]
+    L = hls[:, 1]
+    S = hls[:, 2]
+
+    C = (1 - np.absolute(2 * L - 1)) * S
+
+    Hp = H * 6.0
+    i = Hp.astype(np.int)
+    #f = Hp - i  # |H' mod 2|  ?
+
+    X = C * (1 - np.absolute(np.mod(Hp, 2) - 1))
+    #X = C * (1 - f)
+
+    # initialize with zero
+    R = np.zeros(H.shape, float)
+    G = np.zeros(H.shape, float)
+    B = np.zeros(H.shape, float)
+
+    # handle each case:
+
+    #mask = (Hp >= 0) == ( Hp < 1)
+    mask = i % 6 == 0
+    R[mask] = C[mask]
+    G[mask] = X[mask]
+
+    #mask = (Hp >= 1) == ( Hp < 2)
+    mask = i == 1
+    R[mask] = X[mask]
+    G[mask] = C[mask]
+
+    #mask = (Hp >= 2) == ( Hp < 3)
+    mask = i == 2
+    G[mask] = C[mask]
+    B[mask] = X[mask]
+
+    #mask = (Hp >= 3) == ( Hp < 4)
+    mask = i == 3
+    G[mask] = X[mask]
+    B[mask] = C[mask]
+
+    #mask = (Hp >= 4) == ( Hp < 5)
+    mask = i == 4
+    R[mask] = X[mask]
+    B[mask] = C[mask]
+
+    #mask = (Hp >= 5) == ( Hp < 6)
+    mask = i == 5
+    R[mask] = C[mask]
+    B[mask] = X[mask]
+
+    m = L - 0.5*C
+    R += m
+    G += m
+    B += m
+
+    rgb = np.empty_like(hls)
+    rgb[:, 0] = R
+    rgb[:, 1] = G
+    rgb[:, 2] = B
+    return rgb

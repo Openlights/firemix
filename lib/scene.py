@@ -1,6 +1,24 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import os
 import math
 import logging
+import numpy as np
 
 from lib.json_dict import JSONDict
 from lib.fixture import Fixture
@@ -30,6 +48,7 @@ class Scene(JSONDict):
         self._all_pixels = None
         self._all_pixel_locations = None
         self._all_pixels_raw = None
+        self._strand_settings = None
 
     def warmup(self):
         """
@@ -76,7 +95,9 @@ class Scene(JSONDict):
         return self.data.get("name", "")
 
     def get_strand_settings(self):
-        return self.data.get("strand-settings", [])
+        if self._strand_settings is None:
+            self._strand_settings = self.data.get("strand-settings")
+        return self._strand_settings
 
     def set_strand_settings(self, settings):
         self.data["strand-settings"] = settings
@@ -99,6 +120,8 @@ class Scene(JSONDict):
                 if f.strand == strand and f.address == address:
                     fix = f
                     self._fixture_dict[(strand, address)] = f
+        if fix is None:
+            raise ValueError("Fixture [%d,%d] is out of range" % (strand, address))
         return fix
 
     def fixture_hierarchy(self):
@@ -248,8 +271,7 @@ class Scene(JSONDict):
         if self._all_pixels is None:
             addresses = []
             for f in self.fixtures():
-                pixels = range(f.pixels)
-                for pixel in pixels:
+                for pixel in xrange(f.pixels):
                     addresses.append((f.strand, f.address, pixel))
             self._all_pixels = addresses
         return self._all_pixels
@@ -270,7 +292,7 @@ class Scene(JSONDict):
 
     def get_all_pixel_locations(self):
         """
-        Returns a list of ((strand, address, pixel), (x, y)) tuples
+        Returns a numpy array of (x, y) pairs.
         """
         if self._all_pixel_locations is None:
             pixels = self.get_all_pixels()
@@ -278,8 +300,8 @@ class Scene(JSONDict):
             for pixel in pixels:
                 pixel_location_list.append(self.get_pixel_location(pixel))
 
-            self._all_pixel_locations = pixel_location_list
-        return self._all_pixel_locations
+            self._all_pixel_locations = np.asarray(pixel_location_list)
+        return np.copy(self._all_pixel_locations)
 
 
     def get_fixture_bounding_box(self):

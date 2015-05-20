@@ -1,9 +1,26 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import unittest
 import time
 import logging
 import numpy as np
 
-from lib.commands import SetAll, SetStrand, SetFixture, SetPixel
+from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, render_command_list
 
 log = logging.getLogger("firemix.lib.preset")
 
@@ -16,6 +33,7 @@ class Preset:
         self._commands = []
         self._tickers = []
         self._ticks = 0
+        self._elapsed_time = 0
         self._parameters = {}
         self._instance_name = name
         self.setup()
@@ -128,8 +146,6 @@ class Preset:
     def tick(self, dt):  
         if self._mixer._enable_profiling:
             start = time.time()
-            # TODO: This does not account for varying frame rate
-        current_time = self._ticks * dt
 
         for parameter in self._parameters.values():
             parameter.tick(dt)
@@ -137,7 +153,7 @@ class Preset:
         # Assume that self._tickers is already sorted via add_ticker()
         for ticker, priority in self._tickers:
 
-            for lights, color in ticker(self._ticks, current_time):
+            for lights, color in ticker(self._ticks, self._elapsed_time):
 
                 if lights is not None:
 
@@ -155,10 +171,16 @@ class Preset:
                             self.add_command(SetPixel(light[0], light[1], light[2], color, priority))
 
         self._ticks += 1
+        self._elapsed_time += dt
         if self._mixer._enable_profiling:
             tick_time = 1000.0 * (time.time() - start)
             if tick_time > 30.0:
                 log.info("%s slow frame: %d ms" % (self.__class__, tick_time))
+
+    def draw_to_buffer(self, buffer):
+        commands = self.get_commands()
+        render_command_list(self.scene(), commands, buffer)
+        return buffer
 
     def tick_rate(self):
         return self._mixer.get_tick_rate()

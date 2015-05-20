@@ -1,3 +1,20 @@
+# This file is part of Firemix.
+#
+# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+#
+# Firemix is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 import numpy as np
 from math import fmod, fabs, sqrt, pow, tan, pi, atan2
 from copy import deepcopy
@@ -42,7 +59,7 @@ class Spiral(Transition):
         self.mask = np.tile(False, (self.buffer_size, 3))
         self.angle = 0.0
         self.radius = 0.0
-        self.active = deepcopy(self.locations)
+        self.active = [True,] * len(self.locations)
 
     def get(self, start, end, progress):
 
@@ -50,13 +67,15 @@ class Spiral(Transition):
         distance_progress = self.scene_radius * progress
         distance_cutoff = (1.0 / self.revolutions) * self.scene_radius * progress
 
-        for pixel, location in enumerate(self.active):
+        for pixel in xrange(len(self.active)):
+            if not self.active[pixel]:
+                continue
             angle = self.angles[pixel]
             distance = self.radii[pixel]
 
             if distance < distance_cutoff or (distance < distance_progress and angle < radius_progress):
                 self.mask[pixel][:] = True
-                self.active.remove(location)
+                self.active[pixel] = False
 
         start[self.mask] = 0.0
         end[np.invert(self.mask)] = 0.0
