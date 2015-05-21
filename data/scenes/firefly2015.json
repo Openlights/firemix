@@ -392,6 +392,20 @@
       ],
       "strand": 4,
       "type": "linear"
+    },
+    {
+      "address": 1,
+      "pixels": 120,
+      "pos1": [
+        398,
+        399
+      ],
+      "pos2": [
+        222,
+        700
+      ],
+      "strand": 13,
+      "type": "linear"
     }
   ],
     "labels_enable": false,

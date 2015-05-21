@@ -6,6 +6,9 @@
             "name": "SimplexNoise", 
             "params": {
                 "angle": "[0.25, 0.5, 0.75]", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "0.25", 
                 "hue-max": "1.0", 
                 "hue-min": "0.0", 
@@ -45,6 +48,9 @@
             "name": "Simplex-BluePurple", 
             "params": {
                 "angle": "0.125", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "0.0", 
                 "hue-max": "1.0", 
                 "hue-min": "0.5", 
@@ -87,6 +93,7 @@
             "classname": "Twinkle", 
             "name": "Twinkle-1", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "0.25", 
                 "black-color": "(0.0, 0.0, 1.0)", 
@@ -101,6 +108,9 @@
             "name": "SimplexNoise-Rasta", 
             "params": {
                 "angle": "0.125", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
                 "color-speed": "1.0", 
                 "hue-max": "0.4", 
                 "hue-min": "0.0", 
@@ -135,6 +145,7 @@
             "classname": "Twinkle", 
             "name": "StarryNight", 
             "params": {
+                "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "1.0", 
                 "black-color": "(0.0, 0.0, 1.0)", 
@@ -206,15 +217,6 @@
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.2", 
                 "wave-speed": "0.1"
-            }
-        }, 
-        {
-            "classname": "MotionSilencing", 
-            "name": "MotionSilencing-1", 
-            "params": {
-                "color-speed": "0.3", 
-                "duty-cycle": "2.0", 
-                "motion-speed": "40.0"
             }
         }
     ]
