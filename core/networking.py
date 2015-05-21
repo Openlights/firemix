@@ -131,7 +131,7 @@ class Networking:
                     raise NotImplementedError('Unknown color mode: %s' % client_color_mode)
 
                 try:
-                    #print "Sending packet of length %i for strand %i", (len(packet), strand)
+                    #print "Sending packet of length %i for strand %i" % (len(packet), strand)
                     self._socket.sendto(packet, (client["host"], client["port"]))
                 except IOError as (errno, strerror):
                     print "I/O error({0}): {1}".format(errno, strerror)

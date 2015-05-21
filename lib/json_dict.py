@@ -62,7 +62,7 @@ class JSONDict(collections.MutableMapping):
                     if self.data.get('file-type', None) != self.filetype:
                         raise ValueError("Error loading settings from %s: file-type mismatch." % self.filename)
                 except:
-                    raise
+                    raise ValueError("Parse error in JSON file.")
 
     def save(self):
         with open(self.filename, 'w') as f:
