@@ -14,7 +14,7 @@
         800
     ],
     "file-type": "scene",
-    "fixtures": [
+  "fixtures": [
     {
       "address": 1,
       "pixels": 120,
@@ -376,7 +376,7 @@
         743,
         396
       ],
-      "strand": 4,
+      "strand": 14,
       "type": "linear"
     },
     {
@@ -394,17 +394,45 @@
       "type": "linear"
     },
     {
+      "address": 0,
+      "pixels": 120,
+      "pos1": [
+        37,
+        400
+      ],
+      "pos2": [
+        398,
+        399
+      ],
+      "strand": 14,
+      "type": "linear"
+    },
+    {
       "address": 1,
       "pixels": 120,
       "pos1": [
         398,
-        399
+        400
       ],
       "pos2": [
-        222,
-        700
+        573,
+        707
       ],
       "strand": 13,
+      "type": "linear"
+    },
+    {
+      "address": 1,
+      "pixels": 120,
+      "pos1": [
+        397,
+        396
+      ],
+      "pos2": [
+        549,
+        115
+      ],
+      "strand": 4,
       "type": "linear"
     }
   ],
@@ -481,6 +509,11 @@
             "color-mode": "BGR8",
             "enabled": true,
             "id": 13
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 14
         }
     ]
 }
