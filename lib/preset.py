@@ -44,7 +44,7 @@ class Preset:
     def set_name(self, name):
         self._instance_name = name
 
-    def get_name(self):
+    def name(self):
         return self._instance_name
 
     def reset(self):
