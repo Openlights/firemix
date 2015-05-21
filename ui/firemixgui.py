@@ -249,12 +249,14 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         shuffle_state = QtCore.Qt.Checked if self._app.settings['mixer']['shuffle'] else QtCore.Qt.Unchecked
         self.btn_shuffle_playlist.setChecked(shuffle_state)
 
+        preset = self._app.playlist.get_active_preset().name()
+
         if not self._mixer.is_paused():
             self.tbl_preset_parameters.setDisabled(True)
-            self.lbl_preset_parameters.setTitle("Preset Parameters (Pause to Edit)")
+            self.lbl_preset_parameters.setTitle("%s Parameters (Pause to Edit)" % preset)
             self.btn_playpause.setText("Pause")
         else:
-            self.lbl_preset_parameters.setTitle("Preset Parameters")
+            self.lbl_preset_parameters.setTitle("%s Parameters" % preset)
             self.tbl_preset_parameters.setDisabled(False)
             self.btn_playpause.setText("Play")
 
@@ -274,7 +276,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         current = self._app.playlist.get_active_preset()
         next = self._app.playlist.get_next_preset()
         for preset in presets:
-            item = QtGui.QListWidgetItem(preset.get_name())
+            item = QtGui.QListWidgetItem(preset.name())
             #TODO: Enable renaming in the list when we have a real delegate
             #item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
 

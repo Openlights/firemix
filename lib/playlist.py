@@ -140,7 +140,7 @@ class Playlist(JSONDict):
         playlist = []
         for preset in self._playlist:
             playlist_entry = {'classname': preset.__class__.__name__,
-                              'name': preset.get_name()}
+                              'name': preset.name()}
             param_dict = {}
             for name, param in preset.get_parameters().iteritems():
                 param_dict[name] = param.get_as_str()
@@ -190,7 +190,7 @@ class Playlist(JSONDict):
         Returns the preset name of a preset relative to the active preset by an offset of pos
         For exapmle, get_preset_relative_to_active(1) would return the next in the playlist
         """
-        return self._playlist[(self._active_index + pos) % len(self._playlist)].get_name()
+        return self._playlist[(self._active_index + pos) % len(self._playlist)].name()
 
     def get_next_preset(self):
         if len(self._playlist) == 0:
@@ -206,7 +206,7 @@ class Playlist(JSONDict):
 
     def get_preset_by_name(self, name):
         for preset in self._playlist:
-            if preset.get_name() == name:
+            if preset.name() == name:
                 return preset
         return None
 
@@ -219,7 +219,7 @@ class Playlist(JSONDict):
     def set_active_preset_by_name(self, name):
         #TODO: Support transitions other than jump cut
         for i, preset in enumerate(self._playlist):
-            if preset.get_name() == name:
+            if preset.name() == name:
                 preset._reset()
                 self._active_index = i
                 self._app.mixer._elapsed = 0.0  # Hack
@@ -228,7 +228,7 @@ class Playlist(JSONDict):
 
     def set_next_preset_by_name(self, name):
         for i, preset in enumerate(self._playlist):
-            if preset.get_name() == name:
+            if preset.name() == name:
                 self._next_index = i
                 self.changed()
                 return
@@ -237,7 +237,7 @@ class Playlist(JSONDict):
         """
         Pass in a list of preset names to reorder.
         """
-        current = dict([(preset.get_name(), preset) for preset in self._playlist])
+        current = dict([(preset.name(), preset) for preset in self._playlist])
 
         new = []
         for name in names:
@@ -250,7 +250,7 @@ class Playlist(JSONDict):
         return self._preset_classes.keys()
 
     def preset_name_exists(self, name):
-        return True if name in [p.get_name() for p in self._playlist] else False
+        return True if name in [p.name() for p in self._playlist] else False
 
     def add_preset(self, classname, name, idx=None):
         """
@@ -286,7 +286,7 @@ class Playlist(JSONDict):
         if not self.preset_name_exists(name):
             return False
 
-        pl = [(i, p) for i, p in enumerate(self._playlist) if p.get_name() == name]
+        pl = [(i, p) for i, p in enumerate(self._playlist) if p.name() == name]
         assert len(pl) == 1
 
         self._playlist.remove(pl[0][1])
@@ -314,7 +314,7 @@ class Playlist(JSONDict):
         self.changed()
 
     def rename_preset(self, old_name, new_name):
-        pl = [i for i, p in enumerate(self._playlist) if p.get_name() == old_name]
+        pl = [i for i, p in enumerate(self._playlist) if p.name() == old_name]
         if len(pl) != 1:
             return False
         self._playlist[pl[0]].set_name(new_name)
