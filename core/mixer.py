@@ -283,6 +283,7 @@ class Mixer(QtCore.QObject):
         self._start_transition = False
         if self._in_transition:
             self._in_transition = False
+            self.transition_progress = 0
 
     def tick(self):
         self._num_frames += 1

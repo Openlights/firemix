@@ -327,7 +327,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         pass
 
     def on_preset_double_clicked(self, preset_item):
-        self._app.mixer.start_transition(preset_item.text())
+        self._app.mixer.cancel_transition()
+        self._app.playlist.set_active_preset_by_name(preset_item.text())
+
         self.update_playlist()
         self.load_preset_parameters_table()
 
