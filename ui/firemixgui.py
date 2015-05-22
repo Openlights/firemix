@@ -162,14 +162,18 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.setWindowTitle("FireMix - %s - %0.2f FPS" % (self._app.playlist.name, fps))
 
         # Update wibblers
+        # TODO (jon) this is kinda inefficient
         for name, parameter in self._app.playlist.get_active_preset().get_parameters().iteritems():
-            if parameter._wibbler is not None:
-                pval = parameter.get()
-                for i in range(self.tbl_preset_parameters.rowCount()):
-                    if self.tbl_preset_parameters.item(i, 0).text() == name:
-                        # TODO: For now, all wibblers are float values.  Maybe they should be allowed to be others?
+            pval = parameter.get()
+            for i in range(self.tbl_preset_parameters.rowCount()):
+                if self.tbl_preset_parameters.item(i, 0).text() == name:
+                    # TODO: For now, all wibblers are float values.  Maybe they should be allowed to be others?
+                    if parameter._wibbler is not None:
                         self.tbl_preset_parameters.item(i, 2).setText("= %0.2f" % pval)
                         self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(200, 255, 255))
+                    else:
+                        self.tbl_preset_parameters.item(i, 2).setText("")
+                        self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
 
     def on_btn_playpause(self):
         if self._mixer.is_paused():
