@@ -126,32 +126,33 @@ def rgb_to_hls(arr):
 
     l = total / 2.0
 
-    s = delta / total
-    idx = (l > 0.5)
-    s[idx] = delta[idx] / (2.0 - total[idx])
+    if total.all() > 0:
+        s = delta / total
+        idx = (l > 0.5)
+        s[idx] = delta[idx] / (2.0 - total[idx])
 
-    # red is max
-    idx = (arr[:,:,0] == arr_max)
-    out[idx, 0] = (arr[idx, 1] - arr[idx, 2]) / delta[idx]
+        # red is max
+        idx = (arr[:,:,0] == arr_max)
+        out[idx, 0] = (arr[idx, 1] - arr[idx, 2]) / delta[idx]
 
-    # green is max
-    idx = (arr[:,:,1] == arr_max)
-    out[idx, 0] = 2. + (arr[idx, 2] - arr[idx, 0] ) / delta[idx]
+        # green is max
+        idx = (arr[:,:,1] == arr_max)
+        out[idx, 0] = 2. + (arr[idx, 2] - arr[idx, 0] ) / delta[idx]
 
-    # blue is max
-    idx = (arr[:,:,2] == arr_max)
-    out[idx, 0] = 4. + (arr[idx, 0] - arr[idx, 1] ) / delta[idx]
+        # blue is max
+        idx = (arr[:,:,2] == arr_max)
+        out[idx, 0] = 4. + (arr[idx, 0] - arr[idx, 1] ) / delta[idx]
 
-    out[:,:,0] = (out[:,:,0]/6.0) % 1.0
-    out[:,:,1] = l
-    out[:,:,2] = s
+        out[:,:,0] = (out[:,:,0]/6.0) % 1.0
+        out[:,:,1] = l
+        out[:,:,2] = s
 
-    idx = (delta==0)
-    out[idx, 2] = 0.0
-    out[idx, 0] = 0.0
+        idx = (delta==0)
+        out[idx, 2] = 0.0
+        out[idx, 0] = 0.0
 
-    # remove NaN
-    out[np.isnan(out)] = 0
+        # remove NaN
+        out[np.isnan(out)] = 0
 
     return out
 
