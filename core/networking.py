@@ -80,10 +80,8 @@ class Networking:
         packets = []
 
         for strand in xrange(len(strand_settings)):
-        #for strand in xrange(1):
             if not strand_settings[strand]["enabled"]:
                 continue
-            array_packet = array.array('B', [])
 
             start, end = BufferUtils.get_strand_extents(strand)
 
@@ -103,8 +101,7 @@ class Networking:
             packet[3] = (length & 0xFF00) >> 8
 
             fill_packet(buffer_rgb, start, end, packet_header_size, packet, False)
-            array_packet.extend(array.array('B', packet))
-            packets.append(array_packet)
+            packets.append(array.array('B', packet))
 
         def safe_send(packet, client):
             try:
@@ -119,6 +116,8 @@ class Networking:
 
         for client in active_clients:
             safe_send(START_FRAME_PACKET, client)
-            for p in packets:
-                safe_send(p, client)
+            for i in xrange(0, len(packets), 2):
+                chunk = packets[i:i+2]
+                apacket = array.array('B', [item for sublist in chunk for item in sublist])
+                safe_send(apacket, client)
             safe_send(END_FRAME_PACKET, client)
