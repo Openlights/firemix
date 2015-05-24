@@ -33,6 +33,10 @@ COMMAND_END_FRAME = 0x02
 COMMAND_SET_BGR = 0x10
 COMMAND_SET_RGB = 0x20
 
+START_FRAME_PACKET = array.array('B', [COMMAND_START_FRAME, 0, 0, 0, 0])
+END_FRAME_PACKET = array.array('B', [COMMAND_END_FRAME, 0, 0, 0, 0])
+
+
 class Networking:
 
     def __init__(self, app):
@@ -51,6 +55,7 @@ class Networking:
         Decodes the HLS-Float data according to client settings
         """
         strand_settings = self._app.scene.get_strand_settings()
+        active_clients = [client for client in self._app.settings['networking']['clients'] if client["enabled"]]
 
         # Protect against presets or transitions that write float data.
         buffer_rgb = np.int_(hls_to_rgb(buffer) * 255)
@@ -69,14 +74,13 @@ class Networking:
 
         clients = [client for client in self._app.settings['networking']['clients']
                    if client["enabled"]]
-
         if not clients:
             return
 
         packets = []
-        packets.append(array.array('B', [COMMAND_START_FRAME, 0, 0, 0, 0]))
 
         for strand in xrange(len(strand_settings)):
+        #for strand in xrange(1):
             if not strand_settings[strand]["enabled"]:
                 continue
             array_packet = array.array('B', [])
@@ -86,7 +90,11 @@ class Networking:
             packet_header_size = 4
             packet_size = (end-start) * 3 + packet_header_size
 
-            packet = [0,] * packet_size
+            try:
+                packet = self._packet_cache[packet_size]
+            except KeyError:
+                packet = [0,] * packet_size
+                self._packet_cache[packet_size] = packet
 
             packet[0] = COMMAND_SET_RGB
             packet[1] = strand
@@ -98,18 +106,19 @@ class Networking:
             array_packet.extend(array.array('B', packet))
             packets.append(array_packet)
 
-        packets.append(array.array('B', [COMMAND_END_FRAME, 0, 0, 0, 0]))
+        def safe_send(packet, client):
+            try:
+                self._socket.sendto(packet, (client["host"], client["port"]))
+            except IOError as (errno, strerror):
+                print "I/O error({0}): {1}".format(errno, strerror)
+            except ValueError:
+                print "Could not convert data to an integer."
+            except:
+                print "Unexpected error:", sys.exc_info()[0]
+                raise
 
-        for client in [client for client in self._app.settings['networking']['clients'] if client["enabled"]]:
+        for client in active_clients:
+            safe_send(START_FRAME_PACKET, client)
             for p in packets:
-                try:
-                    #print "Sending packet of length %i for strand %i" % (len(packet), strand)
-                    self._socket.sendto(p, (client["host"], client["port"]))
-                except IOError as (errno, strerror):
-                    print "I/O error({0}): {1}".format(errno, strerror)
-                    #print "On strand %i with length %i" % (strand, len(packet))
-                except ValueError:
-                    print "Could not convert data to an integer."
-                except:
-                    print "Unexpected error:", sys.exc_info()[0]
-                    raise
+                safe_send(p, client)
+            safe_send(END_FRAME_PACKET, client)
