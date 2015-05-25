@@ -2,31 +2,14 @@
     "file-type": "playlist", 
     "playlist": [
         {
-            "classname": "SpiralGradient", 
-            "name": "SpiralGradient-1", 
-            "params": {
-                "angle-hue-width": "2.0", 
-                "center-distance": "1.0", 
-                "center-speed": "5.0", 
-                "color-end": "(0.4, 0.5, 1.0)", 
-                "color-start": "(0.2, 0.5, 1.0)", 
-                "hue-speed": "0.0", 
-                "onset-speed-boost": "5.0", 
-                "onset-speed-decay": "1.0", 
-                "radius-hue-width": "1.5", 
-                "speed": "0.3", 
-                "wave-hue-period": "0.1", 
-                "wave-hue-width": "0.1", 
-                "wave-speed": "0.1"
-            }
+            "classname": "TestFFT", 
+            "name": "TestFFT-1", 
+            "params": {}
         }, 
         {
-            "classname": "RadialRainbow", 
-            "name": "RadialRainbow-1", 
-            "params": {
-                "speed": "0.2", 
-                "width": "1.0"
-            }
+            "classname": "TestPattern", 
+            "name": "TestPattern-1", 
+            "params": {}
         }
     ]
 }
