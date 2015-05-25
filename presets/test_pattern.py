@@ -18,17 +18,48 @@
 import numpy as np
 
 from lib.raw_preset import RawPreset
+from lib.buffer_utils import BufferUtils
 
 class TestPattern(RawPreset):
-    """Simple RGB test pattern"""
+    """Array calibration pattern"""
 
     def setup(self):
         self._pixels = self.scene().get_all_pixels()
+        self._logical = self.scene().get_all_pixels_logical()
+        self._heirarchy = self.scene().fixture_hierarchy()
 
     def reset(self):
         pass
 
     def draw(self, dt):
-        hues = np.asarray([0.0, 0.33, 0.66] * (len(self._pixels) + 1 / 3))[0:len(self._pixels)]
-        luminances = np.asarray([0.5] * len(self._pixels))
-        self.setAllHLS(hues, luminances, 1.0)
+        self.setAllHLS(1.0, 0.05, 0.0)
+        for strand in self._heirarchy:
+            self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 0), scene=self.scene()), (0.33, 0.5, 1.0))
+
+            if (strand & 0x1):
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.33, 1.0, 1.0))
+            else:
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.66, 0.5, 0.75))
+            if (strand & 0x2):
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.33, 1.0, 1.0))
+            else:
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.66, 0.5, 0.75))
+            if (strand & 0x4):
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.33, 1.0, 1.0))
+            else:
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.66, 0.5, 0.75))
+            if (strand & 0x8):
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.33, 1.0, 1.0))
+            else:
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.66, 0.5, 0.75))
+
+            for fixture in self._heirarchy[strand]:
+                last_fixture_pixel = self._heirarchy[strand][fixture].pixels - 1
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, fixture, last_fixture_pixel), scene=self.scene()), (0.66, 0.5, 1.0))
+                if fixture > 0:
+                    self.setPixelHLS(BufferUtils.logical_to_index((strand, fixture, 0), scene=self.scene()), (0.15, 0.5, 1.0))
+
+            last_fixture = len(self._heirarchy[strand].keys()) - 1
+            last_pixel = self._heirarchy[strand][last_fixture].pixels - 1
+
+            self.setPixelHLS(BufferUtils.logical_to_index((strand, last_fixture, last_pixel), scene=self.scene()), (0.0, 0.5, 1.0))
