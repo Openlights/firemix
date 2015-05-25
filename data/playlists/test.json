@@ -4,7 +4,9 @@
         {
             "classname": "TestFFT", 
             "name": "TestFFT-1", 
-            "params": {}
+            "params": {
+                "fft-weight": "100.0"
+            }
         }, 
         {
             "classname": "TestPattern", 

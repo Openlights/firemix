@@ -16,6 +16,7 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import struct
 from PySide import QtCore, QtNetwork
 
 log = logging.getLogger("firemix.lib.aubio_connector")
@@ -24,7 +25,9 @@ log = logging.getLogger("firemix.lib.aubio_connector")
 class AubioConnector(QtCore.QObject):
 
     onset_detected = QtCore.Signal()
+    fft_data = QtCore.Signal(list)
 
+    PACKET_FFT = 0x66
     PACKET_ONSET = 0x77
 
     def __init__(self):
@@ -44,5 +47,13 @@ class AubioConnector(QtCore.QObject):
             datagram = QtCore.QByteArray()
             datagram.resize(self.socket.pendingDatagramSize())
             (datagram, sender, sport) = self.socket.readDatagram(datagram.size())
-            if datagram.size() > 0 and ord(datagram[0]) == self.PACKET_ONSET:
-                self.onset_detected.emit()
+            if datagram.size() > 0:
+                if ord(datagram[0]) == self.PACKET_ONSET:
+                    self.onset_detected.emit()
+                elif ord(datagram[0]) == self.PACKET_FFT:
+                    fft_size = ord(datagram[1])
+                    fft = []
+                    for i in range(fft_size):
+                        fft.append(struct.unpack("<f", datagram[2+(i*4):2+(i*4)+4])[0])
+
+                    self.fft_data.emit(fft)

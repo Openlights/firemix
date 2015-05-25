@@ -19,6 +19,7 @@ import numpy as np
 import math
 
 from lib.raw_preset import RawPreset
+from lib.parameters import FloatParameter
 from lib.color_fade import ColorFade
 
 class TestFFT(RawPreset):
@@ -30,7 +31,8 @@ class TestFFT(RawPreset):
     def setup(self):
         self.parameter_changed(None)
         self._fader = ColorFade([(0.0, 0.5, 1.0), (1.0, 0.5, 1.0), (0.0, 0.5, 1.0)], self._fader_steps)
-        self._fft_normalized = [1.0, 0.75, 0.5, 0.35, 0.2, 0.1]
+        self._fft_normalized = [0.0] * 8
+        self.add_parameter(FloatParameter('fft-weight', 25.0))
 
     def parameter_changed(self, parameter):
         pass
@@ -43,26 +45,30 @@ class TestFFT(RawPreset):
         def rotate(l, n):
             return l[n:] + l[:n]
 
-        if self._mixer.is_onset():
-            self._fft_normalized = rotate(self._fft_normalized, 1)
+        #if self._mixer.is_onset():
+        #    self._fft_normalized = rotate(self._fft_normalized, 1)
 
-        angle_bin_width = (2.0 * math.pi) / len(self._fft_normalized)
+        self.fft = self._mixer.fft_data()
+        #self._fft_normalized = [i if i == 0 else (i / max(self._fft_normalized)) for i in self._fft_normalized]
+
+        angle_bin_width = (2.0 * math.pi) / len(self.fft)
 
         cx, cy = self.scene().center_point()
         x,y = (self.locations - (cx, cy)).T
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
         self.pixel_angles = np.arctan2(y, x) + math.pi
         self.pixel_distances /= max(self.pixel_distances)
+        self.pixel_amplitudes = self.pixel_distances
 
-        for bin in range(len(self._fft_normalized)):
+        for bin in range(len(self.fft)):
             start = bin * angle_bin_width
             end = (bin + 1) * angle_bin_width
             mask = (self.pixel_angles > start) & (self.pixel_angles < end)
-            self.pixel_distances[mask] *= self._fft_normalized[bin]
+            self.pixel_amplitudes[mask] = (self.parameter('fft-weight').get() * self.fft[bin])
 
         angles = self.pixel_angles / (4.0 * math.pi)
         hues = np.abs(angles - 0.5)
-        lights = 0.5 * (1.0 - self.pixel_distances)
+        lights = 0.5 * (1.0 - self.pixel_distances) * self.pixel_amplitudes
         hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
         colors = self._fader.color_cache[hues]
         colors = colors.T

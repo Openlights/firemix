@@ -55,8 +55,12 @@ class FireMixApp(QtCore.QThread):
 
         self.aubio_connector = None
         if not self.args.noaudio:
+            self.aubio_thread = QtCore.QThread()
+            self.aubio_thread.start()
             self.aubio_connector = AubioConnector()
             self.aubio_connector.onset_detected.connect(self.mixer.onset_detected)
+            self.aubio_connector.fft_data.connect(self.mixer.update_fft_data)
+            self.aubio_connector.moveToThread(self.aubio_thread)
 
         self.mixer.set_playlist(self.playlist)
 
@@ -72,6 +76,7 @@ class FireMixApp(QtCore.QThread):
 
     def stop(self):
         self._running = False
+        self.aubio_thread.quit()
         self.mixer.stop()
         self.playlist.save()
         self.settings.save()
