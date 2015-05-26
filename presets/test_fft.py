@@ -27,6 +27,7 @@ class TestFFT(RawPreset):
 
     _fader = None
     _fader_steps = 256
+    _onset_decay = 0.0
     
     def setup(self):
         self.parameter_changed(None)
@@ -45,13 +46,16 @@ class TestFFT(RawPreset):
         def rotate(l, n):
             return l[n:] + l[:n]
 
-        #if self._mixer.is_onset():
-        #    self._fft_normalized = rotate(self._fft_normalized, 1)
-
         self.fft = self._mixer.fft_data()
         #self._fft_normalized = [i if i == 0 else (i / max(self._fft_normalized)) for i in self._fft_normalized]
 
         angle_bin_width = (2.0 * math.pi) / len(self.fft)
+
+        if self._mixer.is_onset():
+            self._onset_decay = 1.0
+        elif self._onset_decay > 0.0:
+            self._onset_decay -= 0.05
+
 
         cx, cy = self.scene().center_point()
         x,y = (self.locations - (cx, cy)).T
@@ -68,7 +72,7 @@ class TestFFT(RawPreset):
 
         angles = self.pixel_angles / (4.0 * math.pi)
         hues = np.abs(angles - 0.5)
-        lights = 0.5 * (1.0 - self.pixel_distances) * self.pixel_amplitudes
+        lights = (0.5 * (1.0 - self.pixel_distances) * self.pixel_amplitudes) + (0.5 * self._onset_decay)
         hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
         colors = self._fader.color_cache[hues]
         colors = colors.T

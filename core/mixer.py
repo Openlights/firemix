@@ -226,7 +226,6 @@ class Mixer(QtCore.QObject):
             self._render_in_progress = True
             self.tick()
             self._render_in_progress = False
-            #self._onset = False
             dt = (time.clock() - start)
             delay = max(0, (1.0 / self._tick_rate) - dt)
             if not self._paused:
