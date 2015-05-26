@@ -21,7 +21,7 @@
             "classname": "StripeGradient", 
             "name": "stripe new 2", 
             "params": {
-                "angle-speed": "[-0.1,0.1,1]", 
+                "angle-speed": "[-0.2,0.2,1]", 
                 "center-orbit-distance": "[20,30,10]", 
                 "center-orbit-speed": "[-0.05,0.05,1]", 
                 "color-gradient": "[(0,0,1), (0,0,1), (0,0.2,1), (0,1,1)]", 
