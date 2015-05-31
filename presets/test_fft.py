@@ -32,7 +32,6 @@ class TestFFT(RawPreset):
     def setup(self):
         self.parameter_changed(None)
         self._fader = ColorFade([(0.0, 0.5, 1.0), (1.0, 0.5, 1.0), (0.0, 0.5, 1.0)], self._fader_steps)
-        self._fft_normalized = [0.0] * 8
         self.add_parameter(FloatParameter('fft-weight', 25.0))
 
     def parameter_changed(self, parameter):
@@ -47,11 +46,16 @@ class TestFFT(RawPreset):
             return l[n:] + l[:n]
 
         self.fft = self._mixer.fft_data()
-        #self._fft_normalized = [i if i == 0 else (i / max(self._fft_normalized)) for i in self._fft_normalized]
+
+        if len(self.fft) == 0:
+            return
+
+        #self.fft = [i if i == 0 else (i / max(self.fft)) for i in self.fft]
 
         angle_bin_width = (2.0 * math.pi) / len(self.fft)
 
-        if self._mixer.is_onset():
+        if False:
+        #if self._mixer.is_onset():
             self._onset_decay = 1.0
         elif self._onset_decay > 0.0:
             self._onset_decay -= 0.05
@@ -64,15 +68,21 @@ class TestFFT(RawPreset):
         self.pixel_distances /= max(self.pixel_distances)
         self.pixel_amplitudes = self.pixel_distances
 
+        log_widget = np.int_(np.logspace(0, 8, num=256, base=2.0))
+        #print log_widget
+        #print self.fft
+
         for bin in range(len(self.fft)):
+            #if bin > len(log_widget):
+            #    break
             start = bin * angle_bin_width
             end = (bin + 1) * angle_bin_width
             mask = (self.pixel_angles > start) & (self.pixel_angles < end)
-            self.pixel_amplitudes[mask] = (self.parameter('fft-weight').get() * self.fft[bin])
+            self.pixel_amplitudes[mask] = (self.parameter('fft-weight').get() * self.fft[log_widget[bin]]) * (log_widget[bin] + 1) / len(self.fft)
 
         angles = self.pixel_angles / (4.0 * math.pi)
         hues = np.abs(angles - 0.5)
-        lights = (0.5 * (1.0 - self.pixel_distances) * self.pixel_amplitudes) + (0.5 * self._onset_decay)
+        lights = (0.5 * self.pixel_amplitudes)
         hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
         colors = self._fader.color_cache[hues]
         colors = colors.T

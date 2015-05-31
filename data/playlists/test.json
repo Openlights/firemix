@@ -5,7 +5,7 @@
             "classname": "TestFFT", 
             "name": "TestFFT-1", 
             "params": {
-                "fft-weight": "200.0"
+                "fft-weight": "2.0"
             }
         }, 
         {

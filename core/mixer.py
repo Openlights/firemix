@@ -86,7 +86,7 @@ class Mixer(QtCore.QObject):
         self._render_in_progress = False
         self._last_tick_time = time.time()
         self.transition_progress = 0.0
-        self._fft_data = [0.0] * 8
+        self._fft_data = []
 
         if self._app.args.yappi and USE_YAPPI:
             yappi.start()
