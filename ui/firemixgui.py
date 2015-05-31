@@ -293,7 +293,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_playlist_changed(self):
         self.update_playlist()
         self.update_mixer_settings()
-        #self.load_preset_parameters_table()
+        self.load_preset_parameters_table()
 
     def on_playlist_reorder(self):
         names = [self.lst_presets.item(i).text() for i in range(self.lst_presets.count())]
@@ -373,6 +373,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.tbl_preset_parameters.horizontalHeader().resizeSection(1, 400)
         self.tbl_preset_parameters.setHorizontalHeaderLabels(('Parameter', 'Value', 'Current'))
 
+    # Unused?
     @QtCore.Slot()
     def update_preset_parameters(self):
         """
