@@ -48,9 +48,13 @@ class TestFFT(RawPreset):
 
         latest_fft = self._mixer.fft_data()
 
+        if len(latest_fft) == 0:
+            print "received no fft"
+            return
+
         if len(self.fft) == 0:
             self.fft.append(latest_fft)
-            print "no fft"
+            print "first fft"
             return
 
         self.fft.append(latest_fft)
@@ -68,21 +72,21 @@ class TestFFT(RawPreset):
         cx, cy = self.scene().center_point()
         x,y = (self.locations - (cx, cy)).T
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-        self.pixel_angles = np.arctan2(y, x) + math.pi
+        self.pixel_angles = np.mod((np.arctan2(y, x) + math.pi) / (math.pi * 2) + 1, 1)
         self.pixel_distances /= max(self.pixel_distances)
         self.pixel_amplitudes = self.pixel_distances
 
-        for pixel in range(len(self.pixel_amplitudes)):
-            pixel_fft = int((1 - self.pixel_distances[pixel]) * (len(self.fft) - 1))
-            fft = self.fft[pixel_fft]
-            bin = int(self.pixel_angles[pixel] / (2.0 * math.pi) * len(fft))
-            bin = np.mod(bin+1, len(fft))
-            if bin < len(fft):
-                self.pixel_amplitudes[pixel] = fft[bin] * self.parameter('fft-weight').get() * (1 - self.pixel_distances[pixel])
+        fft_size = len(self.fft[0])
+        pixel_count = len(self.pixel_distances)
 
 
-        angles = self.pixel_angles / (4.0 * math.pi)
-        hues = np.abs(angles - 0.5)
+        pixel_ffts = np.int_((1 - self.pixel_distances) * (len(self.fft) - 1))
+        fft_per_pixel = np.asarray(self.fft)[pixel_ffts]
+        bin_per_pixel = np.int_(self.pixel_angles * fft_size)
+        self.pixel_amplitudes = fft_per_pixel[np.arange(pixel_count), bin_per_pixel]
+        self.pixel_amplitudes = np.multiply(self.pixel_amplitudes, self.parameter('fft-weight').get() * (1 - self.pixel_distances))
+
+        hues = (1 - self.pixel_angles) / 2
         lights = (0.5 * self.pixel_amplitudes)
         hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
         colors = self._fader.color_cache[hues]
