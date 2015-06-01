@@ -3,15 +3,82 @@
     "playlist": [
         {
             "classname": "TestFFT", 
-            "name": "TestFFT-1", 
+            "name": "FFT", 
             "params": {
-                "fft-weight": "2.0"
+                "fft-weight": "1.0"
             }
         }, 
         {
             "classname": "TestPattern", 
             "name": "TestPattern-1", 
             "params": {}
+        }, 
+        {
+            "classname": "SimplexNoise", 
+            "name": "Noise", 
+            "params": {
+                "angle": "0.125", 
+                "beat-color-boost": "0.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
+                "color-speed": "0.2", 
+                "hue-max": "0.0", 
+                "hue-min": "0.0", 
+                "luminance-map": "[(0,0,0), (0,1,0)]", 
+                "luminance-scale": "0.3", 
+                "resolution": "1", 
+                "scale": "7.0", 
+                "speed": "0.7", 
+                "stretch": "0.4"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "CombinePresets-1", 
+            "params": {
+                "first-preset": "FFT", 
+                "second-preset": "Spiral", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "RadialGradient", 
+            "name": "Radial", 
+            "params": {
+                "blackout": "0.1", 
+                "hue-step": "0.1", 
+                "hue-width": "0.0", 
+                "luminance-scale": "2.0", 
+                "luminance-speed": "0.01", 
+                "speed": "0.1", 
+                "wave1-amplitude": "0.5", 
+                "wave1-period": "1.5", 
+                "wave1-speed": "0.05", 
+                "wave2-amplitude": "0.5", 
+                "wave2-period": "1.5", 
+                "wave2-speed": "0.1", 
+                "whiteout": "0.2"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "Spiral", 
+            "params": {
+                "angle-hue-width": "2.0", 
+                "center-distance": "0.0", 
+                "center-speed": "0.0", 
+                "color-end": "(1.0, 0.5, 0.0)", 
+                "color-start": "(0.0, -3.0, 0.0)", 
+                "hue-speed": "0.3", 
+                "onset-speed-boost": "5.0", 
+                "onset-speed-decay": "1.0", 
+                "radius-hue-width": "1.5", 
+                "speed": "0.3", 
+                "wave-hue-period": "[0.1,2,2]", 
+                "wave-hue-width": "0.1", 
+                "wave-speed": "0.1"
+            }
         }
     ]
 }

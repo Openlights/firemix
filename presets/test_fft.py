@@ -46,23 +46,17 @@ class TestFFT(RawPreset):
         def rotate(l, n):
             return l[n:] + l[:n]
 
-        smoothing = 0.9
         latest_fft = self._mixer.fft_data()
 
         if len(self.fft) == 0:
-            self.fft = latest_fft
+            self.fft.append(latest_fft)
             print "no fft"
             return
 
-        #print "fft size is ", len(self.fft)
+        self.fft.append(latest_fft)
 
-        #print self.fft[0], latest_fft[0]
-        self.fft = np.multiply(self.fft, smoothing) + np.multiply(latest_fft, (1.0 - smoothing))
-        #self.fft = np.multiply(self.fft, 0.95)
-
-        #self.fft = [i if i == 0 else (i / max(self.fft)) for i in self.fft]
-
-        angle_bin_width = (2.0 * math.pi) / len(self.fft)
+        if len(self.fft) > 30:
+            self.fft.pop(0)
 
         if False:
         #if self._mixer.is_onset():
@@ -78,27 +72,14 @@ class TestFFT(RawPreset):
         self.pixel_distances /= max(self.pixel_distances)
         self.pixel_amplitudes = self.pixel_distances
 
-        #log_widget = np.int_(np.logspace(0, 8, num=1024, base=2.0))
-        #print np.int_(np.logspace(0, 9, num=256, base=2.0)).tolist()
-        #print log_widget
-        #print self.fft
+        for pixel in range(len(self.pixel_amplitudes)):
+            pixel_fft = int((1 - self.pixel_distances[pixel]) * (len(self.fft) - 1))
+            fft = self.fft[pixel_fft]
+            bin = int(self.pixel_angles[pixel] / (2.0 * math.pi) * len(fft))
+            bin = np.mod(bin+1, len(fft))
+            if bin < len(fft):
+                self.pixel_amplitudes[pixel] = fft[bin] * self.parameter('fft-weight').get() * (1 - self.pixel_distances[pixel])
 
-        for bin in range(len(self.fft)):
-            #if bin > len(log_widget):
-            #    break
-            start = bin * angle_bin_width
-            end = (bin + 1) * angle_bin_width
-            mask = (self.pixel_angles > start) & (self.pixel_angles < end)
-            self.pixel_amplitudes[mask] = (self.parameter('fft-weight').get() * self.fft[bin]) #* (bin + 1) / len(self.fft)
-
-        for bin in range(len(self.fft)):
-            #if bin > len(log_widget):
-            #    break
-            start = bin * angle_bin_width
-            end = (bin + 0.5) * angle_bin_width
-            scaled_fft = (self.parameter('fft-weight').get() * latest_fft[bin]) #* (bin + 1) / len(self.fft)
-            mask = (self.pixel_angles > start) & (self.pixel_angles < end) & (self.pixel_distances < 0.4)
-            self.pixel_amplitudes[mask] = scaled_fft
 
         angles = self.pixel_angles / (4.0 * math.pi)
         hues = np.abs(angles - 0.5)
