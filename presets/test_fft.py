@@ -34,12 +34,14 @@ class TestFFT(RawPreset):
         self._fader = ColorFade([(0.0, 0.5, 1.0), (1.0, 0.5, 1.0), (0.0, 0.5, 1.0)], self._fader_steps)
         self.add_parameter(FloatParameter('fft-weight', 25.0))
         self.fft = []
+        self.color_angle = 0.0
 
     def parameter_changed(self, parameter):
         pass
 
     def reset(self):
         self.locations = self.scene().get_all_pixel_locations()
+        self.color_angle = 0.0
 
     def draw(self, dt):
 
@@ -62,17 +64,18 @@ class TestFFT(RawPreset):
         if len(self.fft) > 30:
             self.fft.pop(0)
 
+        self.color_angle += dt * 0.1
+
         if False:
         #if self._mixer.is_onset():
             self._onset_decay = 1.0
         elif self._onset_decay > 0.0:
             self._onset_decay -= 0.05
 
-
         cx, cy = self.scene().center_point()
         x,y = (self.locations - (cx, cy)).T
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-        self.pixel_angles = np.mod((np.arctan2(y, x) + math.pi) / (math.pi * 2) + 1, 1)
+        self.pixel_angles = np.mod((np.arctan2(y, x) + (self.color_angle * math.pi)) / (math.pi * 2) + 1, 1)
         self.pixel_distances /= max(self.pixel_distances)
         self.pixel_amplitudes = self.pixel_distances
 
@@ -86,7 +89,7 @@ class TestFFT(RawPreset):
         self.pixel_amplitudes = fft_per_pixel[np.arange(pixel_count), bin_per_pixel]
         self.pixel_amplitudes = np.multiply(self.pixel_amplitudes, self.parameter('fft-weight').get() * (1 - self.pixel_distances))
 
-        hues = (1 - self.pixel_angles) / 2
+        hues = (1 - self.pixel_angles) / 2.0
         lights = (0.5 * self.pixel_amplitudes)
         hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
         colors = self._fader.color_cache[hues]
