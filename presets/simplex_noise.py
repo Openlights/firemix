@@ -79,6 +79,7 @@ class SimplexNoise(RawPreset):
         #self._offset_y += dt * self.parameter('speed').get() * math.sin(angle) * 2 * math.pi
         self._offset_x += dt * self.parameter('speed').get()
         self._offset_z += dt * self.parameter('color-speed').get()
+        self._offset_z += dt * self._mixer.audio.getEnergy() * self.parameter('beat-color-boost').get()
         posterization = self.parameter('resolution').get()
 
         rotMatrix = np.array([(math.cos(angle), -math.sin(angle)), (math.sin(angle),  math.cos(angle))])
@@ -96,7 +97,8 @@ class SimplexNoise(RawPreset):
         brights = np.asarray([snoise3(self.luminance_scale * location[0], self.luminance_scale * location[1], self._offset_z, 1, 0.5, 0.5) for location in locations])
         brights = (1.0 + brights) / 2
         brights *= self._luminance_steps
-        luminances = self.lum_fader.color_cache[np.int_(brights)].T[1]
+        LS = self.lum_fader.color_cache[np.int_(brights)].T
+        luminances = LS[1]
 
-        self.setAllHLS(hues, luminances, 1.0)
+        self.setAllHLS(hues, luminances, LS[2])
 

@@ -36,6 +36,7 @@ from PySide import QtCore
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands, render_command_list
 from lib.raw_preset import RawPreset
 from lib.buffer_utils import BufferUtils
+from core.audio import Audio
 
 
 log = logging.getLogger("firemix.core.mixer")
@@ -86,7 +87,7 @@ class Mixer(QtCore.QObject):
         self._render_in_progress = False
         self._last_tick_time = time.time()
         self.transition_progress = 0.0
-        self._fft_data = []
+        self.audio = Audio(self)
 
         if self._app.args.yappi and USE_YAPPI:
             yappi.start()
@@ -257,9 +258,6 @@ class Mixer(QtCore.QObject):
             self._reset_onset = True
             return True
         return False
-
-    def fft_data(self):
-        return self._fft_data
 
     def next(self):
         #TODO: Fix this after the Playlist merge

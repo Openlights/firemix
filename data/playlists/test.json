@@ -2,6 +2,36 @@
     "file-type": "playlist", 
     "playlist": [
         {
+            "classname": "RadialGradient", 
+            "name": "Radial", 
+            "params": {
+                "audio-amplitude": "-1.4", 
+                "blackout": "0.1", 
+                "hue-step": "0.3", 
+                "hue-width": "0.3", 
+                "luminance-scale": "1.0", 
+                "luminance-speed": "-0.1", 
+                "speed": "0.1", 
+                "wave1-amplitude": "0.0", 
+                "wave1-period": "1.5", 
+                "wave1-speed": "1.0", 
+                "wave2-amplitude": "0.3", 
+                "wave2-period": "6.0", 
+                "wave2-speed": "2.0", 
+                "whiteout": "0.0"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "Radial FFT", 
+            "params": {
+                "first-preset": "Radial", 
+                "second-preset": "FFT", 
+                "transition-mode": "Linear Blend", 
+                "transition-progress": "0.96"
+            }
+        }, 
+        {
             "classname": "TestFFT", 
             "name": "FFT", 
             "params": {
@@ -9,56 +39,42 @@
             }
         }, 
         {
-            "classname": "TestPattern", 
-            "name": "TestPattern-1", 
-            "params": {}
+            "classname": "CombinePresets", 
+            "name": "noise fft", 
+            "params": {
+                "first-preset": "FFT", 
+                "second-preset": "Noise", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
+            }
         }, 
         {
             "classname": "SimplexNoise", 
             "name": "Noise", 
             "params": {
                 "angle": "0.125", 
-                "beat-color-boost": "0.0", 
+                "beat-color-boost": "2.0", 
                 "beat-lum-boost": "0.05", 
                 "beat-lum-time": "0.1", 
-                "color-speed": "0.2", 
+                "color-speed": "-1.0", 
                 "hue-max": "0.0", 
                 "hue-min": "0.0", 
-                "luminance-map": "[(0,0,0), (0,1,0)]", 
-                "luminance-scale": "0.3", 
+                "luminance-map": "[(0,-2,0), (0,1,0)]", 
+                "luminance-scale": "0.6", 
                 "resolution": "1", 
                 "scale": "7.0", 
                 "speed": "0.7", 
-                "stretch": "0.4"
+                "stretch": "1.0"
             }
         }, 
         {
             "classname": "CombinePresets", 
-            "name": "CombinePresets-1", 
+            "name": "spiral fft", 
             "params": {
                 "first-preset": "FFT", 
                 "second-preset": "Spiral", 
                 "transition-mode": "Multiply Blend", 
                 "transition-progress": "0.5"
-            }
-        }, 
-        {
-            "classname": "RadialGradient", 
-            "name": "Radial", 
-            "params": {
-                "blackout": "0.1", 
-                "hue-step": "0.1", 
-                "hue-width": "0.0", 
-                "luminance-scale": "2.0", 
-                "luminance-speed": "0.01", 
-                "speed": "0.1", 
-                "wave1-amplitude": "0.5", 
-                "wave1-period": "1.5", 
-                "wave1-speed": "0.05", 
-                "wave2-amplitude": "0.5", 
-                "wave2-period": "1.5", 
-                "wave2-speed": "0.1", 
-                "whiteout": "0.2"
             }
         }, 
         {
@@ -69,15 +85,35 @@
                 "center-distance": "0.0", 
                 "center-speed": "0.0", 
                 "color-end": "(1.0, 0.5, 0.0)", 
-                "color-start": "(0.0, -3.0, 0.0)", 
+                "color-start": "(0.0, -1.0, 0.0)", 
                 "hue-speed": "0.3", 
-                "onset-speed-boost": "5.0", 
+                "onset-speed-boost": "-10.0", 
                 "onset-speed-decay": "1.0", 
                 "radius-hue-width": "1.5", 
                 "speed": "0.3", 
                 "wave-hue-period": "[0.1,2,2]", 
                 "wave-hue-width": "0.1", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "TestPattern", 
+            "name": "TestPattern-1", 
+            "params": {}
+        }, 
+        {
+            "classname": "Twinkle", 
+            "name": "Twinkle", 
+            "params": {
+                "beat-births": "8000.0", 
+                "beat-color": "(1.0, 1.0, 1.0)", 
+                "birth-rate": "0.15", 
+                "black-color": "(0.0, 0.0, 1.0)", 
+                "fade-down-time": "0.1", 
+                "fade-up-time": "0.5", 
+                "off-color": "(0.5, 0.0, 1.0)", 
+                "on-color": "(1.2, 0.5, 1.0)"
             }
         }
     ]
