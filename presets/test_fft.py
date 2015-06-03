@@ -33,17 +33,21 @@ class TestFFT(RawPreset):
         self.parameter_changed(None)
         self._fader = ColorFade([(0.0, 0.5, 1.0), (1.0, 0.5, 1.0), (0.0, 0.5, 1.0)], self._fader_steps)
         self.add_parameter(FloatParameter('fft-weight', 25.0))
+        self.color_angle = 0.0
 
     def parameter_changed(self, parameter):
         pass
 
     def reset(self):
         self.locations = self.scene().get_all_pixel_locations()
+        self.color_angle = 0.0
 
     def draw(self, dt):
 
         def rotate(l, n):
             return l[n:] + l[:n]
+
+        self.color_angle += dt * 0.1
 
         if False:
         #if self._mixer.is_onset():
@@ -54,7 +58,7 @@ class TestFFT(RawPreset):
         cx, cy = self.scene().center_point()
         x,y = (self.locations - (cx, cy)).T
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-        self.pixel_angles = np.mod((np.arctan2(y, x) + math.pi) / (math.pi * 2) + 1, 1)
+        self.pixel_angles = np.mod((np.arctan2(y, x) + (self.color_angle * math.pi)) / (math.pi * 2) + 1, 1)
         self.pixel_distances /= max(self.pixel_distances)
         self.pixel_amplitudes = self.pixel_distances
 
@@ -66,7 +70,8 @@ class TestFFT(RawPreset):
         fft_size = len(fft[0])
         pixel_count = len(self.pixel_distances)
 
-        time_to_graph = (len(fft) - 1) * (1 - self._mixer.audio.getEnergy() / 2)
+        #time_to_graph = (len(fft) - 1) * (1 - self._mixer.audio.getEnergy() / 2) # pulse with total energy
+        time_to_graph = (len(fft) - 1)
         pixel_ffts = np.int_((self.pixel_distances) * time_to_graph)
         fft_per_pixel = np.asarray(fft)[pixel_ffts]
         bin_per_pixel = np.int_(self.pixel_angles * fft_size)
