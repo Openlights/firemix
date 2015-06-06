@@ -51,9 +51,9 @@ class AubioConnector(QtCore.QObject):
                 if ord(datagram[0]) == self.PACKET_ONSET:
                     self.onset_detected.emit()
                 elif ord(datagram[0]) == self.PACKET_FFT:
-                    fft_size = ord(datagram[1])
+                    fft_size = ord(datagram[1]) + (ord(datagram[2]) << 8)
                     fft = []
                     for i in range(fft_size):
-                        fft.append(struct.unpack("<f", datagram[2+(i*4):2+(i*4)+4])[0])
+                        fft.append(struct.unpack("<f", datagram[3+(i*4):3+(i*4)+4])[0])
 
                     self.fft_data.emit(fft)

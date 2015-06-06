@@ -2,4 +2,5 @@
 .idea
 
 /data/settings.json
+/data/images/rejected/*
 ui/ui_*.py

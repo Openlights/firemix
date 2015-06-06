@@ -28,56 +28,61 @@ class TestFFT(RawPreset):
     _fader = None
     _fader_steps = 256
     _onset_decay = 0.0
-    
+
     def setup(self):
         self.parameter_changed(None)
         self._fader = ColorFade([(0.0, 0.5, 1.0), (1.0, 0.5, 1.0), (0.0, 0.5, 1.0)], self._fader_steps)
-        self._fft_normalized = [0.0] * 8
         self.add_parameter(FloatParameter('fft-weight', 25.0))
+        self.color_angle = 0.0
 
     def parameter_changed(self, parameter):
         pass
 
     def reset(self):
         self.locations = self.scene().get_all_pixel_locations()
+        self.color_angle = 0.0
 
     def draw(self, dt):
 
         def rotate(l, n):
             return l[n:] + l[:n]
 
-        self.fft = self._mixer.fft_data()
-        #self._fft_normalized = [i if i == 0 else (i / max(self._fft_normalized)) for i in self._fft_normalized]
+        self.color_angle += dt * 0.1
 
-        angle_bin_width = (2.0 * math.pi) / len(self.fft)
-
-        if self._mixer.is_onset():
+        if False:
+        #if self._mixer.is_onset():
             self._onset_decay = 1.0
         elif self._onset_decay > 0.0:
             self._onset_decay -= 0.05
 
-
         cx, cy = self.scene().center_point()
         x,y = (self.locations - (cx, cy)).T
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-        self.pixel_angles = np.arctan2(y, x) + math.pi
+        self.pixel_angles = np.mod((np.arctan2(y, x) + (self.color_angle * math.pi)) / (math.pi * 2) + 1, 1)
         self.pixel_distances /= max(self.pixel_distances)
         self.pixel_amplitudes = self.pixel_distances
 
-        for bin in range(len(self.fft)):
-            start = bin * angle_bin_width
-            end = (bin + 1) * angle_bin_width
-            mask = (self.pixel_angles > start) & (self.pixel_angles < end)
-            self.pixel_amplitudes[mask] = (self.parameter('fft-weight').get() * self.fft[bin])
+        fft = self._mixer.audio.fft
 
-        angles = self.pixel_angles / (4.0 * math.pi)
-        hues = np.abs(angles - 0.5)
-        lights = (0.5 * (1.0 - self.pixel_distances) * self.pixel_amplitudes) + (0.5 * self._onset_decay)
-        hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
-        colors = self._fader.color_cache[hues]
-        colors = colors.T
-        colors[0] = np.mod(colors[0], 1.0)
-        colors[1] = lights
-        colors = colors.T
+        if len(fft) == 0:
+            return
 
-        self._pixel_buffer = colors
+        fft_size = len(fft[0])
+        pixel_count = len(self.pixel_distances)
+
+        #time_to_graph = (len(fft) - 1) * (1 - self._mixer.audio.getEnergy() / 2) # pulse with total energy
+        time_to_graph = (len(fft) - 1)
+        pixel_ffts = np.int_((self.pixel_distances) * time_to_graph)
+        fft_per_pixel = np.asarray(fft)[pixel_ffts]
+        bin_per_pixel = np.int_(self.pixel_angles * fft_size)
+        self.pixel_amplitudes = fft_per_pixel[np.arange(pixel_count), bin_per_pixel]
+        self.pixel_amplitudes = np.multiply(self.pixel_amplitudes, self.parameter('fft-weight').get() * (1 - self.pixel_distances))
+
+        # angle_bin_width = (2.0 * math.pi) / len(fft[0])
+        # for bin in range(len(fft[0])):
+        #     start = bin * angle_bin_width
+        #     end = (bin + 0.5) * angle_bin_width
+        #     mask = (self.pixel_angles > start) & (self.pixel_angles < end) & (self.pixel_distances < fft[0][bin])
+        #     self.pixel_amplitudes[mask] += 0.3
+
+        self.setAllHLS(self.pixel_angles, (0.5 * self.pixel_amplitudes), 1.0)

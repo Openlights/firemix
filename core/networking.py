@@ -55,6 +55,7 @@ class Networking:
 
         # Protect against presets or transitions that write float data.
         buffer_rgb = np.int_(hls_to_rgb(buffer) * 255)
+        np.clip(buffer_rgb, 0, 255, buffer_rgb)
 
         def fill_packet(intbuffer, start, end, offset, packet, swap_order=False):
             for pixel_index, pixel in enumerate(intbuffer[start:end]):
