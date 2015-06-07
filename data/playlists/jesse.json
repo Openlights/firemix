@@ -87,7 +87,6 @@
                 "speed": "[0,0.5,0.1]", 
                 "wave-hue-period": "[0.1,1.5,1]", 
                 "wave-hue-width": "[-0.5,0.7,0.2]", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "[0,2,0.1]"
             }
         }, 
@@ -213,6 +212,16 @@
             }
         }, 
         {
+            "classname": "CombinePresets", 
+            "name": "combine high lum", 
+            "params": {
+                "first-preset": "radial complement stars", 
+                "second-preset": "high lum test", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
             "classname": "SpiralGradient", 
             "name": "radial combine", 
             "params": {
@@ -228,18 +237,7 @@
                 "speed": "0.1", 
                 "wave-hue-period": "1.0", 
                 "wave-hue-width": "0.1", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
-            }
-        }, 
-        {
-            "classname": "CombinePresets", 
-            "name": "combine high lum", 
-            "params": {
-                "first-preset": "radial complement stars", 
-                "second-preset": "high lum test", 
-                "transition-mode": "Additive Blend", 
-                "transition-progress": "0.5"
             }
         }, 
         {
@@ -258,7 +256,6 @@
                 "speed": "0.1", 
                 "wave-hue-period": "1.0", 
                 "wave-hue-width": "0.0", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
             }
         }, 
@@ -278,7 +275,6 @@
                 "speed": "0.2", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.0", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "3.0"
             }
         }, 
@@ -298,7 +294,6 @@
                 "speed": "1.0", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.0", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
             }
         }, 
@@ -368,7 +363,6 @@
                 "speed": "0.1", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.2", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.3"
             }
         }, 
@@ -388,7 +382,6 @@
                 "speed": "[0,0.1,0.1]", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "1.0", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.2"
             }
         }, 
@@ -408,7 +401,6 @@
                 "speed": "[0,0.5,0.1]", 
                 "wave-hue-period": "[0.1,1.5,1]", 
                 "wave-hue-width": "[-0.5,0.7,0.2]", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "[0,2,0.1]"
             }
         }, 
@@ -428,7 +420,6 @@
                 "speed": "0.04", 
                 "wave-hue-period": "[-0.2,0.1,0.1]", 
                 "wave-hue-width": "4.5", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.07"
             }
         }, 
@@ -466,7 +457,6 @@
                 "speed": "0.1", 
                 "wave-hue-period": "[-0.5,3,0.1]", 
                 "wave-hue-width": "[-0.1,0.2,1]", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "1.0"
             }
         }, 
@@ -486,7 +476,6 @@
                 "speed": "[0,0.1,0.01]", 
                 "wave-hue-period": "[1,2,0.1]", 
                 "wave-hue-width": "[0,0.3,0.01]", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "[0,1,1]"
             }
         }, 
@@ -506,7 +495,6 @@
                 "speed": "[0,0.1,0.1]", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "1.0", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.2"
             }
         }, 
@@ -536,7 +524,6 @@
                 "speed": "[-0.1,0.1,0.1]", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "1.0", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.01"
             }
         }, 
@@ -556,7 +543,6 @@
                 "speed": "[0,2,1]", 
                 "wave-hue-period": "[0.1,1,0.1]", 
                 "wave-hue-width": "[0,1,1]", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "[-1,1.0,1]"
             }
         }, 
@@ -944,6 +930,21 @@
         }, 
         {
             "classname": "Dragons", 
+            "name": "dragons shooting stars", 
+            "params": {
+                "alive-color": "(0.0, 1.0, 1.0)", 
+                "birth-rate": "0.8", 
+                "dead-color": "(0.1, 0.0, 1.0)", 
+                "explode-color": "(0.3, 2.0, 2.0)", 
+                "growth-rate": "120.0", 
+                "growth-time": "4.0", 
+                "pop-limit": "20", 
+                "tail-color": "(0.2, 0.1, 1.0)", 
+                "tail-persist": "0.3"
+            }
+        }, 
+        {
+            "classname": "Dragons", 
             "name": "dragons small yellow", 
             "params": {
                 "alive-color": "(0.0, 1.0, 1.0)", 
@@ -1128,18 +1129,18 @@
             "classname": "Fungus", 
             "name": "fungi very rainbow", 
             "params": {
-                "alive-color": "[3.7, 0.6, 0.6]", 
+                "alive-color": "[3.0, 1.0, 0.6]", 
                 "birth-rate": "0.05", 
-                "black-color": "[-2.5, 0.0, 1.0]", 
-                "dead-color": "[0.7, 0.5, 1.0]", 
-                "death-time": "1.0", 
-                "fade-out-time": "1.0", 
-                "growth-time": "0.2", 
-                "isolated-life-time": "0.1", 
+                "black-color": "[-0.5, 0.0, 1.0]", 
+                "dead-color": "[0.0, 0.5, 1.0]", 
+                "death-time": "3.0", 
+                "fade-out-time": "2.0", 
+                "growth-time": "1.0", 
+                "isolated-life-time": "1.0", 
                 "life-time": "0.5", 
-                "mass-destruction-threshold": "400", 
+                "mass-destruction-threshold": "40", 
                 "mass-destruction-time": "2.0", 
-                "pop-limit": "400", 
+                "pop-limit": "500", 
                 "spread-rate": "10.0"
             }
         }, 
@@ -1244,7 +1245,6 @@
                 "speed": "-0.4", 
                 "wave-hue-period": "1.0", 
                 "wave-hue-width": "5.0", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
             }
         }, 
@@ -1264,7 +1264,6 @@
                 "speed": "-0.3", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.0", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
             }
         }, 
@@ -1284,7 +1283,6 @@
                 "speed": "[-0.2,1,1]", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.0", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
             }
         }, 
@@ -1304,7 +1302,6 @@
                 "speed": "-0.3", 
                 "wave-hue-period": "0.3", 
                 "wave-hue-width": "[0.2,0.5,1]", 
-                "wave-period-boost": "0.0", 
                 "wave-speed": "0.3"
             }
         }, 
@@ -1325,6 +1322,34 @@
                 "scale": "0.5", 
                 "speed": "-0.3", 
                 "stretch": "0.08"
+            }
+        }, 
+        {
+            "classname": "Twinkle", 
+            "name": "twinkle sunrise", 
+            "params": {
+                "beat-births": "25.0", 
+                "beat-color": "(0.8, 0.6, 1.0)", 
+                "birth-rate": "[15,55,10]", 
+                "black-color": "(0.01, 0.0, 0.7)", 
+                "fade-down-time": "[4,12,3]", 
+                "fade-up-time": "[0.1,0.5,3]", 
+                "off-color": "(0.0, 0.5, 0.5)", 
+                "on-color": "(0.15, 0.6, 0.5)"
+            }
+        }, 
+        {
+            "classname": "Twinkle", 
+            "name": "twinkle bedtime", 
+            "params": {
+                "beat-births": "25.0", 
+                "beat-color": "(0.8, 0.6, 1.0)", 
+                "birth-rate": "[5,25,10]", 
+                "black-color": "(0.5, 0.0, 0.9)", 
+                "fade-down-time": "[4,12,3]", 
+                "fade-up-time": "[4,8,3]", 
+                "off-color": "(0.1, 0.5, 0.5)", 
+                "on-color": "(0.15, 1.0, 0.5)"
             }
         }, 
         {
