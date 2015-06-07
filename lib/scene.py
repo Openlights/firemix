@@ -20,6 +20,7 @@ import math
 import logging
 import numpy as np
 
+from scipy import spatial
 from lib.json_dict import JSONDict
 from lib.fixture import Fixture
 from lib.buffer_utils import BufferUtils
@@ -49,6 +50,7 @@ class Scene(JSONDict):
         self._all_pixel_locations = None
         self._all_pixels_raw = None
         self._strand_settings = None
+        self._tree = None
 
     def warmup(self):
         """
@@ -68,8 +70,7 @@ class Scene(JSONDict):
         self.get_fixture_bounding_box()
         self.get_intersection_points()
         self.get_all_pixels_logical()
-        #self.get_all_pixels()
-        #self.get_all_pixel_locations()
+        self._tree = spatial.KDTree(self.get_all_pixel_locations())
         log.info("Done")
 
     def extents(self):
@@ -205,20 +206,11 @@ class Scene(JSONDict):
 
         if neighbors is None:
             neighbors = []
-            strand, address, pixel = BufferUtils.index_to_logical(index)
-            f = self.fixture(strand, address)
-            neighbors = [BufferUtils.logical_to_index((strand, address, p)) for p in f.pixel_neighbors(pixel)]
-
-            if (pixel == 0) or (pixel == f.pixels - 1):
-                # If this pixel is on the end of a fixture, consider the neighboring fixtures
-                loc = 'end'
-                if pixel == 0:
-                    loc = 'start'
-
-                logical_neighbors = self.get_colliding_fixtures(strand, address, loc)
-                neighbors += [BufferUtils.logical_to_index(n) for n in logical_neighbors]
-
-            self._pixel_neighbors_cache[index] = neighbors
+            if self._tree:
+                neighbors = self._tree.query_ball_point(self.get_pixel_location(index), 3)
+                # if len(neighbors) > 4:
+                #     print index, neighbors
+                self._pixel_neighbors_cache[index] = neighbors
 
         return neighbors
 

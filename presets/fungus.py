@@ -153,7 +153,7 @@ class Fungus(RawPreset):
             if len(neighbors) < 2:
                 lt = self._isolated_life_time
 
-            if len(live_neighbors) < 2 and ((self._current_time - self._time[address]) / lt) >= 1.0:
+            if len(live_neighbors) < 3 and ((self._current_time - self._time[address]) / lt) >= 1.0:
                 self._alive.remove(address)
                 self._dying.append(address)
                 self._time[address] = self._current_time
