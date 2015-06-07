@@ -25,6 +25,7 @@
             "classname": "RadialGradient", 
             "name": "radial wibble dance", 
             "params": {
+                "audio-amplitude": "0.0", 
                 "blackout": "[0.01,0.1,1]", 
                 "hue-step": "0.05", 
                 "hue-width": "1.0", 
@@ -86,6 +87,7 @@
                 "speed": "[0,0.5,0.1]", 
                 "wave-hue-period": "[0.1,1.5,1]", 
                 "wave-hue-width": "[-0.5,0.7,0.2]", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "[0,2,0.1]"
             }
         }, 
@@ -93,6 +95,7 @@
             "classname": "RadialGradient", 
             "name": "radial snakes", 
             "params": {
+                "audio-amplitude": "0.0", 
                 "blackout": "0.6", 
                 "hue-step": "-0.04", 
                 "hue-width": "0.2", 
@@ -225,6 +228,7 @@
                 "speed": "0.1", 
                 "wave-hue-period": "1.0", 
                 "wave-hue-width": "0.1", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
             }
         }, 
@@ -254,6 +258,7 @@
                 "speed": "0.1", 
                 "wave-hue-period": "1.0", 
                 "wave-hue-width": "0.0", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
             }
         }, 
@@ -273,6 +278,7 @@
                 "speed": "0.2", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.0", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "3.0"
             }
         }, 
@@ -292,6 +298,7 @@
                 "speed": "1.0", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.0", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
             }
         }, 
@@ -361,6 +368,7 @@
                 "speed": "0.1", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.2", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.3"
             }
         }, 
@@ -380,6 +388,7 @@
                 "speed": "[0,0.1,0.1]", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "1.0", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.2"
             }
         }, 
@@ -399,6 +408,7 @@
                 "speed": "[0,0.5,0.1]", 
                 "wave-hue-period": "[0.1,1.5,1]", 
                 "wave-hue-width": "[-0.5,0.7,0.2]", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "[0,2,0.1]"
             }
         }, 
@@ -418,6 +428,7 @@
                 "speed": "0.04", 
                 "wave-hue-period": "[-0.2,0.1,0.1]", 
                 "wave-hue-width": "4.5", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.07"
             }
         }, 
@@ -455,6 +466,7 @@
                 "speed": "0.1", 
                 "wave-hue-period": "[-0.5,3,0.1]", 
                 "wave-hue-width": "[-0.1,0.2,1]", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "1.0"
             }
         }, 
@@ -474,6 +486,7 @@
                 "speed": "[0,0.1,0.01]", 
                 "wave-hue-period": "[1,2,0.1]", 
                 "wave-hue-width": "[0,0.3,0.01]", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "[0,1,1]"
             }
         }, 
@@ -493,6 +506,7 @@
                 "speed": "[0,0.1,0.1]", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "1.0", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.2"
             }
         }, 
@@ -522,6 +536,7 @@
                 "speed": "[-0.1,0.1,0.1]", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "1.0", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.01"
             }
         }, 
@@ -541,6 +556,7 @@
                 "speed": "[0,2,1]", 
                 "wave-hue-period": "[0.1,1,0.1]", 
                 "wave-hue-width": "[0,1,1]", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "[-1,1.0,1]"
             }
         }, 
@@ -664,6 +680,7 @@
             "classname": "RadialGradient", 
             "name": "radial wibble slow", 
             "params": {
+                "audio-amplitude": "0.0", 
                 "blackout": "[0.01, 0.05, 0.1]", 
                 "hue-step": "0.1", 
                 "hue-width": "1.0", 
@@ -683,6 +700,7 @@
             "classname": "RadialGradient", 
             "name": "radial splotch", 
             "params": {
+                "audio-amplitude": "0.0", 
                 "blackout": "0.1", 
                 "hue-step": "0.05", 
                 "hue-width": "0.5", 
@@ -702,6 +720,7 @@
             "classname": "RadialGradient", 
             "name": "radial darting rainbows", 
             "params": {
+                "audio-amplitude": "0.0", 
                 "blackout": "0.05", 
                 "hue-step": "0.1", 
                 "hue-width": "0.2", 
@@ -721,6 +740,7 @@
             "classname": "RadialGradient", 
             "name": "radial darting rainbows 2", 
             "params": {
+                "audio-amplitude": "0.0", 
                 "blackout": "0.1", 
                 "hue-step": "0.1", 
                 "hue-width": "0.5", 
@@ -740,6 +760,7 @@
             "classname": "RadialGradient", 
             "name": "radial pistons", 
             "params": {
+                "audio-amplitude": "0.0", 
                 "blackout": "0.3", 
                 "hue-step": "0.1", 
                 "hue-width": "0.5", 
@@ -759,6 +780,7 @@
             "classname": "RadialGradient", 
             "name": "radial complement stars", 
             "params": {
+                "audio-amplitude": "0.0", 
                 "blackout": "0.05", 
                 "hue-step": "0.1", 
                 "hue-width": "0.5", 
@@ -778,6 +800,7 @@
             "classname": "RadialGradient", 
             "name": "radial slow simple", 
             "params": {
+                "audio-amplitude": "0.0", 
                 "blackout": "0.3", 
                 "hue-step": "0.1", 
                 "hue-width": "0.5", 
@@ -797,6 +820,7 @@
             "classname": "RadialGradient", 
             "name": "radial glitchy", 
             "params": {
+                "audio-amplitude": "0.0", 
                 "blackout": "[0.1,0.4,0.1]", 
                 "hue-step": "0.1", 
                 "hue-width": "0.3", 
@@ -816,6 +840,7 @@
             "classname": "RadialGradient", 
             "name": "radial something", 
             "params": {
+                "audio-amplitude": "0.0", 
                 "blackout": "[0.1,0.4,0.1]", 
                 "hue-step": "0.1", 
                 "hue-width": "0.3", 
@@ -1103,18 +1128,18 @@
             "classname": "Fungus", 
             "name": "fungi very rainbow", 
             "params": {
-                "alive-color": "[3.0, 1.0, 0.6]", 
+                "alive-color": "[3.7, 0.6, 0.6]", 
                 "birth-rate": "0.05", 
-                "black-color": "[-0.5, 0.0, 1.0]", 
-                "dead-color": "[0.0, 0.5, 1.0]", 
-                "death-time": "3.0", 
-                "fade-out-time": "2.0", 
-                "growth-time": "1.0", 
-                "isolated-life-time": "1.0", 
+                "black-color": "[-2.5, 0.0, 1.0]", 
+                "dead-color": "[0.7, 0.5, 1.0]", 
+                "death-time": "1.0", 
+                "fade-out-time": "1.0", 
+                "growth-time": "0.2", 
+                "isolated-life-time": "0.1", 
                 "life-time": "0.5", 
-                "mass-destruction-threshold": "40", 
+                "mass-destruction-threshold": "400", 
                 "mass-destruction-time": "2.0", 
-                "pop-limit": "500", 
+                "pop-limit": "400", 
                 "spread-rate": "10.0"
             }
         }, 
@@ -1219,6 +1244,7 @@
                 "speed": "-0.4", 
                 "wave-hue-period": "1.0", 
                 "wave-hue-width": "5.0", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
             }
         }, 
@@ -1238,6 +1264,7 @@
                 "speed": "-0.3", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.0", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
             }
         }, 
@@ -1257,6 +1284,7 @@
                 "speed": "[-0.2,1,1]", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.0", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.1"
             }
         }, 
@@ -1276,6 +1304,7 @@
                 "speed": "-0.3", 
                 "wave-hue-period": "0.3", 
                 "wave-hue-width": "[0.2,0.5,1]", 
+                "wave-period-boost": "0.0", 
                 "wave-speed": "0.3"
             }
         }, 

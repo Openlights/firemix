@@ -17,9 +17,10 @@
 
 import numpy as np
 import math
+import ast
 
 from lib.raw_preset import RawPreset
-from lib.parameters import FloatParameter
+from lib.parameters import FloatParameter, StringParameter
 from lib.color_fade import ColorFade
 
 class TestFFT(RawPreset):
@@ -30,12 +31,17 @@ class TestFFT(RawPreset):
     _onset_decay = 0.0
 
     def setup(self):
-        self.parameter_changed(None)
-        self._fader = ColorFade([(0.0, 0.5, 1.0), (1.0, 0.5, 1.0), (0.0, 0.5, 1.0)], self._fader_steps)
         self.add_parameter(FloatParameter('fft-weight', 25.0))
+        self.add_parameter(StringParameter('color-gradient', "[(0,0.5,1), (1,0.5,1)]"))
+        self.add_parameter(FloatParameter('frequency-max', 1.0))
+        self.add_parameter(FloatParameter('frequency-min', 0.0))
+        self.add_parameter(FloatParameter('time-range', 1.0))
         self.color_angle = 0.0
+        self.parameter_changed(None)
 
     def parameter_changed(self, parameter):
+        fade_colors = ast.literal_eval(self.parameter('color-gradient').get())
+        self._fader = ColorFade(fade_colors, self._fader_steps)
         pass
 
     def reset(self):
@@ -71,10 +77,13 @@ class TestFFT(RawPreset):
         pixel_count = len(self.pixel_distances)
 
         #time_to_graph = (len(fft) - 1) * (1 - self._mixer.audio.getEnergy() / 2) # pulse with total energy
-        time_to_graph = (len(fft) - 1)
-        pixel_ffts = np.int_((self.pixel_distances) * time_to_graph)
+        frequency_min = self.parameter('frequency-min').get()
+        frequency_max = self.parameter('frequency-max').get()
+        frequency_range = frequency_max - frequency_min
+        time_to_graph = (len(fft) - 1) * self.parameter('time-range').get()
+        pixel_ffts = np.mod(np.int_((self.pixel_distances) * time_to_graph), len(fft))
         fft_per_pixel = np.asarray(fft)[pixel_ffts]
-        bin_per_pixel = np.int_(self.pixel_angles * fft_size)
+        bin_per_pixel = np.int_(np.mod(self.pixel_angles * frequency_range + frequency_min, 1.0) * fft_size)
         self.pixel_amplitudes = fft_per_pixel[np.arange(pixel_count), bin_per_pixel]
         self.pixel_amplitudes = np.multiply(self.pixel_amplitudes, self.parameter('fft-weight').get() * (1 - self.pixel_distances))
 
@@ -85,4 +94,8 @@ class TestFFT(RawPreset):
         #     mask = (self.pixel_angles > start) & (self.pixel_angles < end) & (self.pixel_distances < fft[0][bin])
         #     self.pixel_amplitudes[mask] += 0.3
 
-        self.setAllHLS(self.pixel_angles, (0.5 * self.pixel_amplitudes), 1.0)
+        hues = np.int_(np.mod(self.pixel_angles, 1.0) * self._fader_steps)
+        colors = self._fader.color_cache[hues]
+        colors.T[1] *= self.pixel_amplitudes
+
+        self._pixel_buffer = colors
