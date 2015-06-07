@@ -47,7 +47,7 @@ class Audio(QtCore.QObject):
     todo zero these at start
     """
     def __init__(self, app):
-        self.fft = []
+        self.fft = [[0]]
         self.smoothed = []
 
     def fft_data(self):
@@ -58,8 +58,8 @@ class Audio(QtCore.QObject):
             print "received no fft"
             return
 
-        if len(self.fft) == 0:
-            self.fft.append(latest_fft)
+        if len(self.fft[0]) <= 1:
+            self.fft[0] = latest_fft
             self.smoothed = latest_fft
             print "first fft"
             return
