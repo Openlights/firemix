@@ -94,17 +94,19 @@ class RadialGradient(RawPreset):
         audio_amplitude = self.parameter('audio-amplitude').get()
         luminance_scale = self.parameter('luminance-scale').get()
 
-        fft = self._mixer.audio.getSmoothedFFT()
 
         wave1 = np.abs(np.cos(self.wave1_offset + self.pixel_angles * wave1_period) * wave1_amplitude)
         wave2 = np.abs(np.cos(self.wave2_offset + self.pixel_angles * wave2_period) * wave2_amplitude)
         hues = self.pixel_distances + wave1 + wave2
+
+        fft = self._mixer.audio.getSmoothedFFT()
         if len(fft) > 0:
             audio_pixel_angles = np.mod(self.pixel_angles / (math.pi * 2) + 1, 1)
             fft_size = len(fft)
             bin_per_pixel = np.int_(audio_pixel_angles * fft_size / 4) # uses lowest quadrant of fft
             wave_audio = audio_amplitude * np.asarray(fft)[bin_per_pixel]
             hues += wave_audio
+
         luminance_indices = np.mod(np.abs(np.int_((self.luminance_offset + hues * luminance_scale) * self._luminance_steps)), self._luminance_steps)
         luminances = luminance_table[luminance_indices]
         hues = np.fmod(self.hue_inner + hues * self.parameter('hue-width').get(), 1.0)

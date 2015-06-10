@@ -21,7 +21,7 @@ import random
 import math
 
 from lib.raw_preset import RawPreset
-from lib.parameters import FloatParameter, HLSParameter
+from lib.parameters import FloatParameter, HLSParameter, StringParameter
 from lib.color_fade import ColorFade
 
 class SpiralGradient(RawPreset):
@@ -44,6 +44,8 @@ class SpiralGradient(RawPreset):
         self.add_parameter(HLSParameter('color-end', (1.0, 0.5, 1.0)))
         self.add_parameter(FloatParameter('center-distance', 0.0))
         self.add_parameter(FloatParameter('center-speed', 0.0))
+        self.add_parameter(FloatParameter('wave-period-boost', 0.0))
+        self.add_parameter(FloatParameter('wave-falloff', 0.0))
         self.hue_inner = 0
         self.color_offset = 0
         self.wave_offset = random.random()
@@ -56,6 +58,7 @@ class SpiralGradient(RawPreset):
 
     def parameter_changed(self, parameter):
         fade_colors = [self.parameter('color-start').get(), self.parameter('color-end').get(), self.parameter('color-start').get()]
+        self.add_parameter(StringParameter('color-gradient', str(fade_colors)))
 
         self._fader = ColorFade(fade_colors, self._fader_steps)
 
@@ -63,8 +66,10 @@ class SpiralGradient(RawPreset):
         self.locations = self.scene().get_all_pixel_locations()
 
     def draw(self, dt):
-        if self._mixer.is_onset():
-            self.onset_speed_boost = self.parameter('onset-speed-boost').get()
+        # if self._mixer.is_onset():
+        #     self.onset_speed_boost = self.parameter('onset-speed-boost').get()
+        boost = self._mixer.audio.getLowFrequency() * self.parameter('onset-speed-boost').get()
+        self.onset_speed_boost = max(boost, self.onset_speed_boost)
 
         self.center_offset_angle += dt * self.parameter('center-speed').get() * self.onset_speed_boost
         self.hue_inner += dt * self.parameter('hue-speed').get() * self.onset_speed_boost
@@ -73,7 +78,7 @@ class SpiralGradient(RawPreset):
 
         self.onset_speed_boost = max(1, self.onset_speed_boost - self.parameter('onset-speed-decay').get())
 
-        wave_hue_period = 2 * math.pi * self.parameter('wave-hue-period').get()
+        wave_hue_period = 2 * math.pi * self.parameter('wave-hue-period').get() + self.parameter('wave-period-boost').get() * self._mixer.audio.getEnergy()
         wave_hue_width = self.parameter('wave-hue-width').get()
         radius_hue_width = self.parameter('radius-hue-width').get()
         angle_hue_width = self.parameter('angle-hue-width').get()
@@ -86,8 +91,12 @@ class SpiralGradient(RawPreset):
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
         self.pixel_angles = np.arctan2(y, x) / (2.0 * math.pi)
         self.pixel_distances /= max(self.pixel_distances)
+        wave_amplitude = self.pixel_distances
+        wave_falloff = self.parameter('wave-falloff').get()
+        if wave_falloff !=0:
+            wave_amplitude *= np.max(wave_falloff - self.pixel_distances, 0)
 
-        angles = np.mod(1.0 + self.pixel_angles + np.sin(self.wave_offset + self.pixel_distances * wave_hue_period) * wave_hue_width, 1.0)
+        angles = np.mod(1.0 + self.pixel_angles + np.sin(self.wave_offset + wave_amplitude * wave_hue_period) * wave_hue_width, 1.0)
         hues = self.color_offset + (radius_hue_width * self.pixel_distances) + (2 * np.abs(angles - 0.5) * angle_hue_width)
         hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
         colors = self._fader.color_cache[hues]

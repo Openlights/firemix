@@ -33,6 +33,7 @@ class SimplexNoise(RawPreset):
     _luminance_steps = 256
     
     def setup(self):
+        self.add_parameter(FloatParameter('audio-brightness', 0.0))
         self.add_parameter(FloatParameter('hue-min', 0.0))
         self.add_parameter(FloatParameter('hue-max', 3.0))
         self.add_parameter(FloatParameter('speed', 0.7))
@@ -98,7 +99,7 @@ class SimplexNoise(RawPreset):
         brights = (1.0 + brights) / 2
         brights *= self._luminance_steps
         LS = self.lum_fader.color_cache[np.int_(brights)].T
-        luminances = LS[1]
+        luminances = LS[1] + self._mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
 
         self.setAllHLS(hues, luminances, LS[2])
 
