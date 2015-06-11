@@ -31,6 +31,7 @@ class SpiralGradient(RawPreset):
     _fader_steps = 256
     
     def setup(self):
+        self.add_parameter(FloatParameter('audio-brightness', 0.3))
         self.add_parameter(FloatParameter('speed', 0.3))
         self.add_parameter(FloatParameter('hue-speed', 0.3))
         self.add_parameter(FloatParameter('angle-hue-width', 2.0))
@@ -102,6 +103,7 @@ class SpiralGradient(RawPreset):
         colors = self._fader.color_cache[hues]
         colors = colors.T
         colors[0] = np.mod(colors[0] + self.hue_inner, 1.0)
+        colors[1] += self._mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
         colors = colors.T
 
         self._pixel_buffer = colors
