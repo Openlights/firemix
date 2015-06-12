@@ -32,6 +32,7 @@ class TestFFT(RawPreset):
 
     def setup(self):
         self.add_parameter(FloatParameter('fft-weight', 25.0))
+        self.add_parameter(FloatParameter('rotation', 0.0))
         self.add_parameter(StringParameter('color-gradient', "[(0,0.5,1), (1,0.5,1)]"))
         self.add_parameter(FloatParameter('frequency-max', 1.0))
         self.add_parameter(FloatParameter('frequency-min', 0.0))
@@ -53,7 +54,7 @@ class TestFFT(RawPreset):
         def rotate(l, n):
             return l[n:] + l[:n]
 
-        self.color_angle += dt * 0.1
+        self.color_angle += dt *  self.parameter('rotation').get()
 
         if False:
         #if self._mixer.is_onset():

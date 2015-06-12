@@ -49,6 +49,10 @@ class Audio(QtCore.QObject):
     def __init__(self, app):
         self.fft = [[0]]
         self.smoothed = []
+#        self.average = [[0]]
+        self.peak = [[0]]
+        self.gain = 1.0
+        self.maxGain = 10.0
 
     def fft_data(self):
         return self.fft
@@ -61,21 +65,35 @@ class Audio(QtCore.QObject):
         if len(self.fft[0]) <= 1:
             self.fft[0] = latest_fft
             self.smoothed = latest_fft
+            self.peak[0] = np.max(latest_fft)
+#            self.average[0] = self.getEnergy()
             print "first fft"
             return
 
+
+        self.peak.insert(0, np.max(latest_fft))
+ #       self.average.insert(0, self.getEnergy())
         self.fft.insert(0, latest_fft)
+
+        maxPeak = np.max(self.peak)
+        if maxPeak > 1 / self.maxGain:
+            self.gain = 1 / maxPeak
+        else:
+            self.gain = self.maxGain
 
         if len(self.fft) > 60:
             self.fft.pop()
+            self.peak.pop()
+#            self.average.pop()
+#            averageEnergy = np.sum(self.average) / len(self.fft)
 
         smoothing = 0.8
-        np.insert(self.smoothed, 0, 0)
+        #np.insert(self.smoothed, 0, 0)
         #self.smoothed.pop()
         self.smoothed = np.multiply(latest_fft, 1 - smoothing) + np.multiply(self.smoothed, smoothing)
 
     def getEnergy(self):
-        return np.sum(self.fft[0]) / len(self.fft[0])
+        return np.sum(self.fft[0]) / len(self.fft[0]) * self.gain
 
     def getLowFrequency(self):
         return self.fft[0][0]
