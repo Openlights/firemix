@@ -647,24 +647,6 @@
             }
         }, 
         {
-            "classname": "ImagePreset", 
-            "name": "image hi", 
-            "params": {
-                "beat-lum-boost": "0.2", 
-                "beat-lum-time": "0.05", 
-                "center-orbit-distance": "0.0", 
-                "center-orbit-speed": "60.0", 
-                "center-x": "[-180,180,120]", 
-                "center-y": "[-60,60,80]", 
-                "edge-mode": "clamp", 
-                "ghost": "0.5", 
-                "image-file": "data/images/hello.png", 
-                "scale": "3.0", 
-                "speed-hue": "0.02", 
-                "speed-rotation": "0.05"
-            }
-        }, 
-        {
             "classname": "SpiralGradient", 
             "name": "spiral plasma", 
             "params": {
