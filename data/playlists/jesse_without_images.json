@@ -179,7 +179,7 @@
             "params": {
                 "first-preset": "radial darting rainbows", 
                 "second-preset": "radial combine", 
-                "transition-mode": "Linear Blend", 
+                "transition-mode": "Multiply Blend", 
                 "transition-progress": "0.5"
             }
         }, 
@@ -206,9 +206,9 @@
             "classname": "CombinePresets", 
             "name": "combine high lum", 
             "params": {
-                "first-preset": "radial complement stars", 
+                "first-preset": "fluid spirals", 
                 "second-preset": "high lum test", 
-                "transition-mode": "Additive Blend", 
+                "transition-mode": "Linear Blend", 
                 "transition-progress": "0.5"
             }
         }, 
@@ -245,25 +245,6 @@
                 "onset-speed-decay": "2.0", 
                 "radius-hue-width": "0.0", 
                 "speed": "0.1", 
-                "wave-hue-period": "0.1", 
-                "wave-hue-width": "0.0", 
-                "wave-speed": "0.1"
-            }
-        }, 
-        {
-            "classname": "SpiralGradient", 
-            "name": "add b", 
-            "params": {
-                "angle-hue-width": "0.5", 
-                "center-distance": "0.0", 
-                "center-speed": "0.0", 
-                "color-end": "(1.0, 1.0, 1.0)", 
-                "color-start": "(0.0, 0.5, 1.0)", 
-                "hue-speed": "0.0", 
-                "onset-speed-boost": "-20.0", 
-                "onset-speed-decay": "2.0", 
-                "radius-hue-width": "0.0", 
-                "speed": "1.0", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.0", 
                 "wave-speed": "0.1"

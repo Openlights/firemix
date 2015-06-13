@@ -95,7 +95,6 @@ class Networking:
             fill_packet(buffer_rgb, start, end, packet_header_size, packet, False)
             packets.append(array.array('B', packet))
 
-        self.socket.send("B")
-        for packet in packets:
-            self.socket.send(packet)
-        self.socket.send("E")
+        frame = ["B"] + packets + ["E"]
+
+        self.socket.send_multipart(frame)
