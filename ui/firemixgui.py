@@ -32,6 +32,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self._mixer = app.mixer
         self.setupUi(self)
 
+        self.icon_blank = QtGui.QIcon("./res/icons/blank.png")
+        self.icon_disabled = QtGui.QIcon("./res/icons/ic_highlight_off_black_24dp_1x.png")
+        self.icon_playing = QtGui.QIcon("./res/icons/ic_play_circle_filled_black_24dp_1x.png")
+        self.icon_next = QtGui.QIcon("./res/icons/ic_play_circle_outline_black_24dp_1x.png")
+
         # Control
         self.btn_blackout.clicked.connect(self.on_btn_blackout)
         self.btn_runfreeze.clicked.connect(self.on_btn_runfreeze)
@@ -103,6 +108,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.transition_update_timer.setInterval(300)
         self.transition_update_timer.timeout.connect(self.on_transition_update_timer)
         self._mixer.transition_starting.connect(self.transition_update_start)
+
+        self.btn_prev_preset.setDisabled(True)
 
         self.update_mixer_settings()
 
@@ -178,8 +185,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_btn_playpause(self):
         if self._mixer.is_paused():
             self._mixer.pause(False)
+            self.btn_next_preset.setDisabled(False)
         else:
             self._mixer.pause()
+            self.btn_next_preset.setDisabled(True)
         self.update_mixer_settings()
 
     def on_btn_runfreeze(self):
@@ -194,9 +203,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self._mixer.next()
         self.update_playlist()
 
+    # Disabling this button, we don't use it and it complicates implementation
     def on_btn_prev_preset(self):
-        self._mixer.prev()
-        self.update_playlist()
+        pass
 
     def on_btn_reset_preset(self):
         paused = self._app.mixer.is_paused()
@@ -259,9 +268,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.tbl_preset_parameters.setDisabled(True)
             self.lbl_preset_parameters.setTitle("%s Parameters (Pause to Edit)" % preset)
             self.btn_playpause.setText("Pause")
+            self.btn_next_preset.setDisabled(False)
         else:
             self.lbl_preset_parameters.setTitle("%s Parameters" % preset)
             self.tbl_preset_parameters.setDisabled(False)
+            self.btn_next_preset.setDisabled(True)
             self.btn_playpause.setText("Play")
 
     def on_slider_dimmer(self):
@@ -281,13 +292,19 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         next = self._app.playlist.get_next_preset()
         for preset in presets:
             item = QtGui.QListWidgetItem(preset.name())
+
             #TODO: Enable renaming in the list when we have a real delegate
             #item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+            if not preset.parameter('allow-playback').get():
+                item.setIcon(self.icon_disabled)
+            else:
+                if preset == current:
+                    item.setIcon(self.icon_playing)
+                elif preset == next:
+                    item.setIcon(self.icon_next)
+                else:
+                    item.setIcon(self.icon_blank)
 
-            if preset == current:
-                item.setForeground(QtGui.QColor(0, 100, 200))
-            elif preset == next:
-                item.setForeground(QtGui.QColor(200, 100, 0))
             self.lst_presets.addItem(item)
 
     def on_playlist_changed(self):

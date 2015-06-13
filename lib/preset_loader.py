@@ -18,11 +18,23 @@
 import os
 import logging
 import inspect
+from watchdog.observers import Observer
+from watchdog.events import PatternMatchingEventHandler, FileModifiedEvent, FileDeletedEvent
 
 from lib.preset import Preset
 
 log = logging.getLogger("firemix.lib.preset_loader")
 
+
+class PresetFileEventHandler(PatternMatchingEventHandler):
+
+    patterns = ["*.py"]
+    ignore_directories = True
+    callback = None
+
+    def on_modified(self, event):
+        if self.callback:
+            self.callback(event.src_path)
 
 class PresetLoader:
     """
@@ -32,9 +44,26 @@ class PresetLoader:
     http://code.activestate.com/recipes/436873-import-modulesdiscover-methods-from-a-directory-na/
     """
 
-    def __init__(self):
+    def __init__(self, parent):
+        self._parent = parent
         self._modules = []
         self._presets = []
+        self._presets_dict = None
+        self.event_handler = PresetFileEventHandler()
+        self.event_handler.callback = self.reload_preset_by_filename
+        self.observer = Observer()
+        self.observer.schedule(self.event_handler, os.path.join(os.getcwd(), "presets"), recursive=True)
+        log.info("Watching preset directory for changes.")
+        self.observer.start()
+
+    def __del__(self):
+        self.observer.stop()
+        self.observer.join()
+
+    def all_presets(self):
+        if not self._presets_dict:
+            self._presets_dict = self.load()
+        return self._presets_dict
 
     def load(self):
         self._modules = []
@@ -51,7 +80,8 @@ class PresetLoader:
                 self._modules.append(module)
                 self._load_presets_from_modules(module)
         log.info("Loaded %d presets." % len(self._presets))
-        return dict([(i.__name__, i) for i in self._presets])
+        self._presets_dict = dict([(classname.__name__, (module, classname)) for module, classname in self._presets])
+        return dict([(i[1].__name__, i[1]) for i in self._presets])
 
     def reload(self):
         """Reloads all preset modules"""
@@ -61,11 +91,18 @@ class PresetLoader:
             self._load_presets_from_modules(module)
         return dict([(i.__name__, i) for i in self._presets])
 
+    def reload_preset_by_filename(self, filename):
+        log.info("Reloading %s", filename)
+        for module in self._modules:
+            if module.__name__.split('.')[1] == os.path.basename(filename).split('.')[0]:
+                reload(module)
+                self._parent.module_reloaded(module.__name__)
+
     def _load_presets_from_modules(self, module):
         for name, obj in inspect.getmembers(module, inspect.isclass):
             if issubclass(obj, Preset) and (name is not "Preset") and (name is not "RawPreset"):
                 log.info("Loaded %s" % obj.__name__)
-                self._presets.append(obj)
+                self._presets.append((module, obj))
 
 
 

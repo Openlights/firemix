@@ -95,6 +95,8 @@ class RawPreset(Preset):
         """
         Unlike tick() in Preset, this method applies pixel_behavior to all pixels.
         """
+        if self.disabled:
+            return
 
         for parameter in self._parameters.values():
             parameter.tick(dt)

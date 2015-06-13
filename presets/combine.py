@@ -45,8 +45,8 @@ class CombinePresets(RawPreset):
 
     def draw(self, dt):
 
-        preset1 = self._mixer._playlist.get_preset_by_name(self.parameter('first-preset').get())
-        preset2 = self._mixer._playlist.get_preset_by_name(self.parameter('second-preset').get())
+        preset1 = self._mixer.playlist.get_preset_by_name(self.parameter('first-preset').get())
+        preset2 = self._mixer.playlist.get_preset_by_name(self.parameter('second-preset').get())
 
         if preset1 and preset2 and self._transition:
             # this is here because many transitions are set up to only play from start to end :(

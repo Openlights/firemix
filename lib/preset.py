@@ -21,6 +21,7 @@ import logging
 import numpy as np
 
 from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, render_command_list
+from lib.parameters import BoolParameter
 
 log = logging.getLogger("firemix.lib.preset")
 
@@ -36,6 +37,8 @@ class Preset:
         self._elapsed_time = 0
         self._parameters = {}
         self._instance_name = name
+        self.disabled = False
+        self.add_parameter(BoolParameter('allow-playback', True))
         self.setup()
 
     def __repr__(self):

@@ -54,7 +54,7 @@ class Mixer(QtCore.QObject):
         super(Mixer, self).__init__()
         self._app = app
         self._net = app.net
-        self._playlist = None
+        self.playlist = None
         self._scene = app.scene
         self._tick_rate = self._app.settings.get('mixer')['tick-rate']
         self._in_transition = False
@@ -230,7 +230,7 @@ class Mixer(QtCore.QObject):
             dt = (time.clock() - start)
             delay = max(0, (1.0 / self._tick_rate) - dt)
             if not self._paused:
-                self._elapsed += (1.0 / self._tick_rate)
+                self._elapsed += dt
         self._running = self._app._running
         if self._running:
             self._tick_timer = threading.Timer(delay, self.on_tick_timer)
@@ -245,7 +245,7 @@ class Mixer(QtCore.QObject):
         """
         Assigns a Playlist object to the mixer
         """
-        self._playlist = playlist
+        self.playlist = playlist
 
     def get_tick_rate(self):
         return self._tick_rate
@@ -261,23 +261,21 @@ class Mixer(QtCore.QObject):
 
     def next(self):
         #TODO: Fix this after the Playlist merge
-        if len(self._playlist) == 0:
+        if len(self.playlist) == 0:
             return
 
-        self.start_transition(self._playlist.get_preset_relative_to_active(1))
+        self.start_transition(self.playlist.next_preset)
 
     def prev(self):
-        #TODO: Fix this after the Playlist merge
-        if len(self._playlist) == 0:
-            return
-        self.start_transition(self._playlist.get_preset_relative_to_active(-1))
+        # Disabling this because it's not very useful and complicates implementation.
+        pass
 
     def start_transition(self, next=None):
         """
         Starts a transition.  If a name is given for Next, it will be the endpoint of the transition
         """
         if next is not None:
-            self._playlist.set_next_preset_by_name(next)
+            self.playlist.set_next_preset_by_name(next)
 
         self._in_transition = True
         self._start_transition = True
@@ -298,16 +296,17 @@ class Mixer(QtCore.QObject):
 
         dt *= self._global_speed
 
-        if len(self._playlist) > 0:
+        if len(self.playlist) > 0:
 
-            active_preset = self._playlist.get_active_preset()
-            active_index = self._playlist.get_active_index()
-
-            next_preset = self._playlist.get_next_preset()
-            next_index = self._playlist.get_next_index()
-
+            active_preset = self.playlist.get_active_preset()
+            next_preset = self.playlist.get_next_preset()
             active_preset.clear_commands()
-            active_preset.tick(dt)
+
+            try:
+                active_preset.tick(dt)
+            except:
+                log.error("Exception raised in preset %s" % active_preset.name())
+                self.playlist.disable_presets_by_class(active_preset.__class__.__name__)
 
             # Handle transition by rendering both the active and the next
             # preset, and blending them together
@@ -327,9 +326,9 @@ class Mixer(QtCore.QObject):
                 else:
                     self.transition_progress = 1.0
 
-                if self._playlist.get_next_preset() is not None:
-                    self._playlist.get_next_preset().clear_commands()
-                    self._playlist.get_next_preset().tick(dt)
+                if self.playlist.get_next_preset() is not None:
+                    self.playlist.get_next_preset().clear_commands()
+                    self.playlist.get_next_preset().tick(dt)
 
                 # Exit from transition state after the transition duration has
                 # elapsed
@@ -338,26 +337,24 @@ class Mixer(QtCore.QObject):
                     # Reset the elapsed time counter so the preset runs for the
                     # full duration after the transition
                     self._elapsed = 0.0
-                    self._playlist.advance()
+                    self.playlist.advance()
+                    # Is this needed?
                     active_preset = next_preset
-                    active_index = next_index
 
             # If the scene tree is available, we can do efficient mixing of presets.
             # If not, a tree would need to be constructed on-the-fly.
             # TODO: Support mixing without a scene tree available
             if self._enable_rendering:
-                first_preset = self._playlist.get_preset_by_index(active_index)
                 if self._in_transition:
-                    second_preset = self._playlist.get_preset_by_index(next_index)
                     mixed_buffer = self.render_presets(
-                        first_preset, self._main_buffer,
-                        second_preset, self._secondary_buffer,
+                        active_preset, self._main_buffer,
+                        next_preset, self._secondary_buffer,
                         self._in_transition, self._transition,
                         self.transition_progress,
                         check_for_nan=self._enable_profiling)
                 else:
                     mixed_buffer = self.render_presets(
-                        first_preset, self._main_buffer,
+                        active_preset, self._main_buffer,
                         check_for_nan=self._enable_profiling)
 
                 # render_presets writes all the desired pixels to
@@ -382,7 +379,7 @@ class Mixer(QtCore.QObject):
 
             if not self._paused and (self._elapsed >= self._duration) and active_preset.can_transition() and not self._in_transition:
                 if (self._elapsed >= (self._duration + self._transition_slop)) or self._onset:
-                    if len(self._playlist) > 1:
+                    if len(self.playlist) > 1:
                         self.start_transition()
                     self._elapsed = 0.0
 
