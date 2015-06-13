@@ -33,7 +33,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.setupUi(self)
 
         self.icon_blank = QtGui.QIcon("./res/icons/blank.png")
-        self.icon_disabled = QtGui.QIcon("./res/icons/ic_highlight_off_black_24dp_1x.png")
+        self.icon_disabled = QtGui.QIcon("./res/icons/ic_do_not_disturb_black_24dp_1x.png")
         self.icon_playing = QtGui.QIcon("./res/icons/ic_play_circle_filled_black_24dp_1x.png")
         self.icon_next = QtGui.QIcon("./res/icons/ic_play_circle_outline_black_24dp_1x.png")
 
