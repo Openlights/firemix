@@ -41,7 +41,6 @@ class RawPreset(Preset):
 
     def _reset(self):
         self.init_pixels()
-        log.info("%s raw_preset _reset()" % self.__class__.__name__)
         Preset._reset(self)
 
     def init_pixels(self):

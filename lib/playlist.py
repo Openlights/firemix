@@ -107,9 +107,6 @@ class Playlist(JSONDict):
         (presets dragged around, dis/enabled, deleted, duplicated, added, etc)
         It also gets called from advance() at the end of a transition, etc
         """
-        # Generate the shuffle list
-        if self._shuffle:
-            self.generate_shuffle()
 
         if self.active_preset is None:
             if len(self._playlist) > 0:
@@ -118,6 +115,10 @@ class Playlist(JSONDict):
                 # Nothing going on here!
                 self.next_preset = None
                 return
+
+        # Generate the shuffle list
+        if self._shuffle:
+            self.generate_shuffle()
 
         if self.next_preset is None:
             # Initialize _next.  We probably went from a playlist of length 0 to 1.
@@ -340,7 +341,13 @@ class Playlist(JSONDict):
     def clone_preset(self, old_name):
         old = self.get_preset_by_name(old_name)
         classname = old.__class__.__name__
-        new_name = old_name + " clone"
+        new_name = old_name
+        candidate = new_name
+        i = 2
+        while self.get_preset_by_name(candidate):
+            candidate = new_name + " (" + str(i) + ")"
+            i += 1
+        new_name = candidate
         self.add_preset(classname, new_name, self._playlist.index(old) + 1)
         new = self.get_preset_by_name(new_name)
 
