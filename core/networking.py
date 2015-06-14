@@ -24,8 +24,6 @@ import struct
 import time
 import zmq
 
-from profilehooks import profile
-
 from lib.colors import hls_to_rgb
 from lib.buffer_utils import BufferUtils
 
@@ -45,7 +43,6 @@ class Networking:
         self.socket = self.context.socket(zmq.PUB)
         self.socket.bind("tcp://*:3020")
 
-    @profile
     def write_buffer(self, buffer):
         """
         Performs a bulk strand write.

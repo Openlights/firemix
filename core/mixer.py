@@ -23,8 +23,6 @@ import random
 import math
 import numpy as np
 
-from profilehooks import profile
-
 USE_YAPPI = True
 try:
     import yappi
@@ -90,6 +88,7 @@ class Mixer(QtCore.QObject):
         self.audio = Audio(self)
 
         if self._app.args.yappi and USE_YAPPI:
+            print "yappi start"
             yappi.start()
 
         # Load transitions
@@ -133,7 +132,7 @@ class Mixer(QtCore.QObject):
         self._stop_time = time.time()
 
         if self._app.args.yappi and USE_YAPPI:
-            yappi.print_stats(sort_type=yappi.SORTTYPE_TSUB, limit=15, thread_stats_on=False)
+            yappi.get_func_stats().print_all()
 
     def pause(self, pause=True):
         self._paused = pause
@@ -218,7 +217,6 @@ class Mixer(QtCore.QObject):
     def get_transition_duration(self):
         return self._transition_duration
 
-    @profile
     def on_tick_timer(self):
         if self._frozen:
             delay = 1.0 / self._tick_rate
@@ -230,7 +228,7 @@ class Mixer(QtCore.QObject):
             dt = (time.clock() - start)
             delay = max(0, (1.0 / self._tick_rate) - dt)
             if not self._paused:
-                self._elapsed += dt
+                self._elapsed += dt + delay
         self._running = self._app._running
         if self._running:
             self._tick_timer = threading.Timer(delay, self.on_tick_timer)
@@ -307,6 +305,7 @@ class Mixer(QtCore.QObject):
             except:
                 log.error("Exception raised in preset %s" % active_preset.name())
                 self.playlist.disable_presets_by_class(active_preset.__class__.__name__)
+                raise
 
             # Handle transition by rendering both the active and the next
             # preset, and blending them together
