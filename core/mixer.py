@@ -298,7 +298,6 @@ class Mixer(QtCore.QObject):
 
             active_preset = self.playlist.get_active_preset()
             next_preset = self.playlist.get_next_preset()
-            active_preset.clear_commands()
 
             try:
                 active_preset.tick(dt)
