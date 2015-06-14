@@ -94,7 +94,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self._app.aubio_connector.onset_detected.connect(self.onset_detected)
 
         # Mixer FPS update
-        self._update_interval = 500
+        self._update_interval = 250
         self._mixer_frame_counts = []
         self.last_frames = 0
         self.last_time = time.time()
@@ -181,6 +181,12 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                     else:
                         self.tbl_preset_parameters.item(i, 2).setText("")
                         self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
+
+        for name, watch in self._app.playlist.get_active_preset().get_watches().iteritems():
+            val = watch.get()
+            for i in range(self.tbl_preset_parameters.rowCount()):
+                if self.tbl_preset_parameters.item(i, 0).text() == ("watch(%s)" % name):
+                    self.tbl_preset_parameters.item(i, 1).setText(str(val))
 
     def on_btn_playpause(self):
         if self._mixer.is_paused():
@@ -372,14 +378,27 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             return
 
         parameters = self._app.playlist.get_active_preset().get_parameters()
+        watches = self._app.playlist.get_active_preset().get_watches()
         self.tbl_preset_parameters.setColumnCount(3)
-        self.tbl_preset_parameters.setRowCount(len(parameters))
+        self.tbl_preset_parameters.setRowCount(len(parameters) + len(watches))
         i = 0
         for name in sorted(parameters, key=lambda x: x):
             parameter = parameters[name]
             key_item = QtGui.QTableWidgetItem(name)
             key_item.setFlags(QtCore.Qt.ItemIsEnabled)
             value_item = QtGui.QTableWidgetItem(parameter.get_as_str())
+            current_state_item = QtGui.QTableWidgetItem("")
+            current_state_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            self.tbl_preset_parameters.setItem(i, 0, key_item)
+            self.tbl_preset_parameters.setItem(i, 1, value_item)
+            self.tbl_preset_parameters.setItem(i, 2, current_state_item)
+            i += 1
+
+        for name in sorted(watches, key=lambda x: x):
+            watch = watches[name]
+            key_item = QtGui.QTableWidgetItem("watch(%s)" % name)
+            key_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            value_item = QtGui.QTableWidgetItem(watch.get_as_str())
             current_state_item = QtGui.QTableWidgetItem("")
             current_state_item.setFlags(QtCore.Qt.ItemIsEnabled)
             self.tbl_preset_parameters.setItem(i, 0, key_item)
@@ -405,6 +424,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             return
 
         key = self.tbl_preset_parameters.item(item.row(), 0)
+        if key.text()[:6] == "watch(":
+            return
+
         par = self._app.playlist.get_active_preset().parameter(key.text())
         try:
             par.set_from_str(item.text())

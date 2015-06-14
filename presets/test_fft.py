@@ -21,6 +21,7 @@ import ast
 
 from lib.raw_preset import RawPreset
 from lib.parameters import FloatParameter, StringParameter
+from lib.watch import Watch
 from lib.color_fade import ColorFade
 
 class TestFFT(RawPreset):
@@ -38,6 +39,7 @@ class TestFFT(RawPreset):
         self.add_parameter(FloatParameter('frequency-min', 0.0))
         self.add_parameter(FloatParameter('time-range', 1.0))
         self.color_angle = 0.0
+        self.add_watch(Watch(self, 'color_angle'))
         self.parameter_changed(None)
 
     def parameter_changed(self, parameter):

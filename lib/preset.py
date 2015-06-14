@@ -36,6 +36,7 @@ class Preset:
         self._ticks = 0
         self._elapsed_time = 0
         self._parameters = {}
+        self._watches = {}
         self._instance_name = name
         self.disabled = False
         self.add_parameter(BoolParameter('allow-playback', True))
@@ -108,6 +109,18 @@ class Preset:
             return True
         except KeyError:
             return False
+
+    def add_watch(self, watch):
+        self._watches[str(watch)] = watch
+
+    def get_watches(self):
+        return self._watches
+
+    def clear_watches(self):
+        self._watches = []
+
+    def watch(self, key):
+        return self._watches.get(key, None)
 
     def add_ticker(self, ticker, priority=0):
         """
