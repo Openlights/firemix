@@ -299,6 +299,9 @@ class Mixer(QtCore.QObject):
             active_preset = self.playlist.get_active_preset()
             next_preset = self.playlist.get_next_preset()
 
+            if active_preset is None:
+                return
+
             try:
                 active_preset.tick(dt)
             except:
