@@ -18,6 +18,7 @@
 import random
 import numpy as np
 import ast
+import math
 
 from lib.raw_preset import RawPreset
 from lib.color_fade import ColorFade
@@ -41,12 +42,13 @@ class Twinkle(RawPreset):
         self.add_parameter(FloatParameter('fade-up-time', 0.5))
         self.add_parameter(FloatParameter('fade-down-time', 4.0))
         #self.add_parameter(HLSParameter('on-color', (0.1, 1.0, 1.0)))
-        self.add_parameter(HLSParameter('off-color', (1.0, 0.0, 1.0)))
+        #self.add_parameter(HLSParameter('off-color', (1.0, 0.0, 1.0)))
         self.add_parameter(FloatParameter('fade-rate', 0.1))
         self.add_parameter(HLSParameter('beat-color', (1.0, 1.0, 1.0)))
         self.add_parameter(FloatParameter('beat-births', 25.0))
         #self.add_parameter(HLSParameter('black-color', (0.0, 0.0, 1.0)))
         self.add_parameter(StringParameter('color-gradient', "[(0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.1, 1.0, 1.0)]"))
+        self.add_parameter(FloatParameter('pie-peaks', 0.0))
         self._setup_colors()
         self._nbirth = 0
         self._current_time = 0
@@ -66,6 +68,7 @@ class Twinkle(RawPreset):
         self._idle = np.asarray(self.scene().get_all_pixels()[:])
         np.random.shuffle(self._idle)
         self._time = np.zeros((len(self._idle)))
+        self.color_angle = 0
 
     def draw(self, dt):
 
@@ -76,8 +79,9 @@ class Twinkle(RawPreset):
             self._nbirth += self.parameter('beat-births').get()
 
         # spawn FFT-colored stars
-        if len(self._mixer.audio.fft[0]):
-            fft_pixels = np.int_(np.multiply(self._mixer.audio.fft[0], self.parameter('audio-birth-rate').get() * self._mixer.audio.gain))
+        fft = self._mixer.audio.fft_data()
+        if len(fft[0]):
+            fft_pixels = np.int_(np.multiply(fft[0], self.parameter('audio-birth-rate').get()))
             births = np.sum(fft_pixels)
             popped, self._idle = self._idle[:births], np.append(self._idle[births:], self._idle[:births])
             colors = np.repeat(self._fader.color_cache[:256], fft_pixels, axis=0)
@@ -91,7 +95,7 @@ class Twinkle(RawPreset):
 
         # spawn FFT-colored stars for max color only
         if len(self._mixer.audio.fft[0]):
-            fft_pixels = np.atleast_1d(np.int_(np.multiply(self._mixer.audio.fft[0], self.parameter('audio-peak-birth-rate').get())))
+            fft_pixels = np.atleast_1d(np.int_(np.multiply(fft[0], self.parameter('audio-peak-birth-rate').get())))
             max = np.argmax(fft_pixels)
             births = fft_pixels[max]
             if births:
@@ -99,12 +103,24 @@ class Twinkle(RawPreset):
                 self._idle = np.append(self._idle[births:], popped)
                 self.setPixelHLS(popped, self._fader.color_cache[max])
 
+        # this doesn't belong here, just testing
+        if self.parameter('pie-peaks').get():
+            self.locations = self.scene().get_all_pixel_locations()
+            cx, cy = self.scene().center_point()
+            x,y = (self.locations - (cx, cy)).T
+            self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
+            self.color_angle += 0.001
+            self.pixel_angles = np.mod((np.arctan2(y, x) + (self.color_angle * math.pi)) / (math.pi * 2) + 1, 1)
+            self.pixel_distances /= np.max(self.pixel_distances)
+            mask = (self.pixel_distances < 2 * fft[0][np.int_(self.pixel_angles * len(fft[0]))])
+            self._pixel_buffer.T[1][mask] = self.parameter('pie-peaks').get()
+
         # audioEnergy = self._mixer.audio.getEnergy() * self.parameter('audio-birth-rate').get() * dt
         # self._nbirth += audioEnergy
 
         self._nbirth += self.parameter('birth-rate').get() * dt
 
-        black = self.parameter('off-color').get()
+        #black = self.parameter('off-color').get()
         fade_rate = self.parameter('fade-rate').get()
 
         self._pixel_buffer.T[1] *= (1.0 - fade_rate)

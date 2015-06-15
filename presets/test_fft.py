@@ -33,11 +33,14 @@ class TestFFT(RawPreset):
 
     def setup(self):
         self.add_parameter(FloatParameter('fft-weight', 25.0))
+        self.add_parameter(FloatParameter('fft-bias', 0.0))
+        self.add_parameter(FloatParameter('fft-gamma', 1.0))
         self.add_parameter(FloatParameter('rotation', 0.0))
         self.add_parameter(StringParameter('color-gradient', "[(0,0.5,1), (1,0.5,1)]"))
         self.add_parameter(FloatParameter('frequency-max', 1.0))
         self.add_parameter(FloatParameter('frequency-min', 0.0))
         self.add_parameter(FloatParameter('time-range', 1.0))
+        self.add_parameter(FloatParameter('pie-peaks', 0.0))
         self.color_angle = 0.0
         self.add_watch(Watch(self, 'color_angle'))
         self.parameter_changed(None)
@@ -71,7 +74,7 @@ class TestFFT(RawPreset):
         self.pixel_distances /= max(self.pixel_distances)
         self.pixel_amplitudes = self.pixel_distances
 
-        fft = self._mixer.audio.fft
+        fft = self._mixer.audio.fft_data()
 
         if len(fft) == 0:
             return
@@ -90,15 +93,19 @@ class TestFFT(RawPreset):
         self.pixel_amplitudes = fft_per_pixel[np.arange(pixel_count), bin_per_pixel]
         self.pixel_amplitudes = np.multiply(self.pixel_amplitudes, self.parameter('fft-weight').get() * (1 - self.pixel_distances))
 
-        # angle_bin_width = (2.0 * math.pi) / len(fft[0])
-        # for bin in range(len(fft[0])):
-        #     start = bin * angle_bin_width
-        #     end = (bin + 0.5) * angle_bin_width
-        #     mask = (self.pixel_angles > start) & (self.pixel_angles < end) & (self.pixel_distances < fft[0][bin])
-        #     self.pixel_amplitudes[mask] += 0.3
+        if self.parameter('pie-peaks').get():
+            #angle_bin_width = (2.0 * math.pi) / len(fft[0])
+            # for bin in range(len(fft[0])):
+            #     start = bin * angle_bin_width
+            #     end = (bin + 1) * angle_bin_width
+            #     mask = (self.pixel_angles > start) & (self.pixel_angles < end) & (self.pixel_distances < fft[0][bin])
+            #     self.pixel_amplitudes[mask] += self.parameter('pie-peaks').get()
+            #print self.pixel_angles
+            mask = (self.pixel_distances < fft[0][np.int_(self.pixel_angles * len(fft[0]))])
+            self.pixel_amplitudes[mask] = self.parameter('pie-peaks').get()
 
         hues = np.int_(np.mod(self.pixel_angles, 1.0) * self._fader_steps)
         colors = self._fader.color_cache[hues]
-        colors.T[1] *= self.pixel_amplitudes
+        colors.T[1] *= np.power(self.pixel_amplitudes - self.parameter('fft-bias').get(), self.parameter('fft-gamma').get())
 
         self._pixel_buffer = colors

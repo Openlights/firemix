@@ -54,8 +54,10 @@ class Audio(QtCore.QObject):
         self.gain = 1.0
         self.maxGain = 10.0
 
+        self.smoothEnergy = 0.0
+
     def fft_data(self):
-        return self.fft
+        return np.multiply(self.fft, self.gain)
 
     def update_fft_data(self, latest_fft):
         if len(latest_fft) == 0:
@@ -92,14 +94,21 @@ class Audio(QtCore.QObject):
         #self.smoothed.pop()
         self.smoothed = np.multiply(latest_fft, 1 - smoothing) + np.multiply(self.smoothed, smoothing)
 
+        self.smoothEnergy *= 0.9
+        self.smoothEnergy += self.getEnergy()
+
     def getEnergy(self):
         return np.sum(self.fft[0]) / len(self.fft[0]) * self.gain
 
     def getLowFrequency(self):
-        return self.fft[0][0]
+        return self.fft[0][0] * self.gain
 
     def getHighFrequency(self):
-        return self.fft[0][240]
+        if len(self.fft[0]) > 1:
+            high = self.fft[0][240:]
+            return np.sum(high) * self.gain / len(high)
+        else:
+            return 0
 
     def getSmoothedFFT(self):
         return self.smoothed
