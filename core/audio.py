@@ -23,6 +23,7 @@ import random
 import math
 import numpy as np
 
+from lib.color_fade import ColorFade
 from profilehooks import profile
 
 USE_YAPPI = True
@@ -42,6 +43,7 @@ class Audio(QtCore.QObject):
     Audio handles looking at sound data and setting it up for use in presets
     """
     transition_starting = QtCore.Signal()
+    _fader_steps = 256
 
     """
     todo zero these at start
@@ -49,10 +51,12 @@ class Audio(QtCore.QObject):
     def __init__(self, app):
         self.fft = [[0]]
         self.smoothed = []
-#        self.average = [[0]]
+        self.average = [[0]]
         self.peak = [[0]]
+        self.peakFrequency = [[0]]
         self.gain = 1.0
         self.maxGain = 10.0
+        self.fader = ColorFade([(0,0,1), (0,1,1)], self._fader_steps)
 
         self.smoothEnergy = 0.0
 
@@ -64,18 +68,26 @@ class Audio(QtCore.QObject):
             print "received no fft"
             return
 
+        latest_fft = np.asarray(latest_fft)
+
+        # noise_threshold = 0.1
+        # np.multiply(latest_fft, 1.0 + noise_threshold, latest_fft)
+        # np.maximum(latest_fft - noise_threshold, 0.0, latest_fft)
+        #latest_fft = latest_fft * (1.0 + noise_threshold) - noise_threshold
+
         if len(self.fft[0]) <= 1:
             self.fft[0] = latest_fft
-            self.smoothed = latest_fft
+            self.smoothed = np.asarray(latest_fft)
             self.peak[0] = np.max(latest_fft)
-#            self.average[0] = self.getEnergy()
+            self.peakFrequency[0] = np.argmax(latest_fft)
+            self.average[0] = self.getEnergy()
             print "first fft"
             return
 
-
         self.peak.insert(0, np.max(latest_fft))
- #       self.average.insert(0, self.getEnergy())
+        self.average.insert(0, self.getEnergy())
         self.fft.insert(0, latest_fft)
+        self.peakFrequency.insert(0, np.argmax(latest_fft))
 
         maxPeak = np.max(self.peak)
         if maxPeak > 1 / self.maxGain:
@@ -86,13 +98,26 @@ class Audio(QtCore.QObject):
         if len(self.fft) > 60:
             self.fft.pop()
             self.peak.pop()
+            self.average.pop()
+            self.peakFrequency.pop()
+
+            colors = np.zeros((len(self.average), 3))
+            colors[:,1] = self.average
+            colors[:,0] = np.multiply(self.peakFrequency, 1.0/255)
+
+            self.fader = ColorFade(colors, self._fader_steps)
+
 #            self.average.pop()
 #            averageEnergy = np.sum(self.average) / len(self.fft)
 
         smoothing = 0.8
         #np.insert(self.smoothed, 0, 0)
         #self.smoothed.pop()
-        self.smoothed = np.multiply(latest_fft, 1 - smoothing) + np.multiply(self.smoothed, smoothing)
+        #self.smoothed *= 0.95 #= np.minimum(self.smoothed - 0.1)
+        np.multiply(self.smoothed, 0.97, self.smoothed)
+        self.smoothed = np.maximum(self.smoothed, latest_fft, self.smoothed)
+
+        #np.multiply(latest_fft, 1 - smoothing) + np.multiply(self.smoothed, smoothing)
 
         self.smoothEnergy *= 0.9
         self.smoothEnergy += self.getEnergy()
@@ -111,5 +136,5 @@ class Audio(QtCore.QObject):
             return 0
 
     def getSmoothedFFT(self):
-        return self.smoothed
+        return np.multiply(self.smoothed, self.gain)
 

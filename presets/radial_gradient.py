@@ -49,12 +49,14 @@ class RadialGradient(RawPreset):
         self.add_parameter(FloatParameter('audio-boost', 0.0))
         self.add_parameter(FloatParameter('audio-brightness', 0.0))
         self.add_parameter(FloatParameter('audio-scale', 0.0))
+        self.add_parameter(FloatParameter('audio-use-fader', 0.0))
+        self.add_parameter(FloatParameter('audio-fader-percent', 1.0))
         self.add_parameter(FloatParameter('luminance-speed', 0.01))
         self.add_parameter(FloatParameter('luminance-scale', 1.0))
         self.add_parameter(StringParameter('color-gradient', "[(0,0,1), (0,1,1)]"))
 
         self.hue_inner = random.random()
-        self.wave1_offset = random.random()
+        self.wave1_offset = 0 #andom.random()
         self.wave2_offset = random.random()
         self.rwave_offset = random.random()
         self.luminance_offset = random.random()
@@ -111,5 +113,10 @@ class RadialGradient(RawPreset):
         luminances += self._mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
 
         hues = np.fmod(self.hue_inner + hues * self.parameter('hue-width').get(), 1.0)
+
+        if self.parameter('audio-use-fader').get():
+            #luminances *= self._mixer.audio.fader.color_cache.T[1][np.int_(luminance_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
+            #hues += self._mixer.audio.fader.color_cache.T[0][np.int_(hues * 255 * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
+            hues += self._mixer.audio.fader.color_cache.T[0][np.int_(luminance_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
 
         self.setAllHLS(hues, luminances, 1.0)

@@ -41,6 +41,11 @@ class TestFFT(RawPreset):
         self.add_parameter(FloatParameter('frequency-min', 0.0))
         self.add_parameter(FloatParameter('time-range', 1.0))
         self.add_parameter(FloatParameter('pie-peaks', 0.0))
+        self.add_parameter(FloatParameter('rings', 0.0))
+        self.add_parameter(FloatParameter('ring peaks', 0.0))
+        self.add_parameter(FloatParameter('ring current', 0.0))
+        self.add_parameter(FloatParameter('ghosting', 0.0))
+
         self.color_angle = 0.0
         self.add_watch(Watch(self, 'color_angle'))
         self.parameter_changed(None)
@@ -82,30 +87,43 @@ class TestFFT(RawPreset):
         fft_size = len(fft[0])
         pixel_count = len(self.pixel_distances)
 
-        #time_to_graph = (len(fft) - 1) * (1 - self._mixer.audio.getEnergy() / 2) # pulse with total energy
-        frequency_min = self.parameter('frequency-min').get()
-        frequency_max = self.parameter('frequency-max').get()
-        frequency_range = frequency_max - frequency_min
-        time_to_graph = (len(fft) - 1) * self.parameter('time-range').get()
-        pixel_ffts = np.mod(np.int_((self.pixel_distances) * time_to_graph), len(fft))
-        fft_per_pixel = np.asarray(fft)[pixel_ffts]
-        bin_per_pixel = np.int_(np.mod(self.pixel_angles * frequency_range + frequency_min, 1.0) * fft_size)
-        self.pixel_amplitudes = fft_per_pixel[np.arange(pixel_count), bin_per_pixel]
-        self.pixel_amplitudes = np.multiply(self.pixel_amplitudes, self.parameter('fft-weight').get() * (1 - self.pixel_distances))
-
-        if self.parameter('pie-peaks').get():
-            #angle_bin_width = (2.0 * math.pi) / len(fft[0])
-            # for bin in range(len(fft[0])):
-            #     start = bin * angle_bin_width
-            #     end = (bin + 1) * angle_bin_width
-            #     mask = (self.pixel_angles > start) & (self.pixel_angles < end) & (self.pixel_distances < fft[0][bin])
-            #     self.pixel_amplitudes[mask] += self.parameter('pie-peaks').get()
-            #print self.pixel_angles
-            mask = (self.pixel_distances < fft[0][np.int_(self.pixel_angles * len(fft[0]))])
-            self.pixel_amplitudes[mask] = self.parameter('pie-peaks').get()
+        if self.parameter('fft-weight').get():
+            #time_to_graph = (len(fft) - 1) * (1 - self._mixer.audio.getEnergy() / 2) # pulse with total energy
+            frequency_min = self.parameter('frequency-min').get()
+            frequency_max = self.parameter('frequency-max').get()
+            frequency_range = frequency_max - frequency_min
+            time_to_graph = (len(fft) - 1) * self.parameter('time-range').get()
+            pixel_ffts = np.mod(np.int_((self.pixel_distances) * time_to_graph), len(fft))
+            fft_per_pixel = np.asarray(fft)[pixel_ffts]
+            bin_per_pixel = np.int_(np.mod(self.pixel_angles * frequency_range + frequency_min, 1.0) * fft_size)
+            self.pixel_amplitudes = fft_per_pixel[np.arange(pixel_count), bin_per_pixel]
+            self.pixel_amplitudes = np.multiply(self.pixel_amplitudes, self.parameter('fft-weight').get() * (1 - self.pixel_distances))
 
         hues = np.int_(np.mod(self.pixel_angles, 1.0) * self._fader_steps)
+
+        if self.parameter('ring current').get():
+            mask = (self.pixel_angles > (1.0 - fft[0][np.int_(self.pixel_distances * (fft_size-1))]))
+            self.pixel_amplitudes[mask] += self.parameter('ring current').get()
+
+        smooth_fft = self._mixer.audio.getSmoothedFFT()
+
+        if len(smooth_fft):
+            if self.parameter('pie-peaks').get():
+                mask = (self.pixel_distances < smooth_fft[np.int_(self.pixel_angles * len(smooth_fft))])
+                self.pixel_amplitudes[mask] += self.parameter('pie-peaks').get()
+
+            if self.parameter('rings').get():
+                d = np.int_(255 - 255 * self.pixel_distances)
+                self.pixel_amplitudes += smooth_fft[d] * self.parameter('rings').get()
+                hues = d
+
+            if self.parameter('ring peaks').get():
+                mask = (self.pixel_angles < smooth_fft[np.int_(self.pixel_distances * (len(smooth_fft)-1))])
+                self.pixel_amplitudes[mask] += self.parameter('ring peaks').get()
+
         colors = self._fader.color_cache[hues]
+        np.minimum(self.pixel_amplitudes, 1, self.pixel_amplitudes)
         colors.T[1] *= np.power(self.pixel_amplitudes - self.parameter('fft-bias').get(), self.parameter('fft-gamma').get())
+        colors.T[1] = self._pixel_buffer.T[1] * self.parameter('ghosting').get() + colors.T[1]
 
         self._pixel_buffer = colors
