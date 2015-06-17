@@ -42,9 +42,12 @@ class TestFFT(RawPreset):
         self.add_parameter(FloatParameter('time-range', 1.0))
         self.add_parameter(FloatParameter('pie-peaks', 0.0))
         self.add_parameter(FloatParameter('rings', 0.0))
+        self.add_parameter(FloatParameter('ring bars', 0.0))
         self.add_parameter(FloatParameter('ring peaks', 0.0))
+        self.add_parameter(FloatParameter('ring peak width', 0.02))
         self.add_parameter(FloatParameter('ring current', 0.0))
         self.add_parameter(FloatParameter('ghosting', 0.0))
+        self.add_parameter(FloatParameter('noise threshold', 0.1))
 
         self.color_angle = 0.0
         self.add_watch(Watch(self, 'color_angle'))
@@ -76,7 +79,7 @@ class TestFFT(RawPreset):
         x,y = (self.locations - (cx, cy)).T
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
         self.pixel_angles = np.mod((np.arctan2(y, x) + (self.color_angle * math.pi)) / (math.pi * 2) + 1, 1)
-        self.pixel_distances /= max(self.pixel_distances)
+        self.pixel_distances /= np.max(self.pixel_distances)
         self.pixel_amplitudes = self.pixel_distances
 
         fft = self._mixer.audio.fft_data()
@@ -86,6 +89,7 @@ class TestFFT(RawPreset):
 
         fft_size = len(fft[0])
         pixel_count = len(self.pixel_distances)
+        self.pixel_amplitudes = np.zeros(pixel_count)
 
         if self.parameter('fft-weight').get():
             #time_to_graph = (len(fft) - 1) * (1 - self._mixer.audio.getEnergy() / 2) # pulse with total energy
@@ -102,10 +106,17 @@ class TestFFT(RawPreset):
         hues = np.int_(np.mod(self.pixel_angles, 1.0) * self._fader_steps)
 
         if self.parameter('ring current').get():
-            mask = (self.pixel_angles > (1.0 - fft[0][np.int_(self.pixel_distances * (fft_size-1))]))
+            np.minimum(self.pixel_distances, 1.0, self.pixel_distances)
+            pd = np.int_((self.pixel_distances * 1.2 - 0.1) * (fft_size - 1))
+            np.minimum(pd, fft_size - 1, pd)
+            np.maximum(pd, 0.0, pd)
+            mask = (self.pixel_angles > (1.0 - fft[0][pd]))
             self.pixel_amplitudes[mask] += self.parameter('ring current').get()
 
+        noise_threshold = self.parameter('noise threshold').get()
         smooth_fft = self._mixer.audio.getSmoothedFFT()
+        np.maximum(smooth_fft - noise_threshold, 0, smooth_fft)
+        np.multiply(smooth_fft, 1.0 / (1.0 - noise_threshold), smooth_fft)
 
         if len(smooth_fft):
             if self.parameter('pie-peaks').get():
@@ -113,12 +124,25 @@ class TestFFT(RawPreset):
                 self.pixel_amplitudes[mask] += self.parameter('pie-peaks').get()
 
             if self.parameter('rings').get():
-                d = np.int_(255 - 255 * self.pixel_distances)
-                self.pixel_amplitudes += smooth_fft[d] * self.parameter('rings').get()
-                hues = d
+                pd = np.int_(len(smooth_fft) * (1.2 * self.pixel_distances - 0.1))
+                np.minimum(pd, len(smooth_fft) - 1, pd)
+                np.maximum(pd, 0.0, pd)
+                self.pixel_amplitudes += smooth_fft[pd] * self.parameter('rings').get()
+                hues = pd
+
+            if self.parameter('ring bars').get():
+                pd = np.int_(len(smooth_fft) * (1.2 * self.pixel_distances - 0.1))
+                np.minimum(pd, len(smooth_fft) - 1, pd)
+                np.maximum(pd, 0.0, pd)
+                mask = (self.pixel_angles < smooth_fft[pd])
+                self.pixel_amplitudes[mask] += self.parameter('ring bars').get()
 
             if self.parameter('ring peaks').get():
-                mask = (self.pixel_angles < smooth_fft[np.int_(self.pixel_distances * (len(smooth_fft)-1))])
+                pd = np.int_(len(smooth_fft) * (1.2 * self.pixel_distances - 0.1))
+                np.minimum(pd, len(smooth_fft) - 1, pd)
+                np.maximum(pd, 0.0, pd)
+                peak_width = self.parameter('ring peak width').get()
+                mask = (np.abs(self.pixel_angles - smooth_fft[pd]) < peak_width)
                 self.pixel_amplitudes[mask] += self.parameter('ring peaks').get()
 
         colors = self._fader.color_cache[hues]

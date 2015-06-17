@@ -42,6 +42,7 @@ class RadialGradient(RawPreset):
         self.add_parameter(FloatParameter('wave2-period', 1.5))
         self.add_parameter(FloatParameter('wave2-speed', 0.1))
         self.add_parameter(FloatParameter('rwave-amplitude', 0.5))
+        self.add_parameter(FloatParameter('rwave-standing', 0.0))
         self.add_parameter(FloatParameter('rwave-period', 1.5))
         self.add_parameter(FloatParameter('rwave-speed', 0.1))
         self.add_parameter(FloatParameter('radius-scale', 1.0))
@@ -92,7 +93,11 @@ class RadialGradient(RawPreset):
         self.luminance_offset += self.parameter('luminance-speed').get() * dt
 
         luminance_scale = self.parameter('luminance-scale').get() + self._mixer.audio.smoothEnergy * self.parameter('audio-scale').get()
-        rwave = np.abs(np.sin(self.rwave_offset + self.pixel_distances * self.parameter('rwave-period').get()) * self.parameter('rwave-amplitude').get())
+        if self.parameter('rwave-standing').get():
+            rwave = np.sin(self.pixel_distances * self.parameter('rwave-period').get()) * self.parameter('rwave-standing').get() * np.sin(self.rwave_offset)
+            rwave += np.sin(self.rwave_offset + np.pi * 0.75) * self.parameter('rwave-standing').get()
+        else:
+            rwave = np.abs(np.sin(self.rwave_offset + self.pixel_distances * self.parameter('rwave-period').get()) * self.parameter('rwave-amplitude').get())
         pixel_angles = self.pixel_angles + rwave
 
         wave1 = np.abs(np.cos(self.wave1_offset + pixel_angles * self.parameter('wave1-period').get()) * self.parameter('wave1-amplitude').get())
