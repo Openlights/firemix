@@ -71,6 +71,16 @@ class Scene(JSONDict):
         self.get_intersection_points()
         self.get_all_pixels_logical()
         self._tree = spatial.KDTree(self.get_all_pixel_locations())
+
+        locations = self.get_all_pixel_locations()
+        self.pixelDistances = np.empty([len(locations), len(locations)])
+
+        for pixel in range(len(locations)):
+            cx, cy = locations[pixel]
+            x,y = (locations - (cx, cy)).T
+            pixel_distances = np.sqrt(np.square(x) + np.square(y))
+            self.pixelDistances[pixel] = pixel_distances
+
         log.info("Done")
 
     def extents(self):
@@ -267,6 +277,9 @@ class Scene(JSONDict):
                     addresses.append((f.strand, f.address, pixel))
             self._all_pixels = addresses
         return self._all_pixels
+
+    def get_pixel_distances(self, pixel):
+        return self.pixelDistances[pixel]
 
     def get_all_pixels(self):
         """

@@ -55,7 +55,7 @@ class Audio(QtCore.QObject):
         self.peak = [[0]]
         self.peakFrequency = [[0]]
         self.gain = 1.0
-        self.maxGain = 10.0
+        self.maxGain = 5.0
         self.fader = ColorFade([(0,0,1), (0,1,1)], self._fader_steps)
 
         self.smoothEnergy = 0.0
