@@ -53,6 +53,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.btn_shuffle_playlist.clicked.connect(self.on_btn_shuffle_playlist)
         self.btn_trigger_onset.clicked.connect(self.on_btn_trigger_onset)
 
+        def slider_double_click_event(e):
+            self.on_slider_speed_double_click()
+
+        self.slider_speed.mouseDoubleClickEvent = slider_double_click_event
+
         # File menu
         self.action_file_load_scene.triggered.connect(self.on_file_load_scene)
         self.action_file_open_playlist.triggered.connect(self.on_file_open_playlist)
@@ -287,9 +292,13 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.lbl_dimmer.setText("Dimmer [%0.2f]" % dval)
 
     def on_slider_speed(self):
-        sval = round(self.slider_speed.value() / 100.0, 1)
+        sval = round(self.slider_speed.value() / 1000.0, 2)
         self._app.mixer.set_global_speed(sval)
-        self.lbl_speed.setText("Speed [%0.1fx]" % sval)
+        self.lbl_speed.setText("Speed [%0.2fx]" % sval)
+
+    def on_slider_speed_double_click(self):
+        self.slider_speed.setValue(1000.0)
+        self.on_slider_speed()
 
     def update_playlist(self):
         self.lst_presets.clear()
