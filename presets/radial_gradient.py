@@ -51,6 +51,8 @@ class RadialGradient(RawPreset):
         self.add_parameter(FloatParameter('audio-brightness', 0.0))
         self.add_parameter(FloatParameter('audio-scale', 0.0))
         self.add_parameter(FloatParameter('audio-use-fader', 0.0))
+        self.add_parameter(FloatParameter('audio-energy-lum-time', 0.0))
+        self.add_parameter(FloatParameter('audio-energy-lum-strength', 0.0))
         self.add_parameter(FloatParameter('audio-fader-percent', 1.0))
         self.add_parameter(FloatParameter('luminance-speed', 0.01))
         self.add_parameter(FloatParameter('luminance-scale', 1.0))
@@ -113,7 +115,13 @@ class RadialGradient(RawPreset):
             wave_audio = audio_amplitude * np.asarray(fft)[bin_per_pixel]
             hues += wave_audio
 
-        luminance_indices = np.mod(np.abs(np.int_((self.luminance_offset + hues * luminance_scale) * self._luminance_steps)), self._luminance_steps)
+        if self.parameter('audio-energy-lum-strength').get():
+            lums = np.mod(np.int_(hues * self.parameter('audio-energy-lum-time').get()), self._luminance_steps)
+            lums = self._mixer.audio.fader.color_cache.T[0][lums] * self.parameter('audio-energy-lum-strength').get()
+        else:
+            lums = hues
+
+        luminance_indices = np.mod(np.abs(np.int_((self.luminance_offset + lums * luminance_scale) * self._luminance_steps)), self._luminance_steps)
         luminances = self._fader.color_cache.T[1][luminance_indices]
         luminances += self._mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
 

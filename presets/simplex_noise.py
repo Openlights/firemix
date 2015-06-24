@@ -36,6 +36,8 @@ class SimplexNoise(RawPreset):
         self.add_parameter(FloatParameter('audio-brightness', 0.0))
         self.add_parameter(FloatParameter('hue-min', 0.0))
         self.add_parameter(FloatParameter('hue-max', 3.0))
+        self.add_parameter(FloatParameter('hue-offset', 0.0))
+        self.add_parameter(FloatParameter('audio-hue-offset', 0.0))
         self.add_parameter(FloatParameter('speed', 0.7))
         self.add_parameter(FloatParameter('angle', 0.125))
         self.add_parameter(FloatParameter('color-speed', 0.2))
@@ -67,7 +69,6 @@ class SimplexNoise(RawPreset):
         self.hue_max = self.parameter('hue-max').get()
         self.color_speed = self.parameter('color-speed').get()
         self.scale = self.parameter('scale').get() / 100.0
-        self.luminance_scale = self.parameter('luminance-scale').get() / 100.0
         fade_colors = ast.literal_eval(self.parameter('luminance-map').get())
         self.lum_fader = ColorFade(fade_colors, self._luminance_steps)
 
@@ -90,12 +91,8 @@ class SimplexNoise(RawPreset):
         y += self._offset_y
         locations = np.asarray([x,y]).T
 
-        # hues = np.asarray([snoise3(self.scale * location[0], \
-        #                            self.scale * location[1], \
-        #                            self._offset_z, 1, 0.5, 0.5) for location in locations])
-        # hues = (1.0 + hues) / 2
-        # hues = self.hue_min + ((np.int_(hues * posterization) / float(posterization)) * (self.hue_max - self.hue_min))
-        brights = np.asarray([snoise3(self.luminance_scale * location[0], self.luminance_scale * location[1], self._offset_z, 1, 0.5, 0.5) for location in locations])
+        luminance_scale = self.parameter('luminance-scale').get() / 100.0
+        brights = np.asarray([snoise3(luminance_scale * location[0], luminance_scale * location[1], self._offset_z, 1, 0.5, 0.5) for location in locations])
         brights = (1.0 + brights) / 2
         brights *= self._luminance_steps
         LS = self.lum_fader.color_cache[np.int_(brights)].T
