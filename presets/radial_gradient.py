@@ -122,7 +122,8 @@ class RadialGradient(RawPreset):
             lums = hues
 
         luminance_indices = np.mod(np.abs(np.int_((self.luminance_offset + lums * luminance_scale) * self._luminance_steps)), self._luminance_steps)
-        luminances = self._fader.color_cache.T[1][luminance_indices]
+        LS = self._fader.color_cache[luminance_indices].T
+        luminances = LS[1]
         luminances += self._mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
 
         hues = np.fmod(self.hue_inner + hues * self.parameter('hue-width').get(), 1.0)
@@ -132,4 +133,4 @@ class RadialGradient(RawPreset):
             #hues += self._mixer.audio.fader.color_cache.T[0][np.int_(hues * 255 * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
             hues += self._mixer.audio.fader.color_cache.T[0][np.int_(luminance_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
 
-        self.setAllHLS(hues, luminances, 1.0)
+        self.setAllHLS(hues, luminances, LS[2])
