@@ -102,7 +102,7 @@ class Twinkle(RawPreset):
             popped, self._idle = self._idle[:births], np.append(self._idle[births:], self._idle[:births])
             colors = np.repeat(self._fader.color_cache[:256], fft_pixels, axis=0)
 
-            self.setPixelHLS(popped, colors)
+            self.setPixelHLS(popped, colors[:len(popped)])
 
         # spawn FFT-colored rings
         if len(fft):
@@ -151,17 +151,17 @@ class Twinkle(RawPreset):
                 self._idle = np.append(self._idle[births:], popped)
                 self.setPixelHLS(popped, self._fader.color_cache[max])
 
-        # this doesn't belong here, just testing
-        if self.parameter('pie-peaks').get():
-            self.locations = self.scene().get_all_pixel_locations()
-            cx, cy = self.scene().center_point()
-            x,y = (self.locations - (cx, cy)).T
-            self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-            self.color_angle += 0.001
-            self.pixel_angles = np.mod((np.arctan2(y, x) + (self.color_angle * math.pi)) / (math.pi * 2) + 1, 1)
-            self.pixel_distances /= np.max(self.pixel_distances)
-            mask = (self.pixel_distances < 2 * fft[0][np.int_(self.pixel_angles * len(fft[0]))])
-            self._pixel_buffer.T[1][mask] = self.parameter('pie-peaks').get()
+            # this doesn't belong here, just testing
+            if self.parameter('pie-peaks').get():
+                self.locations = self.scene().get_all_pixel_locations()
+                cx, cy = self.scene().center_point()
+                x,y = (self.locations - (cx, cy)).T
+                self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
+                self.color_angle += 0.001
+                self.pixel_angles = np.mod((np.arctan2(y, x) + (self.color_angle * math.pi)) / (math.pi * 2) + 1, 1)
+                self.pixel_distances /= np.max(self.pixel_distances)
+                mask = (self.pixel_distances < 2 * fft[0][np.int_(self.pixel_angles * len(fft[0]))])
+                self._pixel_buffer.T[1][mask] = self.parameter('pie-peaks').get()
 
         # audioEnergy = self._mixer.audio.getEnergy() * self.parameter('audio-birth-rate').get() * dt
         # self._nbirth += audioEnergy
