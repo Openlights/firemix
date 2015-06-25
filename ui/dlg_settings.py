@@ -152,6 +152,10 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         self.tbl_networking_clients.setItem(row, 0, QtGui.QTableWidgetItem(""))
         self.tbl_networking_clients.setItem(row, 1, QtGui.QTableWidgetItem("3020"))
         self.tbl_networking_clients.setCellWidget(row, 2, QtGui.QCheckBox())
+        item_color_mode = QtGui.QComboBox()
+        for mode in color_modes.modes:
+            item_color_mode.addItem(mode)
+        self.tbl_networking_clients.setCellWidget(row, 3, item_color_mode)
 
     def del_networking_client_row(self):
         self.tbl_networking_clients.removeRow(self.tbl_networking_clients.currentRow())
