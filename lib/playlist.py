@@ -218,7 +218,6 @@ class Playlist(JSONDict):
         """
         Advances the playlist
         """
-        #TODO: support transitions other than cut
         self.active_preset = self.next_preset
 
         if self._shuffle:
@@ -265,7 +264,6 @@ class Playlist(JSONDict):
                 self.active_preset = preset
                 self._app.mixer._elapsed = 0.0  # Hack
                 self.update_next_preset()
-                self.changed()
                 return
 
     def set_next_preset_by_name(self, name):

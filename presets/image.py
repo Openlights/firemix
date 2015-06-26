@@ -67,7 +67,7 @@ class ImagePreset(RawPreset):
                 self.image = rgb_to_hls(self.image)
                 #print self.image
 
-                print "image", self.parameter('image-file').get(), "loaded:", self.image.shape
+                #print "image", self.parameter('image-file').get(), "loaded:", self.image.shape
 
         self.lastFrame = None
 

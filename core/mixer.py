@@ -64,7 +64,7 @@ class Mixer(QtCore.QObject):
         self._elapsed = 0.0
         self._running = False
         self._enable_rendering = True
-        self._main_buffer = None
+        self._buffer_a = None
         self._max_fixtures = 0
         self._max_pixels = 0
         self._tick_time_data = dict()
@@ -83,7 +83,7 @@ class Mixer(QtCore.QObject):
         self._global_dimmer = 1.0
         self._global_speed = 1.0
         self._render_in_progress = False
-        self._last_tick_time = time.time()
+        self._last_tick_time = 0.0
         self.transition_progress = 0.0
         self.audio = Audio(self)
 
@@ -110,14 +110,15 @@ class Mixer(QtCore.QObject):
 
             (maxs, maxf, maxp) = self._scene.get_matrix_extents()
 
-            self._main_buffer = BufferUtils.create_buffer()
-            self._secondary_buffer = BufferUtils.create_buffer()
+            self._buffer_a = BufferUtils.create_buffer()
+            self._buffer_b = BufferUtils.create_buffer()
             self._max_fixtures = maxf
             self._max_pixels = maxp
 
     def run(self):
         if not self._running:
             self._tick_rate = self._app.settings.get('mixer')['tick-rate']
+            self._last_tick_time = 1.0 / self._tick_rate
             self._tick_timer = threading.Timer(1.0 / self._tick_rate, self.on_tick_timer)
             self._tick_timer.start()
             self._running = True
@@ -217,13 +218,13 @@ class Mixer(QtCore.QObject):
     def get_transition_duration(self):
         return self._transition_duration
 
-    def on_tick_timer(self):
-        if self._frozen:
+    def on_tick_timer(self, force_tick=False):
+        if self._frozen and not force_tick:
             delay = 1.0 / self._tick_rate
         else:
             start = time.clock()
             self._render_in_progress = True
-            self.tick()
+            self.tick(self._last_tick_time)
             self._render_in_progress = False
             dt = (time.clock() - start)
             delay = max(0, (1.0 / self._tick_rate) - dt)
@@ -286,11 +287,8 @@ class Mixer(QtCore.QObject):
             self._in_transition = False
             self.transition_progress = 0
 
-    def tick(self):
+    def tick(self, dt):
         self._num_frames += 1
-        now = time.time()
-        dt = now - self._last_tick_time
-        self._last_tick_time = now
 
         dt *= self._global_speed
 
@@ -311,7 +309,7 @@ class Mixer(QtCore.QObject):
 
             # Handle transition by rendering both the active and the next
             # preset, and blending them together
-            if self._in_transition:
+            if self._in_transition and next_preset:
                 if self._start_transition:
                     self._start_transition = False
                     if self._app.settings.get('mixer')['transition'] == "Random":
@@ -319,7 +317,7 @@ class Mixer(QtCore.QObject):
                     if self._transition:
                         self._transition.reset()
                     next_preset._reset()
-                    self._secondary_buffer = BufferUtils.create_buffer()
+                    self._buffer_b = BufferUtils.create_buffer()
 
                 if self._transition_duration > 0.0 and self._transition is not None:
                     if not self._paused:
@@ -327,20 +325,7 @@ class Mixer(QtCore.QObject):
                 else:
                     self.transition_progress = 1.0
 
-                if self.playlist.get_next_preset() is not None:
-                    self.playlist.get_next_preset().clear_commands()
-                    self.playlist.get_next_preset().tick(dt)
-
-                # Exit from transition state after the transition duration has
-                # elapsed
-                if self.transition_progress >= 1.0:
-                    self._in_transition = False
-                    # Reset the elapsed time counter so the preset runs for the
-                    # full duration after the transition
-                    self._elapsed = 0.0
-                    self.playlist.advance()
-                    # Is this needed?
-                    active_preset = next_preset
+                next_preset.tick(dt)
 
             # If the scene tree is available, we can do efficient mixing of presets.
             # If not, a tree would need to be constructed on-the-fly.
@@ -348,14 +333,14 @@ class Mixer(QtCore.QObject):
             if self._enable_rendering:
                 if self._in_transition:
                     mixed_buffer = self.render_presets(
-                        active_preset, self._main_buffer,
-                        next_preset, self._secondary_buffer,
+                        active_preset, self._buffer_a,
+                        next_preset, self._buffer_b,
                         self._in_transition, self._transition,
                         self.transition_progress,
                         check_for_nan=self._enable_profiling)
                 else:
                     mixed_buffer = self.render_presets(
-                        active_preset, self._main_buffer,
+                        active_preset, self._buffer_a,
                         check_for_nan=self._enable_profiling)
 
                 # render_presets writes all the desired pixels to
@@ -378,11 +363,22 @@ class Mixer(QtCore.QObject):
                 if self._net is not None:
                     self._net.write_commands(active_preset.get_commands_packed())
 
-            if not self._paused and (self._elapsed >= self._duration) and active_preset.can_transition() and not self._in_transition:
+            if (not self._paused and (self._elapsed >= self._duration)
+                and active_preset.can_transition()
+                and not self._in_transition):
+
                 if (self._elapsed >= (self._duration + self._transition_slop)) or self._onset:
                     if len(self.playlist) > 1:
                         self.start_transition()
                     self._elapsed = 0.0
+
+            elif self._in_transition:
+                if self.transition_progress >= 1.0:
+                    self._in_transition = False
+                    # Reset the elapsed time counter so the preset runs for the
+                    # full duration after the transition
+                    self._elapsed = 0.0
+                    self.playlist.advance()
 
         if self._reset_onset:
             self._onset = False
@@ -435,8 +431,8 @@ class Mixer(QtCore.QObject):
         """
         Clears the output buffer
         """
-        self._main_buffer = BufferUtils.create_buffer()
-        self._secondary_buffer = BufferUtils.create_buffer()
+        self._buffer_a = BufferUtils.create_buffer()
+        self._buffer_b = BufferUtils.create_buffer()
 
 
     def render_command_list(self, list, buffer):
@@ -474,4 +470,4 @@ class Mixer(QtCore.QObject):
                 buffer[pixel] = color
 
     def get_buffer_shape(self):
-        return self._main_buffer.shape
+        return self._buffer_a.shape

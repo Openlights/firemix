@@ -91,7 +91,7 @@ class Audio(QtCore.QObject):
             self.peak[0] = np.max(latest_fft)
             self.peakFrequency[0] = np.argmax(latest_fft)
             self.average[0] = self.getEnergy()
-            print "first fft"
+            #print "first fft"
             return
 
         self.peak.insert(0, np.max(latest_fft))

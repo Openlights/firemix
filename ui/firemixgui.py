@@ -115,6 +115,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self._mixer.transition_starting.connect(self.transition_update_start)
 
         self.btn_prev_preset.setDisabled(True)
+        self.btn_blackout.setDisabled(False)
 
         self.update_mixer_settings()
 
@@ -123,7 +124,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         event.accept()
 
     def on_btn_blackout(self):
-        pass
+        self._app.mixer.on_tick_timer(force_tick=True)
 
     @QtCore.Slot()
     def onset_detected(self):
@@ -362,9 +363,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self._app.mixer.cancel_transition()
         self._app.playlist.set_active_preset_by_name(preset_item.text())
 
-        self.update_playlist()
-        self.load_preset_parameters_table()
-
     def on_preset_duration_changed(self):
         nd = self.edit_preset_duration.value()
         if self._mixer.set_preset_duration(nd):
@@ -382,6 +380,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self._app.settings['mixer']['transition'] = self.cb_transition_mode.currentText()
 
     def load_preset_parameters_table(self):
+        self.tbl_preset_parameters.itemChanged.disconnect(self.on_preset_parameter_changed)
         self.tbl_preset_parameters.clear()
         if self._app.playlist.get_active_preset() == None:
             return
@@ -417,6 +416,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         self.tbl_preset_parameters.horizontalHeader().resizeSection(1, 400)
         self.tbl_preset_parameters.setHorizontalHeaderLabels(('Parameter', 'Value', 'Current'))
+        self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
 
     # Unused?
     @QtCore.Slot()
