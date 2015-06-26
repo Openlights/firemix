@@ -42,6 +42,8 @@ class TestFFT(RawPreset):
         self.add_parameter(FloatParameter('time-range', 1.0))
         self.add_parameter(FloatParameter('pie-peaks', 0.0))
         self.add_parameter(FloatParameter('rings', 0.0))
+        self.add_parameter(FloatParameter('linear', 0.0))
+        self.add_parameter(FloatParameter('linear-weight', 2.0))
         self.add_parameter(FloatParameter('ring bars', 0.0))
         self.add_parameter(FloatParameter('ring peaks', 0.0))
         self.add_parameter(FloatParameter('ring peak width', 0.02))
@@ -91,6 +93,15 @@ class TestFFT(RawPreset):
         pixel_count = len(self.pixel_distances)
         self.pixel_amplitudes = np.zeros(pixel_count)
 
+        noise_threshold = self.parameter('noise threshold').get()
+        smooth_fft = self._mixer.audio.getSmoothedFFT()
+
+        if len(smooth_fft):
+            np.maximum(smooth_fft - noise_threshold, 0, smooth_fft)
+            np.multiply(smooth_fft, 1.0 / (1.0 - noise_threshold), smooth_fft)
+            convolution = np.asarray([0.5, 0.9, 1.0, 0.9, 0.5])
+            smooth_fft = np.convolve(smooth_fft, convolution, 'same')
+
         if self.parameter('fft-weight').get():
             #time_to_graph = (len(fft) - 1) * (1 - self._mixer.audio.getEnergy() / 2) # pulse with total energy
             frequency_min = self.parameter('frequency-min').get()
@@ -113,11 +124,6 @@ class TestFFT(RawPreset):
             mask = (self.pixel_angles > (1.0 - fft[0][pd]))
             self.pixel_amplitudes[mask] += self.parameter('ring current').get()
 
-        noise_threshold = self.parameter('noise threshold').get()
-        smooth_fft = self._mixer.audio.getSmoothedFFT()
-        np.maximum(smooth_fft - noise_threshold, 0, smooth_fft)
-        np.multiply(smooth_fft, 1.0 / (1.0 - noise_threshold), smooth_fft)
-
         if len(smooth_fft):
             if self.parameter('pie-peaks').get():
                 mask = (self.pixel_distances < smooth_fft[np.int_(self.pixel_angles * len(smooth_fft))])
@@ -138,12 +144,24 @@ class TestFFT(RawPreset):
                 self.pixel_amplitudes[mask] += self.parameter('ring bars').get()
 
             if self.parameter('ring peaks').get():
-                pd = np.int_(len(smooth_fft) * (1.2 * self.pixel_distances - 0.1))
+                pd = np.int_(len(smooth_fft) * (1.1 * self.pixel_distances))
                 np.minimum(pd, len(smooth_fft) - 1, pd)
                 np.maximum(pd, 0.0, pd)
                 peak_width = self.parameter('ring peak width').get()
                 mask = (np.abs(self.pixel_angles - smooth_fft[pd]) < peak_width)
                 self.pixel_amplitudes[mask] += self.parameter('ring peaks').get()
+
+            if self.parameter('linear').get():
+                x -= np.min(x)
+                x /= np.max(x)
+                #y -= np.min(y)
+                y /= np.max(y)
+                pd = np.int_(len(smooth_fft) * (x))
+                np.minimum(pd, len(smooth_fft) - 1, pd)
+                np.maximum(pd, 0.0, pd)
+                mask = (np.abs(y) < smooth_fft[pd] * self.parameter('linear-weight').get())
+                self.pixel_amplitudes[mask] += self.parameter('linear').get()
+                hues = pd
 
         colors = self._fader.color_cache[hues]
         np.minimum(self.pixel_amplitudes, 1, self.pixel_amplitudes)
