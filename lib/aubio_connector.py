@@ -26,9 +26,11 @@ class AubioConnector(QtCore.QObject):
 
     onset_detected = QtCore.Signal()
     fft_data = QtCore.Signal(list)
+    pitch_data = QtCore.Signal(float, float)
 
     PACKET_FFT = 0x66
     PACKET_ONSET = 0x77
+    PACKET_PITCH = 0x88
 
     def __init__(self):
         super(AubioConnector, self).__init__()
@@ -57,3 +59,7 @@ class AubioConnector(QtCore.QObject):
                         fft.append(struct.unpack("<f", datagram[3+(i*4):3+(i*4)+4])[0])
 
                     self.fft_data.emit(fft)
+                elif ord(datagram[0]) == self.PACKET_PITCH:
+                    pitch = struct.unpack("<f", datagram[1:5])[0]
+                    confidence = struct.unpack("<f", datagram[5:9])[0]
+                    self.pitch_data.emit(pitch, confidence)

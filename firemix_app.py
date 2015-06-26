@@ -60,6 +60,7 @@ class FireMixApp(QtCore.QThread):
             self.aubio_connector = AubioConnector()
             self.aubio_connector.onset_detected.connect(self.mixer.onset_detected)
             self.aubio_connector.fft_data.connect(self.mixer.audio.update_fft_data)
+            self.aubio_connector.pitch_data.connect(self.mixer.audio.update_pitch_data)
             self.aubio_connector.moveToThread(self.aubio_thread)
 
         self.mixer.set_playlist(self.playlist)

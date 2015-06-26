@@ -57,12 +57,22 @@ class Audio(QtCore.QObject):
         self.gain = 1.0
         self.maxGain = 5.0
         self.fader = ColorFade([(0,0,1), (0,1,1)], self._fader_steps)
+        self.pitch = 0.0
+        self.pitch_confidence = 0.0
 
         self.smoothEnergy = 0.0
 
     def fft_data(self):
         return np.multiply(self.fft, self.gain)
 
+    @QtCore.Slot(float, float)
+    def update_pitch_data(self, pitch, confidence):
+        self.pitch = pitch
+        self.pitch_confidence = confidence
+        #if confidence > 0.9:
+        #    print "Pitch: %0.1f" % pitch
+
+    @QtCore.Slot(float, float)
     def update_fft_data(self, latest_fft):
         if len(latest_fft) == 0:
             print "received no fft"
