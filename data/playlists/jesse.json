@@ -3,6 +3,54 @@
     "playlist": [
         {
             "classname": "CombinePresets", 
+            "name": "many rings masked", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.0", 
+                "first-preset": "many rings", 
+                "second-preset": "mask spokes more", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "many rings", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.0", 
+                "first-preset": "twinkle ring eq", 
+                "second-preset": "fft rings bold", 
+                "transition-mode": "Additive Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "combine twinkle fft", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.0", 
+                "first-preset": "fft rings", 
+                "second-preset": "audio color", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "twinkle noise rain", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.0", 
+                "first-preset": "audio color", 
+                "second-preset": "noise rain 2", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
             "name": "linear twinkle", 
             "params": {
                 "allow-playback": "True", 
@@ -14,11 +62,24 @@
             }
         }, 
         {
+            "classname": "CombinePresets", 
+            "name": "color spiral rings", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.5", 
+                "first-preset": "combine spiral rings", 
+                "second-preset": "twinkle burst", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
             "classname": "TestFFT", 
             "name": "linear fft", 
             "params": {
                 "allow-playback": "True", 
                 "color-gradient": "[(1.0,0.5,1), (0,0.5,1)]", 
+                "fft smoothing": "1.0", 
                 "fft-bias": "0.0", 
                 "fft-gamma": "1.0", 
                 "fft-weight": "0.0", 
@@ -44,6 +105,7 @@
             "params": {
                 "allow-playback": "True", 
                 "color-gradient": "[(1,0.5,1), (0,0.5,1)]", 
+                "fft smoothing": "7.0", 
                 "fft-bias": "0.0", 
                 "fft-gamma": "1.0", 
                 "fft-weight": "0.0", 
@@ -51,7 +113,7 @@
                 "frequency-min": "0.0", 
                 "ghosting": "0.95", 
                 "linear": "0.05", 
-                "linear-weight": "20.0", 
+                "linear-weight": "4.0", 
                 "noise threshold": "0.2", 
                 "pie-peaks": "0.0", 
                 "ring bars": "0.0", 
@@ -71,13 +133,13 @@
                 "allow-playback": "True", 
                 "audio-onset-birth-boost": "0.1", 
                 "audio-onset-death-boost": "5.0", 
-                "audio-onset-spread-boost": "25.0", 
+                "audio-onset-spread-boost": "100.0", 
                 "audio-onset-spread-boost-echo": "0.5", 
                 "birth-rate": "0.05", 
-                "black-color": "[0.6, 0.1, 1.0]", 
-                "dead-color": "[0.6, 0.5, 1.0]", 
+                "black-color": "[0.7, 0.0, 1.0]", 
+                "dead-color": "[0.7, 0.5, 1.0]", 
                 "death-time": "10.0", 
-                "fade-out-time": "5.0", 
+                "fade-out-time": "8.0", 
                 "growth-time": "10.0", 
                 "isolated-life-time": "1.0", 
                 "life-time": "0.5", 
@@ -95,6 +157,18 @@
                 "audio-transition": "0.0", 
                 "first-preset": "noise rain 3", 
                 "second-preset": "mask rings", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "twinkly radial", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.0", 
+                "first-preset": "twinkle mask", 
+                "second-preset": "radial slow audio", 
                 "transition-mode": "Multiply Blend", 
                 "transition-progress": "0.5"
             }
@@ -183,6 +257,18 @@
                 "second-preset": "mask noise small", 
                 "transition-mode": "Multiply Blend", 
                 "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "color spiral rings (2)", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.0", 
+                "first-preset": "combine spiral rings", 
+                "second-preset": "audio color", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.3"
             }
         }, 
         {
@@ -477,6 +563,38 @@
                 "hue-step": "0.05", 
                 "hue-width": "0.0", 
                 "luminance-scale": "0.5", 
+                "luminance-speed": "0.1", 
+                "radius-scale": "0.0", 
+                "rwave-amplitude": "0.0", 
+                "rwave-period": "1.0", 
+                "rwave-speed": "0.1", 
+                "rwave-standing": "0.0", 
+                "speed": "0.1", 
+                "wave1-amplitude": "4.0", 
+                "wave1-period": "1.0", 
+                "wave1-speed": "0.05", 
+                "wave2-amplitude": "1.0", 
+                "wave2-period": "3.0", 
+                "wave2-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "RadialGradient", 
+            "name": "mask spokes more", 
+            "params": {
+                "allow-playback": "False", 
+                "audio-amplitude": "1.0", 
+                "audio-boost": "0.0", 
+                "audio-brightness": "0.0", 
+                "audio-energy-lum-strength": "0.0", 
+                "audio-energy-lum-time": "0.0", 
+                "audio-fader-percent": "1.0", 
+                "audio-scale": "0.0", 
+                "audio-use-fader": "0.0", 
+                "color-gradient": "[(0,-1,0), (0,1.0,0), (0,-1,0)]", 
+                "hue-step": "0.05", 
+                "hue-width": "0.0", 
+                "luminance-scale": "1.0", 
                 "luminance-speed": "0.1", 
                 "radius-scale": "0.0", 
                 "rwave-amplitude": "0.0", 
@@ -1194,12 +1312,12 @@
                 "audio-birth-rate": "1.0", 
                 "audio-eq-bands": "0.0", 
                 "audio-peak-birth-rate": "3.0", 
-                "audio-ring-birth-rate": "0.0", 
-                "audio-ring-diameter": "300.0", 
+                "audio-ring-birth-rate": "0.001", 
+                "audio-ring-diameter": "1000.0", 
                 "audio-ring-lifetime": "2.0", 
                 "audio-ring-start-radius": "0.0", 
                 "audio-ring-use-fft-brightness": "0.0", 
-                "audio-ring-width": "5.0", 
+                "audio-ring-width": "1.0", 
                 "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "0.0", 
@@ -1310,6 +1428,7 @@
             "params": {
                 "allow-playback": "False", 
                 "color-gradient": "[(2.1,0.5,1), (0.9,0.5,1)]", 
+                "fft smoothing": "1.0", 
                 "fft-bias": "0.0", 
                 "fft-gamma": "1.0", 
                 "fft-weight": "0.0", 
@@ -1443,6 +1562,31 @@
         }, 
         {
             "classname": "Twinkle", 
+            "name": "audio color less", 
+            "params": {
+                "allow-playback": "False", 
+                "audio-birth-rate": "1.0", 
+                "audio-eq-bands": "0.0", 
+                "audio-peak-birth-rate": "60.0", 
+                "audio-ring-birth-rate": "0.0", 
+                "audio-ring-diameter": "300.0", 
+                "audio-ring-lifetime": "2.0", 
+                "audio-ring-start-radius": "0.0", 
+                "audio-ring-use-fft-brightness": "0.0", 
+                "audio-ring-width": "5.0", 
+                "beat-births": "25.0", 
+                "beat-color": "(1.0, 1.0, 1.0)", 
+                "birth-rate": "0.0", 
+                "color-gradient": "[(1.0, 0.5, 1.0), (0.0, 0.5, 1.0)]", 
+                "fade-down-time": "0.1", 
+                "fade-rate": "0.03", 
+                "fade-up-time": "1.0", 
+                "noise threshold": "0.1", 
+                "pie-peaks": "0.0"
+            }
+        }, 
+        {
+            "classname": "Twinkle", 
             "name": "audio color", 
             "params": {
                 "allow-playback": "False", 
@@ -1492,23 +1636,12 @@
             }
         }, 
         {
-            "classname": "CombinePresets", 
-            "name": "combine twinkle fft", 
-            "params": {
-                "allow-playback": "True", 
-                "audio-transition": "0.0", 
-                "first-preset": "fft rings", 
-                "second-preset": "audio color", 
-                "transition-mode": "Multiply Blend", 
-                "transition-progress": "0.5"
-            }
-        }, 
-        {
             "classname": "TestFFT", 
             "name": "fft slow", 
             "params": {
                 "allow-playback": "True", 
                 "color-gradient": "[(1.7,0.5,1), (0.7,0.5,1)]", 
+                "fft smoothing": "1.0", 
                 "fft-bias": "0.0", 
                 "fft-gamma": "2.0", 
                 "fft-weight": "10.0", 
@@ -1534,6 +1667,7 @@
             "params": {
                 "allow-playback": "True", 
                 "color-gradient": "[(2.0,0.5,1), (1.0,0.5,1)]", 
+                "fft smoothing": "1.0", 
                 "fft-bias": "0.0", 
                 "fft-gamma": "2.0", 
                 "fft-weight": "2.0", 
@@ -1559,6 +1693,7 @@
             "params": {
                 "allow-playback": "False", 
                 "color-gradient": "[(2.0,0.5,1), (1.0,0.5,1)]", 
+                "fft smoothing": "1.0", 
                 "fft-bias": "0.0", 
                 "fft-gamma": "2.0", 
                 "fft-weight": "20.0", 
@@ -1584,6 +1719,7 @@
             "params": {
                 "allow-playback": "False", 
                 "color-gradient": "[(0.0,0.2,0), (0.0,0.2,0)]", 
+                "fft smoothing": "1.0", 
                 "fft-bias": "0.0", 
                 "fft-gamma": "2.0", 
                 "fft-weight": "40.0", 
@@ -1609,12 +1745,13 @@
             "params": {
                 "allow-playback": "False", 
                 "color-gradient": "[(2.1,0.5,1), (1.05,0.5,1)]", 
+                "fft smoothing": "17.0", 
                 "fft-bias": "0.0", 
                 "fft-gamma": "1.0", 
                 "fft-weight": "0.0", 
                 "frequency-max": "1.0", 
                 "frequency-min": "0.0", 
-                "ghosting": "0.8", 
+                "ghosting": "0.7", 
                 "linear": "0.0", 
                 "linear-weight": "2.0", 
                 "noise threshold": "0.2", 
@@ -1623,17 +1760,18 @@
                 "ring current": "0.0", 
                 "ring peak width": "0.02", 
                 "ring peaks": "0.0", 
-                "rings": "0.4", 
+                "rings": "0.3", 
                 "rotation": "0.0", 
                 "time-range": "0.2"
             }
         }, 
         {
             "classname": "TestFFT", 
-            "name": "fft rings (2)", 
+            "name": "fft rings bold", 
             "params": {
                 "allow-playback": "False", 
                 "color-gradient": "[(2.1,0.5,1), (1.05,0.5,1)]", 
+                "fft smoothing": "41.0", 
                 "fft-bias": "0.0", 
                 "fft-gamma": "1.0", 
                 "fft-weight": "0.0", 
@@ -1659,6 +1797,7 @@
             "params": {
                 "allow-playback": "False", 
                 "color-gradient": "[(2.0,0.5,1), (1.0,0.5,1)]", 
+                "fft smoothing": "1.0", 
                 "fft-bias": "0.0", 
                 "fft-gamma": "5.0", 
                 "fft-weight": "5.0", 
@@ -2320,38 +2459,6 @@
                 "scale": "0.3", 
                 "speed": "0.1", 
                 "stretch": "1.0"
-            }
-        }, 
-        {
-            "classname": "RadialGradient", 
-            "name": "radial slow simple for debugging", 
-            "params": {
-                "allow-playback": "True", 
-                "audio-amplitude": "0.0", 
-                "audio-boost": "-2.0", 
-                "audio-brightness": "0.0", 
-                "audio-energy-lum-strength": "0.15", 
-                "audio-energy-lum-time": "60.0", 
-                "audio-fader-percent": "0.5", 
-                "audio-scale": "0.0", 
-                "audio-use-fader": "0.0", 
-                "color-gradient": "[(0,-0.5,1), (1,0.5,1), (0,-0.5,1)]", 
-                "hue-step": "0.1", 
-                "hue-width": "0.5", 
-                "luminance-scale": "3.0", 
-                "luminance-speed": "0.01", 
-                "radius-scale": "1.0", 
-                "rwave-amplitude": "0.0", 
-                "rwave-period": "1.5", 
-                "rwave-speed": "0.1", 
-                "rwave-standing": "0.0", 
-                "speed": "0.1", 
-                "wave1-amplitude": "0.0", 
-                "wave1-period": "3.0", 
-                "wave1-speed": "1.0", 
-                "wave2-amplitude": "[-1,2,2]", 
-                "wave2-period": "1.5", 
-                "wave2-speed": "0.1"
             }
         }, 
         {
@@ -3569,42 +3676,6 @@
         }, 
         {
             "classname": "CombinePresets", 
-            "name": "CombinePresets-3", 
-            "params": {
-                "allow-playback": "True", 
-                "audio-transition": "0.0", 
-                "first-preset": "twinkle mask", 
-                "second-preset": "radial slow audio", 
-                "transition-mode": "Multiply Blend", 
-                "transition-progress": "0.5"
-            }
-        }, 
-        {
-            "classname": "CombinePresets", 
-            "name": "color spiral rings", 
-            "params": {
-                "allow-playback": "True", 
-                "audio-transition": "0.0", 
-                "first-preset": "combine spiral rings", 
-                "second-preset": "twinkle burst", 
-                "transition-mode": "Multiply Blend", 
-                "transition-progress": "0.5"
-            }
-        }, 
-        {
-            "classname": "CombinePresets", 
-            "name": "color spiral rings (2)", 
-            "params": {
-                "allow-playback": "True", 
-                "audio-transition": "0.0", 
-                "first-preset": "combine spiral rings", 
-                "second-preset": "audio color", 
-                "transition-mode": "Multiply Blend", 
-                "transition-progress": "0.3"
-            }
-        }, 
-        {
-            "classname": "CombinePresets", 
             "name": "twinkle rain", 
             "params": {
                 "allow-playback": "True", 
@@ -3670,24 +3741,56 @@
             "name": "twinkle mask", 
             "params": {
                 "allow-playback": "False", 
-                "audio-birth-rate": "2.0", 
+                "audio-birth-rate": "1.0", 
                 "audio-eq-bands": "0.0", 
                 "audio-peak-birth-rate": "0.0", 
-                "audio-ring-birth-rate": "0.01", 
-                "audio-ring-diameter": "300.0", 
-                "audio-ring-lifetime": "2.0", 
+                "audio-ring-birth-rate": "0.005", 
+                "audio-ring-diameter": "500.0", 
+                "audio-ring-lifetime": "3.0", 
                 "audio-ring-start-radius": "0.0", 
                 "audio-ring-use-fft-brightness": "0.0", 
-                "audio-ring-width": "1.0", 
-                "beat-births": "200.0", 
+                "audio-ring-width": "6.0", 
+                "beat-births": "10.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "0.15", 
                 "color-gradient": "[(0, 0.5, 0.0), (0, 0.5, 0.0)]", 
                 "fade-down-time": "10.0", 
-                "fade-rate": "0.03", 
+                "fade-rate": "0.06", 
                 "fade-up-time": "0.5", 
                 "noise threshold": "0.1", 
                 "pie-peaks": "0.0"
+            }
+        }, 
+        {
+            "classname": "RadialGradient", 
+            "name": "radial slow simple for debugging", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-amplitude": "0.0", 
+                "audio-boost": "-2.0", 
+                "audio-brightness": "0.0", 
+                "audio-energy-lum-strength": "0.15", 
+                "audio-energy-lum-time": "60.0", 
+                "audio-fader-percent": "0.5", 
+                "audio-scale": "0.0", 
+                "audio-use-fader": "0.0", 
+                "color-gradient": "[(0,-0.5,1), (1,0.5,1), (0,-0.5,1)]", 
+                "hue-step": "0.1", 
+                "hue-width": "0.5", 
+                "luminance-scale": "3.0", 
+                "luminance-speed": "0.01", 
+                "radius-scale": "1.0", 
+                "rwave-amplitude": "0.0", 
+                "rwave-period": "1.5", 
+                "rwave-speed": "0.1", 
+                "rwave-standing": "0.0", 
+                "speed": "0.1", 
+                "wave1-amplitude": "0.0", 
+                "wave1-period": "3.0", 
+                "wave1-speed": "1.0", 
+                "wave2-amplitude": "[-1,2,2]", 
+                "wave2-period": "1.5", 
+                "wave2-speed": "0.1"
             }
         }, 
         {
@@ -3730,6 +3833,30 @@
                 "audio-transition": "0.0", 
                 "first-preset": "radial slow audio", 
                 "second-preset": "mask spokes", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "plaid more clash", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.6", 
+                "first-preset": "plaid powerclash", 
+                "second-preset": "stripe rainbow", 
+                "transition-mode": "Linear Blend", 
+                "transition-progress": "0.0"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "spiral noise", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.0", 
+                "first-preset": "spiral rings", 
+                "second-preset": "mask noise", 
                 "transition-mode": "Multiply Blend", 
                 "transition-progress": "0.5"
             }

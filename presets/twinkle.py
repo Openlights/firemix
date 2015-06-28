@@ -183,7 +183,7 @@ class Twinkle(RawPreset):
                 self.color_angle += 0.001
                 self.pixel_angles = np.mod((np.arctan2(y, x) + (self.color_angle * math.pi)) / (math.pi * 2) + 1, 1)
                 self.pixel_distances /= np.max(self.pixel_distances)
-                mask = (self.pixel_distances < 2 * fft[0][np.int_(self.pixel_angles * len(fft[0]))])
+                mask = (self.pixel_distances < 2 * fft[np.int_(self.pixel_angles * len(fft))])
                 self._pixel_buffer.T[1][mask] = self.parameter('pie-peaks').get()
 
         # audioEnergy = self._mixer.audio.getEnergy() * self.parameter('audio-birth-rate').get() * dt

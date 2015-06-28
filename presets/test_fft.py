@@ -23,6 +23,7 @@ from lib.raw_preset import RawPreset
 from lib.parameters import FloatParameter, StringParameter
 from lib.watch import Watch
 from lib.color_fade import ColorFade
+from scipy import signal
 
 class TestFFT(RawPreset):
     """Simple test for FFT data coming from aubio"""
@@ -50,6 +51,7 @@ class TestFFT(RawPreset):
         self.add_parameter(FloatParameter('ring current', 0.0))
         self.add_parameter(FloatParameter('ghosting', 0.0))
         self.add_parameter(FloatParameter('noise threshold', 0.1))
+        self.add_parameter(FloatParameter('fft smoothing', 1.0))
 
         self.color_angle = 0.0
         self.add_watch(Watch(self, 'color_angle'))
@@ -97,10 +99,12 @@ class TestFFT(RawPreset):
         smooth_fft = self._mixer.audio.getSmoothedFFT()
 
         if len(smooth_fft):
-            np.maximum(smooth_fft - noise_threshold, 0, smooth_fft)
-            np.multiply(smooth_fft, 1.0 / (1.0 - noise_threshold), smooth_fft)
-            convolution = np.asarray([0.5, 0.9, 1.0, 0.9, 0.5])
-            smooth_fft = np.convolve(smooth_fft, convolution, 'same')
+            if self.parameter('fft smoothing').get():
+                np.maximum(smooth_fft - noise_threshold, 0, smooth_fft)
+                np.multiply(smooth_fft, 1.0 / (1.0 - noise_threshold), smooth_fft)
+                convolution = signal.gaussian(self.parameter('fft smoothing').get(), std=1.0)
+
+                smooth_fft = np.convolve(smooth_fft, convolution, 'same')
 
         if self.parameter('fft-weight').get():
             #time_to_graph = (len(fft) - 1) * (1 - self._mixer.audio.getEnergy() / 2) # pulse with total energy
