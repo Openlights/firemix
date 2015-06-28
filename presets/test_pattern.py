@@ -38,19 +38,19 @@ class TestPattern(RawPreset):
         for strand in self._heirarchy:
             self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 0), scene=self.scene()), (0.33, 0.5, 1.0))
 
-            if (strand & 0x1):
+            if (strand & 0x8):
                 self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.66, 0.5, 1.0))
             else:
                 self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.0, 0.5, 1.0))
-            if (strand & 0x2):
+            if (strand & 0x4):
                 self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.66, 0.5, 1.0))
             else:
                 self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.0, 0.5, 1.0))
-            if (strand & 0x4):
+            if (strand & 0x2):
                 self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.66, 0.5, 1.0))
             else:
                 self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.0, 0.5, 1.0))
-            if (strand & 0x8):
+            if (strand & 0x1):
                 self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.66, 0.5, 1.0))
             else:
                 self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.0, 0.5, 1.0))

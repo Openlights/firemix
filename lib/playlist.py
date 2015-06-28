@@ -116,6 +116,11 @@ class Playlist(JSONDict):
                 self.next_preset = None
                 return
 
+        # Check if we just deleted the active preset
+        if self.active_preset not in self._playlist:
+            self.active_preset = self.next_preset
+            self.update_next_preset()
+
         # Generate the shuffle list
         if self._shuffle:
             self.generate_shuffle()
