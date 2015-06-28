@@ -36,4 +36,4 @@ class LinearBlend(Transition):
     def get(self, start, end, progress, fade_length=0.6):
         if self._buffer is None:
             self._buffer = np.empty_like(start)
-        return hls_blend(start, end, self._buffer, progress, 'add', fade_length, 0.3)
+        return hls_blend(start, end, self._buffer, progress, 'add', fade_length, 1.0)
