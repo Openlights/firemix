@@ -46,6 +46,7 @@ class RadialGradient(RawPreset):
         self.add_parameter(FloatParameter('rwave-period', 1.5))
         self.add_parameter(FloatParameter('rwave-speed', 0.1))
         self.add_parameter(FloatParameter('radius-scale', 1.0))
+        self.add_parameter(FloatParameter('audio-radius-scale', 0.0))
         self.add_parameter(FloatParameter('audio-amplitude', 0.0))
         self.add_parameter(FloatParameter('audio-boost', 0.0))
         self.add_parameter(FloatParameter('audio-brightness', 0.0))
@@ -104,7 +105,7 @@ class RadialGradient(RawPreset):
 
         wave1 = np.abs(np.cos(self.wave1_offset + pixel_angles * self.parameter('wave1-period').get()) * self.parameter('wave1-amplitude').get())
         wave2 = np.abs(np.cos(self.wave2_offset + pixel_angles * self.parameter('wave2-period').get()) * self.parameter('wave2-amplitude').get())
-        hues = self.pixel_distances * self.parameter('radius-scale').get() + wave1 + wave2
+        hues = self.pixel_distances * (self.parameter('radius-scale').get() + self._mixer.audio.getSmoothEnergy() * self.parameter('audio-radius-scale').get()) + wave1 + wave2
 
         audio_amplitude = self.parameter('audio-amplitude').get()
         fft = self._mixer.audio.getSmoothedFFT()
