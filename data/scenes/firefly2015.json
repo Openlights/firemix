@@ -15,427 +15,427 @@
     ], 
     "file-type": "scene", 
     "fixtures": [
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        580,
-        92
-      ],
-      "pos2": [
-        757,
-        397
-      ],
-      "strand": 5,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        225,
-        94
-      ],
-      "pos2": [
-        49,
-        396
-      ],
-      "strand": 3,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        580,
-        92
-      ],
-      "pos2": [
-        223,
-        92
-      ],
-      "strand": 3,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        48,
-        397
-      ],
-      "pos2": [
-        226,
-        704
-      ],
-      "strand": 13,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        228,
-        705
-      ],
-      "pos2": [
-        582,
-        704
-      ],
-      "strand": 13,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        755,
-        400
-      ],
-      "pos2": [
-        580,
-        705
-      ],
-      "strand": 5,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        314,
-        94
-      ],
-      "pos2": [
-        491,
-        398
-      ],
-      "strand": 8,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        356,
-        323
-      ],
-      "pos2": [
-        181,
-        628
-      ],
-      "strand": 0,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        712,
-        321
-      ],
-      "pos2": [
-        359,
-        321
-      ],
-      "strand": 0,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        184,
-        171
-      ],
-      "pos2": [
-        358,
-        473
-      ],
-      "strand": 10,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        358,
-        474
-      ],
-      "pos2": [
-        711,
-        476
-      ],
-      "strand": 10,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        492,
-        397
-      ],
-      "pos2": [
-        313,
-        704
-      ],
-      "strand": 8,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        404,
-        94
-      ],
-      "pos2": [
-        577,
-        396
-      ],
-      "strand": 7,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        314,
-        246
-      ],
-      "pos2": [
-        136,
-        551
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        624,
-        168
-      ],
-      "pos2": [
-        271,
-        168
-      ],
-      "strand": 2,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        135,
-        247
-      ],
-      "pos2": [
-        313,
-        548
-      ],
-      "strand": 11,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        316,
-        550
-      ],
-      "pos2": [
-        667,
-        553
-      ],
-      "strand": 11,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        579,
-        396
-      ],
-      "pos2": [
-        404,
-        704
-      ],
-      "strand": 7,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        491,
-        90
-      ],
-      "pos2": [
-        669,
-        396
-      ],
-      "strand": 6,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        268,
-        169
-      ],
-      "pos2": [
-        91,
-        471
-      ],
-      "strand": 2,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        670,
-        245
-      ],
-      "pos2": [
-        316,
-        245
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        92,
-        323
-      ],
-      "pos2": [
-        270,
-        629
-      ],
-      "strand": 12,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        271,
-        629
-      ],
-      "pos2": [
-        629,
-        628
-      ],
-      "strand": 12,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        669,
-        399
-      ],
-      "pos2": [
-        495,
-        701
-      ],
-      "strand": 6,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        226,
-        94
-      ],
-      "pos2": [
-        401,
-        400
-      ],
-      "strand": 9,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        400,
-        399
-      ],
-      "pos2": [
-        756,
-        399
-      ],
-      "strand": 14,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        400,
-        401
-      ],
-      "pos2": [
-        225,
-        704
-      ],
-      "strand": 4,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        49,
-        398
-      ],
-      "pos2": [
-        398,
-        398
-      ],
-      "strand": 14,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 120,
-      "pos1": [
-        398,
-        400
-      ],
-      "pos2": [
-        577,
-        705
-      ],
-      "strand": 9,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 120,
-      "pos1": [
-        580,
-        94
-      ],
-      "pos2": [
-        401,
-        398
-      ],
-      "strand": 4,
-      "type": "linear"
-    }
-  ],
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                580, 
+                92
+            ], 
+            "pos2": [
+                757, 
+                397
+            ], 
+            "strand": 10, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                225, 
+                94
+            ], 
+            "pos2": [
+                49, 
+                396
+            ], 
+            "strand": 8, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                580, 
+                92
+            ], 
+            "pos2": [
+                223, 
+                92
+            ], 
+            "strand": 8, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                48, 
+                397
+            ], 
+            "pos2": [
+                226, 
+                704
+            ], 
+            "strand": 0, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                228, 
+                705
+            ], 
+            "pos2": [
+                582, 
+                704
+            ], 
+            "strand": 0, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                755, 
+                400
+            ], 
+            "pos2": [
+                580, 
+                705
+            ], 
+            "strand": 10, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                314, 
+                94
+            ], 
+            "pos2": [
+                491, 
+                398
+            ], 
+            "strand": 5, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                355, 
+                322
+            ], 
+            "pos2": [
+                180, 
+                627
+            ], 
+            "strand": 13, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                712, 
+                321
+            ], 
+            "pos2": [
+                359, 
+                321
+            ], 
+            "strand": 13, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                184, 
+                171
+            ], 
+            "pos2": [
+                358, 
+                473
+            ], 
+            "strand": 3, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                358, 
+                474
+            ], 
+            "pos2": [
+                711, 
+                476
+            ], 
+            "strand": 3, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                492, 
+                397
+            ], 
+            "pos2": [
+                313, 
+                704
+            ], 
+            "strand": 5, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                404, 
+                94
+            ], 
+            "pos2": [
+                577, 
+                396
+            ], 
+            "strand": 6, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                314, 
+                246
+            ], 
+            "pos2": [
+                136, 
+                551
+            ], 
+            "strand": 12, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                624, 
+                168
+            ], 
+            "pos2": [
+                271, 
+                168
+            ], 
+            "strand": 11, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                135, 
+                247
+            ], 
+            "pos2": [
+                313, 
+                548
+            ], 
+            "strand": 2, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                316, 
+                550
+            ], 
+            "pos2": [
+                667, 
+                553
+            ], 
+            "strand": 2, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                579, 
+                396
+            ], 
+            "pos2": [
+                404, 
+                704
+            ], 
+            "strand": 6, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                491, 
+                90
+            ], 
+            "pos2": [
+                669, 
+                396
+            ], 
+            "strand": 7, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                268, 
+                169
+            ], 
+            "pos2": [
+                91, 
+                471
+            ], 
+            "strand": 11, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                670, 
+                245
+            ], 
+            "pos2": [
+                316, 
+                245
+            ], 
+            "strand": 12, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                92, 
+                323
+            ], 
+            "pos2": [
+                270, 
+                629
+            ], 
+            "strand": 1, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                271, 
+                629
+            ], 
+            "pos2": [
+                629, 
+                628
+            ], 
+            "strand": 1, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                669, 
+                399
+            ], 
+            "pos2": [
+                495, 
+                701
+            ], 
+            "strand": 7, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                226, 
+                94
+            ], 
+            "pos2": [
+                401, 
+                400
+            ], 
+            "strand": 4, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                756, 
+                399
+            ], 
+            "pos2": [
+                400, 
+                399
+            ], 
+            "strand": 14, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                400, 
+                401
+            ], 
+            "pos2": [
+                225, 
+                704
+            ], 
+            "strand": 9, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                398, 
+                398
+            ], 
+            "pos2": [
+                49, 
+                398
+            ], 
+            "strand": 14, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                398, 
+                400
+            ], 
+            "pos2": [
+                577, 
+                705
+            ], 
+            "strand": 4, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                580, 
+                94
+            ], 
+            "pos2": [
+                401, 
+                398
+            ], 
+            "strand": 9, 
+            "type": "linear"
+        }
+    ], 
     "labels_enable": false, 
     "locked": false, 
     "name": "Firefly2015", 

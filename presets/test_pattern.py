@@ -39,21 +39,21 @@ class TestPattern(RawPreset):
             self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 0), scene=self.scene()), (0.33, 0.5, 1.0))
 
             if (strand & 0x8):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.66, 0.5, 1.0))
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.66, 0.9, 1.0))
             else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.0, 0.5, 1.0))
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.0, 0.2, 0.0))
             if (strand & 0x4):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.66, 0.5, 1.0))
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.66, 0.9, 1.0))
             else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.0, 0.5, 1.0))
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.0, 0.2, 0.0))
             if (strand & 0x2):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.66, 0.5, 1.0))
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.66, 0.9, 1.0))
             else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.0, 0.5, 1.0))
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.0, 0.2, 0.0))
             if (strand & 0x1):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.66, 0.5, 1.0))
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.66, 0.9, 1.0))
             else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.0, 0.5, 1.0))
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.0, 0.2, 0.0))
 
             for fixture in self._heirarchy[strand]:
                 last_fixture_pixel = self._heirarchy[strand][fixture].pixels - 1

@@ -19,6 +19,8 @@ from noise import snoise3
 import numpy as np
 import ast
 
+from profilehooks import profile
+
 from lib.color_fade import ColorFade
 from lib.raw_preset import RawPreset
 from lib.parameters import FloatParameter, IntParameter, StringParameter
@@ -72,6 +74,7 @@ class SimplexNoise(RawPreset):
         fade_colors = ast.literal_eval(self.parameter('luminance-map').get())
         self.lum_fader = ColorFade(fade_colors, self._luminance_steps)
 
+    @profile
     def draw(self, dt):
         if self._mixer.is_onset():
             self._offset_z += self.parameter('beat-color-boost').get()

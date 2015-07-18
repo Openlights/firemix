@@ -349,6 +349,10 @@ class Mixer(QtCore.QObject):
                 # Apply the global dimmer to _main_buffer.
                 if self._global_dimmer < 1.0:
                     mixed_buffer.T[1] *= self._global_dimmer
+                #else:
+                    # Global gamma correction.
+                    # TODO(jon): This should be a setting
+                    #mixed_buffer.T[1] = np.power(mixed_buffer.T[1], 4)
 
                 # Mod hue by 1 (to allow wrap-around) and clamp lightness and
                 # saturation to [0, 1].

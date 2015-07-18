@@ -27,6 +27,8 @@ import zmq
 from lib.colors import hls_to_rgb
 from lib.buffer_utils import BufferUtils
 
+USE_ZMQ = False
+
 
 class Networking:
 
@@ -37,11 +39,16 @@ class Networking:
         self.running = True
         self.open_socket()
         self._packet_cache = {}
+        self.port = 3020
 
     def open_socket(self):
-        self.context = zmq.Context()
-        self.socket = self.context.socket(zmq.PUB)
-        self.socket.bind("tcp://*:3020")
+        if USE_ZMQ:
+            self.context = zmq.Context()
+            self.socket = self.context.socket(zmq.PUB)
+            self.socket.bind("tcp://*:3020")
+        else:
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     def write_buffer(self, buffer):
         """
@@ -49,6 +56,7 @@ class Networking:
         Decodes the HLS-Float data according to client settings
         """
         strand_settings = self._app.scene.get_strand_settings()
+        clients = [(client['host'], client['port']) for client in self._app.settings['networking']['clients'] if client["enabled"]]
 
         # Protect against presets or transitions that write float data.
         buffer_rgb = np.int_(hls_to_rgb(buffer) * 255)
@@ -92,6 +100,14 @@ class Networking:
             fill_packet(buffer_rgb, start, end, packet_header_size, packet, False)
             packets.append(array.array('B', packet))
 
-        frame = ["B"] + packets + ["E"]
+        if USE_ZMQ:
+            frame = ["B"] + packets + ["E"]
+            self.socket.send_multipart(frame)
+        else:
+            for client in clients:
+                self.socket.sendto(array.array('B', [ord('B')]), client)
+                for packet in packets:
+                    self.socket.sendto(packet, client)
 
-        self.socket.send_multipart(frame)
+            for client in clients:
+                self.socket.sendto(array.array('B', [ord('E')]), client)
