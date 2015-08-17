@@ -21,7 +21,7 @@ import logging
 import signal
 import sys
 
-from PySide import QtGui
+from PySide import QtCore, QtGui
 
 from firemix_app import FireMixApp
 from ui.firemixgui import FireMixGUI
@@ -42,7 +42,8 @@ def main():
     parser.add_argument("--playlist", type=str, help="Playlist file to load", default=None)
     parser.add_argument("--profile", action='store_const', const=True, default=False, help="Enable profiling")
     parser.add_argument("--yappi", action='store_const', const=True, default=False, help="Enable YAPPI")
-    parser.add_argument("--nogui", action='store_const', const=True, default=False, help="Disable GUI")
+    parser.add_argument("--nogui", dest='gui', action='store_false',
+                        default=True, help="Disable GUI")
     parser.add_argument("--preset", type=str, help="Specify a preset name to run only that preset (useful for debugging)")
     parser.add_argument("--verbose", action='store_const', const=True, default=False, help="Enable verbose log output")
     parser.add_argument("--noaudio", action='store_const', const=True, default=False, help="Disable audio processing client")
@@ -54,16 +55,25 @@ def main():
 
     log.info("Booting FireMix...")
 
-    qt_app = QtGui.QApplication(sys.argv, not args.nogui)
+    qt_app = QtGui.QApplication(sys.argv, args.gui)
     app = FireMixApp(qt_app, args)
 
     signal.signal(signal.SIGINT, functools.partial(sig_handler, app))
 
     app.start()
 
-    if not args.nogui:
+    if args.gui:
         gui = FireMixGUI(app=app)
         gui.show()
+    else:
+        # When the UI isn't running, the Qt application spends all its time
+        # running in its event loop (implemented in C).  During that time, we
+        # can't process any (Unix) signals in Python.  So, in order to handle
+        # signals, we have to occationally execute some Python code.  We just do
+        # nothing when the timeout fires.
+        timer = QtCore.QTimer()
+        timer.start(500)
+        timer.timeout.connect(lambda: None)
 
     qt_app.exec_()
 
