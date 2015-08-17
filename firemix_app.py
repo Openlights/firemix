@@ -40,7 +40,7 @@ class FireMixApp(QtCore.QThread):
     """
     playlist_changed = QtCore.Signal()
 
-    def __init__(self, args, parent=None):
+    def __init__(self, parent, args):
         self._running = False
         self.args = args
         self.settings = Settings()
@@ -50,6 +50,7 @@ class FireMixApp(QtCore.QThread):
         self.plugins = PluginLoader()
         self.mixer = Mixer(self)
         self.playlist = Playlist(self)
+        self.qt_app = parent
 
         self.scene.warmup()
 
