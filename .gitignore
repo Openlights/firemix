@@ -4,3 +4,4 @@
 /data/settings.json
 /data/images/rejected/*
 ui/ui_*.py
+/venv
