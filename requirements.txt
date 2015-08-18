@@ -5,3 +5,4 @@ yappi>=0.62
 profilehooks>=1.7
 watchdog>=0.8.3
 qdarkstyle>=2.3.1
+falcon>=0.3.0

@@ -58,6 +58,7 @@ def main():
     parser.add_argument("--preset", type=str, help="Specify a preset name to run only that preset (useful for debugging)")
     parser.add_argument("--verbose", "-v", action='count', help="Enable verbose log output. Specify more than once for more output")
     parser.add_argument("--noaudio", action='store_const', const=True, default=False, help="Disable audio processing client")
+    parser.add_argument("--rpc", action='store_const', const=True, default=False, help="Enable RPC server")
 
     args = parser.parse_args()
 
