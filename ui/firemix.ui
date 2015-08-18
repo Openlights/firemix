@@ -585,7 +585,7 @@
      <x>0</x>
      <y>0</y>
      <width>1068</width>
-     <height>30</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -637,6 +637,9 @@
   <action name="action_file_quit">
    <property name="text">
     <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="action_file_save_playlist">

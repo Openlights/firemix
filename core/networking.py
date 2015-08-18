@@ -27,7 +27,8 @@ import zmq
 from lib.colors import hls_to_rgb
 from lib.buffer_utils import BufferUtils
 
-USE_ZMQ = False
+USE_ZMQ = True
+USE_OPC = True
 
 
 class Networking:
@@ -40,15 +41,15 @@ class Networking:
         self.open_socket()
         self._packet_cache = {}
         self.port = 3020
+        self.opc_port = 7890
 
     def open_socket(self):
         if USE_ZMQ:
             self.context = zmq.Context()
-            self.socket = self.context.socket(zmq.PUB)
-            self.socket.bind("tcp://*:3020")
-        else:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            self.zmq_socket = self.context.socket(zmq.PUB)
+            self.zmq_socket.bind("tcp://*:3020")
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     def write_buffer(self, buffer):
         """
@@ -56,7 +57,11 @@ class Networking:
         Decodes the HLS-Float data according to client settings
         """
         strand_settings = self._app.scene.get_strand_settings()
-        clients = [(client['host'], client['port']) for client in self._app.settings['networking']['clients'] if client["enabled"]]
+        clients = [client for client in self._app.settings['networking']['clients'] if client["enabled"]]
+
+        have_zmq_clients = (len([c for c in clients if c["protocol"] == "ZMQ"]) > 0)
+        legacy_clients = [c for c in clients if c["protocol"] == "Legacy"]
+        opc_clients = [c for c in clients if c["protocol"] == "OPC"]
 
         # Protect against presets or transitions that write float data.
         buffer_rgb = np.int_(hls_to_rgb(buffer) * 255)
@@ -91,23 +96,39 @@ class Networking:
                 packet = [0,] * packet_size
                 self._packet_cache[packet_size] = packet
 
+            length = packet_size - packet_header_size
+
             packet[0] = ord('S')
             packet[1] = strand
-            length = packet_size - packet_header_size
             packet[2] = length & 0x00FF
             packet[3] = (length & 0xFF00) >> 8
 
             fill_packet(buffer_rgb, start, end, packet_header_size, packet, False)
             packets.append(array.array('B', packet))
 
-        if USE_ZMQ:
+        if USE_ZMQ and have_zmq_clients:
             frame = ["B"] + packets + ["E"]
             self.socket.send_multipart(frame)
-        else:
-            for client in clients:
-                self.socket.sendto(array.array('B', [ord('B')]), client)
-                for packet in packets:
-                    self.socket.sendto(packet, client)
 
-            for client in clients:
-                self.socket.sendto(array.array('B', [ord('E')]), client)
+        for client in legacy_clients:
+            self.socket.sendto(array.array('B', [ord('B')]), (client["host"], client["port"]))
+            for packet in packets:
+                self.socket.sendto(packet, (client["host"], client["port"]))
+            self.socket.sendto(array.array('B', [ord('E')]), (client["host"], client["port"]))
+
+        for client in opc_clients:
+            # TODO: This is hacky, but for now we re-write the packet for OPC here...
+            # Fortunately, OPC happens to look a lot like our existing protocol...
+            # Byte 0 is channel (aka strand).  0 is broadcast address, indexing starts at 1.
+            # Byte 1 is command, always 0 for "set pixel colors"
+            # Bytes 2 and 3 are big-endian length of the data block.
+            # Note: LEDScape needs the strands all concatenated together which is annoying
+            packet[0] = packet[1] + 1
+            tpacket = [0x00, 0x00, 0x00, 0x00]
+            for packet in packets:
+                tpacket += packet[4:]
+            tlen = len(tpacket) - 4
+            tpacket[2] = (tlen & 0xFF00) >> 8
+            tpacket[3] = (tlen & 0xFF)
+            tpacket = array.array('B', tpacket)
+            self.socket.sendto(tpacket, (client["host"], client["port"]))
