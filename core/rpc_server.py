@@ -16,30 +16,66 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 
-# Disabled for now
+import falcon
+import json
+import logging
+from PySide import QtCore
+from wsgiref import simple_server
 
-# import threading
-# from flask import Flask
-# from flaskext.xmlrpc import XMLRPCHandler, Fault
-#
-#
-# class RPCServer(threading.Thread):
-#
-#     def __init__(self, app, ip='127.0.0.1', port=8080):
-#         self._app = app
-#         self._flask = Flask(__name__)
-#         self._handler = XMLRPCHandler('RPC2')
-#         self._handler.connect(self._flask, '/RPC2')
-#
-#         self._handler.register(self.get_active_preset_name)
-#
-#         threading.Thread.__init__(self)
-#
-#     def run(self):
-#         self._flask.run()
-#
-#     def stop(self):
-#         pass
-#
-#     def get_active_preset_name(self):
-#         return self._app._mixer.get_active_preset_name()
+
+log = logging.getLogger("firemix.rpc_server")
+
+
+class SettingsResource:
+    def __init__(self, firemix):
+        self.firemix = firemix
+
+    def on_get(self, req, resp):
+
+        settings = {
+            "current_preset": self.firemix.playlist.active_preset.name(),
+            "all_presets": [p.name() for p in self.firemix.playlist.get()]
+        }
+
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps(settings)
+
+
+# TODO: Use something other than simple_server that works better with threading
+
+class RPCServer(QtCore.QObject):
+
+    start = QtCore.Signal()
+    stop = QtCore.Signal()
+
+    def __init__(self, firemix, host='0.0.0.0', port=8000):
+        QtCore.QObject.__init__(self)
+        self.app = falcon.API()
+        self.firemix = firemix
+        self.host = host
+        self.port = port
+        self.start.connect(self.run)
+        self.stop.connect(self.shutdown)
+
+        self.init_app()
+
+    def init_app(self):
+        self.settings = SettingsResource(self.firemix)
+        self.app.add_route('/settings', self.settings)
+
+    @QtCore.Slot()
+    def run(self):
+        log.info("RPC server listening at %s:%d" % (self.host, self.port))
+        self.server = simple_server.make_server(self.host, self.port, self.app)
+        self._running = True
+
+        while self._running:
+            self.server.handle_request()
+
+        self.server.shutdown()
+
+    @QtCore.Slot()
+    def shutdown(self):
+        self._running = False
+        log.info("Shutting down RPC server")
+        self.server.shutdown()

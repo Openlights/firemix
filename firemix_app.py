@@ -23,6 +23,7 @@ from PySide import QtCore
 from core.mixer import Mixer
 from core.networking import Networking
 from core.scene_loader import SceneLoader
+from core.rpc_server import RPCServer
 from lib.playlist import Playlist
 from lib.settings import Settings
 from lib.scene import Scene
@@ -41,6 +42,7 @@ class FireMixApp(QtCore.QThread):
     playlist_changed = QtCore.Signal()
 
     def __init__(self, parent, args):
+        QtCore.QThread.__init__(self, parent)
         self._running = False
         self.args = args
         self.settings = Settings()
@@ -70,7 +72,13 @@ class FireMixApp(QtCore.QThread):
             log.info("Setting constant preset %s" % args.preset)
             self.mixer.set_constant_preset(args.preset)
 
-        QtCore.QThread.__init__(self, parent)
+        if self.args.rpc:
+            log.info("RPC Server enabled")
+            self.rpc_thread = QtCore.QThread()
+            self.rpc_thread.start()
+            self.rpc_server = RPCServer(firemix=self)
+            self.rpc_server.moveToThread(self.rpc_thread)
+            self.rpc_server.start.emit()
 
     def run(self):
         self._running = True
@@ -79,6 +87,10 @@ class FireMixApp(QtCore.QThread):
     def stop(self):
         self._running = False
         self.aubio_thread.quit()
+        if self.rpc_server is not None:
+            self.rpc_server.stop.emit()
+            self.rpc_thread.quit()
+            self.rpc_thread.wait(100)
         self.mixer.stop()
         self.playlist.save()
         self.settings.save()
