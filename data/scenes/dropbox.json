@@ -1,0 +1,253 @@
+{
+    "backdrop_enable": false, 
+    "backdrop_filename": "data/scenes/dropbox.png",
+    "bounding_box": [
+        640,
+        640
+    ], 
+    "center": [
+        320,
+        260
+    ], 
+    "extents": [
+        640,
+        640
+    ], 
+    "file-type": "scene", 
+    "fixtures": [
+    {
+      "address": 0,
+      "pixels": 32,
+      "pos1": [
+        22,
+        165
+      ],
+      "pos2": [
+        195,
+        47
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 1,
+      "pixels": 32,
+      "pos1": [
+        198,
+        47
+      ],
+      "pos2": [
+        318,
+        149
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 2,
+      "pixels": 32,
+      "pos1": [
+        318,
+        149
+      ],
+      "pos2": [
+        434,
+        48
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 3,
+      "pixels": 32,
+      "pos1": [
+        438,
+        50
+      ],
+      "pos2": [
+        621,
+        160
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 4,
+      "pixels": 32,
+      "pos1": [
+        621,
+        166
+      ],
+      "pos2": [
+        494,
+        258
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 5,
+      "pixels": 32,
+      "pos1": [
+        494,
+        259
+      ],
+      "pos2": [
+        615,
+        357
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 14,
+      "pixels": 32,
+      "pos1": [
+        143,
+        259
+      ],
+      "pos2": [
+        323,
+        367
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 9,
+      "pixels": 32,
+      "pos1": [
+        196,
+        467
+      ],
+      "pos2": [
+        23,
+        355
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 7,
+      "pixels": 32,
+      "pos1": [
+        443,
+        464
+      ],
+      "pos2": [
+        321,
+        365
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 12,
+      "pixels": 32,
+      "pos1": [
+        320,
+        149
+      ],
+      "pos2": [
+        497,
+        259
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 15,
+      "pixels": 32,
+      "pos1": [
+        142,
+        259
+      ],
+      "pos2": [
+        19,
+        164
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 11,
+      "pixels": 32,
+      "pos1": [
+        143,
+        260
+      ],
+      "pos2": [
+        319,
+        148
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 13,
+      "pixels": 32,
+      "pos1": [
+        493,
+        260
+      ],
+      "pos2": [
+        320,
+        366
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 6,
+      "pixels": 32,
+      "pos1": [
+        615,
+        359
+      ],
+      "pos2": [
+        442,
+        465
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 10,
+      "pixels": 32,
+      "pos1": [
+        23,
+        355
+      ],
+      "pos2": [
+        141,
+        258
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 8,
+      "pixels": 32,
+      "pos1": [
+        320,
+        368
+      ],
+      "pos2": [
+        198,
+        465
+      ],
+      "strand": 0,
+      "type": "linear"
+    }
+  ],
+    "labels_enable": false, 
+    "locked": false, 
+    "name": "Dropbox",
+    "strand-settings": [
+        {
+            "color-mode": "BGR8", 
+            "enabled": true, 
+            "id": 0
+        }
+    ]
+}
