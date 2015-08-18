@@ -20,6 +20,9 @@ from PySide import QtCore, QtGui
 from ui.ui_dlg_settings import Ui_DlgSettings
 from lib import color_modes
 
+# TODO: This is a hack
+PROTOCOLS = ["Legacy", "ZMQ", "OPC"]
+
 
 class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
 
@@ -104,7 +107,8 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             port = int(self.tbl_networking_clients.item(i, 1).text())
             enabled = (self.tbl_networking_clients.cellWidget(i, 2).checkState() == QtCore.Qt.Checked)
             color_mode = self.tbl_networking_clients.cellWidget(i, 3).currentText()
-            client = {"host": host, "port": port, "enabled": enabled, "color-mode": color_mode}
+            proto = self.tbl_networking_clients.cellWidget(i, 4).currentText()
+            client = {"host": host, "port": port, "enabled": enabled, "color-mode": color_mode, "protocol": proto}
             if client not in clients:
                 clients.append(client)
         self.app.settings['networking']['clients'] = clients
@@ -140,10 +144,17 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             if client["enabled"]:
                 item_enabled.setCheckState(QtCore.Qt.Checked)
 
+            item_protocol = QtGui.QComboBox()
+            for proto in PROTOCOLS:
+                item_protocol.addItem(proto)
+
+            item_protocol.setCurrentIndex(PROTOCOLS.index(client["protocol"]))
+
             self.tbl_networking_clients.setItem(i, 0, item_host)
             self.tbl_networking_clients.setItem(i, 1, item_port)
             self.tbl_networking_clients.setCellWidget(i, 2, item_enabled)
             self.tbl_networking_clients.setCellWidget(i, 3, item_color_mode)
+            self.tbl_networking_clients.setCellWidget(i, 4, item_protocol)
         self.tbl_networking_clients.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
 
     def add_networking_client_row(self):
@@ -155,7 +166,12 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         item_color_mode = QtGui.QComboBox()
         for mode in color_modes.modes:
             item_color_mode.addItem(mode)
+
+        item_protocol = QtGui.QComboBox()
+        for proto in PROTOCOLS:
+            item_protocol.addItem(proto)
         self.tbl_networking_clients.setCellWidget(row, 3, item_color_mode)
+        self.tbl_networking_clients.setCellWidget(row, 4, item_protocol)
 
     def del_networking_client_row(self):
         self.tbl_networking_clients.removeRow(self.tbl_networking_clients.currentRow())
