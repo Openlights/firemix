@@ -34,6 +34,9 @@ from lib.buffer_utils import BufferUtils
 
 log = logging.getLogger("firemix")
 
+# TODO: This is hacky
+intensity_modes = ["Off", "Chill", "Party"]
+
 
 class FireMixApp(QtCore.QThread):
     """
@@ -53,6 +56,7 @@ class FireMixApp(QtCore.QThread):
         self.mixer = Mixer(self)
         self.playlist = Playlist(self)
         self.qt_app = parent
+        self.intensity_mode = "Party"
 
         self.scene.warmup()
 

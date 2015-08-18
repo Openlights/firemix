@@ -33,12 +33,15 @@ class SettingsResource:
     def on_get(self, req, resp):
 
         settings = {
+            "dimmer": self.firemix.mixer.global_dimmer,
+            "speed": self.firemix.mixer.global_speed,
+            "intensity_mode": self.firemix.intensity_mode,
             "current_preset": self.firemix.playlist.active_preset.name(),
             "all_presets": [p.name() for p in self.firemix.playlist.get()]
         }
 
         resp.status = falcon.HTTP_200
-        resp.body = json.dumps(settings)
+        resp.body = json.dumps(settings, indent=2)
 
 
 # TODO: Use something other than simple_server that works better with threading
