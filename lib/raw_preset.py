@@ -33,7 +33,6 @@ class RawPreset(Preset):
     """
     _pixel_buffer = None
     _indices = None
-    _max_strand, _max_fixture, _max_pixel = (0, 0, 0)
 
     def __init__(self, mixer, name):
         Preset.__init__(self, mixer, name)
@@ -47,7 +46,6 @@ class RawPreset(Preset):
         """
         Sets up the pixel array
         """
-        (self._max_strand, self._max_fixture, self._max_pixel) = self.scene().get_matrix_extents()
         self._pixel_buffer = BufferUtils.create_buffer()
 
     def draw(self, dt):

@@ -149,21 +149,18 @@ class Scene(JSONDict):
 
     def get_matrix_extents(self):
         """
-        Returns a tuple of (strands, fixtures, pixels) indicating the maximum extents needed
-        for a regular 3D matrix of pixels.
+        Returns a tuple of (strands, pixels) indicating the maximum extents needed
+        to store the pixels in memory (note that we now assume that each strand
+        is the same length).
         """
         fh = self.fixture_hierarchy()
         strands = len(fh)
-        fixtures = 0
-        pixels = 0
+        longest_strand = 0
         for strand in fh:
-            if len(fh[strand]) > fixtures:
-                fixtures = len(fh[strand])
-            for fixture in fh[strand]:
-                if fh[strand][fixture].pixels > pixels:
-                    pixels = fh[strand][fixture].pixels
+            strand_len = sum([fh[strand][f].pixels for f in fh[strand]])
+            longest_strand = max(strand_len, longest_strand)
 
-        return (strands, fixtures, pixels)
+        return (strands, longest_strand)
 
     def get_colliding_fixtures(self, strand, address, loc='start', radius=50):
         """

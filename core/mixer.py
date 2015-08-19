@@ -65,7 +65,6 @@ class Mixer(QtCore.QObject):
         self._running = False
         self._enable_rendering = True
         self._buffer_a = None
-        self._max_fixtures = 0
         self._max_pixels = 0
         self._tick_time_data = dict()
         self._num_frames = 0
@@ -108,11 +107,10 @@ class Mixer(QtCore.QObject):
             for strand in fh:
                 self._strand_keys.append(strand)
 
-            (maxs, maxf, maxp) = self._scene.get_matrix_extents()
+            (maxs, maxp) = self._scene.get_matrix_extents()
 
             self._buffer_a = BufferUtils.create_buffer()
             self._buffer_b = BufferUtils.create_buffer()
-            self._max_fixtures = maxf
             self._max_pixels = maxp
 
     def run(self):

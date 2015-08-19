@@ -1,23 +1,23 @@
 {
     "backdrop_enable": false, 
-    "backdrop_filename": "data/scenes/dropbox.png",
+    "backdrop_filename": "data/scenes/dropbox.png", 
     "bounding_box": [
-        640,
+        640, 
         640
     ], 
     "center": [
-        320,
+        320, 
         260
     ], 
     "extents": [
-        640,
+        640, 
         640
     ], 
     "file-type": "scene", 
     "fixtures": [
     {
       "address": 0,
-      "pixels": 32,
+      "pixels": 18,
       "pos1": [
         22,
         165
@@ -31,7 +31,7 @@
     },
     {
       "address": 1,
-      "pixels": 32,
+      "pixels": 14,
       "pos1": [
         198,
         47
@@ -45,7 +45,7 @@
     },
     {
       "address": 2,
-      "pixels": 32,
+      "pixels": 14,
       "pos1": [
         318,
         149
@@ -59,7 +59,7 @@
     },
     {
       "address": 3,
-      "pixels": 32,
+      "pixels": 18,
       "pos1": [
         438,
         50
@@ -73,7 +73,7 @@
     },
     {
       "address": 4,
-      "pixels": 32,
+      "pixels": 14,
       "pos1": [
         621,
         166
@@ -87,7 +87,7 @@
     },
     {
       "address": 5,
-      "pixels": 32,
+      "pixels": 14,
       "pos1": [
         494,
         259
@@ -100,8 +100,8 @@
       "type": "linear"
     },
     {
-      "address": 14,
-      "pixels": 32,
+      "address": 8,
+      "pixels": 18,
       "pos1": [
         143,
         259
@@ -110,12 +110,12 @@
         323,
         367
       ],
-      "strand": 0,
+      "strand": 1,
       "type": "linear"
     },
     {
       "address": 9,
-      "pixels": 32,
+      "pixels": 18,
       "pos1": [
         196,
         467
@@ -129,7 +129,7 @@
     },
     {
       "address": 7,
-      "pixels": 32,
+      "pixels": 14,
       "pos1": [
         443,
         464
@@ -142,8 +142,8 @@
       "type": "linear"
     },
     {
-      "address": 12,
-      "pixels": 32,
+      "address": 0,
+      "pixels": 18,
       "pos1": [
         320,
         149
@@ -152,12 +152,12 @@
         497,
         259
       ],
-      "strand": 0,
+      "strand": 1,
       "type": "linear"
     },
     {
-      "address": 15,
-      "pixels": 32,
+      "address": 11,
+      "pixels": 14,
       "pos1": [
         142,
         259
@@ -170,8 +170,8 @@
       "type": "linear"
     },
     {
-      "address": 11,
-      "pixels": 32,
+      "address": 9,
+      "pixels": 18,
       "pos1": [
         143,
         260
@@ -180,12 +180,12 @@
         319,
         148
       ],
-      "strand": 0,
+      "strand": 1,
       "type": "linear"
     },
     {
-      "address": 13,
-      "pixels": 32,
+      "address": 1,
+      "pixels": 18,
       "pos1": [
         493,
         260
@@ -194,12 +194,12 @@
         320,
         366
       ],
-      "strand": 0,
+      "strand": 1,
       "type": "linear"
     },
     {
       "address": 6,
-      "pixels": 32,
+      "pixels": 18,
       "pos1": [
         615,
         359
@@ -213,7 +213,7 @@
     },
     {
       "address": 10,
-      "pixels": 32,
+      "pixels": 14,
       "pos1": [
         23,
         355
@@ -227,7 +227,7 @@
     },
     {
       "address": 8,
-      "pixels": 32,
+      "pixels": 14,
       "pos1": [
         320,
         368
@@ -238,16 +238,217 @@
       ],
       "strand": 0,
       "type": "linear"
+    },
+    {
+      "address": 5,
+      "pixels": 18,
+      "pos1": [
+        322,
+        596
+      ],
+      "pos2": [
+        145,
+        493
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 4,
+      "pixels": 18,
+      "pos1": [
+        493,
+        493
+      ],
+      "pos2": [
+        321,
+        594
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 6,
+      "pixels": 5,
+      "pos1": [
+        145,
+        456
+      ],
+      "pos2": [
+        196,
+        488
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 2,
+      "pixels": 14,
+      "pos1": [
+        322,
+        391
+      ],
+      "pos2": [
+        443,
+        487
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 3,
+      "pixels": 5,
+      "pos1": [
+        442,
+        487
+      ],
+      "pos2": [
+        493,
+        452
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 7,
+      "pixels": 14,
+      "pos1": [
+        194,
+        487
+      ],
+      "pos2": [
+        319,
+        393
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 12,
+      "pixels": 18,
+      "pos1": [
+        71,
+        177
+      ],
+      "pos2": [
+        203,
+        84
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 13,
+      "pixels": 18,
+      "pos1": [
+        237,
+        107
+      ],
+      "pos2": [
+        101,
+        202
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 14,
+      "pixels": 20,
+      "pos1": [
+        132,
+        225
+      ],
+      "pos2": [
+        268,
+        131
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 10,
+      "pixels": 18,
+      "pos1": [
+        313,
+        181
+      ],
+      "pos2": [
+        440,
+        262
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 11,
+      "pixels": 18,
+      "pos1": [
+        415,
+        279
+      ],
+      "pos2": [
+        287,
+        199
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 12,
+      "pixels": 18,
+      "pos1": [
+        268,
+        217
+      ],
+      "pos2": [
+        386,
+        294
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 13,
+      "pixels": 18,
+      "pos1": [
+        359,
+        314
+      ],
+      "pos2": [
+        235,
+        233
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 14,
+      "pixels": 22,
+      "pos1": [
+        211,
+        251
+      ],
+      "pos2": [
+        332,
+        326
+      ],
+      "strand": 1,
+      "type": "linear"
     }
   ],
     "labels_enable": false, 
     "locked": false, 
-    "name": "Dropbox",
+    "name": "Dropbox", 
     "strand-settings": [
         {
             "color-mode": "BGR8", 
             "enabled": true, 
             "id": 0
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 1
         }
     ]
 }
