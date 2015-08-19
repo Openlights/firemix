@@ -147,22 +147,23 @@ class Twinkle(RawPreset):
         # ring eq
         if len(fft):
             smooth_fft = self._mixer.audio.getSmoothedFFT()
-            eq_bands = self.parameter('audio-eq-bands').get()
-            if eq_bands:
-                band_size = np.int_(len(smooth_fft) / eq_bands)
-                for band in range(np.int_(eq_bands)):
-                    neighbors = self.scene().get_pixel_neighbors(self.eq_centers[band])
-                    self.eq_centers[band] = neighbors[np.int_(np.random.random() * len(neighbors))]
-                    fft_amount = np.sum(smooth_fft[band * band_size : (band + 1) * band_size]) / band_size
-                    pixel = self.eq_centers[band]
-                    color_band_size = np.int_(len(self._fader.color_cache) / eq_bands)
-                    color = self._fader.color_cache[np.int_((band + 0.5) * color_band_size)]
-                    ringWidth = self.parameter('audio-ring-width').get()
-                    size_percent = fft_amount
-                    ring = np.where(np.abs(self.parameter('audio-ring-diameter').get() * size_percent + self.parameter('audio-ring-start-radius').get() - self.scene().get_pixel_distances(np.int_(pixel))) < ringWidth)
-                    self._pixel_buffer.T[0][ring] = color[0]
-                    self._pixel_buffer.T[1][ring] += color[1] * fft_amount
-                    self._pixel_buffer.T[2][ring] = color[2]
+            if len(smooth_fft):
+                eq_bands = self.parameter('audio-eq-bands').get()
+                if eq_bands:
+                    band_size = np.int_(len(smooth_fft) / eq_bands)
+                    for band in range(np.int_(eq_bands)):
+                        neighbors = self.scene().get_pixel_neighbors(self.eq_centers[band])
+                        self.eq_centers[band] = neighbors[np.int_(np.random.random() * len(neighbors))]
+                        fft_amount = np.sum(smooth_fft[band * band_size : (band + 1) * band_size]) / band_size
+                        pixel = self.eq_centers[band]
+                        color_band_size = np.int_(len(self._fader.color_cache) / eq_bands)
+                        color = self._fader.color_cache[np.int_((band + 0.5) * color_band_size)]
+                        ringWidth = self.parameter('audio-ring-width').get()
+                        size_percent = fft_amount
+                        ring = np.where(np.abs(self.parameter('audio-ring-diameter').get() * size_percent + self.parameter('audio-ring-start-radius').get() - self.scene().get_pixel_distances(np.int_(pixel))) < ringWidth)
+                        self._pixel_buffer.T[0][ring] = color[0]
+                        self._pixel_buffer.T[1][ring] += color[1] * fft_amount
+                        self._pixel_buffer.T[2][ring] = color[2]
 
         # spawn FFT-colored stars  for max color only
         if len(fft):
