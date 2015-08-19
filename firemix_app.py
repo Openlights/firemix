@@ -34,14 +34,13 @@ from lib.buffer_utils import BufferUtils
 
 log = logging.getLogger("firemix")
 
-# TODO: This is hacky
-intensity_modes = ["Off", "Chill", "Party"]
-
-
 class FireMixApp(QtCore.QThread):
     """
     Main logic of FireMix.  Operates the mixer tick loop.
     """
+    # TODO: This is hacky
+    INTENSITY_MODES = ["off", "chill", "party"]
+
     playlist_changed = QtCore.Signal()
 
     def __init__(self, parent, args):
@@ -56,7 +55,7 @@ class FireMixApp(QtCore.QThread):
         self.mixer = Mixer(self)
         self.playlist = Playlist(self)
         self.qt_app = parent
-        self.intensity_mode = "Party"
+        self.intensity_mode = "party"
 
         self.scene.warmup()
 
@@ -98,3 +97,10 @@ class FireMixApp(QtCore.QThread):
         self.mixer.stop()
         self.playlist.save()
         self.settings.save()
+
+    def set_intensity_mode(self, new_val):
+        if new_val not in self.INTENSITY_MODES:
+            raise ValueError("Bad value for 'intensity'",
+                             "Valid values: %s" % (self.INTENSITY_MODES,))
+
+        self.intensity_mode = new_val

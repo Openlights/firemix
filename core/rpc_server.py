@@ -26,7 +26,9 @@ from wsgiref import simple_server
 log = logging.getLogger("firemix.rpc_server")
 
 
-class SettingsResource:
+class SettingsResource(object):
+    SUPPORTED_SETTINGS = ['dimmer', 'speed', 'intensity_mode', 'current_preset']
+
     def __init__(self, firemix):
         self.firemix = firemix
 
@@ -43,6 +45,35 @@ class SettingsResource:
         resp.status = falcon.HTTP_200
         resp.body = json.dumps(settings, indent=2)
 
+    def on_post(self, req, resp):
+        for key in req.params.keys():
+            if key not in self.SUPPORTED_SETTINGS:
+                raise falcon.HTTPBadRequest(
+                    "Attempted to set unsupported setting",
+                    "Supported settings: %s" % (self.SUPPORTED_SETTINGS,)
+                )
+
+        for key, val in req.params.items():
+            if key == 'intensity_mode':
+                try:
+                    self.firemix.set_intensity_mode(val.lower().strip())
+                except ValueError as e:
+                    raise falcon.HTTPBadRequest(*e.args)
+            elif key == 'dimmer':
+                self.firemix.mixer.global_dimmer = val
+            elif key == 'speed':
+                self.firemix.mixer.global_speed = val
+            elif key == 'current_preset':
+                valid_presets = [p.name() for p in self.firemix.playlist.get()]
+                if val not in valid_presets:
+                    raise falcon.HTTPBadRequest(
+                        "Unknown preset",
+                        "Valid presets: %s" % (valid_presets,)
+                    )
+                self.firemix.playlist.set_active_preset_by_name(val)
+
+        resp.status = falcon.HTTP_200
+        resp.body = '{}'
 
 # TODO: Use something other than simple_server that works better with threading
 
