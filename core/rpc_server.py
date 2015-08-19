@@ -19,6 +19,8 @@
 import falcon
 import json
 import logging
+import os
+
 from PySide import QtCore
 from wsgiref import simple_server
 
@@ -75,6 +77,29 @@ class SettingsResource(object):
         resp.status = falcon.HTTP_200
         resp.body = '{}'
 
+class StaticRootSink(object):
+    def __init__(self, root_path):
+        self.root_path = os.path.abspath(root_path)
+
+    def __call__(self, req, resp):
+        # Strip leading slash
+        path = req.path[1:]
+        path = os.path.abspath(os.path.join(self.root_path, path))
+
+        if not path.startswith(self.root_path):
+            raise falcon.HTTPNotFound()
+
+        if os.path.isdir(path):
+            path = os.path.join(path, "index.html")
+
+        try:
+            resp.stream = open(path)
+        except IOError:
+            raise falcon.HTTPNotFound()
+
+        # Let the browser figure out the content type
+        resp.set_header('content-type', '')
+
 # TODO: Use something other than simple_server that works better with threading
 
 class RPCServer(QtCore.QObject):
@@ -96,6 +121,7 @@ class RPCServer(QtCore.QObject):
     def init_app(self):
         self.settings = SettingsResource(self.firemix)
         self.app.add_route('/settings', self.settings)
+        self.app.add_sink(StaticRootSink("webui"))
 
     @QtCore.Slot()
     def run(self):
