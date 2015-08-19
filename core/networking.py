@@ -24,6 +24,8 @@ import struct
 import time
 import zmq
 
+from collections import defaultdict
+
 from lib.colors import hls_to_rgb
 from lib.buffer_utils import BufferUtils
 
@@ -59,9 +61,13 @@ class Networking:
         strand_settings = self._app.scene.get_strand_settings()
         clients = [client for client in self._app.settings['networking']['clients'] if client["enabled"]]
 
-        have_zmq_clients = (len([c for c in clients if c["protocol"] == "ZMQ"]) > 0)
-        legacy_clients = [c for c in clients if c["protocol"] == "Legacy"]
-        opc_clients = [c for c in clients if c["protocol"] == "OPC"]
+        clients_by_type = defaultdict(list)
+        for c in clients:
+            clients_by_type[c.get("protocol", "Legacy")].append(c)
+
+        have_zmq_clients = bool(clients_by_type.get("ZMQ", []))
+        legacy_clients = clients_by_type["Legacy"]
+        opc_clients = clients_by_type["OPC"]
 
         # Protect against presets or transitions that write float data.
         buffer_rgb = np.int_(hls_to_rgb(buffer) * 255)
