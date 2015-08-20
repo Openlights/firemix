@@ -88,9 +88,9 @@ class Dragons(RawPreset):
         
         # Spontaneous birth: Rare after startup
         if (len(self._dragons) < self.parameter('pop-limit').get()) and random.random() < self.parameter('birth-rate').get():
-            address = BufferUtils.logical_to_index((random.randint(0, self._max_strand - 1),
-                        random.randint(0, self._max_fixture - 1),
-                        0))
+            strand = random.randint(0, BufferUtils.num_strands - 1)
+            fixture = random.randint(0, BufferUtils.strand_num_fixtures(strand) - 1)
+            address = BufferUtils.logical_to_index((strand, fixture, 0))
             if address not in [d.loc for d in self._dragons]:
                 self._dragons.append(self.Dragon(address, 1, self._current_time))
 
