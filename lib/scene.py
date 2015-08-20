@@ -21,6 +21,7 @@ import logging
 import numpy as np
 
 from scipy import spatial
+from scipy.ndimage.interpolation import map_coordinates
 from lib.json_dict import JSONDict
 from lib.fixture import Fixture
 from lib.buffer_utils import BufferUtils
@@ -296,6 +297,9 @@ class Scene(JSONDict):
         """
         Returns a numpy array of (x, y) pairs.
         """
+        return np.copy(self._get_all_pixel_locations())
+
+    def _get_all_pixel_locations(self):
         if self._all_pixel_locations is None:
             pixels = self.get_all_pixels()
             pixel_location_list = []
@@ -303,8 +307,7 @@ class Scene(JSONDict):
                 pixel_location_list.append(self.get_pixel_location(pixel))
 
             self._all_pixel_locations = np.asarray(pixel_location_list)
-        return np.copy(self._all_pixel_locations)
-
+        return self._all_pixel_locations
 
     def get_fixture_bounding_box(self):
         """
@@ -374,3 +377,24 @@ class Scene(JSONDict):
             self._intersection_points = centroids
 
         return self._intersection_points
+
+    def get_all_pixels_image_mapped(self, image_data):
+        """Scales the supplied grayscale image data to the scene space and
+        returns an numpy array of the color values at each of the pixel
+        locations."""
+
+        # TODO: preserve aspect ratio
+        bb = self.get_fixture_bounding_box()
+        xmin, ymin, xmax, ymax = bb
+        bb_width = math.ceil(xmax - xmin)
+        bb_height = math.ceil(ymax - ymin)
+        img_width, img_height = image_data.shape
+
+        coordinates = []
+        for px, py in self._get_all_pixel_locations():
+            x = float(px - xmin) / bb_width * img_width
+            y = float(py - ymin) / bb_height * img_height
+            # We really do want (y, x) here
+            coordinates.append((y, x))
+
+        return map_coordinates(image_data, np.asarray(coordinates).T)

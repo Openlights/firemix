@@ -21,6 +21,7 @@ import threading
 import time
 import random
 import math
+import mmap
 import numpy as np
 
 USE_YAPPI = True
@@ -85,6 +86,11 @@ class Mixer(QtCore.QObject):
         self._last_tick_time = 0.0
         self.transition_progress = 0.0
         self.audio = Audio(self)
+        self._fftp_data = None
+        self._camera_data = None
+
+        if self._app.settings.get('inputs'):
+            self._init_camera_data()
 
         if self._app.args.yappi and USE_YAPPI:
             print "yappi start"
@@ -112,6 +118,43 @@ class Mixer(QtCore.QObject):
             self._buffer_a = BufferUtils.create_buffer()
             self._buffer_b = BufferUtils.create_buffer()
             self._max_pixels = maxp
+
+    def _init_camera_data(self):
+        ncameras = 0
+
+        for inp in self._app.settings.get('inputs'):
+            if inp['type'] != 'camera':
+                continue
+
+            if not inp.get('enabled', False):
+                continue
+
+            if ncameras > 0:
+                log.warn("Ignoring all cameras after the first!")
+                return
+            ncameras += 1
+
+            source_file = inp['source-file']
+            width = inp['width']
+            height = inp['height']
+            bit_depth = inp['bit-depth']
+            file_len = width * height * bit_depth / 8
+
+            try:
+                f = open(source_file, 'r')
+                mem = mmap.mmap(f.fileno(), file_len, mmap.MAP_SHARED,
+                                mmap.PROT_READ)
+            except (OSError, IOError) as e:
+                log.error("Could not open camera source file: %s: %s",
+                          source_file, str(e))
+                raise
+
+            array = np.ndarray(buffer=mem, shape=(width, height),
+                               dtype=np.dtype(np.uint16), order='C')
+            self._camera_data = array
+
+            log.info("Initialized camera from %s: %dx%d, %d bits/pixel",
+                     source_file, width, height, bit_depth)
 
     def run(self):
         if not self._running:
