@@ -17,420 +17,476 @@
     "fixtures": [
     {
       "address": 0,
-      "pixels": 18,
+      "pixels": 15,
       "pos1": [
-        22,
-        165
+        54,
+        168
       ],
       "pos2": [
-        195,
-        47
-      ],
-      "strand": 0,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 14,
-      "pos1": [
-        198,
-        47
-      ],
-      "pos2": [
-        318,
-        149
-      ],
-      "strand": 0,
-      "type": "linear"
-    },
-    {
-      "address": 2,
-      "pixels": 14,
-      "pos1": [
-        318,
-        149
-      ],
-      "pos2": [
-        434,
-        48
-      ],
-      "strand": 0,
-      "type": "linear"
-    },
-    {
-      "address": 3,
-      "pixels": 18,
-      "pos1": [
-        438,
-        50
-      ],
-      "pos2": [
-        621,
-        160
+        201,
+        74
       ],
       "strand": 0,
       "type": "linear"
     },
     {
       "address": 4,
-      "pixels": 14,
+      "pixels": 15,
       "pos1": [
-        621,
-        166
+        135,
+        233
       ],
       "pos2": [
-        494,
-        258
+        282,
+        142
       ],
       "strand": 0,
       "type": "linear"
     },
     {
       "address": 5,
-      "pixels": 14,
+      "pixels": 15,
       "pos1": [
-        494,
-        259
+        355,
+        143
       ],
       "pos2": [
-        615,
-        357
+        503,
+        234
       ],
       "strand": 0,
       "type": "linear"
     },
     {
-      "address": 8,
-      "pixels": 18,
+      "address": 6,
+      "pixels": 15,
       "pos1": [
-        143,
-        259
+        524,
+        217
       ],
       "pos2": [
-        323,
-        367
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 9,
-      "pixels": 18,
-      "pos1": [
-        196,
-        467
-      ],
-      "pos2": [
-        23,
-        355
+        375,
+        125
       ],
       "strand": 0,
       "type": "linear"
     },
     {
       "address": 7,
-      "pixels": 14,
+      "pixels": 15,
       "pos1": [
-        443,
-        464
+        395,
+        109
       ],
       "pos2": [
-        321,
-        365
-      ],
-      "strand": 0,
-      "type": "linear"
-    },
-    {
-      "address": 0,
-      "pixels": 18,
-      "pos1": [
-        320,
-        149
-      ],
-      "pos2": [
-        497,
-        259
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 11,
-      "pixels": 14,
-      "pos1": [
-        142,
-        259
-      ],
-      "pos2": [
-        19,
-        164
-      ],
-      "strand": 0,
-      "type": "linear"
-    },
-    {
-      "address": 9,
-      "pixels": 18,
-      "pos1": [
-        143,
-        260
-      ],
-      "pos2": [
-        319,
-        148
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 1,
-      "pixels": 18,
-      "pos1": [
-        493,
-        260
-      ],
-      "pos2": [
-        320,
-        366
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 6,
-      "pixels": 18,
-      "pos1": [
-        615,
-        359
-      ],
-      "pos2": [
-        442,
-        465
-      ],
-      "strand": 0,
-      "type": "linear"
-    },
-    {
-      "address": 10,
-      "pixels": 14,
-      "pos1": [
-        23,
-        355
-      ],
-      "pos2": [
-        141,
-        258
-      ],
-      "strand": 0,
-      "type": "linear"
-    },
-    {
-      "address": 8,
-      "pixels": 14,
-      "pos1": [
-        320,
-        368
-      ],
-      "pos2": [
-        198,
-        465
-      ],
-      "strand": 0,
-      "type": "linear"
-    },
-    {
-      "address": 5,
-      "pixels": 18,
-      "pos1": [
-        322,
-        596
-      ],
-      "pos2": [
-        145,
-        493
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 4,
-      "pixels": 18,
-      "pos1": [
-        493,
-        493
-      ],
-      "pos2": [
-        321,
-        594
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 6,
-      "pixels": 5,
-      "pos1": [
-        145,
-        456
-      ],
-      "pos2": [
-        196,
-        488
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 2,
-      "pixels": 14,
-      "pos1": [
-        322,
-        391
-      ],
-      "pos2": [
-        443,
-        487
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 3,
-      "pixels": 5,
-      "pos1": [
-        442,
-        487
-      ],
-      "pos2": [
-        493,
-        452
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 7,
-      "pixels": 14,
-      "pos1": [
-        194,
-        487
-      ],
-      "pos2": [
-        319,
-        393
-      ],
-      "strand": 1,
-      "type": "linear"
-    },
-    {
-      "address": 12,
-      "pixels": 18,
-      "pos1": [
-        71,
-        177
-      ],
-      "pos2": [
-        203,
-        84
-      ],
-      "strand": 0,
-      "type": "linear"
-    },
-    {
-      "address": 13,
-      "pixels": 18,
-      "pos1": [
-        237,
-        107
-      ],
-      "pos2": [
-        101,
+        544,
         202
       ],
       "strand": 0,
       "type": "linear"
     },
     {
-      "address": 14,
-      "pixels": 20,
+      "address": 9,
+      "pixels": 12,
       "pos1": [
-        132,
-        225
+        437,
+        258
       ],
       "pos2": [
-        268,
-        131
+        318,
+        187
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 7,
+      "pixels": 12,
+      "pos1": [
+        376,
+        294
+      ],
+      "pos2": [
+        260,
+        223
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 5,
+      "pixels": 12,
+      "pos1": [
+        319,
+        328
+      ],
+      "pos2": [
+        201,
+        258
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 1,
+      "pixels": 15,
+      "pos1": [
+        256,
+        388
+      ],
+      "pos2": [
+        118,
+        300
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 8,
+      "pixels": 15,
+      "pos1": [
+        565,
+        184
+      ],
+      "pos2": [
+        415,
+        92
       ],
       "strand": 0,
       "type": "linear"
     },
     {
-      "address": 10,
-      "pixels": 18,
+      "address": 3,
+      "pixels": 15,
       "pos1": [
-        313,
-        181
+        217,
+        422
       ],
       "pos2": [
-        440,
-        262
+        76,
+        335
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 9,
+      "pixels": 15,
+      "pos1": [
+        437,
+        75
+      ],
+      "pos2": [
+        585,
+        169
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 8,
+      "pixels": 12,
+      "pos1": [
+        289,
+        202
+      ],
+      "pos2": [
+        409,
+        276
       ],
       "strand": 1,
       "type": "linear"
     },
     {
       "address": 11,
-      "pixels": 18,
+      "pixels": 15,
       "pos1": [
-        415,
-        279
+        380,
+        389
       ],
       "pos2": [
-        287,
-        199
+        522,
+        300
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 0,
+      "pixels": 15,
+      "pos1": [
+        136,
+        283
+      ],
+      "pos2": [
+        278,
+        368
       ],
       "strand": 1,
       "type": "linear"
     },
     {
-      "address": 12,
-      "pixels": 18,
+      "address": 6,
+      "pixels": 12,
       "pos1": [
-        268,
-        217
+        233,
+        241
       ],
       "pos2": [
-        386,
-        294
+        347,
+        310
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 11,
+      "pixels": 16,
+      "pos1": [
+        315,
+        579
+      ],
+      "pos2": [
+        155,
+        482
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 10,
+      "pixels": 17,
+      "pos1": [
+        483,
+        483
+      ],
+      "pos2": [
+        326,
+        582
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 2,
+      "pixels": 15,
+      "pos1": [
+        97,
+        317
+      ],
+      "pos2": [
+        242,
+        407
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 4,
+      "pixels": 15,
+      "pos1": [
+        57,
+        351
+      ],
+      "pos2": [
+        197,
+        441
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 10,
+      "pixels": 15,
+      "pos1": [
+        502,
+        285
+      ],
+      "pos2": [
+        358,
+        374
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 12,
+      "pixels": 15,
+      "pos1": [
+        542,
+        317
+      ],
+      "pos2": [
+        397,
+        405
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 1,
+      "pixels": 15,
+      "pos1": [
+        219,
+        92
+      ],
+      "pos2": [
+        75,
+        184
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 3,
+      "pixels": 15,
+      "pos1": [
+        261,
+        126
+      ],
+      "pos2": [
+        115,
+        217
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 2,
+      "pixels": 15,
+      "pos1": [
+        95,
+        202
+      ],
+      "pos2": [
+        244,
+        108
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 12,
+      "pixels": 11,
+      "pos1": [
+        214,
+        492
+      ],
+      "pos2": [
+        321,
+        563
       ],
       "strand": 1,
       "type": "linear"
     },
     {
       "address": 13,
-      "pixels": 18,
+      "pixels": 12,
       "pos1": [
-        359,
-        314
+        345,
+        545
       ],
       "pos2": [
-        235,
-        233
+        243,
+        472
       ],
       "strand": 1,
       "type": "linear"
     },
     {
       "address": 14,
-      "pixels": 22,
+      "pixels": 12,
       "pos1": [
-        211,
-        251
+        267,
+        448
       ],
       "pos2": [
-        332,
-        326
+        372,
+        528
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 15,
+      "pixels": 13,
+      "pos1": [
+        406,
+        512
+      ],
+      "pos2": [
+        294,
+        427
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 16,
+      "pixels": 13,
+      "pos1": [
+        320,
+        410
+      ],
+      "pos2": [
+        425,
+        494
+      ],
+      "strand": 1,
+      "type": "linear"
+    },
+    {
+      "address": 13,
+      "pixels": 15,
+      "pos1": [
+        422,
+        422
+      ],
+      "pos2": [
+        560,
+        334
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 14,
+      "pixels": 15,
+      "pos1": [
+        587,
+        349
+      ],
+      "pos2": [
+        441,
+        439
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 15,
+      "pixels": 15,
+      "pos1": [
+        80,
+        410
+      ],
+      "pos2": [
+        136,
+        444
+      ],
+      "strand": 0,
+      "type": "linear"
+    },
+    {
+      "address": 17,
+      "pixels": 11,
+      "pos1": [
+        82,
+        429
+      ],
+      "pos2": [
+        128,
+        460
       ],
       "strand": 1,
       "type": "linear"
@@ -444,10 +500,10 @@
             "color-mode": "BGR8", 
             "enabled": true, 
             "id": 0
-        },
+        }, 
         {
-            "color-mode": "BGR8",
-            "enabled": true,
+            "color-mode": "BGR8", 
+            "enabled": true, 
             "id": 1
         }
     ]
