@@ -23,13 +23,14 @@ class BufferUtils:
     Utilities for working with frame buffers
     """
     _first_time = True
-    _num_strands = 0
-    _max_fixtures = 0
+    num_strands = 0
+    max_fixtures = 0
     _max_pixels_per_fixture = 0
     _max_pixels_per_strand = 0
     _buffer_length = 0
     _app = None
     _strand_lengths = {}
+    _strand_num_fixtures = {}
     _fixture_lengths = {}
     _fixture_extents = {}
     _fixture_pixels = {}
@@ -46,15 +47,15 @@ class BufferUtils:
         """
         Generates the caches and initializes local storage.  Must be called before any other methods.
         """
-        cls._num_strands, cls._max_pixels_per_strand = cls._app.scene.get_matrix_extents()
-        cls._buffer_length = cls._num_strands * cls._max_pixels_per_strand
+        cls.num_strands, cls._max_pixels_per_strand = cls._app.scene.get_matrix_extents()
+        cls._buffer_length = cls.num_strands * cls._max_pixels_per_strand
         fh = cls._app.scene.fixture_hierarchy()
 
-        # TODO: Are the two for-loops below still necessary for anything?
         for strand in fh:
             cls._strand_lengths[strand] = sum([fh[strand][f].pixels for f in fh[strand]])
 
         for strand in fh:
+            cls._strand_num_fixtures[strand] = len(fh[strand])
             for fixture in fh[strand]:
                 for offset in xrange(cls._app.scene.fixture(strand, fixture).pixels):
                     cls.logical_to_index((strand, fixture, offset))
@@ -170,3 +171,7 @@ class BufferUtils:
             start += cls._strand_lengths[i]
 
         return (start, start + cls._strand_lengths[strand])
+
+    @classmethod
+    def strand_num_fixtures(cls, strand):
+        return cls._strand_num_fixtures[strand]
