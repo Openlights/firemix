@@ -123,9 +123,10 @@ class Fungus(RawPreset):
 
         # Spontaneous birth: Rare after startup
         if (self._population < self._population_limit) and random.random() + self.parameter('audio-onset-birth-boost').get() > p_birth:
-            address = BufferUtils.logical_to_index((random.randint(0, self._max_strand - 1),
-                                                    random.randint(0, self._max_fixture - 1),
-                                                    random.randint(0, self._max_pixel - 1)))
+            strand = random.randint(0, BufferUtils.num_strands - 1)
+            fixture = random.randint(0, BufferUtils.strand_num_fixtures(strand) - 1)
+            pixel = random.randint(0, BufferUtils.fixture_length(strand, fixture) - 1)
+            address = BufferUtils.logical_to_index((strand, fixture, pixel))
             if address not in (self._growing + self._alive + self._dying + self._fading_out):
                 self._growing.append(address)
                 self._time[address] = self._current_time
