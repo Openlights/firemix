@@ -58,13 +58,10 @@ class SpiralGradient(RawPreset):
 
         self.onset_speed_boost = 1
 
-        self.parameter_changed(None)
-
         self.audio_twist = 0
 
     def parameter_changed(self, parameter):
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())
-
         self._fader = ColorFade(fade_colors, self._fader_steps)
 
     def reset(self):

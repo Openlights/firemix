@@ -78,6 +78,7 @@ class Playlist(JSONDict):
         return True
 
     def generate_playlist(self):
+        log.info("Populating playlist...")
         if len(self._playlist_data) == 0:
             self._playlist = []
 
@@ -92,12 +93,18 @@ class Playlist(JSONDict):
                         inst.parameter(key).set_from_str(str(entry['params'][key]))
                     except AttributeError:
                         log.warn("Parameter %s called out in playlist but not found in plugin.  Perhaps it was renamed?" % key)
+
+                # This is a total hack and indicates that the initialization
+                # model for presets isn't quite right.
+                self.initialized = True
+                inst.parameter_changed(None)
                 self._playlist.append(inst)
             else:
                 self._playlist_data.remove(entry)
 
         self.playlist_mutated()
 
+        log.info("Done")
         return self._playlist
 
     @QtCore.Slot()

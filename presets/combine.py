@@ -31,7 +31,6 @@ class CombinePresets(RawPreset):
         self.add_parameter(FloatParameter('transition-progress', 0.5))
         self.add_parameter(FloatParameter('audio-transition', 0.0))
         self.add_parameter(StringParameter('transition-mode', "Additive Blend"))
-        self.parameter_changed(None)
         self._preset1_buffer = BufferUtils.create_buffer()
         self._preset2_buffer = BufferUtils.create_buffer()
 

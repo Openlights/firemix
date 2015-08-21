@@ -55,12 +55,10 @@ class TestFFT(RawPreset):
 
         self.color_angle = 0.0
         self.add_watch(Watch(self, 'color_angle'))
-        self.parameter_changed(None)
 
     def parameter_changed(self, parameter):
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())
         self._fader = ColorFade(fade_colors, self._fader_steps)
-        pass
 
     def reset(self):
         self.locations = self.scene().get_all_pixel_locations()
