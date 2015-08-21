@@ -1,7 +1,8 @@
+
 $( document ).ready(function() {
     var serverUrl = "http://localhost:8000";
     getLedStatus();
-    $(".button-container input").on("click", function() {
+    $(document).on("click", ".button-container input", function() {
         var new_setting = $(this).val();
         $.ajax({
             method: 'POST',
@@ -22,7 +23,7 @@ $( document ).ready(function() {
 
     getPatternList();
 
-    $(document).on("click", ".patternsBox input", function(){
+    $(document).on("click", "#patternListBox input", function(){
       setNewPattern($(this).parent().find('input[type="radio"]').val());
     })
 
@@ -36,7 +37,7 @@ $( document ).ready(function() {
                 setButtons( result['intensity_mode']);
             },
             error: function(e) {
-                alert("Error :(")
+                alert("Error :(");
             }
         });
     }
@@ -89,9 +90,6 @@ $( document ).ready(function() {
       });
     }
 
-    $('.nav a').on('click', function(){
-    $(".btn-navbar").click(); //bootstrap 2.x
-    $(".navbar-toggle").click() //bootstrap 3.x by Richard
-    });
+
 
 });
