@@ -1,5 +1,15 @@
 {
-    "file-type": "settings", 
+    "file-type": "settings",
+    "inputs": [
+        {
+            "bit-depth": 8,
+            "enabled": false,
+            "height": 100,
+            "source-file": "",
+            "type": "camera",
+            "width": 100
+        }
+    ],
     "last-playlist": "default", 
     "last-scene": "demo", 
     "mixer": {
