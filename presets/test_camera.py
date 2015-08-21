@@ -15,10 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import numpy as np
 
 from lib.raw_preset import RawPreset
 from lib.buffer_utils import BufferUtils
+
+log = logging.getLogger("firemix.presets.test_camera")
 
 class TestCamera(RawPreset):
     """Display the camera data on all pixels"""
@@ -27,8 +30,12 @@ class TestCamera(RawPreset):
         pass
 
     def reset(self):
-        pass
+        if self._mixer._camera_data is None:
+            log.warn("camera_data not present.")
 
     def draw(self, dt):
+        if self._mixer._camera_data is None:
+            return
+
         ir_values = self.scene().get_all_pixels_image_mapped(self._mixer._camera_data)
         self.setAllHLS(0.0, ir_values, 0.0)
