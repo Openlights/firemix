@@ -1,0 +1,12 @@
+{
+    "file-type": "playlist",
+    "playlist": [
+        {
+            "classname": "TestCamera",
+            "name": "TestCamera-1",
+            "params": {
+                "allow-playback": "True"
+            }
+        }
+    ]
+}
