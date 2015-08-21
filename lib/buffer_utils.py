@@ -86,7 +86,8 @@ class BufferUtils:
                 index += scene.fixture(strand, i).pixels
 
             fixture_start = index
-            fixture_end = index + scene.fixture(strand, fixture).pixels
+            num_pixels = scene.fixture(strand, fixture).pixels
+            fixture_end = index + num_pixels
 
             # (3) Add the offset along the fixture
             index += offset
@@ -94,6 +95,7 @@ class BufferUtils:
             cls._pixel_index_cache[logical_address] = index
             cls._pixel_logical_cache[index] = logical_address
             cls._fixture_extents[(strand, fixture)] = (fixture_start, fixture_end)
+            cls._fixture_pixels[(strand, fixture)] = num_pixels
 
         return index
 
@@ -175,3 +177,7 @@ class BufferUtils:
     @classmethod
     def strand_num_fixtures(cls, strand):
         return cls._strand_num_fixtures[strand]
+
+    @classmethod
+    def fixture_length(cls, strand, fixture):
+        return cls._fixture_pixels[(strand, fixture)]
