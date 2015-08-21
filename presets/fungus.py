@@ -81,7 +81,6 @@ class Fungus(RawPreset):
         self.add_parameter(HLSParameter('alive-color', self._alive_color))
         self.add_parameter(HLSParameter('dead-color', self._dead_color))
         self.add_parameter(HLSParameter('black-color', self._black_color))
-        self.parameter_changed(None)
 
     def reset(self):
         self._current_time = 0

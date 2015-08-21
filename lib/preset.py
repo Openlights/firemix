@@ -38,6 +38,7 @@ class Preset:
         self._parameters = {}
         self._watches = {}
         self._instance_name = name
+        self.initialized = False
         self.disabled = False
         self.add_parameter(BoolParameter('allow-playback', True))
         self.setup()

@@ -50,8 +50,6 @@ class ImagePreset(RawPreset):
         self.image = None
         self._buffer = None
 
-        self.parameter_changed(None)
-
     def parameter_changed(self, parameter):
         if self.imagename != self.parameter('image-file').get():
             self.pixmap = QPixmap(self.parameter('image-file').get())

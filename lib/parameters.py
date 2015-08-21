@@ -53,7 +53,7 @@ class Parameter:
             self._wibbler = None
             self._value = value
             self._valueString = str(value)
-            if self._parent is not None:
+            if self._parent is not None and self._parent.initialized:
                 self._parent.parameter_changed(self)
             return True
         else:
