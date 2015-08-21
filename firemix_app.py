@@ -45,6 +45,7 @@ class FireMixApp(QtCore.QThread):
     def __init__(self, parent, args):
         QtCore.QThread.__init__(self, parent)
         self._running = False
+        self.rpc_server = None
         self.args = args
         self.settings = Settings()
         self.net = Networking(self)
