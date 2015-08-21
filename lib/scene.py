@@ -388,13 +388,13 @@ class Scene(JSONDict):
         xmin, ymin, xmax, ymax = bb
         bb_width = math.ceil(xmax - xmin)
         bb_height = math.ceil(ymax - ymin)
-        img_width, img_height = image_data.shape
+        img_height, img_width = image_data.shape
 
         coordinates = []
         for px, py in self._get_all_pixel_locations():
             x = float(px - xmin) / bb_width * img_width
             y = float(py - ymin) / bb_height * img_height
-            # We really do want (y, x) here
+            # Yes, we really do want (y, x) here
             coordinates.append((y, x))
 
         return map_coordinates(image_data, np.asarray(coordinates).T)

@@ -149,7 +149,7 @@ class Mixer(QtCore.QObject):
                           source_file, str(e))
                 raise
 
-            array = np.ndarray(buffer=mem, shape=(width, height),
+            array = np.ndarray(buffer=mem, shape=(height, width),
                                dtype=np.dtype(np.uint16), order='C')
             self._camera_data = array
 
