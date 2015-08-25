@@ -17,13 +17,15 @@
                 "color-mode": "RGB8",
                 "enabled": true,
                 "host": "127.0.0.1",
-                "port": 3020
+                "port": 3020,
+                "protocol": "Legacy"
             },
             {
                 "color-mode": "RGB8",
                 "enabled": false,
                 "host": "127.0.0.1",
-                "port": 3021
+                "port": 3021,
+                "protocol": "Legacy"
             }
         ]
     }
