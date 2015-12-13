@@ -21,11 +21,11 @@ import math
 import numpy as np
 import ast
 
-from lib.raw_preset import RawPreset
+from lib.preset import Preset
 from lib.parameters import FloatParameter, IntParameter, StringParameter
 from lib.color_fade import ColorFade
 
-class StripeGradient(RawPreset):
+class StripeGradient(Preset):
     _fader = None
 
     def setup(self):

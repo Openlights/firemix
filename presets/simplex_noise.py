@@ -22,12 +22,12 @@ import ast
 from profilehooks import profile
 
 from lib.color_fade import ColorFade
-from lib.raw_preset import RawPreset
+from lib.preset import Preset
 from lib.parameters import FloatParameter, IntParameter, StringParameter
 import math
 from lib.colors import clip
 
-class SimplexNoise(RawPreset):
+class SimplexNoise(Preset):
     """
     Simplex noise hue map
     """

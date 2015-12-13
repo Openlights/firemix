@@ -31,8 +31,7 @@ except ImportError:
 
 from PySide import QtCore
 
-from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, commands_overlap, blend_commands, render_command_list
-from lib.raw_preset import RawPreset
+from lib.preset import Preset
 from lib.buffer_utils import BufferUtils
 from core.audio import Audio
 
@@ -63,7 +62,6 @@ class Mixer(QtCore.QObject):
         self._duration = self._app.settings.get('mixer')['preset-duration']
         self._elapsed = 0.0
         self._running = False
-        self._enable_rendering = True
         self._buffer_a = None
         self._max_pixels = 0
         self._tick_time_data = dict()
@@ -93,25 +91,20 @@ class Mixer(QtCore.QObject):
         # Load transitions
         self.set_transition_mode(self._app.settings.get('mixer')['transition'])
 
-        if not self._scene:
-            log.warn("No scene assigned to mixer.  Preset rendering and transitions are disabled.")
-            self._transition_duration = 0.0
-            self._enable_rendering = False
-        else:
-            log.info("Warming up BufferUtils cache...")
-            BufferUtils.init()
-            log.info("Completed BufferUtils cache warmup")
+        log.info("Warming up BufferUtils cache...")
+        BufferUtils.init()
+        log.info("Completed BufferUtils cache warmup")
 
-            log.info("Initializing preset rendering buffer")
-            fh = self._scene.fixture_hierarchy()
-            for strand in fh:
-                self._strand_keys.append(strand)
+        log.info("Initializing preset rendering buffer")
+        fh = self._scene.fixture_hierarchy()
+        for strand in fh:
+            self._strand_keys.append(strand)
 
-            (maxs, maxp) = self._scene.get_matrix_extents()
+        (maxs, maxp) = self._scene.get_matrix_extents()
 
-            self._buffer_a = BufferUtils.create_buffer()
-            self._buffer_b = BufferUtils.create_buffer()
-            self._max_pixels = maxp
+        self._buffer_a = BufferUtils.create_buffer()
+        self._buffer_b = BufferUtils.create_buffer()
+        self._max_pixels = maxp
 
     def run(self):
         if not self._running:
@@ -328,42 +321,39 @@ class Mixer(QtCore.QObject):
             # If the scene tree is available, we can do efficient mixing of presets.
             # If not, a tree would need to be constructed on-the-fly.
             # TODO: Support mixing without a scene tree available
-            if self._enable_rendering:
-                if self._in_transition:
-                    mixed_buffer = self.render_presets(
-                        active_preset, self._buffer_a,
-                        next_preset, self._buffer_b,
-                        self._in_transition, self._transition,
-                        self.transition_progress,
-                        check_for_nan=self._enable_profiling)
-                else:
-                    mixed_buffer = self.render_presets(
-                        active_preset, self._buffer_a,
-                        check_for_nan=self._enable_profiling)
 
-                # render_presets writes all the desired pixels to
-                # self._main_buffer.
-
-                # Apply the global dimmer to _main_buffer.
-                if self._global_dimmer < 1.0:
-                    mixed_buffer.T[1] *= self._global_dimmer
-                #else:
-                    # Global gamma correction.
-                    # TODO(jon): This should be a setting
-                    #mixed_buffer.T[1] = np.power(mixed_buffer.T[1], 4)
-
-                # Mod hue by 1 (to allow wrap-around) and clamp lightness and
-                # saturation to [0, 1].
-                mixed_buffer.T[0] = np.mod(mixed_buffer.T[0], 1.0)
-                np.clip(mixed_buffer.T[1], 0.0, 1.0, mixed_buffer.T[1])
-                np.clip(mixed_buffer.T[2], 0.0, 1.0, mixed_buffer.T[2])
-
-                # Write this buffer to enabled clients.
-                if self._net is not None:
-                    self._net.write_buffer(mixed_buffer)
+            if self._in_transition:
+                mixed_buffer = self.render_presets(
+                    active_preset, self._buffer_a,
+                    next_preset, self._buffer_b,
+                    self._in_transition, self._transition,
+                    self.transition_progress,
+                    check_for_nan=self._enable_profiling)
             else:
-                if self._net is not None:
-                    self._net.write_commands(active_preset.get_commands_packed())
+                mixed_buffer = self.render_presets(
+                    active_preset, self._buffer_a,
+                    check_for_nan=self._enable_profiling)
+
+            # render_presets writes all the desired pixels to
+            # self._main_buffer.
+
+            # Apply the global dimmer to _main_buffer.
+            if self._global_dimmer < 1.0:
+                mixed_buffer.T[1] *= self._global_dimmer
+            #else:
+                # Global gamma correction.
+                # TODO(jon): This should be a setting
+                #mixed_buffer.T[1] = np.power(mixed_buffer.T[1], 4)
+
+            # Mod hue by 1 (to allow wrap-around) and clamp lightness and
+            # saturation to [0, 1].
+            mixed_buffer.T[0] = np.mod(mixed_buffer.T[0], 1.0)
+            np.clip(mixed_buffer.T[1], 0.0, 1.0, mixed_buffer.T[1])
+            np.clip(mixed_buffer.T[2], 0.0, 1.0, mixed_buffer.T[2])
+
+            # Write this buffer to enabled clients.
+            if self._net is not None:
+                self._net.write_buffer(mixed_buffer)
 
             if (not self._paused and (self._elapsed >= self._duration)
                 and active_preset.can_transition()
@@ -406,14 +396,14 @@ class Mixer(QtCore.QObject):
         according to transition_progress (0.0 = 100% first, 1.0 = 100% second)
         """
 
-        first_buffer = first_preset.draw_to_buffer(first_buffer)
+        first_buffer = first_preset.get_buffer()
         if check_for_nan:
             for item in first_buffer.flat:
                 if math.isnan(item):
                     raise ValueError
 
         if second_preset is not None:
-            second_buffer = second_preset.draw_to_buffer(second_buffer)
+            second_buffer = second_preset.get_buffer()
             if check_for_nan:
                 for item in second_buffer.flat:
                     if math.isnan(item):
@@ -435,41 +425,6 @@ class Mixer(QtCore.QObject):
         """
         self._buffer_a = BufferUtils.create_buffer()
         self._buffer_b = BufferUtils.create_buffer()
-
-
-    def render_command_list(self, list, buffer):
-        """
-        Renders the output of a command list to the output buffer.
-        Commands are rendered in FIFO overlap style.  Run the list through
-        filter_and_sort_commands() beforehand.
-        If the output buffer is not zero (black) at a command's target,
-        the output will be additively blended according to the blend_state
-        (0.0 = 100% original, 1.0 = 100% new)
-        """
-        for command in list:
-            color = command.get_color()
-            if isinstance(command, SetAll):
-                buffer[:,:] = color
-
-            elif isinstance(command, SetStrand):
-                strand = command.get_strand()
-                start, end = BufferUtils.get_strand_extents(strand)
-                buffer[start:end] = color
-
-            elif isinstance(command, SetFixture):
-                pass
-                # strand = command.get_strand()
-                # fixture = command.get_address()
-                # start = BufferUtils.logical_to_index((strand, fixture, 0))
-                # end = start + self._scene.fixture(strand, fixture).pixels
-                # buffer[start:end] = color
-
-            elif isinstance(command, SetPixel):
-                strand = command.get_strand()
-                fixture = command.get_address()
-                offset = command.get_pixel()
-                pixel = BufferUtils.logical_to_index((strand, fixture, offset))
-                buffer[pixel] = color
 
     def get_buffer_shape(self):
         return self._buffer_a.shape

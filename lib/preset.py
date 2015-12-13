@@ -15,12 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-import unittest
+import numpy as np
 import time
 import logging
-import numpy as np
+import colorsys
 
-from lib.commands import SetAll, SetStrand, SetFixture, SetPixel, render_command_list
+from lib.buffer_utils import BufferUtils
 from lib.parameters import BoolParameter
 
 log = logging.getLogger("firemix.lib.preset")
@@ -31,16 +31,16 @@ class Preset:
 
     def __init__(self, mixer, name=""):
         self._mixer = mixer
-        self._commands = []
-        self._tickers = []
         self._ticks = 0
         self._elapsed_time = 0
         self._parameters = {}
         self._watches = {}
+
         self._instance_name = name
         self.initialized = False
         self.disabled = False
         self.add_parameter(BoolParameter('allow-playback', True))
+        self.init_pixels()
         self.setup()
 
     def __repr__(self):
@@ -61,8 +61,14 @@ class Preset:
         pass
 
     def _reset(self):
-        self._commands = []
+        self.init_pixels()
         self.reset()
+
+    def init_pixels(self):
+        """
+        Sets up the pixel array
+        """
+        self._pixel_buffer = BufferUtils.create_buffer()
 
     def setup(self):
         """
@@ -123,96 +129,20 @@ class Preset:
     def watch(self, key):
         return self._watches.get(key, None)
 
-    def add_ticker(self, ticker, priority=0):
-        """
-        Adds a ticker. Tickers are run every tick and can yield any number of
-        (lights, color) tuples.
-
-        lights is one of:
-            an empty tuple                    (to change all strands)
-            a (strand) tuple                  (to change all addresses on the strand)
-            a (strand, address) tuple         (to change all pixels on the strand)
-            a (strand, address, pixel) tuple  (to change a single pixel)
-            a list of any of the above tuples
-
-        color is an (r, g, b) tuple where r, g, and b are either:
-            integers between 0 and 255
-            floats between 0 and 1
-
-        Tickers get a two arguments: the number of ticks that have
-        passed since this preset started, and the approximate amount of time
-        this preset has been running for, in seconds.
-
-        The optional priority arguments is used to determine the order in which
-        tickers are run. High priorities are run after lower priorities, allowing
-        them to override the lower-priority tickers.
-        """
-        self._tickers.append((ticker, priority))
-        # Resort the list here rather than at each tick
-        self._tickers = sorted(self._tickers, key=lambda x: x[1])
-        return ticker
-
-    def remove_ticker(self, ticker):
-        for (t, p) in self._tickers:
-            if t == ticker:
-                self._tickers.remove((t, p))
-
-    def clear_tickers(self):
-        self._tickers = []
-
     def tick(self, dt):  
-        if self._mixer._enable_profiling:
-            start = time.time()
+        if self.disabled:
+            return
 
         for parameter in self._parameters.values():
             parameter.tick(dt)
         
-        # Assume that self._tickers is already sorted via add_ticker()
-        for ticker, priority in self._tickers:
-
-            for lights, color in ticker(self._ticks, self._elapsed_time):
-
-                if lights is not None:
-
-                    if type(lights) == tuple:
-                        lights = [lights]
-
-                    for light in lights:
-                        if len(light) == 0:
-                            self.add_command(SetAll(color, priority))
-                        elif len(light) == 1:
-                            self.add_command(SetStrand(light[0], color, priority))
-                        elif len(light) == 2:
-                            self.add_command(SetFixture(light[0], light[1], color, priority))
-                        elif len(light) == 3:
-                            self.add_command(SetPixel(light[0], light[1], light[2], color, priority))
+        self.draw(dt)
 
         self._ticks += 1
-        self._elapsed_time += dt
-        if self._mixer._enable_profiling:
-            tick_time = 1000.0 * (time.time() - start)
-            if tick_time > 30.0:
-                log.info("%s slow frame: %d ms" % (self.__class__, tick_time))
-
-    def draw_to_buffer(self, buffer):
-        commands = self.get_commands()
-        render_command_list(self.scene(), commands, buffer)
-        return buffer
 
     def tick_rate(self):
+        # TODO: should have a different way of getting to the mixer settings
         return self._mixer.get_tick_rate()
-
-    def clear_commands(self):
-        self._commands = []
-
-    def get_commands(self):
-        return self._commands
-
-    def get_commands_packed(self):
-        return [cmd.pack() for cmd in self._commands]
-
-    def add_command(self, cmd):
-        self._commands.append(cmd)
 
     def _convert_color(self, color):
         if (type(color[0]) == float) or (type(color[1]) == float) or (type(color[2]) == float) or (type(color[1]) ==np.float32):
@@ -223,7 +153,35 @@ class Preset:
     def scene(self):
         return self._mixer.scene()
 
+    def get_buffer(self):
+        """
+        Used by Mixer to render output
+        """
+        return self._pixel_buffer
 
-class TestPreset(unittest.TestCase):
+    def current_color(self, address):
+        """
+        Returns the current color of a pixel in RGB float
+        address is a tuple of (strand, fixture, pixel)
+        """
+        return self._pixel_buffer[address]
 
-    pass
+    def setPixelHLS(self, index, color):
+        self._pixel_buffer[index] = color
+        
+    def setPixelRGB(self, index, color):
+        self.setPixelHLS(index, colorsys.rgb_to_hls(*color))
+        
+    def setPixelHSV(self, index, color):
+        # There's probably a more efficient way to do this:
+        hls = colorsys.rgb_to_hls(*colorsys.hsv_to_rgb(*color))
+
+        self.setPixelHLS(index, hls)
+
+    def setAllHLS(self, hues, luminances, saturations):
+        """
+        Sets the entire buffer, assuming an input list.
+        """
+        self._pixel_buffer[:,0] = hues
+        self._pixel_buffer[:,1] = luminances
+        self._pixel_buffer[:,2] = saturations

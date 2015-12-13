@@ -17,10 +17,10 @@
 
 import numpy as np
 
-from lib.raw_preset import RawPreset
+from lib.preset import Preset
 from lib.buffer_utils import BufferUtils
 
-class TestPattern(RawPreset):
+class TestPattern(Preset):
     """Array calibration pattern"""
 
     def setup(self):

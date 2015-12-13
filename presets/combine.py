@@ -16,10 +16,10 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 from lib.buffer_utils import BufferUtils
-from lib.raw_preset import RawPreset
+from lib.preset import Preset
 from lib.parameters import FloatParameter, HLSParameter, StringParameter
 
-class CombinePresets(RawPreset):
+class CombinePresets(Preset):
     """
     Preset that loads two presets and renders both
     Combine requires a transition that will render an arbitrary progress point
@@ -31,8 +31,6 @@ class CombinePresets(RawPreset):
         self.add_parameter(FloatParameter('transition-progress', 0.5))
         self.add_parameter(FloatParameter('audio-transition', 0.0))
         self.add_parameter(StringParameter('transition-mode', "Additive Blend"))
-        self._preset1_buffer = BufferUtils.create_buffer()
-        self._preset2_buffer = BufferUtils.create_buffer()
 
     def parameter_changed(self, parameter):
         self._transition = self._mixer.get_transition_by_name(self.parameter('transition-mode').get())
@@ -55,8 +53,8 @@ class CombinePresets(RawPreset):
             preset1.tick(dt)
             preset2.tick(dt)
 
-            preset1_buffer = preset1.draw_to_buffer(self._preset1_buffer)
-            preset2_buffer = preset2.draw_to_buffer(self._preset2_buffer)
+            preset1_buffer = preset1.get_buffer()
+            preset2_buffer = preset2.get_buffer()
 
             transition_amount = self.parameter('transition-progress').get()
 

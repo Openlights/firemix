@@ -100,7 +100,7 @@ class PresetLoader:
 
     def _load_presets_from_modules(self, module):
         for name, obj in inspect.getmembers(module, inspect.isclass):
-            if issubclass(obj, Preset) and (name is not "Preset") and (name is not "RawPreset"):
+            if issubclass(obj, Preset) and (name is not "Preset") and (name is not "Preset"):
                 log.info("Loaded %s" % obj.__name__)
                 self._presets.append((module, obj))
 

@@ -21,11 +21,11 @@ import numpy as np
 from lib.colors import hls_blend
 from PySide.QtGui import QPixmap
 
-from lib.raw_preset import RawPreset
+from lib.preset import Preset
 from lib.parameters import FloatParameter, StringParameter
 from lib.colors import rgb_to_hls
 
-class ImagePreset(RawPreset):
+class ImagePreset(Preset):
     def setup(self):
         self.add_parameter(FloatParameter('speed-rotation', 0.1))
         self.add_parameter(FloatParameter('speed-hue', 0.0))

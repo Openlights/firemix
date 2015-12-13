@@ -18,14 +18,14 @@
 import colorsys
 import random
 
-from lib.raw_preset import RawPreset
+from lib.preset import Preset
 from lib.colors import uint8_to_float, float_to_uint8
 from lib.buffer_utils import BufferUtils
 from lib.color_fade import ColorFade
 from lib.parameters import FloatParameter, IntParameter, HLSParameter
 
 
-class Fungus(RawPreset):
+class Fungus(Preset):
     """
     Spreading fungus
     Illustrates use of Scene.get_pixel_neighbors.
