@@ -8,7 +8,14 @@
             "name": "scale1",
             "parameters": {
                 "key1": "value1",
-                "key2": "value2"
+                "key2": {
+                    "class": "wibbler",
+                    "params": {
+                        "speed": 1.0,
+                        "min": 0.0,
+                        "max": 1.0
+                    }
+                }
             }
         },
         {
