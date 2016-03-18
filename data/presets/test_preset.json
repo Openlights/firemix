@@ -1,0 +1,30 @@
+{
+    "name": "Test Preset",
+    "author": "Jon Evans",
+    "allow-playback": true,
+    "components": [
+        {
+            "class": "gradient",
+            "name": "gradient-source",
+            "parameters": {
+                "key1": "value1",
+                "key2": "value2"
+            }
+        },
+        {
+            "class": "scale",
+            "name": "scale-transform",
+            "parameters": {
+                "key1": "value1",
+                "key2": "value2"
+            }
+        }
+    ],
+    "sources": [
+        "gradient-source"
+    ],
+    "pipeline": [
+        "gradient-source",
+        "scale-transform"
+    ]
+}
