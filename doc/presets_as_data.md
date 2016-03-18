@@ -32,28 +32,28 @@ and its output is used as the preset output.
     "allow-playback": true,
     "components": [
         {
-            "class": "gradient",
-            "name": "gradient-source",
+            "class": "scale",
+            "name": "scale1",
             "parameters": {
                 "key1": "value1",
                 "key2": "value2"
             }
         },
         {
-            "class": "scale",
-            "name": "scale-transform",
+            "class": "gradient",
+            "name": "gradient1",
             "parameters": {
                 "key1": "value1",
                 "key2": "value2"
             }
         }
     ],
-    "sources": [
-        "gradient-source"
+    "inputs": [
+        "scale1"
     ],
     "pipeline": [
-        "gradient-source",
-        "scale-transform"
+        "scale1",
+        "gradient1"
     ]
 }
 ```
