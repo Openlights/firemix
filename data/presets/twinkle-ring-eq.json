@@ -1,0 +1,25 @@
+{
+    "classname": "Twinkle", 
+    "name": "twinkle ring eq", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-birth-rate": "0.0", 
+        "audio-eq-bands": "6.0", 
+        "audio-peak-birth-rate": "0.0", 
+        "audio-ring-birth-rate": "0.0", 
+        "audio-ring-diameter": "700.0", 
+        "audio-ring-lifetime": "2.0", 
+        "audio-ring-start-radius": "5.0", 
+        "audio-ring-use-fft-brightness": "0.1", 
+        "audio-ring-width": "10.0", 
+        "beat-births": "25.0", 
+        "beat-color": "(1.0, 1.0, 1.0)", 
+        "birth-rate": "0.0", 
+        "color-gradient": "[(2.0,0.25,1), (1.0,0.25,1)]", 
+        "fade-down-time": "3.0", 
+        "fade-rate": "0.05", 
+        "fade-up-time": "0.6", 
+        "noise threshold": "0.1", 
+        "pie-peaks": "0.0"
+    }
+}

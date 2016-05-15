@@ -1,0 +1,25 @@
+{
+    "classname": "Twinkle", 
+    "name": "twinkle rings sparse", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-birth-rate": "0.0", 
+        "audio-eq-bands": "0.0", 
+        "audio-peak-birth-rate": "0.0", 
+        "audio-ring-birth-rate": "0.1", 
+        "audio-ring-diameter": "200.0", 
+        "audio-ring-lifetime": "2.0", 
+        "audio-ring-start-radius": "2.0", 
+        "audio-ring-use-fft-brightness": "0.0", 
+        "audio-ring-width": "6.0", 
+        "beat-births": "1.0", 
+        "beat-color": "(1.0, 1.0, 1.0)", 
+        "birth-rate": "0.0", 
+        "color-gradient": "[(2.0,0.5,1), (1.0,0.5,1)]", 
+        "fade-down-time": "3.0", 
+        "fade-rate": "0.5", 
+        "fade-up-time": "0.6", 
+        "noise threshold": "0.3", 
+        "pie-peaks": "0.0"
+    }
+}

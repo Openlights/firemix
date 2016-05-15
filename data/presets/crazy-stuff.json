@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "crazy stuff", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "linear fft twinkle", 
+        "second-preset": "spiral audio crazy", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

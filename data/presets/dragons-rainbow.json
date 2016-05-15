@@ -1,0 +1,16 @@
+{
+    "classname": "Dragons", 
+    "name": "dragons rainbow", 
+    "params": {
+        "alive-color": "[0.0, 0.5, 1.0]", 
+        "allow-playback": "True", 
+        "birth-rate": "0.1", 
+        "dead-color": "[0.8, 0.5, 1.0]", 
+        "explode-color": "(0.5, 2.0, 1.0)", 
+        "growth-rate": "20.0", 
+        "growth-time": "0.5", 
+        "pop-limit": "20", 
+        "tail-color": "[0.2, 0.5, 1.0]", 
+        "tail-persist": "0.5"
+    }
+}

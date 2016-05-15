@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "spiral noise", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "spiral rings", 
+        "second-preset": "mask noise", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "classname": "RadialGradient", 
+    "name": "radial audio", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-amplitude": "0.0", 
+        "audio-boost": "0.0", 
+        "audio-brightness": "0.0", 
+        "audio-energy-lum-strength": "0.2", 
+        "audio-energy-lum-time": "200.0", 
+        "audio-fader-percent": "1.0", 
+        "audio-radius-scale": "0.0", 
+        "audio-scale": "0.0", 
+        "audio-use-fader": "0.3", 
+        "color-gradient": "[(0,-0.5,1), (0,0.5,1), (0,-0.5,1)]", 
+        "hue-step": "0.1", 
+        "hue-width": "0.3", 
+        "luminance-scale": "2.0", 
+        "luminance-speed": "0.01", 
+        "radius-scale": "3.0", 
+        "rwave-amplitude": "0.0", 
+        "rwave-period": "1.0", 
+        "rwave-speed": "1.0", 
+        "rwave-standing": "2.0", 
+        "speed": "0.1", 
+        "wave1-amplitude": "2.0", 
+        "wave1-period": "1.5", 
+        "wave1-speed": "0.05", 
+        "wave2-amplitude": "0.0", 
+        "wave2-period": "1.5", 
+        "wave2-speed": "0.1"
+    }
+}

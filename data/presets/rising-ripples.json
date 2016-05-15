@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "rising ripples", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "rising sun", 
+        "second-preset": "ripple 1", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "[0.1,0.9,2]"
+    }
+}

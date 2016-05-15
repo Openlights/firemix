@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "wavy ripples", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "rising ripples", 
+        "second-preset": "spiral wavy", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

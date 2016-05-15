@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "audio noise clone", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "mask noise double", 
+        "second-preset": "audio color", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "wavy sweep twinkle", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "twinkle audio more", 
+        "second-preset": "wavy sweeps", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "0.5"
+    }
+}

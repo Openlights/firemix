@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "radial audio spokes", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "radial slow audio", 
+        "second-preset": "rainbow spokes", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

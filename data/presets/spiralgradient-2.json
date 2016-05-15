@@ -1,0 +1,25 @@
+{
+    "classname": "SpiralGradient", 
+    "name": "SpiralGradient-2", 
+    "params": {
+        "allow-playback": "True", 
+        "angle-hue-width": "2.0", 
+        "audio-brightness": "5.0", 
+        "audio-speed-boost-bass": "-3.0", 
+        "audio-speed-boost-treble": "-6.0", 
+        "audio-twist": "0.0", 
+        "audio-wave-period-boost": "0.0", 
+        "center-distance": "0.0", 
+        "center-speed": "0.0", 
+        "color-gradient": "[(0,-5,1), (0,0.5,1)]", 
+        "hue-speed": "0.3", 
+        "onset-speed-boost": "5.0", 
+        "onset-speed-decay": "1.0", 
+        "radius-hue-width": "1.0", 
+        "speed": "0.1", 
+        "wave-falloff": "0.0", 
+        "wave-hue-period": "0.1", 
+        "wave-hue-width": "0.5", 
+        "wave-speed": "0.2"
+    }
+}

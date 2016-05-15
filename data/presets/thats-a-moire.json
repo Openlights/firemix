@@ -1,0 +1,20 @@
+{
+    "classname": "StripeGradient", 
+    "name": "that's a moire", 
+    "params": {
+        "allow-playback": "True", 
+        "angle-speed": "[-0.1,0.1,0.1]", 
+        "audio-brightness": "1.0", 
+        "audio-speed": "0.0", 
+        "audio-stripe-width": "100.0", 
+        "center-orbit-distance": "[0,100,1]", 
+        "center-orbit-speed": "-0.01", 
+        "color-gradient": "[(0,-2,1), (1,0.5,1), (0,-2,1)]", 
+        "hue-step": "0.1", 
+        "posterization": "100", 
+        "speed": "0.05", 
+        "stripe-width": "[125.0,200,1]", 
+        "stripe-x-center": "0.5", 
+        "stripe-y-center": "0.5"
+    }
+}

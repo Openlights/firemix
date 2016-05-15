@@ -1,0 +1,7 @@
+{
+    "classname": "TestPattern", 
+    "name": "TestPattern-1", 
+    "params": {
+        "allow-playback": "False"
+    }
+}

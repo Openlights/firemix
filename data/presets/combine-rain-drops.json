@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "combine rain drops", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "mask noise rains", 
+        "second-preset": "ripple 1", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

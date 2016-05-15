@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "twinkly radial", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "twinkle mask", 
+        "second-preset": "radial slow audio", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

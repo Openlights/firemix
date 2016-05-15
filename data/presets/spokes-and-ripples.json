@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "spokes and ripples", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "radial spokes", 
+        "second-preset": "ripple 1", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "0.5"
+    }
+}

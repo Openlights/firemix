@@ -1,0 +1,25 @@
+{
+    "classname": "Twinkle", 
+    "name": "twinkle to blue", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-birth-rate": "0.0", 
+        "audio-eq-bands": "0.0", 
+        "audio-peak-birth-rate": "0.0", 
+        "audio-ring-birth-rate": "0.0", 
+        "audio-ring-diameter": "300.0", 
+        "audio-ring-lifetime": "2.0", 
+        "audio-ring-start-radius": "0.0", 
+        "audio-ring-use-fft-brightness": "0.0", 
+        "audio-ring-width": "5.0", 
+        "beat-births": "25.0", 
+        "beat-color": "(1.0, 1.0, 1.0)", 
+        "birth-rate": "2.0", 
+        "color-gradient": "[[0.6, 0.2, 1.0], [0.6, 0.0, 1.0], [0.1, 1.0, 1.0]]", 
+        "fade-down-time": "4.0", 
+        "fade-rate": "0.1", 
+        "fade-up-time": "0.5", 
+        "noise threshold": "0.1", 
+        "pie-peaks": "0.0"
+    }
+}

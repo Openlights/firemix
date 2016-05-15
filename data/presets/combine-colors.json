@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "combine colors", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "mask spiral", 
+        "second-preset": "spiral warp", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

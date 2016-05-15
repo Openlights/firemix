@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "plaid more clash", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "1.0", 
+        "first-preset": "plaid powerclash", 
+        "second-preset": "stripe rainbow", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "0.0"
+    }
+}

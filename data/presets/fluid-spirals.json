@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "fluid spirals", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "spiral wiggle", 
+        "second-preset": "spiral ice", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

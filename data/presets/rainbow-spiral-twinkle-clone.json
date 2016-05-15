@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "rainbow spiral twinkle clone", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "rainbow spiral", 
+        "second-preset": "audio color", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "classname": "StripeGradient", 
+    "name": "stripe zigzag", 
+    "params": {
+        "allow-playback": "True", 
+        "angle-speed": "[-0.2,0.2,1]", 
+        "audio-brightness": "4.0", 
+        "audio-speed": "10.0", 
+        "audio-stripe-width": "400.0", 
+        "center-orbit-distance": "94.2870646943", 
+        "center-orbit-speed": "[0.1,1.1,1.1]", 
+        "color-gradient": "[(0.8,-4.0,1.0), (0.0,0.6,1.0), (0.8,-4.0,1.0), (0.4,0.6,1.0), (1.8,-2.0,1.0)]", 
+        "hue-step": "0.1", 
+        "posterization": "200", 
+        "speed": "0.1", 
+        "stripe-width": "300.0", 
+        "stripe-x-center": "0.0", 
+        "stripe-y-center": "0.5"
+    }
+}

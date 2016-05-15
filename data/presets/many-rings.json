@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "many rings", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "twinkle ring eq", 
+        "second-preset": "fft rings bold", 
+        "transition-mode": "Additive Blend", 
+        "transition-progress": "0.5"
+    }
+}

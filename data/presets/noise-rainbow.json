@@ -1,0 +1,23 @@
+{
+    "classname": "SimplexNoise", 
+    "name": "noise rainbow", 
+    "params": {
+        "allow-playback": "True", 
+        "angle": "0.7", 
+        "audio-brightness": "0.0", 
+        "audio-hue-offset": "0.0", 
+        "beat-color-boost": "0.1", 
+        "beat-lum-boost": "0.05", 
+        "beat-lum-time": "0.1", 
+        "color-speed": "0.1", 
+        "hue-max": "3.0", 
+        "hue-min": "0.0", 
+        "hue-offset": "0.0", 
+        "luminance-map": "[(0.8,0,1), (1.1,0.5,1),  (0,-1,1), (0,-1,1), (0.7,0.5,1.0), (0,-1,1) ]", 
+        "luminance-scale": "1.0", 
+        "resolution": "100", 
+        "scale": "0.04", 
+        "speed": "0.1", 
+        "stretch": "1.0"
+    }
+}

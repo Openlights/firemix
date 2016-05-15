@@ -1,0 +1,20 @@
+{
+    "classname": "StripeGradient", 
+    "name": "like a big soccer ball", 
+    "params": {
+        "allow-playback": "False", 
+        "angle-speed": "[-0.1,0.1,0.01]", 
+        "audio-brightness": "1.0", 
+        "audio-speed": "0.0", 
+        "audio-stripe-width": "100.0", 
+        "center-orbit-distance": "[-100,100,10]", 
+        "center-orbit-speed": "[-0.1,0.1,0.01]", 
+        "color-gradient": "[(0,0,1), (0,0,1), (0,1,1), (0,1,1), (0,0,1)]", 
+        "hue-step": "0.1", 
+        "posterization": "100", 
+        "speed": "0.002", 
+        "stripe-width": "[100,400,2]", 
+        "stripe-x-center": "0.5", 
+        "stripe-y-center": "0.5"
+    }
+}

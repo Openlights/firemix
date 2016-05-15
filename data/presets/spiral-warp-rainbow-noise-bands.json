@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "spiral warp rainbow noise bands", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "1.0", 
+        "first-preset": "spiral ice", 
+        "second-preset": "rainbow noise bands large", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "0.0"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "rainbow spiral clone", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "spiral audio boost", 
+        "second-preset": "spiral wiggle", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "twinkle spiral", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "twinkle max rainbow", 
+        "second-preset": "spiral warp", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "[0,0.95,0.5]"
+    }
+}

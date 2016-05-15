@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "plaid powerclash", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "6.0", 
+        "first-preset": "stripe test", 
+        "second-preset": "stripe zigzag", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "0.0"
+    }
+}

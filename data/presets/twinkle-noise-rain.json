@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "twinkle noise rain", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "audio color", 
+        "second-preset": "noise rain 2", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

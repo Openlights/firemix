@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "spoke rings", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "radial spokes", 
+        "second-preset": "mask rings", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

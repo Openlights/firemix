@@ -1,0 +1,25 @@
+{
+    "classname": "Twinkle", 
+    "name": "twinkle max rainbow", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-birth-rate": "0.0", 
+        "audio-eq-bands": "0.0", 
+        "audio-peak-birth-rate": "0.0", 
+        "audio-ring-birth-rate": "0.0", 
+        "audio-ring-diameter": "10.0", 
+        "audio-ring-lifetime": "2.0", 
+        "audio-ring-start-radius": "0.0", 
+        "audio-ring-use-fft-brightness": "0.0", 
+        "audio-ring-width": "5.0", 
+        "beat-births": "25.0", 
+        "beat-color": "(1.0, 1.0, 1.0)", 
+        "birth-rate": "400.0", 
+        "color-gradient": "[(-0.5, 0.0, 1.0), [0.5, 0.5, 1.0], [1.7, 0.5, 1.0]]", 
+        "fade-down-time": "2.0", 
+        "fade-rate": "0.5", 
+        "fade-up-time": "2.0", 
+        "noise threshold": "0.1", 
+        "pie-peaks": "0.0"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "twinkle galaxy comet", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "twinkle stars", 
+        "second-preset": "galaxy comet", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "[0.15,0.5,1]"
+    }
+}

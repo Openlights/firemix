@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "mask noise double", 
+    "params": {
+        "allow-playback": "False", 
+        "audio-transition": "0.0", 
+        "first-preset": "mask noise", 
+        "second-preset": "mask noise small", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "0.01"
+    }
+}

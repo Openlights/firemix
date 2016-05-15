@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "linear twinkle", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "linear fft tall", 
+        "second-preset": "audio color more", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "classname": "StripeGradient", 
+    "name": "stripe poster rainbow", 
+    "params": {
+        "allow-playback": "False", 
+        "angle-speed": "0.1", 
+        "audio-brightness": "1.0", 
+        "audio-speed": "0.0", 
+        "audio-stripe-width": "100.0", 
+        "center-orbit-distance": "[-1000,1000,10]", 
+        "center-orbit-speed": "[-0.5,0.5,0.1]", 
+        "color-gradient": "[(0.2,0.5,1), (0.2,0.5,1), (0.75,0.5,1), (0.75,0.5,1), (0.2,0.5,1)]", 
+        "hue-step": "0.1", 
+        "posterization": "20", 
+        "speed": "-0.1", 
+        "stripe-width": "[300,1000,10]", 
+        "stripe-x-center": "0.5", 
+        "stripe-y-center": "0.5"
+    }
+}

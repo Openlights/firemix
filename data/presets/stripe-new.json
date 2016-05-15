@@ -1,0 +1,20 @@
+{
+    "classname": "StripeGradient", 
+    "name": "stripe new", 
+    "params": {
+        "allow-playback": "False", 
+        "angle-speed": "[-0.2,0.2,1]", 
+        "audio-brightness": "0.0", 
+        "audio-speed": "0.0", 
+        "audio-stripe-width": "100.0", 
+        "center-orbit-distance": "[20,30,10]", 
+        "center-orbit-speed": "[-0.05,0.05,1]", 
+        "color-gradient": "[(0,0,1), (0,0,1), (0,0.2,1), (0,1,1)]", 
+        "hue-step": "[0,0.5,0.1]", 
+        "posterization": "200", 
+        "speed": "0.023", 
+        "stripe-width": "[150,300,200]", 
+        "stripe-x-center": "1.0", 
+        "stripe-y-center": "0.5"
+    }
+}

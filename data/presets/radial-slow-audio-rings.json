@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "radial slow audio rings", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "radial slow audio", 
+        "second-preset": "mask ripple", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

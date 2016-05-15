@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "name": "CombinePresets-1", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "spiral stripey", 
+        "second-preset": "spiral dark", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.8"
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "classname": "SpiralGradient", 
+    "name": "spiral complex", 
+    "params": {
+        "allow-playback": "True", 
+        "angle-hue-width": "6.0", 
+        "audio-brightness": "1.0", 
+        "audio-speed-boost-bass": "0.0", 
+        "audio-speed-boost-treble": "0.0", 
+        "audio-twist": "0.04", 
+        "audio-wave-period-boost": "0.0", 
+        "center-distance": "400.0", 
+        "center-speed": "[-0.2,0.01,0.2]", 
+        "color-gradient": "[[0.7, -3.0, 1.0], [0.4, 0.5, 1.0], [0.7, 0.0, 1.0]]", 
+        "hue-speed": "0.01", 
+        "onset-speed-boost": "5.0", 
+        "onset-speed-decay": "1.0", 
+        "radius-hue-width": "0.0", 
+        "speed": "[-1,1,1]", 
+        "wave-falloff": "1.0", 
+        "wave-hue-period": "4.0", 
+        "wave-hue-width": "0.2", 
+        "wave-speed": "[-0.5,0.5,1]"
+    }
+}
