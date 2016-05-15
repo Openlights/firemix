@@ -317,7 +317,7 @@ class Mixer(QtCore.QObject):
 
             # Handle transition by rendering both the active and the next
             # preset, and blending them together
-            if self._in_transition and next_preset:
+            if self._in_transition and next_preset and (next_preset != active_preset):
                 if self._start_transition:
                     self._start_transition = False
                     if self._app.settings.get('mixer')['transition'] == "Random":

@@ -60,6 +60,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         # File menu
         self.action_file_load_scene.triggered.connect(self.on_file_load_scene)
+
+        self.action_file_new_playlist.triggered.connect(self.on_file_new_playlist)
         self.action_file_open_playlist.triggered.connect(self.on_file_open_playlist)
         self.action_file_save_playlist_as.triggered.connect(self.on_file_save_playlist_as)
         self.action_file_save_playlist.triggered.connect(self.on_file_save_playlist)
@@ -163,23 +165,24 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         # Update wibblers
         # TODO (jon) this is kinda inefficient
-        for name, parameter in self.app.playlist.get_active_preset().get_parameters().iteritems():
-            pval = parameter.get()
-            for i in range(self.tbl_preset_parameters.rowCount()):
-                if self.tbl_preset_parameters.item(i, 0).text() == name:
-                    # TODO: For now, all wibblers are float values.  Maybe they should be allowed to be others?
-                    if parameter._wibbler is not None:
-                        self.tbl_preset_parameters.item(i, 2).setText("= %0.2f" % pval)
-                        self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(200, 255, 255))
-                    else:
-                        self.tbl_preset_parameters.item(i, 2).setText("")
-                        self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
+        if self.app.playlist.get_active_preset() is not None:
+            for name, parameter in self.app.playlist.get_active_preset().get_parameters().iteritems():
+                pval = parameter.get()
+                for i in range(self.tbl_preset_parameters.rowCount()):
+                    if self.tbl_preset_parameters.item(i, 0).text() == name:
+                        # TODO: For now, all wibblers are float values.  Maybe they should be allowed to be others?
+                        if parameter._wibbler is not None:
+                            self.tbl_preset_parameters.item(i, 2).setText("= %0.2f" % pval)
+                            self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(200, 255, 255))
+                        else:
+                            self.tbl_preset_parameters.item(i, 2).setText("")
+                            self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
 
-        for name, watch in self.app.playlist.get_active_preset().get_watches().iteritems():
-            val = watch.get()
-            for i in range(self.tbl_preset_parameters.rowCount()):
-                if self.tbl_preset_parameters.item(i, 0).text() == ("watch(%s)" % name):
-                    self.tbl_preset_parameters.item(i, 1).setText(str(val))
+            for name, watch in self.app.playlist.get_active_preset().get_watches().iteritems():
+                val = watch.get()
+                for i in range(self.tbl_preset_parameters.rowCount()):
+                    if self.tbl_preset_parameters.item(i, 0).text() == ("watch(%s)" % name):
+                        self.tbl_preset_parameters.item(i, 1).setText(str(val))
 
     def on_btn_playpause(self):
         if self.mixer.is_paused():
@@ -265,18 +268,26 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         shuffle_state = QtCore.Qt.Checked if self.app.settings['mixer']['shuffle'] else QtCore.Qt.Unchecked
         self.btn_shuffle_playlist.setChecked(shuffle_state)
 
-        preset = self.app.playlist.get_active_preset().name()
-
-        if not self.mixer.is_paused():
-            self.tbl_preset_parameters.setDisabled(True)
-            self.lbl_preset_parameters.setTitle("%s Parameters (Pause to Edit)" % preset)
-            self.btn_playpause.setText("Pause")
-            self.btn_next_preset.setDisabled(False)
+        preset = self.app.playlist.get_active_preset()
+        if preset is not None:
+            if not self.mixer.is_paused():
+                self.tbl_preset_parameters.setDisabled(True)
+                self.lbl_preset_parameters.setTitle("%s Parameters (Pause to Edit)" % preset)
+                self.btn_playpause.setText("Pause")
+                self.btn_next_preset.setDisabled(False)
+            else:
+                self.lbl_preset_parameters.setTitle("%s Parameters" % preset)
+                self.tbl_preset_parameters.setDisabled(False)
+                self.btn_next_preset.setDisabled(True)
+                self.btn_playpause.setText("Play")
         else:
-            self.lbl_preset_parameters.setTitle("%s Parameters" % preset)
-            self.tbl_preset_parameters.setDisabled(False)
+            if not self.mixer.is_paused():
+                self.btn_playpause.setText("Pause")
+            else:
+                self.btn_playpause.setText("Play")
             self.btn_next_preset.setDisabled(True)
-            self.btn_playpause.setText("Play")
+            self.tbl_preset_parameters.setDisabled(True)
+            self.lbl_preset_parameters.setTitle("")
 
     def on_slider_dimmer(self):
         dval = self.slider_global_dimmer.value() / 100.0
@@ -373,12 +384,16 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def load_preset_parameters_table(self):
         self.tbl_preset_parameters.itemChanged.disconnect(self.on_preset_parameter_changed)
         self.tbl_preset_parameters.clear()
+
+        self.tbl_preset_parameters.setColumnCount(3)
+        self.tbl_preset_parameters.horizontalHeader().resizeSection(1, 400)
+        self.tbl_preset_parameters.setHorizontalHeaderLabels(('Parameter', 'Value', 'Current'))
+
         if self.app.playlist.get_active_preset() == None:
             return
 
         parameters = self.app.playlist.get_active_preset().get_parameters()
         watches = self.app.playlist.get_active_preset().get_watches()
-        self.tbl_preset_parameters.setColumnCount(3)
         self.tbl_preset_parameters.setRowCount(len(parameters) + len(watches))
         i = 0
         for name in sorted(parameters, key=lambda x: x):
@@ -405,8 +420,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.tbl_preset_parameters.setItem(i, 2, current_state_item)
             i += 1
 
-        self.tbl_preset_parameters.horizontalHeader().resizeSection(1, 400)
-        self.tbl_preset_parameters.setHorizontalHeaderLabels(('Parameter', 'Value', 'Current'))
         self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
 
     # Unused?
@@ -433,6 +446,16 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             item.setText(par.get_as_str())
         except ValueError:
             item.setText(par.get_as_str())
+
+    def on_file_new_playlist(self):
+        paused = self.app.mixer.is_paused()
+        self.app.mixer.stop()
+        filename, _ = QtGui.QFileDialog.getSaveFileName(self, 'Save new playlist file',
+                                                        os.path.join(os.getcwd(), "data", "playlists"),
+                                                        filter="Playlists (*.json)")
+        self.app.playlist.create_new(filename)
+        self.app.mixer.run()
+        self.app.mixer.pause(paused)
 
     def on_file_open_playlist(self):
         paused = self.app.mixer.is_paused()

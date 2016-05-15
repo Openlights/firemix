@@ -66,6 +66,15 @@ class Playlist(JSONDict):
 
         self.open()
 
+    def create_new(self, filename):
+        self.save()
+        self.clear_playlist()
+        self.data = dict()
+        self.set_filename(filename)
+        self.load(True)
+        self.open()
+        self.data["file-version"] = 2
+
     def set_filename(self, filename):
         self.name = os.path.split(filename)[1].replace(".json", "")
         self.filename = filename
@@ -203,7 +212,12 @@ class Playlist(JSONDict):
             self.update_next_preset()
 
     def update_next_preset(self):
-        if len(self._playlist) == 1:
+        if len(self._playlist) == 0:
+            self.next_preset = None
+            self.active_preset = None
+        elif len(self._playlist) == 1:
+            if self.active_preset is None:
+                self.active_preset = self._playlist[0]
             self.next_preset = self.active_preset
         else:
             active_idx = self._playlist.index(self.active_preset)
