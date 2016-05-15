@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
