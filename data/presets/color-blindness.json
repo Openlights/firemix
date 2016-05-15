@@ -1,5 +1,7 @@
 {
     "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "color blindness", 
     "params": {
         "allow-playback": "True", 

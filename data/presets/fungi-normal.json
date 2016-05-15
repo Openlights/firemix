@@ -1,5 +1,7 @@
 {
     "classname": "Fungus", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "fungi normal", 
     "params": {
         "alive-color": "[0.0, 1.0, 1.0]", 

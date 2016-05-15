@@ -19,6 +19,9 @@ import os
 import gc
 import logging
 import random
+import json
+import re
+from copy import deepcopy
 
 from PySide import QtCore
 
@@ -64,6 +67,7 @@ class Playlist(JSONDict):
 
         self._loader = PresetLoader(self)
         self._preset_classes = self._loader.load()
+        self._playlist_file_version = self.data.get("file-version", 1)  # Version 1 didn't have this key
         self._playlist_data = self.data.get('playlist', [])
         self._playlist = []
 
@@ -77,30 +81,95 @@ class Playlist(JSONDict):
         self.changed()
         return True
 
+    def get_preset_from_json_data(self, data):
+        inst = self._loader.all_presets()[data['classname']][1](self._app.mixer, name=data['name'])
+        inst._reset()
+
+        for _, key in enumerate(data.get('params', {})):
+            try:
+                inst.parameter(key).set_from_str(str(data['params'][key]))
+            except AttributeError:
+                log.warn("Parameter %s called out in playlist but not found in plugin.  Perhaps it was renamed?" % key)
+
+        return inst
+
     def generate_playlist(self):
         log.info("Populating playlist...")
         if len(self._playlist_data) == 0:
             self._playlist = []
 
-        for entry in self._playlist_data:
-            if entry['classname'] in self._loader.all_presets():
+        # new_playlist_data = deepcopy(self.data)
+        # new_playlist_data["playlist"] = list()
 
-                inst = self._loader.all_presets()[entry['classname']][1](self._app.mixer, name=entry['name'])
-                inst._reset()
+        if self._playlist_file_version == 1:
+            for entry in self._playlist_data:
+                if entry['classname'] in self._loader.all_presets():
 
-                for _, key in enumerate(entry.get('params', {})):
+                    inst = self.get_preset_from_json_data(entry)
+
+                    # This is a total hack and indicates that the initialization
+                    # model for presets isn't quite right.
+                    self.initialized = True
+                    inst.parameter_changed(None)
+                    self._playlist.append(inst)
+
+                    # def slugify(value):
+                    #     """
+                    #     Normalizes string, converts to lowercase, removes non-alpha characters,
+                    #     and converts spaces to hyphens.
+                    #     """
+                    #     import unicodedata
+                    #     value = unicode(value)
+                    #     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+                    #     value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
+                    #     return re.sub('[-\s]+', '-', value)
+                    #
+                    # # Temporary hack to write presets to data
+                    # filepath = os.path.join(os.getcwd(), "data", "presets", "".join([slugify(entry['name']), ".json"]))
+                    # if os.path.exists(filepath):
+                    #     filepath += "-1"
+                    # with open(filepath, "w") as f:
+                    #     entry["file-type"] = "preset"
+                    #     entry["file-version"] = 1
+                    #     json.dump(entry, f, indent=4, sort_keys=True)
+                    #
+                    # new_playlist_data['playlist'].append(slugify(entry['name']))
+
+                else:
+                    self._playlist_data.remove(entry)
+
+        elif self._playlist_file_version == 2:
+            for preset_slug in self._playlist_data:
+                # TODO: We should have a library of functions for getting common app paths.
+                preset_path = os.path.join(os.getcwd(), "data", "presets", "".join([preset_slug, ".json"]))
+                if os.path.exists(preset_path):
+                    preset_data = {}
                     try:
-                        inst.parameter(key).set_from_str(str(entry['params'][key]))
-                    except AttributeError:
-                        log.warn("Parameter %s called out in playlist but not found in plugin.  Perhaps it was renamed?" % key)
+                        with open(preset_path, "r") as f:
+                            preset_data = json.load(f)
+                    except:
+                        log.warn("Error loading data from preset %s" % preset_path)
+                        continue
 
-                # This is a total hack and indicates that the initialization
-                # model for presets isn't quite right.
-                self.initialized = True
-                inst.parameter_changed(None)
-                self._playlist.append(inst)
-            else:
-                self._playlist_data.remove(entry)
+                    if preset_data['classname'] in self._loader.all_presets():
+                        inst = self.get_preset_from_json_data(preset_data)
+
+                        # This is a total hack and indicates that the initialization
+                        # model for presets isn't quite right.
+                        self.initialized = True
+                        inst.parameter_changed(None)
+                        self._playlist.append(inst)
+
+                else:
+                    log.warn("Preset %s could not be found, skipping..." % preset_slug)
+        else:
+            log.error("Unsupported playlist file version: %d" % self._playlist_file_version)
+
+
+        # Uncomment the following to generate a version-2 playlist from a version-1 playlist
+        # filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self.name, "_separate_presets", ".json"]))
+        # with open(filepath, "w") as f:
+        #     json.dump(new_playlist_data, f, indent=4, sort_keys=True)
 
         self.playlist_mutated()
 

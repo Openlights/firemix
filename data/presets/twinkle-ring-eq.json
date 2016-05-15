@@ -1,5 +1,7 @@
 {
     "classname": "Twinkle", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "twinkle ring eq", 
     "params": {
         "allow-playback": "True", 

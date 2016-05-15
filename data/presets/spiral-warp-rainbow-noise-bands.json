@@ -1,5 +1,7 @@
 {
     "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "spiral warp rainbow noise bands", 
     "params": {
         "allow-playback": "True", 

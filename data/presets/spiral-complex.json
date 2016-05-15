@@ -1,5 +1,7 @@
 {
     "classname": "SpiralGradient", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "spiral complex", 
     "params": {
         "allow-playback": "True", 

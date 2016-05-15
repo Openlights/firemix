@@ -1,5 +1,7 @@
 {
     "classname": "RadialGradient", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "radial audio", 
     "params": {
         "allow-playback": "True", 

@@ -1,5 +1,7 @@
 {
     "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "color spiral rings", 
     "params": {
         "allow-playback": "True", 

@@ -1,5 +1,7 @@
 {
     "classname": "Twinkle", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "twinkle rings (2)", 
     "params": {
         "allow-playback": "True", 

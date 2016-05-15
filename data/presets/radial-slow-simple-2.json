@@ -1,5 +1,7 @@
 {
     "classname": "RadialGradient", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "radial slow simple (2)", 
     "params": {
         "allow-playback": "True", 

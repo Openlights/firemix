@@ -1,5 +1,7 @@
 {
     "classname": "SimplexNoise", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "noise calm", 
     "params": {
         "allow-playback": "True", 

@@ -1,5 +1,7 @@
 {
     "classname": "Fungus", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "fungi very rainbow", 
     "params": {
         "alive-color": "[3.7, 0.6, 0.6]", 

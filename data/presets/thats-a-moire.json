@@ -1,5 +1,7 @@
 {
     "classname": "StripeGradient", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "that's a moire", 
     "params": {
         "allow-playback": "True", 

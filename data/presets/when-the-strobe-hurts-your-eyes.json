@@ -1,5 +1,7 @@
 {
     "classname": "SpiralGradient", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "when the strobe hurts your eyes", 
     "params": {
         "allow-playback": "True", 

@@ -1,5 +1,7 @@
 {
     "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "twinkle galaxy comet", 
     "params": {
         "allow-playback": "True", 

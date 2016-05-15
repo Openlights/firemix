@@ -1,5 +1,7 @@
 {
     "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "combine twinkle fft", 
     "params": {
         "allow-playback": "True", 

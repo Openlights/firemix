@@ -1,5 +1,7 @@
 {
     "classname": "RadialGradient", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "radial stars", 
     "params": {
         "allow-playback": "True", 

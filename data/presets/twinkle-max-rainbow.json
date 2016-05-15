@@ -1,5 +1,7 @@
 {
     "classname": "Twinkle", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "twinkle max rainbow", 
     "params": {
         "allow-playback": "True", 

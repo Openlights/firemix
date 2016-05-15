@@ -1,5 +1,7 @@
 {
     "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "twinkle spiral", 
     "params": {
         "allow-playback": "True", 

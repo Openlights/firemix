@@ -1,5 +1,7 @@
 {
     "classname": "TestFFT", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "fft slow", 
     "params": {
         "allow-playback": "True", 

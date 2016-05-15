@@ -1,5 +1,7 @@
 {
     "classname": "Dragons", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "dragons long green", 
     "params": {
         "alive-color": "[0.4, 0.5, 1.0]", 

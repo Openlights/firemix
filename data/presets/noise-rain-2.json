@@ -1,5 +1,7 @@
 {
     "classname": "SimplexNoise", 
+    "file-type": "preset", 
+    "file-version": 1, 
     "name": "noise rain 2", 
     "params": {
         "allow-playback": "True", 
