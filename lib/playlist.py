@@ -58,17 +58,30 @@ class Playlist(JSONDict):
 
     def __init__(self, app):
         self._app = app
+
+        self._playlist = []
+        self._shuffle_list = []
+        self.active_preset = None
+        self.next_preset = None
+        self._playlist_data = None
+
         self.name = app.args.playlist
         if self.name is None:
-            self.name = self._app.settings.get("mixer").get("last_playlist", "default")
-        filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self.name, ".json"]))
-        JSONDict.__init__(self, 'playlist', filepath, True)
+            self.name = self._app.settings.get("mixer").get("last_playlist", None)
+        if self.name is None or self.name == "":
+            self.filetype = "playlist"
+            self.filename = ""
+            self.initialized = False
+        else:
+            filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self.name, ".json"]))
+            JSONDict.__init__(self, 'playlist', filepath, True)
 
-        self.open()
+            self.open()
 
     def create_new(self, filename):
-        self.save()
-        self.clear_playlist()
+        if self.initialized:
+            self.save()
+            self.clear_playlist()
         self.data = dict()
         self.set_filename(filename)
         self.load(True)
@@ -98,8 +111,10 @@ class Playlist(JSONDict):
         self._shuffle_list = []
 
         self.generate_playlist()
+        self.initialized = True
 
         self.changed()
+
         return True
 
     def get_preset_from_json_data(self, data, slug):

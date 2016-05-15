@@ -41,6 +41,7 @@ class FireMixApp(QtCore.QThread):
     playlist_changed = QtCore.Signal()
 
     def __init__(self, parent, args):
+        QtCore.QThread.__init__(self, parent)
         self._running = False
         self.args = args
         self.settings = Settings()
@@ -69,8 +70,6 @@ class FireMixApp(QtCore.QThread):
         if self.args.preset:
             log.info("Setting constant preset %s" % args.preset)
             self.mixer.set_constant_preset(args.preset)
-
-        QtCore.QThread.__init__(self, parent)
 
     def run(self):
         self._running = True
