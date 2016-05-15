@@ -117,6 +117,14 @@ class Preset:
         except KeyError:
             return False
 
+    def load_params_from_json(self, json_data):
+        for k, v in json_data.iteritems():
+            try:
+                self.parameter(k).set_from_str(str(v))
+            except AttributeError:
+                log.warn("Parameter %s called out in playlist but not found in plugin.  Perhaps it was renamed?" % k)
+        self.parameter_changed(None)
+
     def add_watch(self, watch):
         self._watches[str(watch)] = watch
 

@@ -84,34 +84,22 @@ class Playlist(JSONDict):
     def get_preset_from_json_data(self, data):
         inst = self._loader.all_presets()[data['classname']][1](self._app.mixer, name=data['name'])
         inst._reset()
-
-        for _, key in enumerate(data.get('params', {})):
-            try:
-                inst.parameter(key).set_from_str(str(data['params'][key]))
-            except AttributeError:
-                log.warn("Parameter %s called out in playlist but not found in plugin.  Perhaps it was renamed?" % key)
-
+        inst.load_params_from_json(data.get('params', {}))
         return inst
 
     def generate_playlist(self):
-        log.info("Populating playlist...")
+        log.info("Populating playlist (version %d)..." % self._playlist_file_version)
         if len(self._playlist_data) == 0:
             self._playlist = []
 
         # new_playlist_data = deepcopy(self.data)
+        # new_playlist_data["file-version"] = 2
         # new_playlist_data["playlist"] = list()
 
         if self._playlist_file_version == 1:
             for entry in self._playlist_data:
                 if entry['classname'] in self._loader.all_presets():
-
-                    inst = self.get_preset_from_json_data(entry)
-
-                    # This is a total hack and indicates that the initialization
-                    # model for presets isn't quite right.
-                    self.initialized = True
-                    inst.parameter_changed(None)
-                    self._playlist.append(inst)
+                    self._playlist.append(self.get_preset_from_json_data(entry))
 
                     # def slugify(value):
                     #     """
@@ -123,7 +111,7 @@ class Playlist(JSONDict):
                     #     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
                     #     value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
                     #     return re.sub('[-\s]+', '-', value)
-                    #
+
                     # # Temporary hack to write presets to data
                     # filepath = os.path.join(os.getcwd(), "data", "presets", "".join([slugify(entry['name']), ".json"]))
                     # if os.path.exists(filepath):
@@ -133,6 +121,7 @@ class Playlist(JSONDict):
                     #     entry["file-version"] = 1
                     #     json.dump(entry, f, indent=4, sort_keys=True)
                     #
+
                     # new_playlist_data['playlist'].append(slugify(entry['name']))
 
                 else:
@@ -152,13 +141,7 @@ class Playlist(JSONDict):
                         continue
 
                     if preset_data['classname'] in self._loader.all_presets():
-                        inst = self.get_preset_from_json_data(preset_data)
-
-                        # This is a total hack and indicates that the initialization
-                        # model for presets isn't quite right.
-                        self.initialized = True
-                        inst.parameter_changed(None)
-                        self._playlist.append(inst)
+                        self._playlist.append(self.get_preset_from_json_data(preset_data))
 
                 else:
                     log.warn("Preset %s could not be found, skipping..." % preset_slug)
@@ -171,6 +154,7 @@ class Playlist(JSONDict):
         # with open(filepath, "w") as f:
         #     json.dump(new_playlist_data, f, indent=4, sort_keys=True)
 
+        self.initialized = True
         self.playlist_mutated()
 
         log.info("Done")

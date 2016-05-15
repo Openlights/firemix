@@ -70,6 +70,8 @@ class Parameter:
                     self._wibbler = Wibbler(value)
                     self._value = numpy.random.random() * (self._wibbler._max - self._wibbler._min) + self._wibbler._min
                     self._valueString = valueString
+                    if self._parent is not None and self._parent.initialized:
+                        self._parent.parameter_changed(self)
                     return True
                 return False
             except:
