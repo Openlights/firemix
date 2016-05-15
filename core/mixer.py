@@ -61,7 +61,7 @@ class Mixer(QtCore.QObject):
         self._tick_timer = None
         self._duration = self._app.settings.get('mixer')['preset-duration']
         self._elapsed = 0.0
-        self._running = False
+        self.running = False
         self._buffer_a = None
         self._max_pixels = 0
         self._tick_time_data = dict()
@@ -81,6 +81,10 @@ class Mixer(QtCore.QObject):
         self._global_speed = 1.0
         self._render_in_progress = False
         self._last_tick_time = 0.0
+        self._fps_time = 0.0
+        self._fps_frames = 0
+        self._fps = 0.0
+        self.last_time = time.time()
         self.transition_progress = 0.0
         self.audio = Audio(self)
 
@@ -107,19 +111,19 @@ class Mixer(QtCore.QObject):
         self._max_pixels = maxp
 
     def run(self):
-        if not self._running:
+        if not self.running:
             self._tick_rate = self._app.settings.get('mixer')['tick-rate']
             self._last_tick_time = 1.0 / self._tick_rate
             self._tick_timer = threading.Timer(1.0 / self._tick_rate, self.on_tick_timer)
             self._tick_timer.start()
-            self._running = True
+            self.running = True
             self._elapsed = 0.0
             self._num_frames = 0
             self._start_time = self._last_frame_time = time.time()
             self.reset_output_buffer()
 
     def stop(self):
-        self._running = False
+        self.running = False
         self._tick_timer.cancel()
         self._stop_time = time.time()
 
@@ -132,6 +136,19 @@ class Mixer(QtCore.QObject):
 
     def is_paused(self):
         return self._paused
+
+    def fps(self):
+        if self.running and self._num_frames > self._fps_frames:
+            delta_t = time.time() - self._fps_time
+            if delta_t > 1.0:
+                self._fps = (self._num_frames - self._fps_frames) / delta_t
+                self._fps_frames = self._num_frames
+                self._fps_time = time.time()
+            return self._fps
+        else:
+            self._fps_frames = 0
+            self._fps_time = time.time()
+            return 0.0
 
     @QtCore.Slot()
     def onset_detected(self):
@@ -221,8 +238,8 @@ class Mixer(QtCore.QObject):
             delay = max(0, (1.0 / self._tick_rate) - dt)
             if not self._paused:
                 self._elapsed += dt + delay
-        self._running = self._app._running
-        if self._running:
+        self.running = self._app._running
+        if self.running:
             self._tick_timer = threading.Timer(delay, self.on_tick_timer)
             self._tick_timer.start()
 

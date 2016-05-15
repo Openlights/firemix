@@ -29,7 +29,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def __init__(self, parent=None, app=None):
         super(FireMixGUI, self).__init__(parent)
         self._app = app
-        self._mixer = app.mixer
+        self.mixer = app.mixer
         self.setupUi(self)
 
         self.icon_blank = QtGui.QIcon("./res/icons/blank.png")
@@ -100,9 +100,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         # Mixer FPS update
         self._update_interval = 250
-        self._mixer_frame_counts = []
-        self.last_frames = 0
-        self.last_time = time.time()
         self.mixer_update_timer = QtCore.QTimer()
         self.mixer_update_timer.setInterval(self._update_interval)
         self.mixer_update_timer.timeout.connect(self.update_mixer)
@@ -112,7 +109,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.transition_update_timer = QtCore.QTimer()
         self.transition_update_timer.setInterval(300)
         self.transition_update_timer.timeout.connect(self.on_transition_update_timer)
-        self._mixer.transition_starting.connect(self.transition_update_start)
+        self.mixer.transition_starting.connect(self.transition_update_start)
 
         self.btn_prev_preset.setDisabled(True)
         self.btn_blackout.setDisabled(False)
@@ -145,9 +142,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.transition_update_timer.start()
 
     def on_transition_update_timer(self):
-        p = self._mixer.transition_progress
+        p = self.mixer.transition_progress
 
-        if self.transition_update_toggle and not self._mixer.is_paused:
+        if self.transition_update_toggle and not self.mixer.is_paused:
             self.lbl_transition_progress.setStyleSheet("QLabel { color: #000; }")
             self.transition_update_toggle = False
         else:
@@ -162,17 +159,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.progress_transition.setValue(p * 100)
 
     def update_mixer(self):
-        if len(self._mixer_frame_counts) < 4:
-            self._mixer_frame_counts.append(self._mixer._num_frames)
-            fps = 0.0
-        else:
-            self._mixer_frame_counts.append(self._mixer._num_frames)
-            self._mixer_frame_counts.pop(0)
-            frames = self._mixer_frame_counts[3] - self._mixer_frame_counts[0]
-            dt = (3 * self._update_interval) / 1000.0
-            fps = float(frames) / dt
-
-        self.setWindowTitle("FireMix - %s - %0.2f FPS" % (self._app.playlist.name, fps))
+        self.setWindowTitle("FireMix - %s - %0.2f FPS" % (self._app.playlist.name, self.mixer.fps()))
 
         # Update wibblers
         # TODO (jon) this is kinda inefficient
@@ -195,24 +182,24 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                     self.tbl_preset_parameters.item(i, 1).setText(str(val))
 
     def on_btn_playpause(self):
-        if self._mixer.is_paused():
-            self._mixer.pause(False)
+        if self.mixer.is_paused():
+            self.mixer.pause(False)
             self.btn_next_preset.setDisabled(False)
         else:
-            self._mixer.pause()
+            self.mixer.pause()
             self.btn_next_preset.setDisabled(True)
         self.update_mixer_settings()
 
     def on_btn_runfreeze(self):
-        if self._mixer.is_frozen():
-            self._mixer.freeze(False)
+        if self.mixer.is_frozen():
+            self.mixer.freeze(False)
             self.btn_runfreeze.setText("Freeze")
         else:
-            self._mixer.freeze()
+            self.mixer.freeze()
             self.btn_runfreeze.setText("Unfreeze")
 
     def on_btn_next_preset(self):
-        self._mixer.next()
+        self.mixer.next()
         self.update_playlist()
 
     # Disabling this button, we don't use it and it complicates implementation
@@ -260,8 +247,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.update_playlist()
 
     def update_mixer_settings(self):
-        self.edit_preset_duration.setValue(self._mixer.get_preset_duration())
-        self.edit_transition_duration.setValue(self._mixer.get_transition_duration())
+        self.edit_preset_duration.setValue(self.mixer.get_preset_duration())
+        self.edit_transition_duration.setValue(self.mixer.get_transition_duration())
         # Populate transition list
         current_transition = self._app.settings.get('mixer')['transition']
         transition_list = [str(t(None)) for t in self._app.plugins.get('Transition')]
@@ -276,7 +263,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         preset = self._app.playlist.get_active_preset().name()
 
-        if not self._mixer.is_paused():
+        if not self.mixer.is_paused():
             self.tbl_preset_parameters.setDisabled(True)
             self.lbl_preset_parameters.setTitle("%s Parameters (Pause to Edit)" % preset)
             self.btn_playpause.setText("Pause")
@@ -365,15 +352,15 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_preset_duration_changed(self):
         nd = self.edit_preset_duration.value()
-        if self._mixer.set_preset_duration(nd):
+        if self.mixer.set_preset_duration(nd):
             self._app.settings['mixer']['preset-duration'] = nd
-        self.edit_preset_duration.setValue(self._mixer.get_preset_duration())
+        self.edit_preset_duration.setValue(self.mixer.get_preset_duration())
 
     def on_transition_duration_changed(self):
         nd = self.edit_transition_duration.value()
-        if self._mixer.set_transition_duration(nd):
+        if self.mixer.set_transition_duration(nd):
             self._app.settings['mixer']['transition-duration'] = nd
-        self.edit_transition_duration.setValue(self._mixer.get_transition_duration())
+        self.edit_transition_duration.setValue(self.mixer.get_transition_duration())
 
     def on_transition_mode_changed(self):
         if self._app.mixer.set_transition_mode(self.cb_transition_mode.currentText()):
