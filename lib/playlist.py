@@ -134,6 +134,35 @@ class Playlist(JSONDict):
         log.info("Done")
         return self._playlist
 
+    # TODO: This is ta temporary hack; we should actually just watch the dir for changes and keep a cache
+    def get_all_preset_slugs(self):
+        slugs = []
+        for f in os.listdir(os.path.join(os.getcwd(), "data", "presets")):
+            slug, ext = os.path.splitext(f)
+            if ext == ".json":
+                slugs.append(slug)
+        return slugs
+
+    # TODO: This is ta temporary hack; we should actually just watch the dir for changes and keep a cache
+    def get_all_preset_names(self):
+        names = []
+        preset_root = os.path.join(os.getcwd(), "data", "presets")
+        for f in os.listdir(preset_root):
+            slug, ext = os.path.splitext(f)
+            try:
+                preset_path = os.path.join(preset_root, f)
+                with open(preset_path, "r") as f:
+                    preset_data = json.load(f)
+                    preset_name = preset_data.get("name", None)
+                    if preset_name:
+                        names.append(preset_name)
+                    else:
+                        log.warn("Skipping preset %s because it doesn't have a name" % preset_path)
+            except:
+                log.error("Could not load preset %s" % slug)
+
+        return names
+
     @QtCore.Slot()
     def playlist_mutated(self):
         """
@@ -327,6 +356,33 @@ class Playlist(JSONDict):
     def preset_name_exists(self, name):
         return True if name in [p.name() for p in self._playlist] else False
 
+    def add_existing_preset(self, name):
+
+        # TODO: Should we support multiple instances of the same preset on a playlist?
+        for p in self._playlist:
+            if p.name() == name:
+                log.error("Cannot add a preset to the same playlist twice!")
+                return False
+
+        slug = slugify(name)
+        preset_data = {}
+        preset_path = os.path.join(os.getcwd(), "data", "presets", "".join([slug, ".json"]))
+
+        try:
+            with open(preset_path, "r") as f:
+                preset_data = json.load(f)
+        except:
+            log.error("Could not load preset %s" % name)
+            return False
+
+        self._playlist.append(self.get_preset_from_json_data(preset_data, slug))
+        if self.active_preset == self.next_preset:
+            self.update_next_preset()
+
+        self.changed()
+        return True
+
+    # TODO: Fix this to support slugs
     def add_preset(self, classname, name, idx=None):
         """
         Adds a new preset instance to the playlist.  Classname must be a currently loaded
@@ -338,9 +394,10 @@ class Playlist(JSONDict):
             return False
 
         if self.preset_name_exists(name):
+            log.error("Tried to add a preset that already exists: %s" % name)
             return False
 
-        inst = self._preset_classes[classname](self._app.mixer, name=name)
+        inst = self._preset_classes[classname](self._app.mixer, name)
         inst._reset()
 
         if idx is not None:

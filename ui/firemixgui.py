@@ -28,7 +28,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def __init__(self, parent=None, app=None):
         super(FireMixGUI, self).__init__(parent)
-        self._app = app
+        self.app = app
         self.mixer = app.mixer
         self.setupUi(self)
 
@@ -93,10 +93,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.update_playlist()
         self.load_preset_parameters_table()
         self.tbl_preset_parameters.setDisabled(True)
-        self._app.playlist_changed.connect(self.on_playlist_changed)
+        self.app.playlist_changed.connect(self.on_playlist_changed)
 
-        if self._app.aubio_connector is not None:
-            self._app.aubio_connector.onset_detected.connect(self.onset_detected)
+        if self.app.aubio_connector is not None:
+            self.app.aubio_connector.onset_detected.connect(self.onset_detected)
 
         # Mixer FPS update
         self._update_interval = 250
@@ -117,11 +117,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.update_mixer_settings()
 
     def closeEvent(self, event):
-        self._app.stop()
+        self.app.stop()
         event.accept()
 
     def on_btn_blackout(self):
-        self._app.mixer.on_tick_timer(force_tick=True)
+        self.app.mixer.on_tick_timer(force_tick=True)
 
     @QtCore.Slot()
     def onset_detected(self):
@@ -133,7 +133,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.btn_onset_detected.setChecked(QtCore.Qt.Unchecked)
 
     def on_btn_trigger_onset(self):
-        self._app.mixer.onset_detected()
+        self.app.mixer.onset_detected()
         self.onset_detected()
 
     def transition_update_start(self):
@@ -159,11 +159,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.progress_transition.setValue(p * 100)
 
     def update_mixer(self):
-        self.setWindowTitle("FireMix - %s - %0.2f FPS" % (self._app.playlist.name, self.mixer.fps()))
+        self.setWindowTitle("FireMix - %s - %0.2f FPS" % (self.app.playlist.name, self.mixer.fps()))
 
         # Update wibblers
         # TODO (jon) this is kinda inefficient
-        for name, parameter in self._app.playlist.get_active_preset().get_parameters().iteritems():
+        for name, parameter in self.app.playlist.get_active_preset().get_parameters().iteritems():
             pval = parameter.get()
             for i in range(self.tbl_preset_parameters.rowCount()):
                 if self.tbl_preset_parameters.item(i, 0).text() == name:
@@ -175,7 +175,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                         self.tbl_preset_parameters.item(i, 2).setText("")
                         self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
 
-        for name, watch in self._app.playlist.get_active_preset().get_watches().iteritems():
+        for name, watch in self.app.playlist.get_active_preset().get_watches().iteritems():
             val = watch.get()
             for i in range(self.tbl_preset_parameters.rowCount()):
                 if self.tbl_preset_parameters.item(i, 0).text() == ("watch(%s)" % name):
@@ -207,23 +207,27 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         pass
 
     def on_btn_reset_preset(self):
-        paused = self._app.mixer.is_paused()
-        self._app.mixer.pause()
-        self._app.playlist.get_active_preset()._reset()
-        self._app.mixer.pause(paused)
+        paused = self.app.mixer.is_paused()
+        self.app.mixer.pause()
+        self.app.playlist.get_active_preset()._reset()
+        self.app.mixer.pause(paused)
 
     def on_btn_add_preset(self):
         dlg = DlgAddPreset(self)
         dlg.exec_()
         if dlg.result() == QtGui.QDialog.Accepted:
-            classname = dlg.cb_preset_type.currentText()
-            name = dlg.edit_preset_name.text()
-            self._app.playlist.add_preset(classname, name)
+            if dlg.tabWidget.currentIndex() == 0:
+                classname = dlg.cb_preset_type.currentText()
+                name = dlg.edit_preset_name.text()
+                self.app.playlist.add_preset(classname, name)
+            else:
+                preset_name = dlg.cb_existing_preset_name.currentText()
+                self.app.playlist.add_existing_preset(preset_name)
 
     def on_btn_remove_preset(self):
         ci = self.lst_presets.currentItem()
         if ci is not None:
-            self._app.playlist.remove_preset(ci.text())
+            self.app.playlist.remove_preset(ci.text())
 
     def on_btn_clone_preset(self):
         if self.lst_presets.currentItem() is None:
@@ -231,7 +235,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         old_name = self.lst_presets.currentItem().text()
 
-        self._app.playlist.clone_preset(old_name)
+        self.app.playlist.clone_preset(old_name)
         self.update_playlist()
 
     def on_btn_clear_playlist(self):
@@ -243,25 +247,25 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         dlg.setDefaultButton(QtGui.QMessageBox.No)
         ret = dlg.exec_()
         if ret == QtGui.QMessageBox.Yes:
-            self._app.playlist.clear_playlist()
+            self.app.playlist.clear_playlist()
             self.update_playlist()
 
     def update_mixer_settings(self):
         self.edit_preset_duration.setValue(self.mixer.get_preset_duration())
         self.edit_transition_duration.setValue(self.mixer.get_transition_duration())
         # Populate transition list
-        current_transition = self._app.settings.get('mixer')['transition']
-        transition_list = [str(t(None)) for t in self._app.plugins.get('Transition')]
+        current_transition = self.app.settings.get('mixer')['transition']
+        transition_list = [str(t(None)) for t in self.app.plugins.get('Transition')]
         transition_list.insert(0, "Cut")
         transition_list.insert(1, "Random")
         self.cb_transition_mode.clear()
         self.cb_transition_mode.insertItems(0, transition_list)
         self.cb_transition_mode.setCurrentIndex(self.cb_transition_mode.findText(current_transition))
 
-        shuffle_state = QtCore.Qt.Checked if self._app.settings['mixer']['shuffle'] else QtCore.Qt.Unchecked
+        shuffle_state = QtCore.Qt.Checked if self.app.settings['mixer']['shuffle'] else QtCore.Qt.Unchecked
         self.btn_shuffle_playlist.setChecked(shuffle_state)
 
-        preset = self._app.playlist.get_active_preset().name()
+        preset = self.app.playlist.get_active_preset().name()
 
         if not self.mixer.is_paused():
             self.tbl_preset_parameters.setDisabled(True)
@@ -276,12 +280,12 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_slider_dimmer(self):
         dval = self.slider_global_dimmer.value() / 100.0
-        self._app.mixer.set_global_dimmer(dval)
+        self.app.mixer.set_global_dimmer(dval)
         self.lbl_dimmer.setText("Dimmer [%0.2f]" % dval)
 
     def on_slider_speed(self):
         sval = round(self.slider_speed.value() / 1000.0, 2)
-        self._app.mixer.set_global_speed(sval)
+        self.app.mixer.set_global_speed(sval)
         self.lbl_speed.setText("Speed [%0.2fx]" % sval)
 
     def on_slider_speed_double_click(self):
@@ -290,9 +294,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def update_playlist(self):
         self.lst_presets.clear()
-        presets = self._app.playlist.get()
-        current = self._app.playlist.get_active_preset()
-        next = self._app.playlist.get_next_preset()
+        presets = self.app.playlist.get()
+        current = self.app.playlist.get_active_preset()
+        next = self.app.playlist.get_next_preset()
         for preset in presets:
             item = QtGui.QListWidgetItem(preset.name())
 
@@ -317,15 +321,15 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_playlist_reorder(self):
         names = [self.lst_presets.item(i).text() for i in range(self.lst_presets.count())]
-        self._app.playlist.reorder_playlist_by_names(names)
+        self.app.playlist.reorder_playlist_by_names(names)
 
     def on_file_load_scene(self):
         pass
 
     def on_file_reload_presets(self):
-        self._app.mixer.freeze(True)
-        self._app.playlist.reload_presets()
-        self._app.mixer.freeze(False)
+        self.app.mixer.freeze(True)
+        self.app.playlist.reload_presets()
+        self.app.mixer.freeze(False)
 
     def preset_list_context_menu(self, point):
         ctx = QtGui.QMenu("test")
@@ -340,40 +344,40 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         old_name = self.lst_presets.currentItem().text()
         new_name, ok = QtGui.QInputDialog.getText(self, 'Rename Preset', 'New name', text=old_name)
         if ok and new_name:
-            if not self._app.playlist.preset_name_exists(new_name):
-                self._app.playlist.rename_preset(old_name, new_name)
+            if not self.app.playlist.preset_name_exists(new_name):
+                self.app.playlist.rename_preset(old_name, new_name)
 
     def on_preset_name_changed(self, item):
         pass
 
     def on_preset_double_clicked(self, preset_item):
-        self._app.mixer.cancel_transition()
-        self._app.playlist.set_active_preset_by_name(preset_item.text())
+        self.app.mixer.cancel_transition()
+        self.app.playlist.set_active_preset_by_name(preset_item.text())
 
     def on_preset_duration_changed(self):
         nd = self.edit_preset_duration.value()
         if self.mixer.set_preset_duration(nd):
-            self._app.settings['mixer']['preset-duration'] = nd
+            self.app.settings['mixer']['preset-duration'] = nd
         self.edit_preset_duration.setValue(self.mixer.get_preset_duration())
 
     def on_transition_duration_changed(self):
         nd = self.edit_transition_duration.value()
         if self.mixer.set_transition_duration(nd):
-            self._app.settings['mixer']['transition-duration'] = nd
+            self.app.settings['mixer']['transition-duration'] = nd
         self.edit_transition_duration.setValue(self.mixer.get_transition_duration())
 
     def on_transition_mode_changed(self):
-        if self._app.mixer.set_transition_mode(self.cb_transition_mode.currentText()):
-            self._app.settings['mixer']['transition'] = self.cb_transition_mode.currentText()
+        if self.app.mixer.set_transition_mode(self.cb_transition_mode.currentText()):
+            self.app.settings['mixer']['transition'] = self.cb_transition_mode.currentText()
 
     def load_preset_parameters_table(self):
         self.tbl_preset_parameters.itemChanged.disconnect(self.on_preset_parameter_changed)
         self.tbl_preset_parameters.clear()
-        if self._app.playlist.get_active_preset() == None:
+        if self.app.playlist.get_active_preset() == None:
             return
 
-        parameters = self._app.playlist.get_active_preset().get_parameters()
-        watches = self._app.playlist.get_active_preset().get_watches()
+        parameters = self.app.playlist.get_active_preset().get_parameters()
+        watches = self.app.playlist.get_active_preset().get_watches()
         self.tbl_preset_parameters.setColumnCount(3)
         self.tbl_preset_parameters.setRowCount(len(parameters) + len(watches))
         i = 0
@@ -411,7 +415,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         """
         Called from main app when presets programmatically change parameter values
         """
-        parameters = self._app.playlist.get_active_preset().get_parameters()
+        parameters = self.app.playlist.get_active_preset().get_parameters()
         for item in self.tbl_preset_parameters.items():
             print item
 
@@ -423,7 +427,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         if key.text()[:6] == "watch(":
             return
 
-        par = self._app.playlist.get_active_preset().parameter(key.text())
+        par = self.app.playlist.get_active_preset().parameter(key.text())
         try:
             par.set_from_str(item.text())
             item.setText(par.get_as_str())
@@ -431,32 +435,32 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             item.setText(par.get_as_str())
 
     def on_file_open_playlist(self):
-        paused = self._app.mixer.is_paused()
-        self._app.mixer.stop()
-        old_name = self._app.playlist.filename
+        paused = self.app.mixer.is_paused()
+        self.app.mixer.stop()
+        old_name = self.app.playlist.filename
         filename, _ = QtGui.QFileDialog.getOpenFileName(self, 'Open playlist file', os.path.join(os.getcwd(), "data", "playlists"), filter="Playlists (*.json)")
         name = os.path.split(filename)[1].replace(".json", "")
 
-        self._app.playlist.set_filename(filename)
-        if not self._app.playlist.open():
-            self._app.playlist.set_filename(old_name)
+        self.app.playlist.set_filename(filename)
+        if not self.app.playlist.open():
+            self.app.playlist.set_filename(old_name)
             QtGui.QMessageBox.warning(self, "Error", "Could not open file")
-        self._app.mixer.run()
-        self._app.mixer.pause(paused)
+        self.app.mixer.run()
+        self.app.mixer.pause(paused)
 
     def on_file_save_playlist(self):
-        self._app.playlist.save()
+        self.app.playlist.save()
 
     def on_file_save_playlist_as(self):
-        paused = self._app.mixer.is_paused()
-        self._app.mixer.pause()
-        filename = self._app.playlist.filename
+        paused = self.app.mixer.is_paused()
+        self.app.mixer.pause()
+        filename = self.app.playlist.filename
         filename, _ = QtGui.QFileDialog.getSaveFileName(self, 'Save playlist file as', os.path.join(os.getcwd(), "data", "playlists"), filter="Playlists (*.json)")
 
         if len(filename) > 0:
-            self._app.playlist.set_filename(filename)
-            self._app.playlist.save()
-        self._app.mixer.pause(paused)
+            self.app.playlist.set_filename(filename)
+            self.app.playlist.save()
+        self.app.mixer.pause(paused)
 
     def on_file_generate_default_playlist(self):
         dlg = QtGui.QMessageBox()
@@ -467,7 +471,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         dlg.setDefaultButton(QtGui.QMessageBox.No)
         ret = dlg.exec_()
         if ret == QtGui.QMessageBox.Yes:
-            self._app.playlist.generate_default_playlist()
+            self.app.playlist.generate_default_playlist()
             self.update_playlist()
 
     def on_edit_settings(self):
@@ -475,6 +479,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_btn_shuffle_playlist(self):
         shuffle = self.btn_shuffle_playlist.isChecked()
-        self._app.settings['mixer']['shuffle'] = shuffle
-        self._app.playlist.shuffle_mode(shuffle)
+        self.app.settings['mixer']['shuffle'] = shuffle
+        self.app.playlist.shuffle_mode(shuffle)
 

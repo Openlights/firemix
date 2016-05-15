@@ -28,9 +28,9 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
 
     def __init__(self, parent=None):
         super(DlgSettings, self).__init__(parent)
-        self.playlist = parent._app.playlist
+        self.playlist = parent.app.playlist
         self.setupUi(self)
-        self.app = parent._app
+        self.app = parent.app
 
         # Setup tree view
         self.tree_settings.itemClicked.connect(self.on_tree_changed)

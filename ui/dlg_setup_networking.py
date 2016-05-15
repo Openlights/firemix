@@ -24,9 +24,9 @@ class DlgSetupNetworking(QtGui.QDialog, Ui_DlgSetupNetworking):
 
     def __init__(self, parent=None):
         super(DlgSetupNetworking, self).__init__(parent)
-        self.playlist = parent._app.playlist
+        self.playlist = parent.app.playlist
         self.setupUi(self)
-        self.app = parent._app
+        self.app = parent.app
 
         self.btn_add_client.clicked.connect(self.add_client_row)
         self.btn_del_client.clicked.connect(self.del_client_row)
