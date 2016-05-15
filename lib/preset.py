@@ -16,32 +16,54 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
-import time
+import os
 import logging
 import colorsys
 
+from lib.json_dict import JSONDict
 from lib.buffer_utils import BufferUtils
 from lib.parameters import BoolParameter
 
 log = logging.getLogger("firemix.lib.preset")
 
 
-class Preset:
+class Preset(JSONDict):
     """Base Preset.  Does nothing."""
 
-    def __init__(self, mixer, name=""):
+    def __init__(self, mixer, slug=""):
         self._mixer = mixer
         self._ticks = 0
         self._elapsed_time = 0
         self._parameters = {}
         self._watches = {}
-
-        self._instance_name = name
+        self._instance_name = ""
+        self._instance_slug = slug
         self.initialized = False
         self.disabled = False
+
+        filepath = os.path.join(os.getcwd(), "data", "presets", "".join([slug, ".json"]))
+        JSONDict.__init__(self, 'preset', filepath, True)
+
+        self.open()
+
+    def open(self):
+        try:
+            self.load(False)
+        except ValueError:
+            print "Error loading %s" % self.filename
+            return False
+
+        self._instance_name = self.data.get('name', "")
+
         self.add_parameter(BoolParameter('allow-playback', True))
-        self.init_pixels()
         self.setup()
+        self._reset()
+        self.load_params_from_json(self.data.get('params', {}))
+
+    def save(self):
+        for n, p in self._parameters.iteritems():
+            self.data["params"][n] = p.get_as_str()
+        JSONDict.save(self)
 
     def __repr__(self):
         return "%s (%s)" % (self._instance_name, self.__class__.__name__)
@@ -51,6 +73,9 @@ class Preset:
 
     def name(self):
         return self._instance_name
+
+    def slug(self):
+        return self._instance_slug
 
     def reset(self):
         """
@@ -122,7 +147,7 @@ class Preset:
             try:
                 self.parameter(k).set_from_str(str(v))
             except AttributeError:
-                log.warn("Parameter %s called out in playlist but not found in plugin.  Perhaps it was renamed?" % k)
+                log.warn("Parameter %s found in JSON data but not found in preset class.  Perhaps it was renamed?" % k)
         self.parameter_changed(None)
 
     def add_watch(self, watch):
@@ -137,13 +162,13 @@ class Preset:
     def watch(self, key):
         return self._watches.get(key, None)
 
-    def tick(self, dt):  
+    def tick(self, dt):
         if self.disabled:
             return
 
         for parameter in self._parameters.values():
             parameter.tick(dt)
-        
+
         self.draw(dt)
 
         self._ticks += 1
@@ -176,10 +201,10 @@ class Preset:
 
     def setPixelHLS(self, index, color):
         self._pixel_buffer[index] = color
-        
+
     def setPixelRGB(self, index, color):
         self.setPixelHLS(index, colorsys.rgb_to_hls(*color))
-        
+
     def setPixelHSV(self, index, color):
         # There's probably a more efficient way to do this:
         hls = colorsys.rgb_to_hls(*colorsys.hsv_to_rgb(*color))

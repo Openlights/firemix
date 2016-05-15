@@ -31,6 +31,18 @@ from lib.preset_loader import PresetLoader
 log = logging.getLogger("firemix.lib.playlist")
 
 
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+    """
+    import unicodedata
+    value = unicode(value)
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
+    return re.sub('[-\s]+', '-', value)
+
+
 # TODO: Metaclass hell when trying to subclass QObject here.  Maybe don't need to subclass JSONDict?
 class Playlist(JSONDict):
     """
@@ -81,10 +93,9 @@ class Playlist(JSONDict):
         self.changed()
         return True
 
-    def get_preset_from_json_data(self, data):
-        inst = self._loader.all_presets()[data['classname']][1](self._app.mixer, name=data['name'])
+    def get_preset_from_json_data(self, data, slug):
+        inst = self._loader.all_presets()[data['classname']][1](self._app.mixer, slug)
         inst._reset()
-        inst.load_params_from_json(data.get('params', {}))
         return inst
 
     def generate_playlist(self):
@@ -92,67 +103,30 @@ class Playlist(JSONDict):
         if len(self._playlist_data) == 0:
             self._playlist = []
 
-        # new_playlist_data = deepcopy(self.data)
-        # new_playlist_data["file-version"] = 2
-        # new_playlist_data["playlist"] = list()
+        if self._playlist_file_version != 2:
+            log.error("Upgrade this playlist to version 2!")
+            return
 
-        if self._playlist_file_version == 1:
-            for entry in self._playlist_data:
-                if entry['classname'] in self._loader.all_presets():
-                    self._playlist.append(self.get_preset_from_json_data(entry))
+        # TODO: This is kind of dumb, we have to load the JSON twice -- once to figure out
+        #       what class the preset is, then again in the class (as JSONDict)
 
-                    # def slugify(value):
-                    #     """
-                    #     Normalizes string, converts to lowercase, removes non-alpha characters,
-                    #     and converts spaces to hyphens.
-                    #     """
-                    #     import unicodedata
-                    #     value = unicode(value)
-                    #     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-                    #     value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
-                    #     return re.sub('[-\s]+', '-', value)
+        for preset_slug in self._playlist_data:
+            # TODO: We should have a library of functions for getting common app paths.
+            preset_path = os.path.join(os.getcwd(), "data", "presets", "".join([preset_slug, ".json"]))
+            if os.path.exists(preset_path):
+                preset_data = {}
+                try:
+                    with open(preset_path, "r") as f:
+                        preset_data = json.load(f)
+                except:
+                    log.warn("Error loading data from preset %s" % preset_path)
+                    continue
 
-                    # # Temporary hack to write presets to data
-                    # filepath = os.path.join(os.getcwd(), "data", "presets", "".join([slugify(entry['name']), ".json"]))
-                    # if os.path.exists(filepath):
-                    #     filepath += "-1"
-                    # with open(filepath, "w") as f:
-                    #     entry["file-type"] = "preset"
-                    #     entry["file-version"] = 1
-                    #     json.dump(entry, f, indent=4, sort_keys=True)
-                    #
+                if preset_data['classname'] in self._loader.all_presets():
+                    self._playlist.append(self.get_preset_from_json_data(preset_data, preset_slug))
 
-                    # new_playlist_data['playlist'].append(slugify(entry['name']))
-
-                else:
-                    self._playlist_data.remove(entry)
-
-        elif self._playlist_file_version == 2:
-            for preset_slug in self._playlist_data:
-                # TODO: We should have a library of functions for getting common app paths.
-                preset_path = os.path.join(os.getcwd(), "data", "presets", "".join([preset_slug, ".json"]))
-                if os.path.exists(preset_path):
-                    preset_data = {}
-                    try:
-                        with open(preset_path, "r") as f:
-                            preset_data = json.load(f)
-                    except:
-                        log.warn("Error loading data from preset %s" % preset_path)
-                        continue
-
-                    if preset_data['classname'] in self._loader.all_presets():
-                        self._playlist.append(self.get_preset_from_json_data(preset_data))
-
-                else:
-                    log.warn("Preset %s could not be found, skipping..." % preset_slug)
-        else:
-            log.error("Unsupported playlist file version: %d" % self._playlist_file_version)
-
-
-        # Uncomment the following to generate a version-2 playlist from a version-1 playlist
-        # filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self.name, "_separate_presets", ".json"]))
-        # with open(filepath, "w") as f:
-        #     json.dump(new_playlist_data, f, indent=4, sort_keys=True)
+            else:
+                log.warn("Preset %s could not be found, skipping..." % preset_slug)
 
         self.initialized = True
         self.playlist_mutated()
@@ -258,20 +232,15 @@ class Playlist(JSONDict):
                 p.reset()
                 p.disabled = False
 
-    def save(self):
+    def save(self, save_all_presets=True):
         log.info("Saving playlist")
-        # Pack the current state into self.data
-        self.data = {'file-type': 'playlist'}
         playlist = []
         for preset in self._playlist:
-            playlist_entry = {'classname': preset.__class__.__name__,
-                              'name': preset.name()}
-            param_dict = {}
-            for name, param in preset.get_parameters().iteritems():
-                param_dict[name] = param.get_as_str()
-            playlist_entry['params'] = param_dict
-            playlist.append(playlist_entry)
+            playlist.append(preset.slug())
+            if save_all_presets:
+                preset.save()
         self.data['playlist'] = playlist
+
         # Superclass write to file
         self._app.settings.get("mixer")["last_playlist"] = self.name
         JSONDict.save(self)
