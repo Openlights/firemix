@@ -19,6 +19,7 @@ import numpy as np
 
 from lib.transition import Transition
 from lib.buffer_utils import BufferUtils
+from lib.colors import clip
 
 
 class Fuzz(Transition):
@@ -44,7 +45,10 @@ class Fuzz(Transition):
 
 
     def get(self, start, end, progress):
-        idx = int(progress * len(self.rand_index))
+
+        progress = clip(0.0, progress, 1.0)
+        idx = int(progress * (len(self.rand_index) - 1))
+
         for i in range(self.last_idx, idx):
             offset = self.rand_index[i] * 3
             self.mask.flat[offset] = True

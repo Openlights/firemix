@@ -34,6 +34,7 @@ from PySide import QtCore
 from lib.preset import Preset
 from lib.buffer_utils import BufferUtils
 from core.audio import Audio
+from lib.colors import clip
 
 
 log = logging.getLogger("firemix.core.mixer")
@@ -323,7 +324,9 @@ class Mixer(QtCore.QObject):
 
                 if self._transition_duration > 0.0 and self._transition is not None:
                     if not self._paused:
-                        self.transition_progress = self._elapsed / self._transition_duration
+                        self.transition_progress = clip(0.0,
+                                                        self._elapsed / self._transition_duration,
+                                                        1.0)
                 else:
                     self.transition_progress = 1.0
 
