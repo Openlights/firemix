@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from collections import defaultdict
 import os
 import logging
 import inspect
@@ -48,7 +49,7 @@ class PresetLoader:
         self._parent = parent
         self._modules = []
         self._presets = []
-        self._presets_dict = None
+        self._presets_dict = defaultdict()
         self.event_handler = PresetFileEventHandler()
         self.event_handler.callback = self.reload_preset_by_filename
         self.observer = Observer()
@@ -93,9 +94,11 @@ class PresetLoader:
 
     def reload_preset_by_filename(self, filename):
         log.info("Reloading %s", filename)
-        for module in self._modules:
+        for idx, module in enumerate(self._modules):
             if module.__name__.split('.')[1] == os.path.basename(filename).split('.')[0]:
-                reload(module)
+                self._modules[idx] = reload(module)
+                self._presets = [(m, o) for (m, o) in self._presets if m != module]
+                self._load_presets_from_modules(self._modules[idx])
                 self._parent.module_reloaded(module.__name__)
 
     def _load_presets_from_modules(self, module):
@@ -103,6 +106,7 @@ class PresetLoader:
             if issubclass(obj, Preset) and (name is not "Preset") and (name is not "Preset"):
                 log.info("Loaded %s" % obj.__name__)
                 self._presets.append((module, obj))
+                self._presets_dict[obj.__name__] = (module, obj)
 
 
 

@@ -122,6 +122,20 @@ class Playlist(JSONDict):
         inst._reset()
         return inst
 
+    def load_preset_from_file(self, preset_slug):
+        # TODO: We should have a library of functions for getting common app paths.
+        preset_path = os.path.join(os.getcwd(), "data", "presets", "".join([preset_slug, ".json"]))
+        preset_data = None
+        if os.path.exists(preset_path):
+            try:
+                with open(preset_path, "r") as f:
+                    preset_data = json.load(f)
+            except:
+                log.warn("Error loading data from preset %s" % preset_path)
+        else:
+            log.warn("Preset %s could not be found, skipping..." % preset_slug)
+        return preset_data
+
     def generate_playlist(self):
         log.info("Populating playlist (version %d)..." % self._playlist_file_version)
         if len(self._playlist_data) == 0:
@@ -135,22 +149,9 @@ class Playlist(JSONDict):
         #       what class the preset is, then again in the class (as JSONDict)
 
         for preset_slug in self._playlist_data:
-            # TODO: We should have a library of functions for getting common app paths.
-            preset_path = os.path.join(os.getcwd(), "data", "presets", "".join([preset_slug, ".json"]))
-            if os.path.exists(preset_path):
-                preset_data = {}
-                try:
-                    with open(preset_path, "r") as f:
-                        preset_data = json.load(f)
-                except:
-                    log.warn("Error loading data from preset %s" % preset_path)
-                    continue
-
-                if preset_data['classname'] in self._loader.all_presets():
-                    self._playlist.append(self.get_preset_from_json_data(preset_data, preset_slug))
-
-            else:
-                log.warn("Preset %s could not be found, skipping..." % preset_slug)
+            preset_data = self.load_preset_from_file(preset_slug)
+            if preset_data and preset_data['classname'] in self._loader.all_presets():
+                self._playlist.append(self.get_preset_from_json_data(preset_data, preset_slug))
 
         self.initialized = True
         self.playlist_mutated()
@@ -284,11 +285,18 @@ class Playlist(JSONDict):
                 p.disabled = True
                 log.error("Disabling %s because the preset is crashing." % p.name())
 
-    def module_reloaded(self, module):
-        for p in self._playlist:
-            if p.__module__ == module:
-                p.reset()
-                p.disabled = False
+    def module_reloaded(self, module_name):
+        to_rebuild = [(i, p) for (i, p) in enumerate(self._playlist) if p.__module__ == module_name]
+
+        for idx, preset in to_rebuild:
+            preset_data = self.load_preset_from_file(preset.slug())
+            new_inst = self.get_preset_from_json_data(preset_data, preset.slug())
+            self._playlist[idx] = new_inst
+
+            if self.active_preset is preset:
+                self.active_preset = new_inst
+            if self.next_preset is preset:
+                self.next_preset = new_inst
 
     def save(self, save_all_presets=True):
         log.info("Saving playlist")
