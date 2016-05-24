@@ -108,7 +108,10 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             enabled = (self.tbl_networking_clients.cellWidget(i, 2).checkState() == QtCore.Qt.Checked)
             color_mode = self.tbl_networking_clients.cellWidget(i, 3).currentText()
             proto = self.tbl_networking_clients.cellWidget(i, 4).currentText()
-            client = {"host": host, "port": port, "enabled": enabled, "color-mode": color_mode, "protocol": proto}
+            ignore_dimming = (self.tbl_networking_clients.cellWidget(i, 5).checkState() == QtCore.Qt.Checked)
+
+            client = {"host": host, "port": port, "enabled": enabled, "color-mode": color_mode,
+                      "protocol": proto, "ignore-dimming": ignore_dimming}
             if client not in clients:
                 clients.append(client)
         self.app.settings['networking']['clients'] = clients
@@ -134,6 +137,7 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             item_host = QtGui.QTableWidgetItem(client["host"])
             item_port = QtGui.QTableWidgetItem(str(client["port"]))
             item_enabled = QtGui.QCheckBox()
+            item_ignore_dimming = QtGui.QCheckBox()
 
             item_color_mode = QtGui.QComboBox()
             for mode in color_modes.modes:
@@ -143,6 +147,9 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
 
             if client["enabled"]:
                 item_enabled.setCheckState(QtCore.Qt.Checked)
+
+            if client.get("ignore-dimming", False):
+                item_ignore_dimming.setCheckState(QtCore.Qt.Checked)
 
             item_protocol = QtGui.QComboBox()
             for proto in PROTOCOLS:
@@ -155,6 +162,7 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             self.tbl_networking_clients.setCellWidget(i, 2, item_enabled)
             self.tbl_networking_clients.setCellWidget(i, 3, item_color_mode)
             self.tbl_networking_clients.setCellWidget(i, 4, item_protocol)
+            self.tbl_networking_clients.setCellWidget(i, 5, item_ignore_dimming)
         self.tbl_networking_clients.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
 
     def add_networking_client_row(self):

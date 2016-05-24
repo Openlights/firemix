@@ -77,8 +77,8 @@ class Mixer(QtCore.QObject):
         self._onset_holdoff = self._app.settings.get('mixer')['onset-holdoff']
         self._onset = False
         self._reset_onset = False
-        self._global_dimmer = 1.0
-        self._global_speed = 1.0
+        self.global_dimmer = 1.0
+        self.global_speed = 1.0
         self._render_in_progress = False
         self._last_tick_time = 0.0
         self._fps_time = 0.0
@@ -160,12 +160,6 @@ class Mixer(QtCore.QObject):
     @QtCore.Slot(list)
     def update_fft_data(self, data):
         self._fft_data = data
-
-    def set_global_dimmer(self, dimmer):
-        self._global_dimmer = dimmer
-
-    def set_global_speed(self, speed):
-        self._global_speed = speed
 
     def get_transition_by_name(self, name):
         if not name or name == "Cut":
@@ -298,7 +292,7 @@ class Mixer(QtCore.QObject):
     def tick(self, dt):
         self._num_frames += 1
 
-        dt *= self._global_speed
+        dt *= self.global_speed
 
         if len(self.playlist) > 0:
 
@@ -354,9 +348,6 @@ class Mixer(QtCore.QObject):
             # render_presets writes all the desired pixels to
             # self._main_buffer.
 
-            # Apply the global dimmer to _main_buffer.
-            if self._global_dimmer < 1.0:
-                mixed_buffer.T[1] *= self._global_dimmer
             #else:
                 # Global gamma correction.
                 # TODO(jon): This should be a setting

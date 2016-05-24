@@ -21,6 +21,7 @@ import numpy as np
 import socket
 import array
 import struct
+from copy import deepcopy
 import time
 import zmq
 
@@ -62,16 +63,30 @@ class Networking:
         clients = [client for client in self._app.settings['networking']['clients'] if client["enabled"]]
 
         clients_by_type = defaultdict(list)
+        have_non_dimmed = False
         for c in clients:
             clients_by_type[c.get("protocol", "Legacy")].append(c)
+            have_non_dimmed = c.get("ignore-dimming", False) if not have_non_dimmed else True
 
         have_zmq_clients = bool(clients_by_type.get("ZMQ", []))
         legacy_clients = clients_by_type["Legacy"]
         opc_clients = clients_by_type["OPC"]
 
+        # Apply the global dimmer from the mixer.
+        # TODO: this is stupid.  Should just pass the global dimmer as metadata to the clients
+        if have_non_dimmed:
+            non_dimmed_buffer = deepcopy(buffer)
+
+        if self._app.mixer.global_dimmer < 1.0:
+            buffer.T[1] *= self._app.mixer.global_dimmer
+
         # Protect against presets or transitions that write float data.
         buffer_rgb = np.int_(hls_to_rgb(buffer) * 255)
         np.clip(buffer_rgb, 0, 255, buffer_rgb)
+
+        if have_non_dimmed:
+            non_dimmed_buffer_rgb = np.int_(hls_to_rgb(non_dimmed_buffer) * 255)
+            np.clip(non_dimmed_buffer_rgb, 0, 255, non_dimmed_buffer_rgb)
 
         def fill_packet(intbuffer, start, end, offset, packet, swap_order=False):
             for pixel_index, pixel in enumerate(intbuffer[start:end]):
@@ -86,6 +101,7 @@ class Networking:
                     packet[buffer_index + 2] = pixel[2]
 
         packets = []
+        non_dimmed_packets = []
 
         for strand in xrange(len(strand_settings)):
             if not strand_settings[strand]["enabled"]:
@@ -112,14 +128,19 @@ class Networking:
             fill_packet(buffer_rgb, start, end, packet_header_size, packet, False)
             packets.append(array.array('B', packet))
 
+            if have_non_dimmed:
+                fill_packet(non_dimmed_buffer_rgb, start, end, packet_header_size, packet, False)
+                non_dimmed_packets.append(array.array('B', packet))
+
         if USE_ZMQ and have_zmq_clients:
             frame = ["B"] + packets + ["E"]
             self.socket.send_multipart(frame)
 
         for client in legacy_clients:
             self.socket.sendto(array.array('B', [ord('B')]), (client["host"], client["port"]))
-            for packet in packets:
+            for packet in (non_dimmed_packets if client.get("ignore-dimming", False) else packets):
                 self.socket.sendto(packet, (client["host"], client["port"]))
+                time.sleep(0.001)
             self.socket.sendto(array.array('B', [ord('E')]), (client["host"], client["port"]))
 
         for client in opc_clients:

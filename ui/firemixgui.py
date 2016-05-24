@@ -291,12 +291,12 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_slider_dimmer(self):
         dval = self.slider_global_dimmer.value() / 100.0
-        self.app.mixer.set_global_dimmer(dval)
+        self.app.mixer.global_dimmer = dval
         self.lbl_dimmer.setText("Dimmer [%0.2f]" % dval)
 
     def on_slider_speed(self):
         sval = round(self.slider_speed.value() / 1000.0, 2)
-        self.app.mixer.set_global_speed(sval)
+        self.app.mixer.global_speed = sval
         self.lbl_speed.setText("Speed [%0.2fx]" % sval)
 
     def on_slider_speed_double_click(self):
