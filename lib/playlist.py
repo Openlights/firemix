@@ -434,7 +434,9 @@ class Playlist(JSONDict):
             log.error("Tried to add a preset that already exists: %s" % name)
             return False
 
-        inst = self._preset_classes[classname](self._app.mixer, name)
+        inst = self._preset_classes[classname](self._app.mixer, slugify(name))
+        inst.set_name(name)
+        inst.save()
         inst._reset()
 
         if idx is not None:
