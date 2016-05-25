@@ -347,7 +347,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         action_rename = QtGui.QAction("Rename" ,self)
         action_rename.triggered.connect(self.start_rename)
         ctx.addAction(action_rename)
-        ctx.exec_(self.lst_presets.pos() + self.mapToParent(point))
+        ctx.exec_(self.lst_presets.mapToGlobal(point))
 
     def start_rename(self):
         #TODO: Enable renaming in the list when we have a real delegate
