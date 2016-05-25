@@ -10,7 +10,8 @@ Installation / Development
 --------------------------
 
 Setup instructions are now located on the wiki:
-[Installation Guide](https://github.com/craftyjon/firemix/wiki/Installation-Guide)
+ - [Installation Guide - Windows](https://github.com/Openlights/firemix/wiki/Installation-Guide-(Windows))
+ - [Installation Guide - Linux and Mac](https://github.com/Openlights/firemix/wiki/Installation-Guide-(Linux-and-Mac))
 
 General information and development tips are located on the wiki also,
 check out the [main page](https://github.com/craftyjon/firemix/wiki) to get started.
