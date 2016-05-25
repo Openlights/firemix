@@ -1,0 +1,27 @@
+{
+    "classname": "SpiralGradient", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "when the strobe hurts your eyes", 
+    "params": {
+        "allow-playback": "True", 
+        "angle-hue-width": "1.0", 
+        "audio-brightness": "0.3", 
+        "audio-speed-boost-bass": "0.0", 
+        "audio-speed-boost-treble": "0.0", 
+        "audio-twist": "0.0", 
+        "audio-wave-period-boost": "0.0", 
+        "center-distance": "0.0", 
+        "center-speed": "0.0", 
+        "color-gradient": "[(0.0, 0.0, 0.0), (3.0, 1.0, 1.0), (0.0, 0.0, 0.0)]", 
+        "hue-speed": "9.0", 
+        "onset-speed-boost": "5.0", 
+        "onset-speed-decay": "1.0", 
+        "radius-hue-width": "1.5", 
+        "speed": "[0,2,1]", 
+        "wave-falloff": "0.0", 
+        "wave-hue-period": "[0.1,1,0.1]", 
+        "wave-hue-width": "[0,1,1]", 
+        "wave-speed": "[-1,1.0,1]"
+    }
+}

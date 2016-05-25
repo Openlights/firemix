@@ -5,13 +5,17 @@
             "classname": "SimplexNoise", 
             "name": "SimplexNoise", 
             "params": {
+                "allow-playback": "True", 
                 "angle": "[0.25, 0.5, 0.75]", 
+                "audio-brightness": "0.0", 
+                "audio-hue-offset": "0.0", 
                 "beat-color-boost": "0.0", 
                 "beat-lum-boost": "0.05", 
                 "beat-lum-time": "0.1", 
                 "color-speed": "0.25", 
                 "hue-max": "1.0", 
                 "hue-min": "0.0", 
+                "hue-offset": "0.0", 
                 "luminance-map": "[(0,0,1), (0,0,1), (0,1,1)]", 
                 "luminance-scale": "1.0", 
                 "resolution": "255", 
@@ -21,39 +25,20 @@
             }
         }, 
         {
-            "classname": "RadialRainbow", 
-            "name": "RadialRainbow-1", 
-            "params": {
-                "speed": "0.25", 
-                "width": "0.25"
-            }
-        }, 
-        {
-            "classname": "Dragons", 
-            "name": "Dragons-1", 
-            "params": {
-                "alive-color": "[0.1, 0.5, 1.0]", 
-                "birth-rate": "0.13", 
-                "dead-color": "[0.5, 0.5, 0.0]", 
-                "explode-color": "(1.0, 1.0, 1.0)", 
-                "growth-rate": "0.1", 
-                "growth-time": "0.1", 
-                "pop-limit": "10", 
-                "tail-color": "[0.0, 0.5, 1.0]", 
-                "tail-persist": "50.0"
-            }
-        }, 
-        {
             "classname": "SimplexNoise", 
             "name": "Simplex-BluePurple", 
             "params": {
+                "allow-playback": "True", 
                 "angle": "0.125", 
+                "audio-brightness": "0.0", 
+                "audio-hue-offset": "0.0", 
                 "beat-color-boost": "0.0", 
                 "beat-lum-boost": "0.05", 
                 "beat-lum-time": "0.1", 
                 "color-speed": "0.0", 
                 "hue-max": "1.0", 
                 "hue-min": "0.5", 
+                "hue-offset": "0.0", 
                 "luminance-map": "[(0,0,1), (0,0,1), (0,1,1)]", 
                 "luminance-scale": "0.4", 
                 "resolution": "2", 
@@ -63,57 +48,45 @@
             }
         }, 
         {
-            "classname": "SeparateStrandRGB", 
-            "name": "SeparateStrandRGB-1", 
-            "params": {
-                "interval": "0.05", 
-                "speed": "0.25"
-            }
-        }, 
-        {
-            "classname": "Fungus", 
-            "name": "Fungus-1", 
-            "params": {
-                "alive-color": "[0.35, 0.5, 1.0]", 
-                "birth-rate": "0.9", 
-                "black-color": "(0.0, 0.0, 1.0)", 
-                "dead-color": "[0.13, 0.1, 0.57]", 
-                "death-time": "1.75", 
-                "fade-out-time": "0.25", 
-                "growth-time": "0.05", 
-                "isolated-life-time": "1.0", 
-                "life-time": "5.0", 
-                "mass-destruction-threshold": "150", 
-                "mass-destruction-time": "10.0", 
-                "pop-limit": "500", 
-                "spread-rate": "1.0"
-            }
-        }, 
-        {
             "classname": "Twinkle", 
             "name": "Twinkle-1", 
             "params": {
+                "allow-playback": "True", 
+                "audio-birth-rate": "0.0", 
+                "audio-eq-bands": "0.0", 
+                "audio-peak-birth-rate": "0.0", 
+                "audio-ring-birth-rate": "0.0", 
+                "audio-ring-diameter": "300.0", 
+                "audio-ring-lifetime": "2.0", 
+                "audio-ring-start-radius": "0.0", 
+                "audio-ring-use-fft-brightness": "0.0", 
+                "audio-ring-width": "5.0", 
                 "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "0.25", 
-                "black-color": "(0.0, 0.0, 1.0)", 
+                "color-gradient": "[(0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.1, 1.0, 1.0)]", 
                 "fade-down-time": "2.0", 
+                "fade-rate": "0.1", 
                 "fade-up-time": "1.0", 
-                "off-color": "[0.0, 0.0, 0.0]", 
-                "on-color": "[0.2, 1.0, 1.0]"
+                "noise threshold": "0.1", 
+                "pie-peaks": "0.0"
             }
         }, 
         {
             "classname": "SimplexNoise", 
             "name": "SimplexNoise-Rasta", 
             "params": {
+                "allow-playback": "True", 
                 "angle": "0.125", 
+                "audio-brightness": "0.0", 
+                "audio-hue-offset": "0.0", 
                 "beat-color-boost": "0.0", 
                 "beat-lum-boost": "0.05", 
                 "beat-lum-time": "0.1", 
                 "color-speed": "1.0", 
                 "hue-max": "0.4", 
                 "hue-min": "0.0", 
+                "hue-offset": "0.0", 
                 "luminance-map": "[(0,0,1), (0,0,1), (0,1,1)]", 
                 "luminance-scale": "0.75", 
                 "resolution": "4", 
@@ -126,59 +99,58 @@
             "classname": "RadialGradient", 
             "name": "RadialGradient-1", 
             "params": {
-                "blackout": "1.0", 
+                "allow-playback": "True", 
+                "audio-amplitude": "0.0", 
+                "audio-boost": "0.0", 
+                "audio-brightness": "0.0", 
+                "audio-energy-lum-strength": "0.0", 
+                "audio-energy-lum-time": "0.0", 
+                "audio-fader-percent": "1.0", 
+                "audio-radius-scale": "0.0", 
+                "audio-scale": "0.0", 
+                "audio-use-fader": "0.0", 
+                "color-gradient": "[(0,0,1), (0,1,1)]", 
                 "hue-step": "0.05", 
                 "hue-width": "0.25", 
                 "luminance-scale": "1.0", 
                 "luminance-speed": "0.01", 
+                "radius-scale": "1.0", 
+                "rwave-amplitude": "0.5", 
+                "rwave-period": "1.5", 
+                "rwave-speed": "0.1", 
+                "rwave-standing": "0.0", 
                 "speed": "0.1", 
                 "wave1-amplitude": "0.5", 
                 "wave1-period": "1.5", 
                 "wave1-speed": "0.05", 
                 "wave2-amplitude": "0.5", 
                 "wave2-period": "1.5", 
-                "wave2-speed": "0.1", 
-                "whiteout": "0.0"
+                "wave2-speed": "0.1"
             }
         }, 
         {
             "classname": "Twinkle", 
             "name": "StarryNight", 
             "params": {
+                "allow-playback": "True", 
+                "audio-birth-rate": "0.0", 
+                "audio-eq-bands": "0.0", 
+                "audio-peak-birth-rate": "0.0", 
+                "audio-ring-birth-rate": "0.0", 
+                "audio-ring-diameter": "300.0", 
+                "audio-ring-lifetime": "2.0", 
+                "audio-ring-start-radius": "0.0", 
+                "audio-ring-use-fft-brightness": "0.0", 
+                "audio-ring-width": "5.0", 
                 "beat-births": "25.0", 
                 "beat-color": "(1.0, 1.0, 1.0)", 
                 "birth-rate": "1.0", 
-                "black-color": "(0.0, 0.0, 1.0)", 
+                "color-gradient": "[(0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.1, 1.0, 1.0)]", 
                 "fade-down-time": "1.5", 
+                "fade-rate": "0.1", 
                 "fade-up-time": "2.0", 
-                "off-color": "[0.65, 0.5, 0.0]", 
-                "on-color": "[0.65, 0.5, 1.0]"
-            }
-        }, 
-        {
-            "classname": "RGBFade", 
-            "name": "RGBFade-1", 
-            "params": {
-                "speed": "0.1"
-            }
-        }, 
-        {
-            "classname": "SpiralGradient", 
-            "name": "SpiralGradient-1", 
-            "params": {
-                "angle-hue-width": "2.0", 
-                "center-distance": "0.0", 
-                "center-speed": "0.0", 
-                "color-end": "(1.0, 0.5, 1.0)", 
-                "color-start": "(0.0, 0.5, 1.0)", 
-                "hue-speed": "0.3", 
-                "onset-speed-boost": "5.0", 
-                "onset-speed-decay": "1.0", 
-                "radius-hue-width": "1.5", 
-                "speed": "0.25", 
-                "wave-hue-period": "0.1", 
-                "wave-hue-width": "0.1", 
-                "wave-speed": "0.1"
+                "noise threshold": "0.1", 
+                "pie-peaks": "0.0"
             }
         }, 
         {
@@ -186,6 +158,11 @@
             "name": "Fungus-2", 
             "params": {
                 "alive-color": "[1.0, 0.0, 1.0]", 
+                "allow-playback": "True", 
+                "audio-onset-birth-boost": "0.0", 
+                "audio-onset-death-boost": "0.0", 
+                "audio-onset-spread-boost": "0.0", 
+                "audio-onset-spread-boost-echo": "0.5", 
                 "birth-rate": "0.05", 
                 "black-color": "(0.0, 0.0, 1.0)", 
                 "dead-color": "[0.0, 1.0, 1.0]", 
@@ -204,16 +181,22 @@
             "classname": "SpiralGradient", 
             "name": "SpiralGradient-2", 
             "params": {
+                "allow-playback": "True", 
                 "angle-hue-width": "0.5", 
+                "audio-brightness": "0.0", 
+                "audio-speed-boost-bass": "0.0", 
+                "audio-speed-boost-treble": "0.0", 
+                "audio-twist": "0.0", 
+                "audio-wave-period-boost": "0.0", 
                 "center-distance": "0.0", 
                 "center-speed": "0.0", 
-                "color-end": "(1.0, 0.5, 1.0)", 
-                "color-start": "(0.0, 0.5, 1.0)", 
+                "color-gradient": "[(0,0,1), (0,1,1)]", 
                 "hue-speed": "0.3", 
                 "onset-speed-boost": "5.0", 
                 "onset-speed-decay": "1.0", 
                 "radius-hue-width": "0.2", 
                 "speed": "0.3", 
+                "wave-falloff": "0.0", 
                 "wave-hue-period": "0.1", 
                 "wave-hue-width": "0.2", 
                 "wave-speed": "0.1"

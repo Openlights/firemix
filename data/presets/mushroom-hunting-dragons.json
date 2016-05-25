@@ -1,0 +1,14 @@
+{
+    "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "mushroom hunting dragons", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "dragons small red", 
+        "second-preset": "fungi normal", 
+        "transition-mode": "Additive Blend", 
+        "transition-progress": "0.5"
+    }
+}

@@ -1,0 +1,27 @@
+{
+    "classname": "SpiralGradient", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "spiral plasma clone", 
+    "params": {
+        "allow-playback": "True", 
+        "angle-hue-width": "2.0", 
+        "audio-brightness": "0.3", 
+        "audio-speed-boost-bass": "0.0", 
+        "audio-speed-boost-treble": "0.0", 
+        "audio-twist": "0.0", 
+        "audio-wave-period-boost": "0.0", 
+        "center-distance": "400.0", 
+        "center-speed": "0.05", 
+        "color-gradient": "[[0.7, -1.0, 1.0], [1.4, 0.5, 1.0], [0.7, -1.0, 1.0]]", 
+        "hue-speed": "0.02", 
+        "onset-speed-boost": "5.0", 
+        "onset-speed-decay": "1.0", 
+        "radius-hue-width": "2.0", 
+        "speed": "0.2", 
+        "wave-falloff": "0.5", 
+        "wave-hue-period": "3.0", 
+        "wave-hue-width": "0.2", 
+        "wave-speed": "0.1"
+    }
+}

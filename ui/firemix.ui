@@ -320,7 +320,7 @@
                <item>
                 <widget class="QLabel" name="lbl_speed">
                  <property name="text">
-                  <string>Speed [1.0x]</string>
+                  <string>Speed [1.00x]</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -345,10 +345,13 @@
                   <number>0</number>
                  </property>
                  <property name="maximum">
-                  <number>1000</number>
+                  <number>2000</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>1</number>
                  </property>
                  <property name="value">
-                  <number>100</number>
+                  <number>1000</number>
                  </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -444,7 +447,7 @@
                   <bool>false</bool>
                  </property>
                  <property name="text">
-                  <string>Onset</string>
+                  <string>O&amp;nset</string>
                  </property>
                 </widget>
                </item>
@@ -546,14 +549,16 @@
      <x>0</x>
      <y>0</y>
      <width>1068</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
     <property name="title">
-     <string>File</string>
+     <string>Fi&amp;le</string>
     </property>
     <addaction name="action_file_load_scene"/>
+    <addaction name="separator"/>
+    <addaction name="action_file_new_playlist"/>
     <addaction name="action_file_open_playlist"/>
     <addaction name="action_file_save_playlist"/>
     <addaction name="action_file_save_playlist_as"/>
@@ -584,7 +589,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Load Scene</string>
+    <string>&amp;Load Scene</string>
    </property>
   </action>
   <action name="action_file_reload_presets">
@@ -592,17 +597,20 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Reload Presets</string>
+    <string>&amp;Reload Presets</string>
    </property>
   </action>
   <action name="action_file_quit">
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="action_file_save_playlist">
    <property name="text">
-    <string>Save Playlist</string>
+    <string>&amp;Save Playlist</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -631,17 +639,17 @@
   </action>
   <action name="action_file_generate_default_playlist">
    <property name="text">
-    <string>Generate Default Playlist</string>
+    <string>&amp;Generate Default Playlist</string>
    </property>
   </action>
   <action name="action_edit_settings">
    <property name="text">
-    <string>Settings</string>
+    <string>&amp;Settings</string>
    </property>
   </action>
   <action name="action_file_save_playlist_as">
    <property name="text">
-    <string>Save Playlist As...</string>
+    <string>Save &amp;Playlist As...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
@@ -649,7 +657,10 @@
   </action>
   <action name="action_file_open_playlist">
    <property name="text">
-    <string>Open Playlist</string>
+    <string>&amp;Open Playlist...</string>
+   </property>
+   <property name="iconText">
+    <string>Open Playlist...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -657,7 +668,12 @@
   </action>
   <action name="action_tools_append_playlist">
    <property name="text">
-    <string>Append Playlist</string>
+    <string>&amp;Append Playlist</string>
+   </property>
+  </action>
+  <action name="action_file_new_playlist">
+   <property name="text">
+    <string>New Playlist</string>
    </property>
   </action>
  </widget>

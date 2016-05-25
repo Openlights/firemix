@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,6 +19,11 @@ import os
 import gc
 import logging
 import random
+import json
+import re
+from copy import deepcopy
+
+from PySide import QtCore
 
 from lib.json_dict import JSONDict
 from lib.preset_loader import PresetLoader
@@ -26,6 +31,19 @@ from lib.preset_loader import PresetLoader
 log = logging.getLogger("firemix.lib.playlist")
 
 
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+    """
+    import unicodedata
+    value = unicode(value)
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
+    return re.sub('[-\s]+', '-', value)
+
+
+# TODO: Metaclass hell when trying to subclass QObject here.  Maybe don't need to subclass JSONDict?
 class Playlist(JSONDict):
     """
     Manages the available presets and the current playlist of presets.
@@ -40,13 +58,35 @@ class Playlist(JSONDict):
 
     def __init__(self, app):
         self._app = app
+
+        self._playlist = []
+        self._shuffle_list = []
+        self.active_preset = None
+        self.next_preset = None
+        self._playlist_data = None
+
         self.name = app.args.playlist
         if self.name is None:
-            self.name = self._app.settings.get("mixer").get("last_playlist", "default")
-        filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self.name, ".json"]))
-        JSONDict.__init__(self, 'playlist', filepath, True)
+            self.name = self._app.settings.get("mixer").get("last_playlist", None)
+        if self.name is None or self.name == "":
+            self.filetype = "playlist"
+            self.filename = ""
+            self.initialized = False
+        else:
+            filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self.name, ".json"]))
+            JSONDict.__init__(self, 'playlist', filepath, True)
 
+            self.open()
+
+    def create_new(self, filename):
+        if self.initialized:
+            self.save()
+            self.clear_playlist()
+        self.data = dict()
+        self.set_filename(filename)
+        self.load(True)
         self.open()
+        self.data["file-version"] = 2
 
     def set_filename(self, filename):
         self.name = os.path.split(filename)[1].replace(".json", "")
@@ -59,68 +99,176 @@ class Playlist(JSONDict):
             print "Error loading %s" % self.filename
             return False
 
-        self._loader = PresetLoader()
+        self._loader = PresetLoader(self)
         self._preset_classes = self._loader.load()
+        self._playlist_file_version = self.data.get("file-version", 1)  # Version 1 didn't have this key
         self._playlist_data = self.data.get('playlist', [])
         self._playlist = []
 
-        self._active_index = 0
-        self._next_index = 0
+        self.active_preset = None
+        self.next_preset = None
         self._shuffle = self._app.settings['mixer']['shuffle']
         self._shuffle_list = []
 
         self.generate_playlist()
+        self.initialized = True
 
         self.changed()
+
         return True
 
+    def get_preset_from_json_data(self, data, slug):
+        inst = self._loader.all_presets()[data['classname']][1](self._app.mixer, slug)
+        inst._reset()
+        return inst
+
+    def load_preset_from_file(self, preset_slug):
+        # TODO: We should have a library of functions for getting common app paths.
+        preset_path = os.path.join(os.getcwd(), "data", "presets", "".join([preset_slug, ".json"]))
+        preset_data = None
+        if os.path.exists(preset_path):
+            try:
+                with open(preset_path, "r") as f:
+                    preset_data = json.load(f)
+            except:
+                log.warn("Error loading data from preset %s" % preset_path)
+        else:
+            log.warn("Preset %s could not be found, skipping..." % preset_slug)
+        return preset_data
+
     def generate_playlist(self):
+        log.info("Populating playlist (version %d)..." % self._playlist_file_version)
         if len(self._playlist_data) == 0:
             self._playlist = []
 
-        for entry in self._playlist_data:
-            if entry['classname'] in self._preset_classes:
+        if self._playlist_file_version != 2:
+            log.error("Upgrade this playlist to version 2!")
+            return
 
-                inst = self._preset_classes[entry['classname']](self._app.mixer, name=entry['name'])
-                inst._reset()
+        # TODO: This is kind of dumb, we have to load the JSON twice -- once to figure out
+        #       what class the preset is, then again in the class (as JSONDict)
 
-                for _, key in enumerate(entry.get('params', {})):
-                    try:
-                        inst.parameter(key).set_from_str(str(entry['params'][key]))
-                    except AttributeError:
-                        log.warn("Parameter %s called out in playlist but not found in plugin.  Perhaps it was renamed?" % key)
-                self._playlist.append(inst)
-            else:
-                self._playlist_data.remove(entry)
+        for preset_slug in self._playlist_data:
+            preset_data = self.load_preset_from_file(preset_slug)
+            if preset_data and preset_data['classname'] in self._loader.all_presets():
+                self._playlist.append(self.get_preset_from_json_data(preset_data, preset_slug))
 
-        self._active_index = 0
-        if self._shuffle and len(self._playlist) > 1:
-            self.generate_shuffle()
-            self._next_index = self._shuffle_list.pop()
-        else:
-            self._next_index = 0 if len(self._playlist) == 0 else 1 % len(self._playlist)
+        self.initialized = True
+        self.playlist_mutated()
 
+        log.info("Done")
         return self._playlist
+
+    # TODO: This is ta temporary hack; we should actually just watch the dir for changes and keep a cache
+    def get_all_preset_slugs(self):
+        slugs = []
+        for f in os.listdir(os.path.join(os.getcwd(), "data", "presets")):
+            slug, ext = os.path.splitext(f)
+            if ext == ".json":
+                slugs.append(slug)
+        return slugs
+
+    # TODO: This is ta temporary hack; we should actually just watch the dir for changes and keep a cache
+    def get_all_preset_names(self):
+        names = []
+        preset_root = os.path.join(os.getcwd(), "data", "presets")
+        for f in os.listdir(preset_root):
+            slug, ext = os.path.splitext(f)
+            try:
+                preset_path = os.path.join(preset_root, f)
+                with open(preset_path, "r") as f:
+                    preset_data = json.load(f)
+                    preset_name = preset_data.get("name", None)
+                    if preset_name:
+                        names.append(preset_name)
+                    else:
+                        log.warn("Skipping preset %s because it doesn't have a name" % preset_path)
+            except:
+                log.error("Could not load preset %s" % slug)
+
+        return names
+
+    @QtCore.Slot()
+    def playlist_mutated(self):
+        """
+        This should get called when the playlist is mutated in some way
+        (presets dragged around, dis/enabled, deleted, duplicated, added, etc)
+        It also gets called from advance() at the end of a transition, etc
+        """
+
+        if self.active_preset is None:
+            if len(self._playlist) > 0:
+                self.active_preset = self._playlist[0]
+            else:
+                # Nothing going on here!
+                self.next_preset = None
+                return
+
+        # Check if we just deleted the active preset
+        if self.active_preset not in self._playlist:
+            self.active_preset = self.next_preset
+            self.update_next_preset()
+
+        # Generate the shuffle list
+        if self._shuffle:
+            self.generate_shuffle()
+
+        if self.next_preset is None:
+            # Initialize _next.  We probably went from a playlist of length 0 to 1.
+            if self._shuffle and len(self._playlist) > 1:
+                self.next_preset = self._playlist[self._shuffle_list.pop()]
+            elif len(self._playlist) == 0:
+                self.next_preset = None
+            elif len(self._playlist) == 1:
+                self.next_preset = self.active_preset
+            else:
+                self.next_preset = self._playlist[1]
+        else:
+            # Update the next pointer
+            self.update_next_preset()
+
+    def update_next_preset(self):
+        if len(self._playlist) == 0:
+            self.next_preset = None
+            self.active_preset = None
+        elif len(self._playlist) == 1:
+            if self.active_preset is None:
+                self.active_preset = self._playlist[0]
+            self.next_preset = self.active_preset
+        else:
+            active_idx = self._playlist.index(self.active_preset)
+            candidate = (active_idx + 1) % len(self._playlist)
+            while not self._playlist[candidate].parameter('allow-playback').get():
+                candidate = (candidate + 1) % len(self._playlist)
+                # This should never happen but I don't like infinite loops
+                if candidate == active_idx:
+                    break
+            self.next_preset = self._playlist[candidate]
+        self.changed()
 
     def shuffle_mode(self, shuffle=True):
         """
         Enables or disables playlist shuffle
         """
         self._shuffle = shuffle
+        self.update_next_preset()
 
     def generate_shuffle(self):
         """
         Creates a shuffle list
         """
         self._shuffle_list = range(len(self._playlist))
+
+        # Remove disallowed presets from the shuffle list
+        self._shuffle_list = [idx for idx in self._shuffle_list if self._playlist[idx].parameter('allow-playback').get()]
+
         random.shuffle(self._shuffle_list)
-        if self._active_index in self._shuffle_list:
-            self._shuffle_list.remove(self._active_index)
+        active_idx = self._playlist.index(self.active_preset)
+        if active_idx in self._shuffle_list:
+            self._shuffle_list.remove(active_idx)
 
     def reload_presets(self):
         """Attempts to reload all preset classes in the playlist"""
-        old_active = self._active_index
-        old_next = self._next_index
         self._preset_classes = self._loader.reload()
         while len(self._playlist) > 0:
             inst = self._playlist.pop(0)
@@ -129,24 +277,36 @@ class Playlist(JSONDict):
 
         gc.collect()
         self.generate_playlist()
-        self._active_index = old_active % len(self._playlist)
-        self._next_index = old_next % len(self._playlist)
         self.changed()
 
-    def save(self):
+    def disable_presets_by_class(self, class_name):
+        for p in self._playlist:
+            if p.__class__.__name__ == class_name:
+                p.disabled = True
+                log.error("Disabling %s because the preset is crashing." % p.name())
+
+    def module_reloaded(self, module_name):
+        to_rebuild = [(i, p) for (i, p) in enumerate(self._playlist) if p.__module__ == module_name]
+
+        for idx, preset in to_rebuild:
+            preset_data = self.load_preset_from_file(preset.slug())
+            new_inst = self.get_preset_from_json_data(preset_data, preset.slug())
+            self._playlist[idx] = new_inst
+
+            if self.active_preset is preset:
+                self.active_preset = new_inst
+            if self.next_preset is preset:
+                self.next_preset = new_inst
+
+    def save(self, save_all_presets=True):
         log.info("Saving playlist")
-        # Pack the current state into self.data
-        self.data = {'file-type': 'playlist'}
         playlist = []
         for preset in self._playlist:
-            playlist_entry = {'classname': preset.__class__.__name__,
-                              'name': preset.name()}
-            param_dict = {}
-            for name, param in preset.get_parameters().iteritems():
-                param_dict[name] = param.get_as_str()
-            playlist_entry['params'] = param_dict
-            playlist.append(playlist_entry)
+            playlist.append(preset.slug())
+            if save_all_presets:
+                preset.save()
         self.data['playlist'] = playlist
+
         # Superclass write to file
         self._app.settings.get("mixer")["last_playlist"] = self.name
         JSONDict.save(self)
@@ -154,49 +314,35 @@ class Playlist(JSONDict):
     def get(self):
         return self._playlist
 
-    def advance(self, direction=1):
+    def advance(self):
         """
         Advances the playlist
         """
-        #TODO: support transitions other than cut
-        self._active_index = self._next_index
+        self.active_preset = self.next_preset
 
         if self._shuffle:
             if len(self._shuffle_list) == 0:
                 self.generate_shuffle()
-            self._next_index = self._shuffle_list.pop()
+            self.next_preset = self._playlist[self._shuffle_list.pop()]
         else:
-            self._next_index = (self._next_index + direction) % len(self._playlist)
+            self.update_next_preset()
 
         self.changed()
 
     def __len__(self):
         return len(self._playlist)
 
-    def get_active_index(self):
-        return self._active_index
-
-    def get_next_index(self):
-        return self._next_index
-
     def get_active_preset(self):
         if len(self._playlist) == 0:
             return None
         else:
-            return self._playlist[self._active_index]
-
-    def get_preset_relative_to_active(self, pos):
-        """
-        Returns the preset name of a preset relative to the active preset by an offset of pos
-        For exapmle, get_preset_relative_to_active(1) would return the next in the playlist
-        """
-        return self._playlist[(self._active_index + pos) % len(self._playlist)].name()
+            return self.active_preset
 
     def get_next_preset(self):
         if len(self._playlist) == 0:
             return None
         else:
-            return self._playlist[self._next_index]
+            return self.next_preset
 
     def get_preset_by_index(self, idx):
         if len(self._playlist) == 0:
@@ -210,26 +356,20 @@ class Playlist(JSONDict):
                 return preset
         return None
 
-    def set_active_index(self, idx):
-        self._active_index = idx % len(self._playlist)
-        self._next_index = (self._active_index + 1) % len(self._playlist)
-        self.get_active_preset()._reset()
-        self.changed()
-
     def set_active_preset_by_name(self, name):
         #TODO: Support transitions other than jump cut
         for i, preset in enumerate(self._playlist):
             if preset.name() == name:
                 preset._reset()
-                self._active_index = i
+                self.active_preset = preset
                 self._app.mixer._elapsed = 0.0  # Hack
-                self.changed()
+                self.update_next_preset()
                 return
 
     def set_next_preset_by_name(self, name):
         for i, preset in enumerate(self._playlist):
             if preset.name() == name:
-                self._next_index = i
+                self._next = preset
                 self.changed()
                 return
 
@@ -244,6 +384,7 @@ class Playlist(JSONDict):
             new.append(current[name])
 
         self._playlist = new
+        self.playlist_mutated()
         self.changed()
 
     def get_available_presets(self):
@@ -252,6 +393,33 @@ class Playlist(JSONDict):
     def preset_name_exists(self, name):
         return True if name in [p.name() for p in self._playlist] else False
 
+    def add_existing_preset(self, name):
+
+        # TODO: Should we support multiple instances of the same preset on a playlist?
+        for p in self._playlist:
+            if p.name() == name:
+                log.error("Cannot add a preset to the same playlist twice!")
+                return False
+
+        slug = slugify(name)
+        preset_data = {}
+        preset_path = os.path.join(os.getcwd(), "data", "presets", "".join([slug, ".json"]))
+
+        try:
+            with open(preset_path, "r") as f:
+                preset_data = json.load(f)
+        except:
+            log.error("Could not load preset %s" % name)
+            return False
+
+        self._playlist.append(self.get_preset_from_json_data(preset_data, slug))
+        if self.active_preset == self.next_preset:
+            self.update_next_preset()
+
+        self.changed()
+        return True
+
+    # TODO: Fix this to support slugs
     def add_preset(self, classname, name, idx=None):
         """
         Adds a new preset instance to the playlist.  Classname must be a currently loaded
@@ -263,9 +431,10 @@ class Playlist(JSONDict):
             return False
 
         if self.preset_name_exists(name):
+            log.error("Tried to add a preset that already exists: %s" % name)
             return False
 
-        inst = self._preset_classes[classname](self._app.mixer, name=name)
+        inst = self._preset_classes[classname](self._app.mixer, name)
         inst._reset()
 
         if idx is not None:
@@ -273,8 +442,8 @@ class Playlist(JSONDict):
         else:
             self._playlist.append(inst)
 
-        if self._active_index == self._next_index:
-            self._next_index = (self._next_index + 1) % len(self._playlist)
+        if self.active_preset == self.next_preset:
+            self.update_next_preset()
 
         self.changed()
         return True
@@ -291,26 +460,32 @@ class Playlist(JSONDict):
 
         self._playlist.remove(pl[0][1])
 
-        self._next_index = self._next_index % len(self._playlist)
-        self._active_index = self._active_index % len(self._playlist)
+        self.playlist_mutated()
         self.changed()
         return True
 
     def clone_preset(self, old_name):
         old = self.get_preset_by_name(old_name)
         classname = old.__class__.__name__
-        new_name = old_name + " clone"
-        self.add_preset(classname, new_name, self.get_active_index())
+        new_name = old_name
+        candidate = new_name
+        i = 2
+        while self.get_preset_by_name(candidate):
+            candidate = new_name + " (" + str(i) + ")"
+            i += 1
+        new_name = candidate
+        self.add_preset(classname, new_name, self._playlist.index(old) + 1)
         new = self.get_preset_by_name(new_name)
 
         for name, param in old.get_parameters().iteritems():
             new.parameter(name).set_from_str(param.get_as_str())
+
+        self.playlist_mutated()
         self.changed()
 
     def clear_playlist(self):
         self._playlist = []
-        self._active_index = 0
-        self._next_index = 0
+        self.playlist_mutated()
         self.changed()
 
     def rename_preset(self, old_name, new_name):
@@ -330,6 +505,7 @@ class Playlist(JSONDict):
             inst = self._preset_classes[cn](self._app.mixer, name=name)
             inst.setup()
             self._playlist.append(inst)
+        self.playlist_mutated()
         self.changed()
 
     def suggest_preset_name(self, classname):

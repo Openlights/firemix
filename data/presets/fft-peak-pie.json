@@ -1,0 +1,28 @@
+{
+    "classname": "TestFFT", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "fft peak pie", 
+    "params": {
+        "allow-playback": "False", 
+        "color-gradient": "[(2.0,0.5,1), (1.0,0.5,1)]", 
+        "fft smoothing": "1.0", 
+        "fft-bias": "0.0", 
+        "fft-gamma": "5.0", 
+        "fft-weight": "5.0", 
+        "frequency-max": "1.0", 
+        "frequency-min": "0.0", 
+        "ghosting": "0.95", 
+        "linear": "0.0", 
+        "linear-weight": "2.0", 
+        "noise threshold": "0.2", 
+        "pie-peaks": "0.5", 
+        "ring bars": "0.5", 
+        "ring current": "0.0", 
+        "ring peak width": "0.1", 
+        "ring peaks": "0.0", 
+        "rings": "0.0", 
+        "rotation": "0.0", 
+        "time-range": "0.2"
+    }
+}

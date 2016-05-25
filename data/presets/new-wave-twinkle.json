@@ -1,0 +1,14 @@
+{
+    "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "new wave twinkle", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "twinkle audio more", 
+        "second-preset": "radial new wave", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "0.5"
+    }
+}

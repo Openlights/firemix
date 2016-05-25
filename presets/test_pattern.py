@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,41 +17,43 @@
 
 import numpy as np
 
-from lib.raw_preset import RawPreset
+from lib.preset import Preset
 from lib.buffer_utils import BufferUtils
 
-class TestPattern(RawPreset):
+class TestPattern(Preset):
     """Array calibration pattern"""
 
     def setup(self):
         self._pixels = self.scene().get_all_pixels()
         self._logical = self.scene().get_all_pixels_logical()
         self._heirarchy = self.scene().fixture_hierarchy()
+        self._hue = 0.0
 
     def reset(self):
         pass
 
     def draw(self, dt):
-        self.setAllHLS(1.0, 0.05, 0.0)
+        self._hue = (self._hue + (dt * 0.1)) % 1.0
+        self.setAllHLS(self._hue, 0.2, 1.0)
         for strand in self._heirarchy:
             self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 0), scene=self.scene()), (0.33, 0.5, 1.0))
 
-            if (strand & 0x1):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.33, 1.0, 1.0))
-            else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.66, 0.5, 0.75))
-            if (strand & 0x2):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.33, 1.0, 1.0))
-            else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.66, 0.5, 0.75))
-            if (strand & 0x4):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.33, 1.0, 1.0))
-            else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.66, 0.5, 0.75))
             if (strand & 0x8):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.33, 1.0, 1.0))
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.66, 0.9, 1.0))
             else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.66, 0.5, 0.75))
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.0, 0.2, 0.0))
+            if (strand & 0x4):
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.66, 0.9, 1.0))
+            else:
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.0, 0.2, 0.0))
+            if (strand & 0x2):
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.66, 0.9, 1.0))
+            else:
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.0, 0.2, 0.0))
+            if (strand & 0x1):
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.66, 0.9, 1.0))
+            else:
+                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.0, 0.2, 0.0))
 
             for fixture in self._heirarchy[strand]:
                 last_fixture_pixel = self._heirarchy[strand][fixture].pixels - 1

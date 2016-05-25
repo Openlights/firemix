@@ -1,0 +1,28 @@
+{
+    "classname": "TestFFT", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "fft mask", 
+    "params": {
+        "allow-playback": "False", 
+        "color-gradient": "[(0.0,0.2,0), (0.0,0.2,0)]", 
+        "fft smoothing": "1.0", 
+        "fft-bias": "0.0", 
+        "fft-gamma": "2.0", 
+        "fft-weight": "40.0", 
+        "frequency-max": "1.0", 
+        "frequency-min": "0.0", 
+        "ghosting": "0.5", 
+        "linear": "0.0", 
+        "linear-weight": "2.0", 
+        "noise threshold": "0.3", 
+        "pie-peaks": "0.0", 
+        "ring bars": "0.0", 
+        "ring current": "0.0", 
+        "ring peak width": "0.02", 
+        "ring peaks": "0.0", 
+        "rings": "0.0", 
+        "rotation": "0.0", 
+        "time-range": "0.3"
+    }
+}

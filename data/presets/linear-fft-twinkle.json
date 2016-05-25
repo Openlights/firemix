@@ -1,0 +1,14 @@
+{
+    "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "linear fft twinkle", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "3.0", 
+        "first-preset": "twinkle audio red bass", 
+        "second-preset": "linear fft tall", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "0.2"
+    }
+}

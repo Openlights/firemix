@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ import math
 import logging
 import numpy as np
 
+from scipy import spatial
 from lib.json_dict import JSONDict
 from lib.fixture import Fixture
 from lib.buffer_utils import BufferUtils
@@ -49,6 +50,7 @@ class Scene(JSONDict):
         self._all_pixel_locations = None
         self._all_pixels_raw = None
         self._strand_settings = None
+        self._tree = None
 
     def warmup(self):
         """
@@ -68,8 +70,17 @@ class Scene(JSONDict):
         self.get_fixture_bounding_box()
         self.get_intersection_points()
         self.get_all_pixels_logical()
-        #self.get_all_pixels()
-        #self.get_all_pixel_locations()
+        self._tree = spatial.KDTree(self.get_all_pixel_locations())
+
+        locations = self.get_all_pixel_locations()
+        self.pixelDistances = np.empty([len(locations), len(locations)])
+
+        for pixel in range(len(locations)):
+            cx, cy = locations[pixel]
+            x,y = (locations - (cx, cy)).T
+            pixel_distances = np.sqrt(np.square(x) + np.square(y))
+            self.pixelDistances[pixel] = pixel_distances
+
         log.info("Done")
 
     def extents(self):
@@ -138,21 +149,18 @@ class Scene(JSONDict):
 
     def get_matrix_extents(self):
         """
-        Returns a tuple of (strands, fixtures, pixels) indicating the maximum extents needed
-        for a regular 3D matrix of pixels.
+        Returns a tuple of (strands, pixels) indicating the maximum extents needed
+        to store the pixels in memory (note that we now assume that each strand
+        is the same length).
         """
         fh = self.fixture_hierarchy()
         strands = len(fh)
-        fixtures = 0
-        pixels = 0
+        longest_strand = 0
         for strand in fh:
-            if len(fh[strand]) > fixtures:
-                fixtures = len(fh[strand])
-            for fixture in fh[strand]:
-                if fh[strand][fixture].pixels > pixels:
-                    pixels = fh[strand][fixture].pixels
+            strand_len = sum([fh[strand][f].pixels for f in fh[strand]])
+            longest_strand = max(strand_len, longest_strand)
 
-        return (strands, fixtures, pixels)
+        return (strands, longest_strand)
 
     def get_colliding_fixtures(self, strand, address, loc='start', radius=50):
         """
@@ -205,20 +213,11 @@ class Scene(JSONDict):
 
         if neighbors is None:
             neighbors = []
-            strand, address, pixel = BufferUtils.index_to_logical(index)
-            f = self.fixture(strand, address)
-            neighbors = [BufferUtils.logical_to_index((strand, address, p)) for p in f.pixel_neighbors(pixel)]
-
-            if (pixel == 0) or (pixel == f.pixels - 1):
-                # If this pixel is on the end of a fixture, consider the neighboring fixtures
-                loc = 'end'
-                if pixel == 0:
-                    loc = 'start'
-
-                logical_neighbors = self.get_colliding_fixtures(strand, address, loc)
-                neighbors += [BufferUtils.logical_to_index(n) for n in logical_neighbors]
-
-            self._pixel_neighbors_cache[index] = neighbors
+            if self._tree:
+                neighbors = self._tree.query_ball_point(self.get_pixel_location(index), 3)
+                # if len(neighbors) > 4:
+                #     print index, neighbors
+                self._pixel_neighbors_cache[index] = neighbors
 
         return neighbors
 
@@ -275,6 +274,9 @@ class Scene(JSONDict):
                     addresses.append((f.strand, f.address, pixel))
             self._all_pixels = addresses
         return self._all_pixels
+
+    def get_pixel_distances(self, pixel):
+        return self.pixelDistances[pixel]
 
     def get_all_pixels(self):
         """

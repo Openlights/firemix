@@ -1,0 +1,25 @@
+{
+    "classname": "SimplexNoise", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "rainbow noise bands large", 
+    "params": {
+        "allow-playback": "True", 
+        "angle": "0.7", 
+        "audio-brightness": "1.0", 
+        "audio-hue-offset": "0.0", 
+        "beat-color-boost": "0.02", 
+        "beat-lum-boost": "0.05", 
+        "beat-lum-time": "0.1", 
+        "color-speed": "0.1", 
+        "hue-max": "[0.8,1.0,0.1]", 
+        "hue-min": "[0.2,0.3,0.1]", 
+        "hue-offset": "0.0", 
+        "luminance-map": "[(0,-2,0), (0,0.5,1), (0,-2,0), (0.1,0.5,1), (0,-2,0), (0.2,0.5,1), (0,-2,0), (0.3,0.5,1), (0,-2,0), (0.4,0.5,1), (0,-2,0), (0.5,0.5,1), (0,-2,0), (0.6,0.5,1), (0,-2,0), (0.7,0.5,1), (0,-2,0), (0.8,0.5,1), (0,-2,0), (0.9,0.5,1)]", 
+        "luminance-scale": "0.06", 
+        "resolution": "200", 
+        "scale": "0.01", 
+        "speed": "0.1", 
+        "stretch": "1.0"
+    }
+}

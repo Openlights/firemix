@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,14 +18,14 @@
 import colorsys
 import random
 
-from lib.raw_preset import RawPreset
+from lib.preset import Preset
 from lib.colors import uint8_to_float, float_to_uint8
 from lib.buffer_utils import BufferUtils
 from lib.color_fade import ColorFade
 from lib.parameters import FloatParameter, IntParameter, HLSParameter
 
 
-class Fungus(RawPreset):
+class Fungus(Preset):
     """
     Spreading fungus
     Illustrates use of Scene.get_pixel_neighbors.
@@ -64,6 +64,10 @@ class Fungus(RawPreset):
     def setup(self):
         self._population = 0
         self._time = {}
+        self.add_parameter(FloatParameter('audio-onset-spread-boost', 0.0))
+        self.add_parameter(FloatParameter('audio-onset-spread-boost-echo', 0.5))
+        self.add_parameter(FloatParameter('audio-onset-death-boost', 0.0))
+        self.add_parameter(FloatParameter('audio-onset-birth-boost', 0.0))
         self.add_parameter(FloatParameter('growth-time', self._growth_time))
         self.add_parameter(FloatParameter('life-time', self._life_time))
         self.add_parameter(FloatParameter('isolated-life-time', self._isolated_life_time))
@@ -77,7 +81,6 @@ class Fungus(RawPreset):
         self.add_parameter(HLSParameter('alive-color', self._alive_color))
         self.add_parameter(HLSParameter('dead-color', self._dead_color))
         self.add_parameter(HLSParameter('black-color', self._black_color))
-        self.parameter_changed(None)
 
     def reset(self):
         self._current_time = 0
@@ -87,6 +90,7 @@ class Fungus(RawPreset):
         self._fading_out = []
         self._population = 0
         self._time = {}
+        self._spread_boost = 0
         self.parameter_changed(None)
 
     def parameter_changed(self, parameter):
@@ -118,14 +122,19 @@ class Fungus(RawPreset):
         p_birth = (1.0 - self._spontaneous_birth_probability) if self._population > 5 else 0.5
 
         # Spontaneous birth: Rare after startup
-        if (self._population < self._population_limit) and random.random() > p_birth:
-            address = BufferUtils.logical_to_index((random.randint(0, self._max_strand - 1),
-                                                    random.randint(0, self._max_fixture - 1),
-                                                    random.randint(0, self._max_pixel - 1)))
+        if (self._population < self._population_limit) and random.random() + self.parameter('audio-onset-birth-boost').get() > p_birth:
+            strand = random.randint(0, BufferUtils.num_strands - 1)
+            fixture = random.randint(0, BufferUtils.strand_num_fixtures(strand) - 1)
+            pixel = random.randint(0, BufferUtils.fixture_length(strand, fixture) - 1)
+            address = BufferUtils.logical_to_index((strand, fixture, pixel))
             if address not in (self._growing + self._alive + self._dying + self._fading_out):
                 self._growing.append(address)
                 self._time[address] = self._current_time
                 self._population += 1
+
+        self._spread_boost *= self.parameter('audio-onset-spread-boost-echo').get()
+        if self._mixer.is_onset():
+            self._spread_boost += self.parameter('audio-onset-spread-boost').get()
 
         # Color growth
         for address in self._growing:
@@ -138,7 +147,9 @@ class Fungus(RawPreset):
             self.setPixelHLS(address, color)
 
             # Spread
-            if (self._population < self._population_limit) and (random.random() < self._spread_rate * dt):
+            spread_rate = self._spread_rate + self._spread_boost
+
+            if (self._population < self._population_limit) and (random.random() < spread_rate * dt):
                 for spread in neighbors:
                     if spread not in (self._growing + self._alive + self._dying + self._fading_out):
                         self._growing.append(spread)
@@ -153,7 +164,7 @@ class Fungus(RawPreset):
             if len(neighbors) < 2:
                 lt = self._isolated_life_time
 
-            if len(live_neighbors) < 2 and ((self._current_time - self._time[address]) / lt) >= 1.0:
+            if len(live_neighbors) < 3 and ((self._current_time - self._time[address]) / lt) >= 1.0:
                 self._alive.remove(address)
                 self._dying.append(address)
                 self._time[address] = self._current_time
@@ -171,7 +182,7 @@ class Fungus(RawPreset):
 
         # Color decay
         for address in self._dying:
-            p, color = self._get_next_color(address, self._death_time, self._current_time)
+            p, color = self._get_next_color(address, self._death_time, self._current_time + self.parameter('audio-onset-death-boost').get())
             if p >= 1.0:
                 self._dying.remove(address)
                 self._fading_out.append(address)
@@ -180,7 +191,7 @@ class Fungus(RawPreset):
 
         # Fade out
         for address in self._fading_out:
-            p, color = self._get_next_color(address, self._fade_out_time, self._current_time)
+            p, color = self._get_next_color(address, self._fade_out_time, self._current_time + self.parameter('audio-onset-death-boost').get())
             if p >= 1.0:
                 self._fading_out.remove(address)
             self.setPixelHLS(address, color)

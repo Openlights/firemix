@@ -1,0 +1,37 @@
+{
+    "name": "Test Preset",
+    "author": "Jon Evans",
+    "allow-playback": true,
+    "components": [
+        {
+            "class": "scale",
+            "name": "scale1",
+            "parameters": {
+                "key1": "value1",
+                "key2": {
+                    "class": "wibbler",
+                    "params": {
+                        "speed": 1.0,
+                        "min": 0.0,
+                        "max": 1.0
+                    }
+                }
+            }
+        },
+        {
+            "class": "gradient",
+            "name": "gradient1",
+            "parameters": {
+                "key1": "value1",
+                "key2": "value2"
+            }
+        }
+    ],
+    "inputs": [
+        "scale1"
+    ],
+    "pipeline": [
+        "scale1",
+        "gradient1"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "rainbow spiral twinkle", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "rainbow spiral", 
+        "second-preset": "audio color", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

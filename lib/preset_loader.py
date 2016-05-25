@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,14 +15,35 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from collections import defaultdict
 import os
 import logging
 import inspect
+from watchdog.observers import Observer
+from watchdog.events import PatternMatchingEventHandler, FileModifiedEvent, FileDeletedEvent
 
 from lib.preset import Preset
 
 log = logging.getLogger("firemix.lib.preset_loader")
 
+
+class PresetFileEventHandler(PatternMatchingEventHandler):
+
+    patterns = ["*"]
+    ignore_directories = False
+    callback = None
+
+    def on_modified(self, event):
+        if event.is_directory:
+              files_in_dir = [event.src_path+"/"+f for f in os.listdir(event.src_path)]
+              if len(files_in_dir) > 0:
+                  modified_filename = max(files_in_dir, key=os.path.getmtime)
+        else:
+            modified_filename = event.src_path
+        if modified_filename[-3:] != ".py":
+            return
+        if self.callback:
+            self.callback(modified_filename)
 
 class PresetLoader:
     """
@@ -32,9 +53,26 @@ class PresetLoader:
     http://code.activestate.com/recipes/436873-import-modulesdiscover-methods-from-a-directory-na/
     """
 
-    def __init__(self):
+    def __init__(self, parent):
+        self._parent = parent
         self._modules = []
         self._presets = []
+        self._presets_dict = defaultdict()
+        self.event_handler = PresetFileEventHandler()
+        self.event_handler.callback = self.reload_preset_by_filename
+        self.observer = Observer()
+        self.observer.schedule(self.event_handler, os.path.join(os.getcwd(), "presets"), recursive=True)
+        log.info("Watching preset directory for changes.")
+        self.observer.start()
+
+    def __del__(self):
+        self.observer.stop()
+        self.observer.join()
+
+    def all_presets(self):
+        if not self._presets_dict:
+            self._presets_dict = self.load()
+        return self._presets_dict
 
     def load(self):
         self._modules = []
@@ -51,7 +89,8 @@ class PresetLoader:
                 self._modules.append(module)
                 self._load_presets_from_modules(module)
         log.info("Loaded %d presets." % len(self._presets))
-        return dict([(i.__name__, i) for i in self._presets])
+        self._presets_dict = dict([(classname.__name__, (module, classname)) for module, classname in self._presets])
+        return dict([(i[1].__name__, i[1]) for i in self._presets])
 
     def reload(self):
         """Reloads all preset modules"""
@@ -61,11 +100,21 @@ class PresetLoader:
             self._load_presets_from_modules(module)
         return dict([(i.__name__, i) for i in self._presets])
 
+    def reload_preset_by_filename(self, filename):
+        log.info("Reloading %s", filename)
+        for idx, module in enumerate(self._modules):
+            if module.__name__.split('.')[1] == os.path.basename(filename).split('.')[0]:
+                self._modules[idx] = reload(module)
+                self._presets = [(m, o) for (m, o) in self._presets if m != module]
+                self._load_presets_from_modules(self._modules[idx])
+                self._parent.module_reloaded(module.__name__)
+
     def _load_presets_from_modules(self, module):
         for name, obj in inspect.getmembers(module, inspect.isclass):
-            if issubclass(obj, Preset) and (name is not "Preset") and (name is not "RawPreset"):
+            if issubclass(obj, Preset) and (name is not "Preset") and (name is not "Preset"):
                 log.info("Loaded %s" % obj.__name__)
-                self._presets.append(obj)
+                self._presets.append((module, obj))
+                self._presets_dict[obj.__name__] = (module, obj)
 
 
 

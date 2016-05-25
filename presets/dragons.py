@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,14 +18,14 @@
 import colorsys
 import random
 
-from lib.raw_preset import RawPreset
+from lib.preset import Preset
 from lib.colors import uint8_to_float, float_to_uint8
 from lib.buffer_utils import BufferUtils
 from lib.color_fade import ColorFade
 from lib.parameters import FloatParameter, IntParameter, HLSParameter
 
 
-class Dragons(RawPreset):
+class Dragons(Preset):
     """
     Dragons spawn randomly and travel.  At vertices, dragons can reproduce.
     If two dragons collide, both die.
@@ -88,9 +88,9 @@ class Dragons(RawPreset):
         
         # Spontaneous birth: Rare after startup
         if (len(self._dragons) < self.parameter('pop-limit').get()) and random.random() < self.parameter('birth-rate').get():
-            address = BufferUtils.logical_to_index((random.randint(0, self._max_strand - 1),
-                        random.randint(0, self._max_fixture - 1),
-                        0))
+            strand = random.randint(0, BufferUtils.num_strands - 1)
+            fixture = random.randint(0, BufferUtils.strand_num_fixtures(strand) - 1)
+            address = BufferUtils.logical_to_index((strand, fixture, 0))
             if address not in [d.loc for d in self._dragons]:
                 self._dragons.append(self.Dragon(address, 1, self._current_time))
 

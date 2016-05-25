@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,14 +20,17 @@ from PySide import QtCore, QtGui
 from ui.ui_dlg_settings import Ui_DlgSettings
 from lib import color_modes
 
+# TODO: This is a hack
+PROTOCOLS = ["Legacy", "ZMQ", "OPC"]
+
 
 class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
 
     def __init__(self, parent=None):
         super(DlgSettings, self).__init__(parent)
-        self.playlist = parent._app.playlist
+        self.playlist = parent.app.playlist
         self.setupUi(self)
-        self.app = parent._app
+        self.app = parent.app
 
         # Setup tree view
         self.tree_settings.itemClicked.connect(self.on_tree_changed)
@@ -104,7 +107,11 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             port = int(self.tbl_networking_clients.item(i, 1).text())
             enabled = (self.tbl_networking_clients.cellWidget(i, 2).checkState() == QtCore.Qt.Checked)
             color_mode = self.tbl_networking_clients.cellWidget(i, 3).currentText()
-            client = {"host": host, "port": port, "enabled": enabled, "color-mode": color_mode}
+            proto = self.tbl_networking_clients.cellWidget(i, 4).currentText()
+            ignore_dimming = (self.tbl_networking_clients.cellWidget(i, 5).checkState() == QtCore.Qt.Checked)
+
+            client = {"host": host, "port": port, "enabled": enabled, "color-mode": color_mode,
+                      "protocol": proto, "ignore-dimming": ignore_dimming}
             if client not in clients:
                 clients.append(client)
         self.app.settings['networking']['clients'] = clients
@@ -130,6 +137,7 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             item_host = QtGui.QTableWidgetItem(client["host"])
             item_port = QtGui.QTableWidgetItem(str(client["port"]))
             item_enabled = QtGui.QCheckBox()
+            item_ignore_dimming = QtGui.QCheckBox()
 
             item_color_mode = QtGui.QComboBox()
             for mode in color_modes.modes:
@@ -140,10 +148,21 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             if client["enabled"]:
                 item_enabled.setCheckState(QtCore.Qt.Checked)
 
+            if client.get("ignore-dimming", False):
+                item_ignore_dimming.setCheckState(QtCore.Qt.Checked)
+
+            item_protocol = QtGui.QComboBox()
+            for proto in PROTOCOLS:
+                item_protocol.addItem(proto)
+
+            item_protocol.setCurrentIndex(PROTOCOLS.index(client["protocol"]))
+
             self.tbl_networking_clients.setItem(i, 0, item_host)
             self.tbl_networking_clients.setItem(i, 1, item_port)
             self.tbl_networking_clients.setCellWidget(i, 2, item_enabled)
             self.tbl_networking_clients.setCellWidget(i, 3, item_color_mode)
+            self.tbl_networking_clients.setCellWidget(i, 4, item_protocol)
+            self.tbl_networking_clients.setCellWidget(i, 5, item_ignore_dimming)
         self.tbl_networking_clients.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
 
     def add_networking_client_row(self):
@@ -152,6 +171,15 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         self.tbl_networking_clients.setItem(row, 0, QtGui.QTableWidgetItem(""))
         self.tbl_networking_clients.setItem(row, 1, QtGui.QTableWidgetItem("3020"))
         self.tbl_networking_clients.setCellWidget(row, 2, QtGui.QCheckBox())
+        item_color_mode = QtGui.QComboBox()
+        for mode in color_modes.modes:
+            item_color_mode.addItem(mode)
+
+        item_protocol = QtGui.QComboBox()
+        for proto in PROTOCOLS:
+            item_protocol.addItem(proto)
+        self.tbl_networking_clients.setCellWidget(row, 3, item_color_mode)
+        self.tbl_networking_clients.setCellWidget(row, 4, item_protocol)
 
     def del_networking_client_row(self):
         self.tbl_networking_clients.removeRow(self.tbl_networking_clients.currentRow())

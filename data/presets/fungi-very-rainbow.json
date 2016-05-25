@@ -1,0 +1,26 @@
+{
+    "classname": "Fungus", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "fungi very rainbow", 
+    "params": {
+        "alive-color": "[3.7, 0.6, 0.6]", 
+        "allow-playback": "True", 
+        "audio-onset-birth-boost": "0.0", 
+        "audio-onset-death-boost": "0.0", 
+        "audio-onset-spread-boost": "0.0", 
+        "audio-onset-spread-boost-echo": "0.5", 
+        "birth-rate": "0.05", 
+        "black-color": "[-2.5, 0.0, 1.0]", 
+        "dead-color": "[0.7, 0.1, 1.0]", 
+        "death-time": "1.0", 
+        "fade-out-time": "1.0", 
+        "growth-time": "0.2", 
+        "isolated-life-time": "0.1", 
+        "life-time": "0.5", 
+        "mass-destruction-threshold": "400", 
+        "mass-destruction-time": "2.0", 
+        "pop-limit": "400", 
+        "spread-rate": "10.0"
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "classname": "SimplexNoise", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "galaxy", 
+    "params": {
+        "allow-playback": "False", 
+        "angle": "0.125", 
+        "audio-brightness": "0.0", 
+        "audio-hue-offset": "0.0", 
+        "beat-color-boost": "0.0", 
+        "beat-lum-boost": "0.05", 
+        "beat-lum-time": "0.1", 
+        "color-speed": "0.04", 
+        "hue-max": "0.9", 
+        "hue-min": "0.6", 
+        "hue-offset": "0.0", 
+        "luminance-map": "[(0.9,0,1), (0.6,0.3,1), (0.9,0,1), (0.6,-0.1,1), (0.9,0.3,1)]", 
+        "luminance-scale": "0.8", 
+        "resolution": "128", 
+        "scale": "0.5", 
+        "speed": "2.0", 
+        "stretch": "1.0"
+    }
+}

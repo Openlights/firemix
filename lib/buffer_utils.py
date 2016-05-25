@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,13 +23,14 @@ class BufferUtils:
     Utilities for working with frame buffers
     """
     _first_time = True
-    _num_strands = 0
-    _max_fixtures = 0
+    num_strands = 0
+    max_fixtures = 0
     _max_pixels_per_fixture = 0
     _max_pixels_per_strand = 0
     _buffer_length = 0
     _app = None
     _strand_lengths = {}
+    _strand_num_fixtures = {}
     _fixture_lengths = {}
     _fixture_extents = {}
     _fixture_pixels = {}
@@ -46,19 +47,15 @@ class BufferUtils:
         """
         Generates the caches and initializes local storage.  Must be called before any other methods.
         """
-        cls._num_strands, cls._max_fixtures, cls._max_pixels_per_fixture = cls._app.scene.get_matrix_extents()
-        cls._max_pixels_per_strand = cls._max_fixtures * cls._max_pixels_per_fixture
-        cls._buffer_length = cls._num_strands * cls._max_pixels_per_strand
+        cls.num_strands, cls._max_pixels_per_strand = cls._app.scene.get_matrix_extents()
+        cls._buffer_length = cls.num_strands * cls._max_pixels_per_strand
         fh = cls._app.scene.fixture_hierarchy()
 
         for strand in fh:
-            cls._strand_lengths[strand] = 0
-            for fixture in fh[strand]:
-                fixture_length = cls._app.scene.fixture(strand, fixture).pixels
-                cls._strand_lengths[strand] += fixture_length
-                cls._fixture_lengths[(strand, fixture)] = fixture_length
+            cls._strand_lengths[strand] = sum([fh[strand][f].pixels for f in fh[strand]])
 
         for strand in fh:
+            cls._strand_num_fixtures[strand] = len(fh[strand])
             for fixture in fh[strand]:
                 for offset in xrange(cls._app.scene.fixture(strand, fixture).pixels):
                     cls.logical_to_index((strand, fixture, offset))
@@ -89,7 +86,8 @@ class BufferUtils:
                 index += scene.fixture(strand, i).pixels
 
             fixture_start = index
-            fixture_end = index + scene.fixture(strand, fixture).pixels
+            num_pixels = scene.fixture(strand, fixture).pixels
+            fixture_end = index + num_pixels
 
             # (3) Add the offset along the fixture
             index += offset
@@ -97,6 +95,7 @@ class BufferUtils:
             cls._pixel_index_cache[logical_address] = index
             cls._pixel_logical_cache[index] = logical_address
             cls._fixture_extents[(strand, fixture)] = (fixture_start, fixture_end)
+            cls._fixture_pixels[(strand, fixture)] = num_pixels
 
         return index
 
@@ -174,3 +173,11 @@ class BufferUtils:
             start += cls._strand_lengths[i]
 
         return (start, start + cls._strand_lengths[strand])
+
+    @classmethod
+    def strand_num_fixtures(cls, strand):
+        return cls._strand_num_fixtures[strand]
+
+    @classmethod
+    def fixture_length(cls, strand, fixture):
+        return cls._fixture_pixels[(strand, fixture)]

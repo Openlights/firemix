@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,7 +40,8 @@ class FireMixApp(QtCore.QThread):
     """
     playlist_changed = QtCore.Signal()
 
-    def __init__(self, args, parent=None):
+    def __init__(self, parent, args):
+        QtCore.QThread.__init__(self, parent)
         self._running = False
         self.args = args
         self.settings = Settings()
@@ -50,6 +51,7 @@ class FireMixApp(QtCore.QThread):
         self.plugins = PluginLoader()
         self.mixer = Mixer(self)
         self.playlist = Playlist(self)
+        self.qt_app = parent
 
         self.scene.warmup()
 
@@ -59,7 +61,8 @@ class FireMixApp(QtCore.QThread):
             self.aubio_thread.start()
             self.aubio_connector = AubioConnector()
             self.aubio_connector.onset_detected.connect(self.mixer.onset_detected)
-            self.aubio_connector.fft_data.connect(self.mixer.update_fft_data)
+            self.aubio_connector.fft_data.connect(self.mixer.audio.update_fft_data)
+            self.aubio_connector.pitch_data.connect(self.mixer.audio.update_pitch_data)
             self.aubio_connector.moveToThread(self.aubio_thread)
 
         self.mixer.set_playlist(self.playlist)
@@ -67,8 +70,6 @@ class FireMixApp(QtCore.QThread):
         if self.args.preset:
             log.info("Setting constant preset %s" % args.preset)
             self.mixer.set_constant_preset(args.preset)
-
-        QtCore.QThread.__init__(self, parent)
 
     def run(self):
         self._running = True

@@ -1,0 +1,14 @@
+{
+    "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "wiggle rings", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "-5.0", 
+        "first-preset": "spiral audio boost", 
+        "second-preset": "spiral wiggle", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

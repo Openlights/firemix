@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,4 +36,4 @@ class LinearBlend(Transition):
     def get(self, start, end, progress, fade_length=0.6):
         if self._buffer is None:
             self._buffer = np.empty_like(start)
-        return hls_blend(start, end, self._buffer, progress, 'add', fade_length, 0.3)
+        return hls_blend(start, end, self._buffer, progress, 'add', fade_length, 1.0)

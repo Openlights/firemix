@@ -1,0 +1,18 @@
+{
+    "classname": "Dragons", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "dragons comet", 
+    "params": {
+        "alive-color": "(0.0, 1.0, 1.0)", 
+        "allow-playback": "False", 
+        "birth-rate": "0.01", 
+        "dead-color": "(0.0, 0.0, 0.0)", 
+        "explode-color": "(1.0, 1.0, 1.0)", 
+        "growth-rate": "100.0", 
+        "growth-time": "2.0", 
+        "pop-limit": "1", 
+        "tail-color": "(0.5, 0.0, 1.0)", 
+        "tail-persist": "0.2"
+    }
+}

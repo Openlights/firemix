@@ -1,0 +1,27 @@
+{
+    "classname": "Twinkle", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "twinkle stars", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-birth-rate": "0.0", 
+        "audio-eq-bands": "0.0", 
+        "audio-peak-birth-rate": "0.0", 
+        "audio-ring-birth-rate": "0.0", 
+        "audio-ring-diameter": "300.0", 
+        "audio-ring-lifetime": "2.0", 
+        "audio-ring-start-radius": "0.0", 
+        "audio-ring-use-fft-brightness": "0.0", 
+        "audio-ring-width": "5.0", 
+        "beat-births": "25.0", 
+        "beat-color": "(1.0, 1.0, 1.0)", 
+        "birth-rate": "20.0", 
+        "color-gradient": "[(0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.1, 0.6, 1.0)]", 
+        "fade-down-time": "2.0", 
+        "fade-rate": "0.1", 
+        "fade-up-time": "6.0", 
+        "noise threshold": "0.1", 
+        "pie-peaks": "0.0"
+    }
+}

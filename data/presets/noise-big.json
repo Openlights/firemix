@@ -1,0 +1,25 @@
+{
+    "classname": "SimplexNoise", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "noise big", 
+    "params": {
+        "allow-playback": "True", 
+        "angle": "0.7", 
+        "audio-brightness": "1.0", 
+        "audio-hue-offset": "0.1", 
+        "beat-color-boost": "0.0", 
+        "beat-lum-boost": "0.05", 
+        "beat-lum-time": "0.1", 
+        "color-speed": "0.1", 
+        "hue-max": "[0.8,1.0,0.1]", 
+        "hue-min": "[0.2,0.3,0.1]", 
+        "hue-offset": "[-0.2,0.2,0.1]", 
+        "luminance-map": "[(1.9,-5,1), (0.5,0.5,1), (1,-1,1)]", 
+        "luminance-scale": "0.2", 
+        "resolution": "200", 
+        "scale": "0.3", 
+        "speed": "0.1", 
+        "stretch": "1.0"
+    }
+}

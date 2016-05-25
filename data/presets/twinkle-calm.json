@@ -1,0 +1,27 @@
+{
+    "classname": "Twinkle", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "twinkle calm", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-birth-rate": "0.0", 
+        "audio-eq-bands": "0.0", 
+        "audio-peak-birth-rate": "0.0", 
+        "audio-ring-birth-rate": "0.0001", 
+        "audio-ring-diameter": "600.0", 
+        "audio-ring-lifetime": "10.0", 
+        "audio-ring-start-radius": "0.0", 
+        "audio-ring-use-fft-brightness": "0.0", 
+        "audio-ring-width": "1.0", 
+        "beat-births": "5.0", 
+        "beat-color": "(0.8, 0.6, 1.0)", 
+        "birth-rate": "[1,150,10]", 
+        "color-gradient": "[(0.5, 0.0, 1.0), (0.8, 0.5, 1.0), (0.1, 1.0, 1.0)]", 
+        "fade-down-time": "[4,12,3]", 
+        "fade-rate": "0.1", 
+        "fade-up-time": "[4,8,3]", 
+        "noise threshold": "0.1", 
+        "pie-peaks": "0.0"
+    }
+}

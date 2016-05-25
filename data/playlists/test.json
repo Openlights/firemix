@@ -3,81 +3,353 @@
     "playlist": [
         {
             "classname": "TestFFT", 
-            "name": "FFT", 
+            "name": "FFT other", 
             "params": {
-                "fft-weight": "1.0"
-            }
-        }, 
-        {
-            "classname": "TestPattern", 
-            "name": "TestPattern-1", 
-            "params": {}
-        }, 
-        {
-            "classname": "SimplexNoise", 
-            "name": "Noise", 
-            "params": {
-                "angle": "0.125", 
-                "beat-color-boost": "0.0", 
-                "beat-lum-boost": "0.05", 
-                "beat-lum-time": "0.1", 
-                "color-speed": "0.2", 
-                "hue-max": "0.0", 
-                "hue-min": "0.0", 
-                "luminance-map": "[(0,0,0), (0,1,0)]", 
-                "luminance-scale": "0.3", 
-                "resolution": "1", 
-                "scale": "7.0", 
-                "speed": "0.7", 
-                "stretch": "0.4"
-            }
-        }, 
-        {
-            "classname": "CombinePresets", 
-            "name": "CombinePresets-1", 
-            "params": {
-                "first-preset": "FFT", 
-                "second-preset": "Spiral", 
-                "transition-mode": "Multiply Blend", 
-                "transition-progress": "0.5"
+                "allow-playback": "True", 
+                "color-gradient": "[(1.2,0.5,1), (0.8,0.5,1), (1.2,0.5,1)]", 
+                "fft-bias": "0.0", 
+                "fft-gamma": "1.0", 
+                "fft-weight": "1.0", 
+                "frequency-max": "0.1", 
+                "frequency-min": "0.8", 
+                "ghosting": "0.0", 
+                "noise threshold": "0.1", 
+                "pie-peaks": "0.0", 
+                "ring bars": "0.0", 
+                "ring current": "0.0", 
+                "ring peak width": "0.02", 
+                "ring peaks": "0.0", 
+                "rings": "0.0", 
+                "rotation": "0.0", 
+                "time-range": "0.5"
             }
         }, 
         {
             "classname": "RadialGradient", 
             "name": "Radial", 
             "params": {
-                "blackout": "0.1", 
-                "hue-step": "0.1", 
-                "hue-width": "0.0", 
-                "luminance-scale": "2.0", 
-                "luminance-speed": "0.01", 
+                "allow-playback": "True", 
+                "audio-amplitude": "-5.0", 
+                "audio-boost": "0.0", 
+                "audio-brightness": "0.0", 
+                "audio-fader-percent": "1.0", 
+                "audio-scale": "0.0", 
+                "audio-use-fader": "0.0", 
+                "color-gradient": "[(0,0,1), (0,1,1)]", 
+                "hue-step": "0.3", 
+                "hue-width": "0.3", 
+                "luminance-scale": "1.0", 
+                "luminance-speed": "-0.1", 
+                "radius-scale": "1.0", 
+                "rwave-amplitude": "0.5", 
+                "rwave-period": "1.5", 
+                "rwave-speed": "0.1", 
+                "rwave-standing": "0.0", 
                 "speed": "0.1", 
-                "wave1-amplitude": "0.5", 
+                "wave1-amplitude": "0.0", 
                 "wave1-period": "1.5", 
-                "wave1-speed": "0.05", 
-                "wave2-amplitude": "0.5", 
-                "wave2-period": "1.5", 
-                "wave2-speed": "0.1", 
-                "whiteout": "0.2"
+                "wave1-speed": "1.0", 
+                "wave2-amplitude": "0.3", 
+                "wave2-period": "6.0", 
+                "wave2-speed": "2.0"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "Radial FFT", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.0", 
+                "first-preset": "Radial", 
+                "second-preset": "FFT rainbow", 
+                "transition-mode": "Linear Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "TestFFT", 
+            "name": "FFT rainbow", 
+            "params": {
+                "allow-playback": "True", 
+                "color-gradient": "[(0,0.5,1), (1,0.5,1)]", 
+                "fft-bias": "0.0", 
+                "fft-gamma": "1.0", 
+                "fft-weight": "1.0", 
+                "frequency-max": "1.0", 
+                "frequency-min": "0.0", 
+                "ghosting": "0.0", 
+                "noise threshold": "0.1", 
+                "pie-peaks": "0.0", 
+                "ring bars": "0.0", 
+                "ring current": "0.0", 
+                "ring peak width": "0.02", 
+                "ring peaks": "0.0", 
+                "rings": "0.0", 
+                "rotation": "0.0", 
+                "time-range": "0.2"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "noise fft", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.0", 
+                "first-preset": "FFT", 
+                "second-preset": "Noise", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
+            }
+        }, 
+        {
+            "classname": "SimplexNoise", 
+            "name": "Noise", 
+            "params": {
+                "allow-playback": "True", 
+                "angle": "0.125", 
+                "audio-brightness": "0.0", 
+                "beat-color-boost": "2.0", 
+                "beat-lum-boost": "0.05", 
+                "beat-lum-time": "0.1", 
+                "color-speed": "-1.0", 
+                "hue-max": "0.0", 
+                "hue-min": "0.0", 
+                "luminance-map": "[(0,-2,0), (0,1,0)]", 
+                "luminance-scale": "0.6", 
+                "resolution": "1", 
+                "scale": "7.0", 
+                "speed": "0.7", 
+                "stretch": "1.0"
+            }
+        }, 
+        {
+            "classname": "CombinePresets", 
+            "name": "spiral fft", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-transition": "0.0", 
+                "first-preset": "FFT rainbow", 
+                "second-preset": "Spiral", 
+                "transition-mode": "Multiply Blend", 
+                "transition-progress": "0.5"
             }
         }, 
         {
             "classname": "SpiralGradient", 
             "name": "Spiral", 
             "params": {
+                "allow-playback": "True", 
                 "angle-hue-width": "2.0", 
+                "audio-brightness": "0.3", 
+                "audio-speed-boost-bass": "0.0", 
+                "audio-speed-boost-treble": "0.0", 
+                "audio-twist": "0.0", 
+                "audio-wave-period-boost": "0.0", 
                 "center-distance": "0.0", 
                 "center-speed": "0.0", 
-                "color-end": "(1.0, 0.5, 0.0)", 
-                "color-start": "(0.0, -3.0, 0.0)", 
+                "color-gradient": "[(0.0, -1.0, 0.0), (1.0, 0.5, 0.0), (0.0, -1.0, 0.0)]", 
+                "hue-speed": "0.3", 
+                "onset-speed-boost": "-100.0", 
+                "onset-speed-decay": "1.0", 
+                "radius-hue-width": "1.5", 
+                "speed": "0.3", 
+                "wave-falloff": "0.0", 
+                "wave-hue-period": "[0.1,2,2]", 
+                "wave-hue-width": "0.1", 
+                "wave-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "TestPattern", 
+            "name": "TestPattern-1", 
+            "params": {
+                "allow-playback": "True"
+            }
+        }, 
+        {
+            "classname": "Twinkle", 
+            "name": "Twinkle", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-birth-rate": "0.0", 
+                "audio-peak-birth-rate": "0.0", 
+                "beat-births": "8000.0", 
+                "beat-color": "(1.0, 1.0, 1.0)", 
+                "birth-rate": "0.15", 
+                "color-gradient": "[(0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.1, 1.0, 1.0)]", 
+                "fade-down-time": "0.1", 
+                "fade-rate": "0.1", 
+                "fade-up-time": "0.5", 
+                "pie-peaks": "0.0"
+            }
+        }, 
+        {
+            "classname": "TestFFT", 
+            "name": "FFT vocals", 
+            "params": {
+                "allow-playback": "True", 
+                "color-gradient": "[(0.8,0.3,1), (0.1,0.3,1)]", 
+                "fft-bias": "0.0", 
+                "fft-gamma": "1.0", 
+                "fft-weight": "1.0", 
+                "frequency-max": "0.8", 
+                "frequency-min": "0.3", 
+                "ghosting": "0.0", 
+                "noise threshold": "0.1", 
+                "pie-peaks": "0.0", 
+                "ring bars": "0.0", 
+                "ring current": "0.0", 
+                "ring peak width": "0.02", 
+                "ring peaks": "0.0", 
+                "rings": "0.0", 
+                "rotation": "0.0", 
+                "time-range": "0.3"
+            }
+        }, 
+        {
+            "classname": "Fungus", 
+            "name": "Fungus-1", 
+            "params": {
+                "alive-color": "(1.6, 0.7, 1.0)", 
+                "allow-playback": "True", 
+                "birth-rate": "0.05", 
+                "black-color": "(0.0, 0.0, 1.0)", 
+                "dead-color": "(10.0, 0.0, 1.0)", 
+                "death-time": "0.1", 
+                "fade-out-time": "0.1", 
+                "growth-time": "1.0", 
+                "isolated-life-time": "0.1", 
+                "life-time": "0.2", 
+                "mass-destruction-threshold": "200", 
+                "mass-destruction-time": "0.1", 
+                "pop-limit": "40", 
+                "spread-rate": "30.0"
+            }
+        }, 
+        {
+            "classname": "Dragons", 
+            "name": "Dragons-1", 
+            "params": {
+                "alive-color": "(0.0, 1.0, 1.0)", 
+                "allow-playback": "True", 
+                "birth-rate": "0.4", 
+                "dead-color": "(0.0, 0.0, 0.0)", 
+                "explode-color": "(6.0, 3.0, 1.0)", 
+                "growth-rate": "6.0", 
+                "growth-time": "2.0", 
+                "pop-limit": "20", 
+                "tail-color": "(0.5, 0.0, 1.0)", 
+                "tail-persist": "3.0"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "SpiralGradient-1", 
+            "params": {
+                "allow-playback": "True", 
+                "angle-hue-width": "2.0", 
+                "audio-brightness": "0.3", 
+                "audio-speed-boost-bass": "0.0", 
+                "audio-speed-boost-treble": "0.0", 
+                "audio-twist": "0.0", 
+                "audio-wave-period-boost": "0.0", 
+                "center-distance": "100.0", 
+                "center-speed": "0.0", 
+                "color-gradient": "[(0.0, 0.5, 1.0), (1.0, 0.0, 0.0), (0.0, 0.5, 1.0)]", 
+                "hue-speed": "0.3", 
+                "onset-speed-boost": "4.0", 
+                "onset-speed-decay": "1.0", 
+                "radius-hue-width": "1.0", 
+                "speed": "-0.5", 
+                "wave-falloff": "0.0", 
+                "wave-hue-period": "1.0", 
+                "wave-hue-width": "0.3", 
+                "wave-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "RadialGradient", 
+            "name": "RadialGradient-1", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-amplitude": "1.0", 
+                "audio-boost": "0.0", 
+                "audio-brightness": "0.0", 
+                "audio-fader-percent": "1.0", 
+                "audio-scale": "0.0", 
+                "audio-use-fader": "0.0", 
+                "color-gradient": "[(0,0,1), (0,1,1)]", 
+                "hue-step": "0.1", 
+                "hue-width": "1.5", 
+                "luminance-scale": "1.0", 
+                "luminance-speed": "0.01", 
+                "radius-scale": "1.0", 
+                "rwave-amplitude": "0.5", 
+                "rwave-period": "1.5", 
+                "rwave-speed": "0.1", 
+                "rwave-standing": "0.0", 
+                "speed": "0.1", 
+                "wave1-amplitude": "2.0", 
+                "wave1-period": "0.3", 
+                "wave1-speed": "0.05", 
+                "wave2-amplitude": "0.0", 
+                "wave2-period": "0.1", 
+                "wave2-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "SpiralGradient", 
+            "name": "Karen wavy", 
+            "params": {
+                "allow-playback": "True", 
+                "angle-hue-width": "6.0", 
+                "audio-brightness": "0.3", 
+                "audio-speed-boost-bass": "0.0", 
+                "audio-speed-boost-treble": "0.0", 
+                "audio-twist": "0.0", 
+                "audio-wave-period-boost": "0.0", 
+                "center-distance": "[-400,400,100]", 
+                "center-speed": "0.1", 
+                "color-gradient": "[(0.7, 0.7, 1.0), (1.0, -10, 1.0), (0.7, 0.7, 1.0)]", 
                 "hue-speed": "0.3", 
                 "onset-speed-boost": "5.0", 
                 "onset-speed-decay": "1.0", 
                 "radius-hue-width": "1.5", 
                 "speed": "0.3", 
-                "wave-hue-period": "[0.1,2,2]", 
-                "wave-hue-width": "0.1", 
+                "wave-falloff": "0.0", 
+                "wave-hue-period": "0.1", 
+                "wave-hue-width": "0.5", 
                 "wave-speed": "0.1"
+            }
+        }, 
+        {
+            "classname": "RadialGradient", 
+            "name": "Radial wavy", 
+            "params": {
+                "allow-playback": "True", 
+                "audio-amplitude": "0.0", 
+                "audio-boost": "0.0", 
+                "audio-brightness": "0.0", 
+                "audio-fader-percent": "1.0", 
+                "audio-scale": "0.0", 
+                "audio-use-fader": "0.0", 
+                "color-gradient": "[(0,0,1), (0,1,1)]", 
+                "hue-step": "0.1", 
+                "hue-width": "0.0", 
+                "luminance-scale": "1.0", 
+                "luminance-speed": "0.01", 
+                "radius-scale": "1.0", 
+                "rwave-amplitude": "0.5", 
+                "rwave-period": "1.5", 
+                "rwave-speed": "0.1", 
+                "rwave-standing": "0.0", 
+                "speed": "0.1", 
+                "wave1-amplitude": "0.0", 
+                "wave1-period": "1.5", 
+                "wave1-speed": "0.05", 
+                "wave2-amplitude": "1.0", 
+                "wave2-period": "1.5", 
+                "wave2-speed": "0.1"
             }
         }
     ]

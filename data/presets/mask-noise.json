@@ -1,0 +1,25 @@
+{
+    "classname": "SimplexNoise", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "mask noise", 
+    "params": {
+        "allow-playback": "False", 
+        "angle": "0.7", 
+        "audio-brightness": "2.0", 
+        "audio-hue-offset": "0.0", 
+        "beat-color-boost": "0.02", 
+        "beat-lum-boost": "0.05", 
+        "beat-lum-time": "0.1", 
+        "color-speed": "0.05", 
+        "hue-max": "[0.8,1.0,0.1]", 
+        "hue-min": "[0.2,0.3,0.1]", 
+        "hue-offset": "0.0", 
+        "luminance-map": "[(0,-4,0), (0,1.0,0), (0,-4,0)]", 
+        "luminance-scale": "0.2", 
+        "resolution": "200", 
+        "scale": "0.3", 
+        "speed": "0.1", 
+        "stretch": "1.0"
+    }
+}

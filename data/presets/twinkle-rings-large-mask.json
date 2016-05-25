@@ -1,0 +1,27 @@
+{
+    "classname": "Twinkle", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "twinkle rings large mask", 
+    "params": {
+        "allow-playback": "False", 
+        "audio-birth-rate": "0.0", 
+        "audio-eq-bands": "0.0", 
+        "audio-peak-birth-rate": "0.0", 
+        "audio-ring-birth-rate": "0.02", 
+        "audio-ring-diameter": "300.0", 
+        "audio-ring-lifetime": "2.0", 
+        "audio-ring-start-radius": "5.0", 
+        "audio-ring-use-fft-brightness": "0.1", 
+        "audio-ring-width": "10.0", 
+        "beat-births": "25.0", 
+        "beat-color": "(1.0, 1.0, 1.0)", 
+        "birth-rate": "0.0", 
+        "color-gradient": "[(2.0,0.0,0), (1.0,0.0,0)]", 
+        "fade-down-time": "3.0", 
+        "fade-rate": "0.3", 
+        "fade-up-time": "0.6", 
+        "noise threshold": "0.1", 
+        "pie-peaks": "0.0"
+    }
+}

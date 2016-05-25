@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ class Parameter:
             self._wibbler = None
             self._value = value
             self._valueString = str(value)
-            if self._parent is not None:
+            if self._parent is not None and self._parent.initialized:
                 self._parent.parameter_changed(self)
             return True
         else:
@@ -70,6 +70,8 @@ class Parameter:
                     self._wibbler = Wibbler(value)
                     self._value = numpy.random.random() * (self._wibbler._max - self._wibbler._min) + self._wibbler._min
                     self._valueString = valueString
+                    if self._parent is not None and self._parent.initialized:
+                        self._parent.parameter_changed(self)
                     return True
                 return False
             except:

@@ -1,0 +1,27 @@
+{
+    "classname": "Twinkle", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "audio color more", 
+    "params": {
+        "allow-playback": "False", 
+        "audio-birth-rate": "200.0", 
+        "audio-eq-bands": "0.0", 
+        "audio-peak-birth-rate": "300.0", 
+        "audio-ring-birth-rate": "0.0", 
+        "audio-ring-diameter": "300.0", 
+        "audio-ring-lifetime": "2.0", 
+        "audio-ring-start-radius": "0.0", 
+        "audio-ring-use-fft-brightness": "0.0", 
+        "audio-ring-width": "5.0", 
+        "beat-births": "25.0", 
+        "beat-color": "(1.0, 1.0, 1.0)", 
+        "birth-rate": "0.0", 
+        "color-gradient": "[(1.0, 0.5, 1.0), (0.0, 0.5, 1.0)]", 
+        "fade-down-time": "0.1", 
+        "fade-rate": "0.05", 
+        "fade-up-time": "1.0", 
+        "noise threshold": "0.1", 
+        "pie-peaks": "0.0"
+    }
+}

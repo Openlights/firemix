@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,33 +15,35 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-import logging
 import argparse
+import functools
+import logging
 import signal
+import sys
 
-from PySide import QtGui
+from PySide import QtCore, QtGui
 
 from firemix_app import FireMixApp
 from ui.firemixgui import FireMixGUI
 
 
-def sig_handler(sig, frame):
-    global app
+def sig_handler(app, sig, frame):
+    logging.getLogger("firemix").info("Received signal %d.  Shutting down.", sig)
     app.stop()
+    app.exit()
+    app.qt_app.exit()
 
-if __name__ == "__main__":
+def main():
     logging.basicConfig(level=logging.ERROR)
     log = logging.getLogger("firemix")
-
-    signal.signal(signal.SIGINT, sig_handler)
 
     parser = argparse.ArgumentParser(description="Firelight mixer and preset host")
     parser.add_argument("scene", type=str, help="Scene file to load (create scenes with FireSim)")
     parser.add_argument("--playlist", type=str, help="Playlist file to load", default=None)
     parser.add_argument("--profile", action='store_const', const=True, default=False, help="Enable profiling")
     parser.add_argument("--yappi", action='store_const', const=True, default=False, help="Enable YAPPI")
-    parser.add_argument("--nogui", action='store_const', const=True, default=False, help="Disable GUI")
+    parser.add_argument("--nogui", dest='gui', action='store_false',
+                        default=True, help="Disable GUI")
     parser.add_argument("--preset", type=str, help="Specify a preset name to run only that preset (useful for debugging)")
     parser.add_argument("--verbose", action='store_const', const=True, default=False, help="Enable verbose log output")
     parser.add_argument("--noaudio", action='store_const', const=True, default=False, help="Disable audio processing client")
@@ -53,14 +55,25 @@ if __name__ == "__main__":
 
     log.info("Booting FireMix...")
 
-    qt_app = QtGui.QApplication(sys.argv)
+    qt_app = QtGui.QApplication(sys.argv, args.gui)
+    app = FireMixApp(qt_app, args)
 
-    app = FireMixApp(args, parent=qt_app)
+    signal.signal(signal.SIGINT, functools.partial(sig_handler, app))
+
     app.start()
 
-    if not args.nogui:
+    if args.gui:
         gui = FireMixGUI(app=app)
         gui.show()
+    else:
+        # When the UI isn't running, the Qt application spends all its time
+        # running in its event loop (implemented in C).  During that time, we
+        # can't process any (Unix) signals in Python.  So, in order to handle
+        # signals, we have to occationally execute some Python code.  We just do
+        # nothing when the timeout fires.
+        timer = QtCore.QTimer()
+        timer.start(500)
+        timer.timeout.connect(lambda: None)
 
     qt_app.exec_()
 
@@ -70,3 +83,6 @@ if __name__ == "__main__":
         print "%d frames in %0.2f seconds (%0.2f FPS) " %  (app.mixer._num_frames, elapsed, app.mixer._num_frames / elapsed)
         for c in sorted(app.mixer._tick_time_data.iterkeys()):
             print "[%d fps]:\t%4d\t%0.2f%%" % (c, app.mixer._tick_time_data[c], (float(app.mixer._tick_time_data[c]) / app.mixer._num_frames) * 100.0)
+
+if __name__ == "__main__":
+    main()

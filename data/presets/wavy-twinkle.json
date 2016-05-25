@@ -1,0 +1,14 @@
+{
+    "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "wavy twinkle", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.5", 
+        "first-preset": "spiral wavy", 
+        "second-preset": "twinkle audio more", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "0.1"
+    }
+}

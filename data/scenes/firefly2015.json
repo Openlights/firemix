@@ -16,15 +16,29 @@
     "file-type": "scene", 
     "fixtures": [
         {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                580, 
+                92
+            ], 
+            "pos2": [
+                757, 
+                397
+            ], 
+            "strand": 10, 
+            "type": "linear"
+        }, 
+        {
             "address": 1, 
             "pixels": 120, 
             "pos1": [
-                743, 
-                398
+                225, 
+                94
             ], 
             "pos2": [
-                550, 
-                114
+                49, 
+                396
             ], 
             "strand": 8, 
             "type": "linear"
@@ -33,12 +47,26 @@
             "address": 0, 
             "pixels": 120, 
             "pos1": [
-                223, 
-                111
+                580, 
+                92
             ], 
             "pos2": [
-                31, 
+                223, 
+                92
+            ], 
+            "strand": 8, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                48, 
                 397
+            ], 
+            "pos2": [
+                226, 
+                704
             ], 
             "strand": 0, 
             "type": "linear"
@@ -47,25 +75,319 @@
             "address": 1, 
             "pixels": 120, 
             "pos1": [
-                224, 
-                111
+                228, 
+                705
             ], 
             "pos2": [
-                555, 
-                113
+                582, 
+                704
             ], 
             "strand": 0, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                755, 
+                400
+            ], 
+            "pos2": [
+                580, 
+                705
+            ], 
+            "strand": 10, 
             "type": "linear"
         }, 
         {
             "address": 0, 
             "pixels": 120, 
             "pos1": [
-                34, 
-                400
+                314, 
+                94
             ], 
             "pos2": [
-                214, 
+                491, 
+                398
+            ], 
+            "strand": 5, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                355, 
+                322
+            ], 
+            "pos2": [
+                180, 
+                627
+            ], 
+            "strand": 13, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                712, 
+                321
+            ], 
+            "pos2": [
+                359, 
+                321
+            ], 
+            "strand": 13, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                184, 
+                171
+            ], 
+            "pos2": [
+                358, 
+                473
+            ], 
+            "strand": 3, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                358, 
+                474
+            ], 
+            "pos2": [
+                711, 
+                476
+            ], 
+            "strand": 3, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                492, 
+                397
+            ], 
+            "pos2": [
+                313, 
+                704
+            ], 
+            "strand": 5, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                404, 
+                94
+            ], 
+            "pos2": [
+                577, 
+                396
+            ], 
+            "strand": 6, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                314, 
+                246
+            ], 
+            "pos2": [
+                136, 
+                551
+            ], 
+            "strand": 12, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                624, 
+                168
+            ], 
+            "pos2": [
+                271, 
+                168
+            ], 
+            "strand": 11, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                135, 
+                247
+            ], 
+            "pos2": [
+                313, 
+                548
+            ], 
+            "strand": 2, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                316, 
+                550
+            ], 
+            "pos2": [
+                667, 
+                553
+            ], 
+            "strand": 2, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                579, 
+                396
+            ], 
+            "pos2": [
+                404, 
+                704
+            ], 
+            "strand": 6, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                491, 
+                90
+            ], 
+            "pos2": [
+                669, 
+                396
+            ], 
+            "strand": 7, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                268, 
+                169
+            ], 
+            "pos2": [
+                91, 
+                471
+            ], 
+            "strand": 11, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                670, 
+                245
+            ], 
+            "pos2": [
+                316, 
+                245
+            ], 
+            "strand": 12, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                92, 
+                323
+            ], 
+            "pos2": [
+                270, 
+                629
+            ], 
+            "strand": 1, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                271, 
+                629
+            ], 
+            "pos2": [
+                629, 
+                628
+            ], 
+            "strand": 1, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                669, 
+                399
+            ], 
+            "pos2": [
+                495, 
+                701
+            ], 
+            "strand": 7, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                226, 
+                94
+            ], 
+            "pos2": [
+                401, 
+                400
+            ], 
+            "strand": 4, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                756, 
+                399
+            ], 
+            "pos2": [
+                400, 
+                399
+            ], 
+            "strand": 14, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                400, 
+                401
+            ], 
+            "pos2": [
+                225, 
                 704
             ], 
             "strand": 9, 
@@ -75,364 +397,42 @@
             "address": 1, 
             "pixels": 120, 
             "pos1": [
-                218, 
-                705
+                398, 
+                398
             ], 
             "pos2": [
-                569, 
-                709
+                49, 
+                398
+            ], 
+            "strand": 14, 
+            "type": "linear"
+        }, 
+        {
+            "address": 1, 
+            "pixels": 120, 
+            "pos1": [
+                398, 
+                400
+            ], 
+            "pos2": [
+                577, 
+                705
+            ], 
+            "strand": 4, 
+            "type": "linear"
+        }, 
+        {
+            "address": 0, 
+            "pixels": 120, 
+            "pos1": [
+                580, 
+                94
+            ], 
+            "pos2": [
+                401, 
+                398
             ], 
             "strand": 9, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                746, 
-                399
-            ], 
-            "pos2": [
-                572, 
-                705
-            ], 
-            "strand": 8, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                485, 
-                389
-            ], 
-            "pos2": [
-                292, 
-                105
-            ], 
-            "strand": 5, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                158, 
-                611
-            ], 
-            "pos2": [
-                350, 
-                325
-            ], 
-            "strand": 3, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                360, 
-                325
-            ], 
-            "pos2": [
-                691, 
-                327
-            ], 
-            "strand": 3, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                166, 
-                191
-            ], 
-            "pos2": [
-                341, 
-                489
-            ], 
-            "strand": 12, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                339, 
-                486
-            ], 
-            "pos2": [
-                690, 
-                490
-            ], 
-            "strand": 12, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                297, 
-                703
-            ], 
-            "pos2": [
-                486, 
-                396
-            ], 
-            "strand": 5, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                573, 
-                390
-            ], 
-            "pos2": [
-                380, 
-                106
-            ], 
-            "strand": 6, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                112, 
-                542
-            ], 
-            "pos2": [
-                304, 
-                256
-            ], 
-            "strand": 2, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                269, 
-                185
-            ], 
-            "pos2": [
-                600, 
-                187
-            ], 
-            "strand": 1, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                122, 
-                264
-            ], 
-            "pos2": [
-                300, 
-                565
-            ], 
-            "strand": 11, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                296, 
-                565
-            ], 
-            "pos2": [
-                647, 
-                569
-            ], 
-            "strand": 11, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                398, 
-                702
-            ], 
-            "pos2": [
-                572, 
-                396
-            ], 
-            "strand": 6, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                663, 
-                391
-            ], 
-            "pos2": [
-                477, 
-                112
-            ], 
-            "strand": 7, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                76, 
-                471
-            ], 
-            "pos2": [
-                268, 
-                185
-            ], 
-            "strand": 1, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                308, 
-                253
-            ], 
-            "pos2": [
-                639, 
-                255
-            ], 
-            "strand": 2, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                78, 
-                327
-            ], 
-            "pos2": [
-                258, 
-                631
-            ], 
-            "strand": 10, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                257, 
-                634
-            ], 
-            "pos2": [
-                608, 
-                638
-            ], 
-            "strand": 10, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                488, 
-                703
-            ], 
-            "pos2": [
-                662, 
-                397
-            ], 
-            "strand": 7, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                223, 
-                113
-            ], 
-            "pos2": [
-                396, 
-                395
-            ], 
-            "strand": 13, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                397, 
-                397
-            ], 
-            "pos2": [
-                743, 
-                396
-            ], 
-            "strand": 14, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                213, 
-                700
-            ], 
-            "pos2": [
-                393, 
-                399
-            ], 
-            "strand": 4, 
-            "type": "linear"
-        }, 
-        {
-            "address": 0, 
-            "pixels": 120, 
-            "pos1": [
-                37, 
-                400
-            ], 
-            "pos2": [
-                398, 
-                399
-            ], 
-            "strand": 14, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                398, 
-                400
-            ], 
-            "pos2": [
-                573, 
-                707
-            ], 
-            "strand": 13, 
-            "type": "linear"
-        }, 
-        {
-            "address": 1, 
-            "pixels": 120, 
-            "pos1": [
-                397, 
-                396
-            ], 
-            "pos2": [
-                549, 
-                115
-            ], 
-            "strand": 4, 
             "type": "linear"
         }
     ], 

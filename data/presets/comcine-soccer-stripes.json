@@ -1,0 +1,14 @@
+{
+    "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "comcine soccer stripes", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "1.0", 
+        "first-preset": "combine stripes", 
+        "second-preset": "stripe rainbow", 
+        "transition-mode": "Linear Blend", 
+        "transition-progress": "0.0"
+    }
+}

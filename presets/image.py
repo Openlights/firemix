@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,11 +21,11 @@ import numpy as np
 from lib.colors import hls_blend
 from PySide.QtGui import QPixmap
 
-from lib.raw_preset import RawPreset
+from lib.preset import Preset
 from lib.parameters import FloatParameter, StringParameter
 from lib.colors import rgb_to_hls
 
-class ImagePreset(RawPreset):
+class ImagePreset(Preset):
     def setup(self):
         self.add_parameter(FloatParameter('speed-rotation', 0.1))
         self.add_parameter(FloatParameter('speed-hue', 0.0))
@@ -50,8 +50,6 @@ class ImagePreset(RawPreset):
         self.image = None
         self._buffer = None
 
-        self.parameter_changed(None)
-
     def parameter_changed(self, parameter):
         if self.imagename != self.parameter('image-file').get():
             self.pixmap = QPixmap(self.parameter('image-file').get())
@@ -67,7 +65,7 @@ class ImagePreset(RawPreset):
                 self.image = rgb_to_hls(self.image)
                 #print self.image
 
-                print "image", self.parameter('image-file').get(), "loaded:", self.image.shape
+                #print "image", self.parameter('image-file').get(), "loaded:", self.image.shape
 
         self.lastFrame = None
 

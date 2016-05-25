@@ -1,0 +1,14 @@
+{
+    "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "twinkle rings fft", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
+        "first-preset": "twinkle splat", 
+        "second-preset": "fft", 
+        "transition-mode": "Additive Blend", 
+        "transition-progress": "0.5"
+    }
+}

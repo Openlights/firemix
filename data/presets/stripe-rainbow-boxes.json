@@ -1,0 +1,22 @@
+{
+    "classname": "StripeGradient", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "stripe rainbow boxes", 
+    "params": {
+        "allow-playback": "True", 
+        "angle-speed": "0.1", 
+        "audio-brightness": "0.0", 
+        "audio-speed": "0.0", 
+        "audio-stripe-width": "100.0", 
+        "center-orbit-distance": "0.0", 
+        "center-orbit-speed": "0.01", 
+        "color-gradient": "[(0,-2,0), (0,0.5,1), (0,-2,0), (0.2,0.5,1), (0,-2,0), (0.4,0.5,1), (0,-2,0), (0.6,0.5,1), (0,-2,0), (0.8,0.5,1)]", 
+        "hue-step": "[0,-0.5,0.1]", 
+        "posterization": "200", 
+        "speed": "0.02", 
+        "stripe-width": "500.0", 
+        "stripe-x-center": "0.5", 
+        "stripe-y-center": "0.5"
+    }
+}

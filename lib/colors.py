@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2015 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -66,13 +66,15 @@ def hls_blend(start, end, temporary_buffer, progress, mode, fade_length=1.0, eas
     h1,l1,s1 = start.T
     h2,l2,s2 = end.T
 
-    np.clip(l1,0,1,l1)
-    np.clip(l2,0,1,l2)
+    l1clipped = l1
+    l2clipped = l2
+    np.clip(l1,0,1,l1clipped)
+    np.clip(l2,0,1,l2clipped)
     np.clip(s1,0,1,s1)
     np.clip(s2,0,1,s2)
 
-    startWeight = (1.0 - 2 * np.abs(0.5 - l1)) * s1
-    endWeight = (1.0 - 2 * np.abs(0.5 - l2)) * s2
+    startWeight = (1.0 - 2 * np.abs(0.5 - l1clipped)) * s1
+    endWeight = (1.0 - 2 * np.abs(0.5 - l2clipped)) * s2
 
     s = (s1 * startPower + s2 * endPower)
     x1 = np.cos(2 * np.pi * h1) * startPower * startWeight
@@ -86,7 +88,8 @@ def hls_blend(start, end, temporary_buffer, progress, mode, fade_length=1.0, eas
         l = np.maximum(l1 * startPower, l2 * endPower)
         opposition = np.sqrt(np.square((x1-x2)/2) + np.square((y1-y2)/2))
         if mode == 'multiply':
-            l -= opposition
+            l = np.minimum(l1 * startPower, l2 * endPower)
+            #l -= opposition
         elif mode == 'add':
             l = np.maximum(l, opposition, l)
     else: # hacky support for old blend
