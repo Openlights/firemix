@@ -29,13 +29,21 @@ log = logging.getLogger("firemix.lib.preset_loader")
 
 class PresetFileEventHandler(PatternMatchingEventHandler):
 
-    patterns = ["*.py"]
-    ignore_directories = True
+    patterns = ["*"]
+    ignore_directories = False
     callback = None
 
     def on_modified(self, event):
+        if event.is_directory:
+              files_in_dir = [event.src_path+"/"+f for f in os.listdir(event.src_path)]
+              if len(files_in_dir) > 0:
+                  modified_filename = max(files_in_dir, key=os.path.getmtime)
+        else:
+            modified_filename = event.src_path
+        if modified_filename[-3:] != ".py":
+            return
         if self.callback:
-            self.callback(event.src_path)
+            self.callback(modified_filename)
 
 class PresetLoader:
     """
