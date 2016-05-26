@@ -57,6 +57,7 @@ class Mixer(QtCore.QObject):
         self._tick_rate = self._app.settings.get('mixer')['tick-rate']
         self._in_transition = False
         self._start_transition = False
+        self._transition_scrubbing = False
         self._transition_duration = self._app.settings.get('mixer')['transition-duration']
         self._transition_slop = self._app.settings.get('mixer')['transition-slop']
         self._tick_timer = None
@@ -286,9 +287,25 @@ class Mixer(QtCore.QObject):
 
     def cancel_transition(self):
         self._start_transition = False
+        self._transition_scrubbing = False
         if self._in_transition:
             self._in_transition = False
             self.transition_progress = 0
+
+    def scrub_transition(self, scrub_ratio):
+        if not self.is_paused():
+            return
+
+        self._in_transition = True
+
+        if not self._transition_scrubbing:
+            self._start_transition = True
+            self._transition_scrubbing = True
+
+        self.transition_progress = scrub_ratio
+
+    def cancel_scrub(self):
+        self._transition_scrubbing = False
 
     def tick(self, dt):
         self._num_frames += 1
@@ -323,12 +340,13 @@ class Mixer(QtCore.QObject):
                     self._buffer_b = BufferUtils.create_buffer()
 
                 if self._transition_duration > 0.0 and self._transition is not None:
-                    if not self._paused:
+                    if not self._paused and not self._transition_scrubbing:
                         self.transition_progress = clip(0.0,
                                                         self._elapsed / self._transition_duration,
                                                         1.0)
                 else:
-                    self.transition_progress = 1.0
+                    if not self._transition_scrubbing:
+                        self.transition_progress = 1.0
 
                 next_preset.tick(dt)
 
@@ -376,7 +394,7 @@ class Mixer(QtCore.QObject):
                     self._elapsed = 0.0
 
             elif self._in_transition:
-                if self.transition_progress >= 1.0:
+                if not self._transition_scrubbing and (self.transition_progress >= 1.0):
                     self._in_transition = False
                     # Reset the elapsed time counter so the preset runs for the
                     # full duration after the transition

@@ -228,13 +228,6 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QPushButton" name="btn_prev_preset">
-                 <property name="text">
-                  <string>Previous</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </item>
              <item>
@@ -243,7 +236,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QLabel" name="lbl_transition_progress">
+                <widget class="QLabel" name="lbl_transition_left">
                  <property name="font">
                   <font>
                    <weight>75</weight>
@@ -251,26 +244,51 @@
                   </font>
                  </property>
                  <property name="text">
-                  <string>Transition</string>
+                  <string>Left Preset</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QProgressBar" name="progress_transition">
-                 <property name="maximumSize">
+                <widget class="QSlider" name="slider_transition">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
                   <size>
-                   <width>16777215</width>
-                   <height>16</height>
+                   <width>100</width>
+                   <height>0</height>
                   </size>
                  </property>
-                 <property name="value">
-                  <number>0</number>
+                 <property name="maximum">
+                  <number>100</number>
                  </property>
-                 <property name="textVisible">
-                  <bool>true</bool>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
-                 <property name="invertedAppearance">
-                  <bool>false</bool>
+                 <property name="tickPosition">
+                  <enum>QSlider::TicksBelow</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lbl_transition_right">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Right Preset</string>
                  </property>
                 </widget>
                </item>
@@ -282,7 +300,7 @@
           <item>
            <widget class="QGroupBox" name="groupBox">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -291,6 +309,12 @@
              <size>
               <width>0</width>
               <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>250</width>
+              <height>16777215</height>
              </size>
             </property>
             <property name="sizeIncrement">
