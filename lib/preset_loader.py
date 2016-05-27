@@ -22,7 +22,7 @@ import inspect
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler, FileModifiedEvent, FileDeletedEvent
 
-from lib.preset import Preset
+from lib.pattern import Pattern
 
 log = logging.getLogger("firemix.lib.preset_loader")
 
@@ -111,7 +111,7 @@ class PresetLoader:
 
     def _load_presets_from_modules(self, module):
         for name, obj in inspect.getmembers(module, inspect.isclass):
-            if issubclass(obj, Preset) and (name is not "Preset") and (name is not "Preset"):
+            if issubclass(obj, Pattern) and (name is not "Pattern") and (name is not "Pattern"):
                 log.info("Loaded %s" % obj.__name__)
                 self._presets.append((module, obj))
                 self._presets_dict[obj.__name__] = (module, obj)

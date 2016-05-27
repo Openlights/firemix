@@ -133,7 +133,7 @@ class Playlist(JSONDict):
             except:
                 log.warn("Error loading data from preset %s" % preset_path)
         else:
-            log.warn("Preset %s could not be found, skipping..." % preset_slug)
+            log.warn("Pattern %s could not be found, skipping..." % preset_slug)
         return preset_data
 
     def generate_playlist(self):

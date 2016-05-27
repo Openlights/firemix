@@ -21,11 +21,11 @@ import random
 import math
 import ast
 
-from lib.preset import Preset
+from lib.pattern import Pattern
 from lib.parameters import FloatParameter, HLSParameter, StringParameter
 from lib.color_fade import ColorFade
 
-class SpiralGradient(Preset):
+class SpiralGradient(Pattern):
     """Spiral gradient that responds to onsets"""
        
     _fader = None

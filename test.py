@@ -3,7 +3,7 @@ import unittest
 import core.mixer
 import core.networking
 
-import lib.preset
+import lib.pattern
 import lib.basic_tickers
 import lib.color_fade
 

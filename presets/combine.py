@@ -16,12 +16,12 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 from lib.buffer_utils import BufferUtils
-from lib.preset import Preset
+from lib.pattern import Pattern
 from lib.parameters import FloatParameter, HLSParameter, StringParameter
 
-class CombinePresets(Preset):
+class CombinePresets(Pattern):
     """
-    Preset that loads two presets and renders both
+    Pattern that loads two presets and renders both
     Combine requires a transition that will render an arbitrary progress point
     """
 
