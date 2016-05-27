@@ -20,12 +20,12 @@ import numpy as np
 import ast
 import math
 
-from lib.preset import Preset
+from lib.pattern import Pattern
 from lib.color_fade import ColorFade
 from lib.parameters import FloatParameter, HLSParameter, StringParameter
 
 
-class Twinkle(Preset):
+class Twinkle(Pattern):
     """Random pixels fade in and out"""
 
     _fading_up = []

@@ -79,7 +79,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         # Tools menu
         self.action_file_generate_default_playlist.triggered.connect(self.on_file_generate_default_playlist)
 
-        # Preset list
+        # Pattern list
         self.lst_presets.itemDoubleClicked.connect(self.on_preset_double_clicked)
         self.lst_presets.itemChanged.connect(self.on_preset_name_changed)
         self.lst_presets.layout_changed.connect(self.on_playlist_reorder)
@@ -92,7 +92,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.edit_transition_duration.valueChanged.connect(self.on_transition_duration_changed)
         self.cb_transition_mode.currentIndexChanged.connect(self.on_transition_mode_changed)
 
-        # Preset Parameters
+        # Pattern Parameters
         self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
 
         self.update_playlist()
@@ -390,7 +390,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         #TODO: Enable renaming in the list when we have a real delegate
         #self.lst_presets.editItem(self.lst_presets.currentItem())
         old_name = self.lst_presets.currentItem().text()
-        new_name, ok = QtGui.QInputDialog.getText(self, 'Rename Preset', 'New name', text=old_name)
+        new_name, ok = QtGui.QInputDialog.getText(self, 'Rename Pattern', 'New name', text=old_name)
         if ok and new_name:
             if not self.app.playlist.preset_name_exists(new_name):
                 self.app.playlist.rename_preset(old_name, new_name)

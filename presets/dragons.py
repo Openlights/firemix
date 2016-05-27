@@ -18,14 +18,14 @@
 import colorsys
 import random
 
-from lib.preset import Preset
+from lib.pattern import Pattern
 from lib.colors import uint8_to_float, float_to_uint8
 from lib.buffer_utils import BufferUtils
 from lib.color_fade import ColorFade
 from lib.parameters import FloatParameter, IntParameter, HLSParameter
 
 
-class Dragons(Preset):
+class Dragons(Pattern):
     """
     Dragons spawn randomly and travel.  At vertices, dragons can reproduce.
     If two dragons collide, both die.

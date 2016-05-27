@@ -31,7 +31,7 @@ except ImportError:
 
 from PySide import QtCore
 
-from lib.preset import Preset
+from lib.pattern import Pattern
 from lib.buffer_utils import BufferUtils
 from core.audio import Audio
 from lib.colors import clip
@@ -205,7 +205,7 @@ class Mixer(QtCore.QObject):
             self._duration = duration
             return True
         else:
-            log.warn("Preset duration must be positive or zero.")
+            log.warn("Pattern duration must be positive or zero.")
             return False
 
     def get_preset_duration(self):

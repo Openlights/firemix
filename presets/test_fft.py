@@ -19,13 +19,13 @@ import numpy as np
 import math
 import ast
 
-from lib.preset import Preset
+from lib.pattern import Pattern
 from lib.parameters import FloatParameter, StringParameter
 from lib.watch import Watch
 from lib.color_fade import ColorFade
 from scipy import signal
 
-class TestFFT(Preset):
+class TestFFT(Pattern):
     """Simple test for FFT data coming from aubio"""
 
     _fader = None

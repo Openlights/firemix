@@ -27,8 +27,8 @@ from lib.parameters import BoolParameter
 log = logging.getLogger("firemix.lib.preset")
 
 
-class Preset(JSONDict):
-    """Base Preset.  Does nothing."""
+class Pattern(JSONDict):
+    """Base Pattern.  Does nothing."""
 
     def __init__(self, mixer, slug=""):
         self._mixer = mixer

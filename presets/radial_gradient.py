@@ -21,12 +21,12 @@ import math
 import numpy as np
 import ast
 
-from lib.preset import Preset
+from lib.pattern import Pattern
 from lib.colors import clip
 from lib.parameters import FloatParameter, StringParameter
 from lib.color_fade import ColorFade
 
-class RadialGradient(Preset):
+class RadialGradient(Pattern):
     """Radial gradient that responds to onsets"""
     _luminance_steps = 256
     _fader_steps = 256
