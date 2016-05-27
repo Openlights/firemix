@@ -52,7 +52,7 @@ class JSONDict(collections.MutableMapping):
         if not os.path.exists(self.filename):
             if create_new:
                 with open(self.filename, 'w') as f:
-                    json.dump({'file-type': self.filetype}, f)
+                    json.dump({'file-type': self.filetype}, f, indent=4)
             else:
                 raise ValueError("File %s does not exist." % self.filename)
         else:

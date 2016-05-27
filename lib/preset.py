@@ -61,6 +61,10 @@ class Preset(JSONDict):
         self.load_params_from_json(self.data.get('params', {}))
 
     def save(self):
+        self.data["name"] = self._instance_name
+        self.data["classname"] = self.__class__.__name__
+        self.data["file-version"] = 1
+        self.data["params"] = {}
         for n, p in self._parameters.iteritems():
             self.data["params"][n] = p.get_as_str()
         JSONDict.save(self)
