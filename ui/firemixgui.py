@@ -37,12 +37,14 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.icon_playing = QtGui.QIcon("./res/icons/ic_play_circle_filled_black_24dp_1x.png")
         self.icon_next = QtGui.QIcon("./res/icons/ic_play_circle_outline_black_24dp_1x.png")
 
+        self.transition_right_to_left = False
+        self.transition_in_progress = False
+
         # Control
         self.btn_blackout.clicked.connect(self.on_btn_blackout)
         self.btn_runfreeze.clicked.connect(self.on_btn_runfreeze)
         self.btn_playpause.clicked.connect(self.on_btn_playpause)
         self.btn_next_preset.clicked.connect(self.on_btn_next_preset)
-        self.btn_prev_preset.clicked.connect(self.on_btn_prev_preset)
         self.btn_reset_preset.clicked.connect(self.on_btn_reset_preset)
         self.btn_add_preset.clicked.connect(self.on_btn_add_preset)
         self.btn_remove_preset.clicked.connect(self.on_btn_remove_preset)
@@ -50,6 +52,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.btn_clear_playlist.clicked.connect(self.on_btn_clear_playlist)
         self.slider_global_dimmer.valueChanged.connect(self.on_slider_dimmer)
         self.slider_speed.valueChanged.connect(self.on_slider_speed)
+        self.slider_transition.valueChanged.connect(self.on_slider_transition)
         self.btn_shuffle_playlist.clicked.connect(self.on_btn_shuffle_playlist)
         self.btn_trigger_onset.clicked.connect(self.on_btn_trigger_onset)
 
@@ -113,7 +116,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.transition_update_timer.timeout.connect(self.on_transition_update_timer)
         self.mixer.transition_starting.connect(self.transition_update_start)
 
-        self.btn_prev_preset.setDisabled(True)
         self.btn_blackout.setDisabled(False)
 
         self.update_mixer_settings()
@@ -138,27 +140,41 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.app.mixer.onset_detected()
         self.onset_detected()
 
+    def on_slider_transition(self):
+        if not self.mixer.is_paused():
+            return
+
+        v = (self.slider_transition.value() / 100.0)
+
+        if self.transition_right_to_left:
+            self.mixer.scrub_transition(1.0 - v)
+        else:
+            self.mixer.scrub_transition(v)
+
+
     def transition_update_start(self):
-        self.progress_transition.setValue(0)
-        self.lbl_transition_progress.setStyleSheet("QLabel { color: #22f; }")
+        if self.transition_right_to_left:
+            self.slider_transition.setValue(100)
+        else:
+            self.slider_transition.setValue(0)
+        self.slider_transition.setStyleSheet("QSlider { background-color: rgba(100, 100, 255, 200); }")
+        self.transition_in_progress = True
         self.transition_update_timer.start()
 
     def on_transition_update_timer(self):
         p = self.mixer.transition_progress
 
         if self.transition_update_toggle and not self.mixer.is_paused:
-            self.lbl_transition_progress.setStyleSheet("QLabel { color: #000; }")
+            self.slider_transition.setStyleSheet("QSlider { background-color: rgba(0, 0, 0, 0); }")
             self.transition_update_toggle = False
         else:
-            self.lbl_transition_progress.setStyleSheet("QLabel { color: #22f; }")
+            self.slider_transition.setStyleSheet("QSlider { background-color: rgba(100, 100, 255, 200); }")
             self.transition_update_toggle = True
 
-        if p >= 1.0:
-            self.lbl_transition_progress.setStyleSheet("QLabel { color: #000; }")
-            self.progress_transition.setValue(0)
-            self.transition_update_timer.stop()
-        else:
-            self.progress_transition.setValue(p * 100)
+        if p < 1.0:
+            if self.transition_right_to_left:
+                p = 1.0 - p
+            self.slider_transition.setValue(p * 100)
 
     def update_mixer(self):
         self.setWindowTitle("FireMix - %s - %0.2f FPS" % (self.app.playlist.name, self.mixer.fps()))
@@ -186,11 +202,14 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_btn_playpause(self):
         if self.mixer.is_paused():
+            self.mixer.cancel_scrub()
             self.mixer.pause(False)
             self.btn_next_preset.setDisabled(False)
+            self.slider_transition.setDisabled(True)
         else:
             self.mixer.pause()
             self.btn_next_preset.setDisabled(True)
+            self.slider_transition.setDisabled(False)
         self.update_mixer_settings()
 
     def on_btn_runfreeze(self):
@@ -202,12 +221,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.btn_runfreeze.setText("Unfreeze")
 
     def on_btn_next_preset(self):
+        self.mixer.cancel_scrub()
         self.mixer.next()
         self.update_playlist()
-
-    # Disabling this button, we don't use it and it complicates implementation
-    def on_btn_prev_preset(self):
-        pass
 
     def on_btn_reset_preset(self):
         paused = self.app.mixer.is_paused()
@@ -275,10 +291,12 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                 self.lbl_preset_parameters.setTitle("%s Parameters (Pause to Edit)" % preset)
                 self.btn_playpause.setText("Pause")
                 self.btn_next_preset.setDisabled(False)
+                self.slider_transition.setDisabled(True)
             else:
                 self.lbl_preset_parameters.setTitle("%s Parameters" % preset)
                 self.tbl_preset_parameters.setDisabled(False)
                 self.btn_next_preset.setDisabled(True)
+                self.slider_transition.setDisabled(False)
                 self.btn_playpause.setText("Play")
         else:
             if not self.mixer.is_paused():
@@ -324,6 +342,25 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                     item.setIcon(self.icon_blank)
 
             self.lst_presets.addItem(item)
+
+        if self.transition_in_progress and self.mixer.transition_progress >= 1.0:
+            self.slider_transition.setStyleSheet("QSlider { background-color: rgba(0, 0, 0, 0);; }")
+
+            if self.transition_right_to_left:
+                self.slider_transition.setValue(0)
+            else:
+                self.slider_transition.setValue(100)
+
+            self.transition_right_to_left = not self.transition_right_to_left
+            self.transition_in_progress = False
+            self.transition_update_timer.stop()
+
+        if self.transition_right_to_left:
+            self.lbl_transition_left.setText(next.name())
+            self.lbl_transition_right.setText(current.name())
+        else:
+            self.lbl_transition_left.setText(current.name())
+            self.lbl_transition_right.setText(next.name())
 
     def on_playlist_changed(self):
         self.update_playlist()

@@ -49,11 +49,18 @@ class Fuzz(Transition):
         progress = clip(0.0, progress, 1.0)
         idx = int(progress * (len(self.rand_index) - 1))
 
-        for i in range(self.last_idx, idx):
-            offset = self.rand_index[i] * 3
-            self.mask.flat[offset] = True
-            self.mask.flat[offset + 1] = True
-            self.mask.flat[offset + 2] = True
+        if idx >= self.last_idx:
+            for i in range(self.last_idx, idx):
+                offset = self.rand_index[i] * 3
+                self.mask.flat[offset] = True
+                self.mask.flat[offset + 1] = True
+                self.mask.flat[offset + 2] = True
+        else:
+            for i in range(idx, self.last_idx):
+                offset = self.rand_index[i] * 3
+                self.mask.flat[offset] = False
+                self.mask.flat[offset + 1] = False
+                self.mask.flat[offset + 2] = False
         self.last_idx = idx
 
         start[self.mask] = 0.0
