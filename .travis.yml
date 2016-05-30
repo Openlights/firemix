@@ -5,7 +5,14 @@ python:
 sudo: required
 install:
   - sudo apt-get install gfortran libopenblas-dev liblapack-dev
-  - travis_wait 30 pip install -r requirements.txt
+
+  # install pyside from url, since compiling from source takes a long time
+  - sudo apt-get install libqt4-dev
+  - pip install PySide --no-index --find-links https://parkin.github.io/python-wheelhouse/;
+  # Travis CI servers use virtualenvs, so we need to finish the install by the following
+  - python ~/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/pyside_postinstall.py -install
+  
+  - pip install -r requirements.txt 
 # command to run tests, e.g. python setup.py test
 script:
   - python test.py
