@@ -62,7 +62,7 @@ class Twinkle(Pattern):
 
     def parameter_changed(self, parameter):
         self._setup_colors()
-        self.eq_centers = self._idle[:self.parameter('audio-eq-bands').get()]
+        self.eq_centers = self._idle[:int(self.parameter('audio-eq-bands').get())]
 
     def _setup_colors(self):
         #fade_colors = [self.parameter('black-color').get(), self.parameter('off-color').get(), self.parameter('on-color').get()]

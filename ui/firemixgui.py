@@ -94,6 +94,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         # Pattern Parameters
         self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
+        self.tbl_preset_parameters_item_changed_connected = True
 
         self.update_playlist()
         self.load_preset_parameters_table()
@@ -355,12 +356,16 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.transition_in_progress = False
             self.transition_update_timer.stop()
 
-        if self.transition_right_to_left:
-            self.lbl_transition_left.setText(next.name())
-            self.lbl_transition_right.setText(current.name())
+        if current and next:
+            if self.transition_right_to_left:
+                self.lbl_transition_left.setText(next.name())
+                self.lbl_transition_right.setText(current.name())
+            else:
+                self.lbl_transition_left.setText(current.name())
+                self.lbl_transition_right.setText(next.name())
         else:
-            self.lbl_transition_left.setText(current.name())
-            self.lbl_transition_right.setText(next.name())
+            self.lbl_transition_left.setText("")
+            self.lbl_transition_right.setText("")
 
     def on_playlist_changed(self):
         self.update_playlist()
@@ -419,7 +424,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.app.settings['mixer']['transition'] = self.cb_transition_mode.currentText()
 
     def load_preset_parameters_table(self):
-        self.tbl_preset_parameters.itemChanged.disconnect(self.on_preset_parameter_changed)
+        if self.tbl_preset_parameters_item_changed_connected:
+            self.tbl_preset_parameters.itemChanged.disconnect(self.on_preset_parameter_changed)
+            self.tbl_preset_parameters_item_changed_connected = False
         self.tbl_preset_parameters.clear()
 
         self.tbl_preset_parameters.setColumnCount(3)
@@ -458,6 +465,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             i += 1
 
         self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
+        self.tbl_preset_parameters_item_changed_connected = True
 
     # Unused?
     @QtCore.Slot()
