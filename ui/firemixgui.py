@@ -355,12 +355,16 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.transition_in_progress = False
             self.transition_update_timer.stop()
 
-        if self.transition_right_to_left:
-            self.lbl_transition_left.setText(next.name())
-            self.lbl_transition_right.setText(current.name())
+        if current and next:
+            if self.transition_right_to_left:
+                self.lbl_transition_left.setText(next.name())
+                self.lbl_transition_right.setText(current.name())
+            else:
+                self.lbl_transition_left.setText(current.name())
+                self.lbl_transition_right.setText(next.name())
         else:
-            self.lbl_transition_left.setText(current.name())
-            self.lbl_transition_right.setText(next.name())
+            self.lbl_transition_left.setText("")
+            self.lbl_transition_right.setText("")
 
     def on_playlist_changed(self):
         self.update_playlist()
