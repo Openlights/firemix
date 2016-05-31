@@ -94,6 +94,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         # Pattern Parameters
         self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
+        self.tbl_preset_parameters_item_changed_connected = True
 
         self.update_playlist()
         self.load_preset_parameters_table()
@@ -423,7 +424,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.app.settings['mixer']['transition'] = self.cb_transition_mode.currentText()
 
     def load_preset_parameters_table(self):
-        self.tbl_preset_parameters.itemChanged.disconnect(self.on_preset_parameter_changed)
+        if self.tbl_preset_parameters_item_changed_connected:
+            self.tbl_preset_parameters.itemChanged.disconnect(self.on_preset_parameter_changed)
+            self.tbl_preset_parameters_item_changed_connected = False
         self.tbl_preset_parameters.clear()
 
         self.tbl_preset_parameters.setColumnCount(3)
@@ -462,6 +465,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             i += 1
 
         self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
+        self.tbl_preset_parameters_item_changed_connected = True
 
     # Unused?
     @QtCore.Slot()

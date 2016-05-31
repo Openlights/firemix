@@ -259,6 +259,9 @@ class Playlist(JSONDict):
         """
         self._shuffle_list = range(len(self._playlist))
 
+        if len(self._shuffle_list) == 0:
+            return
+
         # Remove disallowed presets from the shuffle list
         self._shuffle_list = [idx for idx in self._shuffle_list if self._playlist[idx].parameter('allow-playback').get()]
 
