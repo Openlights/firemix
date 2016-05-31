@@ -25,8 +25,7 @@ class TestPattern(Pattern):
 
     def setup(self):
         self._pixels = self.scene().get_all_pixels()
-        self._logical = self.scene().get_all_pixels_logical()
-        self._heirarchy = self.scene().fixture_hierarchy()
+        self._hierarchy = self.scene().fixture_hierarchy()
         self._hue = 0.0
 
     def reset(self):
@@ -35,7 +34,7 @@ class TestPattern(Pattern):
     def draw(self, dt):
         self._hue = (self._hue + (dt * 0.1)) % 1.0
         self.setAllHLS(self._hue, 0.2, 1.0)
-        for strand in self._heirarchy:
+        for strand in self._hierarchy:
             self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 0), scene=self.scene()), (0.33, 0.5, 1.0))
 
             if (strand & 0x8):
@@ -55,13 +54,13 @@ class TestPattern(Pattern):
             else:
                 self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.0, 0.2, 0.0))
 
-            for fixture in self._heirarchy[strand]:
-                last_fixture_pixel = self._heirarchy[strand][fixture].pixels - 1
+            for fixture in self._hierarchy[strand]:
+                last_fixture_pixel = self._hierarchy[strand][fixture].pixels - 1
                 self.setPixelHLS(BufferUtils.logical_to_index((strand, fixture, last_fixture_pixel), scene=self.scene()), (0.66, 0.5, 1.0))
                 if fixture > 0:
                     self.setPixelHLS(BufferUtils.logical_to_index((strand, fixture, 0), scene=self.scene()), (0.15, 0.5, 1.0))
 
-            last_fixture = len(self._heirarchy[strand].keys()) - 1
-            last_pixel = self._heirarchy[strand][last_fixture].pixels - 1
+            last_fixture = len(self._hierarchy[strand].keys()) - 1
+            last_pixel = self._hierarchy[strand][last_fixture].pixels - 1
 
             self.setPixelHLS(BufferUtils.logical_to_index((strand, last_fixture, last_pixel), scene=self.scene()), (0.0, 0.5, 1.0))
