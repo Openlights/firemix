@@ -24,10 +24,10 @@ from watchdog.events import PatternMatchingEventHandler, FileModifiedEvent, File
 
 from lib.pattern import Pattern
 
-log = logging.getLogger("firemix.lib.preset_loader")
+log = logging.getLogger("firemix.lib.pattern_loader")
 
 
-class PresetFileEventHandler(PatternMatchingEventHandler):
+class PatternFileEventHandler(PatternMatchingEventHandler):
 
     patterns = ["*"]
     ignore_directories = False
@@ -45,9 +45,10 @@ class PresetFileEventHandler(PatternMatchingEventHandler):
         if self.callback:
             self.callback(modified_filename)
 
-class PresetLoader:
+
+class PatternLoader:
     """
-    Scans the ./presets/ directory and imports all the presets objects.
+    Scans the ./patterns/ directory and imports all the patterns objects.
 
     Based on code copyright 2005 Jesse Noller <jnoller@gmail.com>
     http://code.activestate.com/recipes/436873-import-modulesdiscover-methods-from-a-directory-na/
@@ -56,65 +57,65 @@ class PresetLoader:
     def __init__(self, parent):
         self._parent = parent
         self._modules = []
-        self._presets = []
-        self._presets_dict = defaultdict()
-        self.event_handler = PresetFileEventHandler()
-        self.event_handler.callback = self.reload_preset_by_filename
+        self._patterns = []
+        self._patterns_dict = defaultdict()
+        self.event_handler = PatternFileEventHandler()
+        self.event_handler.callback = self.reload_pattern_by_filename
         self.observer = Observer()
-        self.observer.schedule(self.event_handler, os.path.join(os.getcwd(), "presets"), recursive=True)
-        log.info("Watching preset directory for changes.")
+        self.observer.schedule(self.event_handler, os.path.join(os.getcwd(), "patterns"), recursive=True)
+        log.info("Watching pattern directory for changes.")
         self.observer.start()
 
     def __del__(self):
         self.observer.stop()
         self.observer.join()
 
-    def all_presets(self):
-        if not self._presets_dict:
-            self._presets_dict = self.load()
-        return self._presets_dict
+    def all_patterns(self):
+        if not self._patterns_dict:
+            self._patterns_dict = self.load()
+        return self._patterns_dict
 
     def load(self):
         self._modules = []
-        self._presets = []
-        log.info("Loading presets...")
-        for f in os.listdir(os.path.join(os.getcwd(), "presets")):
+        self._patterns = []
+        log.info("Loading patterns...")
+        for f in os.listdir(os.path.join(os.getcwd(), "patterns")):
             module_name, ext = os.path.splitext(f)
             if ext == ".py":
                 # Skip emacs lock files.
                 if f.startswith('.#'):
                     continue
 
-                module = __import__("presets." + module_name, fromlist=['dummy'])
+                module = __import__("patterns." + module_name, fromlist=['dummy'])
                 self._modules.append(module)
-                self._load_presets_from_modules(module)
-        log.info("Loaded %d presets." % len(self._presets))
-        self._presets_dict = dict([(classname.__name__, (module, classname)) for module, classname in self._presets])
-        return dict([(i[1].__name__, i[1]) for i in self._presets])
+                self._load_patterns_from_modules(module)
+        log.info("Loaded %d patterns." % len(self._patterns))
+        self._patterns_dict = dict([(classname.__name__, (module, classname)) for module, classname in self._patterns])
+        return dict([(i[1].__name__, i[1]) for i in self._patterns])
 
     def reload(self):
-        """Reloads all preset modules"""
-        self._presets = []
+        """Reloads all pattern modules"""
+        self._patterns = []
         for module in self._modules:
             reload(module)
-            self._load_presets_from_modules(module)
-        return dict([(i.__name__, i) for i in self._presets])
+            self._load_patterns_from_modules(module)
+        return dict([(i.__name__, i) for i in self._patterns])
 
-    def reload_preset_by_filename(self, filename):
+    def reload_pattern_by_filename(self, filename):
         log.info("Reloading %s", filename)
         for idx, module in enumerate(self._modules):
             if module.__name__.split('.')[1] == os.path.basename(filename).split('.')[0]:
                 self._modules[idx] = reload(module)
-                self._presets = [(m, o) for (m, o) in self._presets if m != module]
-                self._load_presets_from_modules(self._modules[idx])
+                self._patterns = [(m, o) for (m, o) in self._patterns if m != module]
+                self._load_patterns_from_modules(self._modules[idx])
                 self._parent.module_reloaded(module.__name__)
 
-    def _load_presets_from_modules(self, module):
+    def _load_patterns_from_modules(self, module):
         for name, obj in inspect.getmembers(module, inspect.isclass):
             if issubclass(obj, Pattern) and (name is not "Pattern") and (name is not "Pattern"):
                 log.info("Loaded %s" % obj.__name__)
-                self._presets.append((module, obj))
-                self._presets_dict[obj.__name__] = (module, obj)
+                self._patterns.append((module, obj))
+                self._patterns_dict[obj.__name__] = (module, obj)
 
 
 

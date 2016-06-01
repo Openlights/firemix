@@ -54,7 +54,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="lbl_preset_type">
            <property name="text">
-            <string>Preset Type</string>
+            <string>Pattern Type</string>
            </property>
           </widget>
          </item>

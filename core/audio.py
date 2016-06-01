@@ -40,7 +40,7 @@ log = logging.getLogger("firemix.core.mixer")
 
 class Audio(QtCore.QObject):
     """
-    Audio handles looking at sound data and setting it up for use in presets
+    Audio handles looking at sound data and setting it up for use in patterns
     """
     transition_starting = QtCore.Signal()
     _fader_steps = 256

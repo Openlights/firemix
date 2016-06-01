@@ -22,7 +22,7 @@ import inspect
 log = logging.getLogger("firemix.lib.plugin_loader")
 
 
-#TODO: This and PresetLoader share a lot of code...
+#TODO: This and PatternLoader share a lot of code...
 class PluginLoader:
     """
     Scans the ./plugins/ directory and imports objects into lists based on base class

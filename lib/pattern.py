@@ -24,7 +24,7 @@ from lib.json_dict import JSONDict
 from lib.buffer_utils import BufferUtils
 from lib.parameters import BoolParameter
 
-log = logging.getLogger("firemix.lib.preset")
+log = logging.getLogger("firemix.lib.pattern")
 
 
 class Pattern(JSONDict):

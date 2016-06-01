@@ -26,7 +26,7 @@ from copy import deepcopy
 from PySide import QtCore
 
 from lib.json_dict import JSONDict
-from lib.preset_loader import PresetLoader
+from lib.pattern_loader import PatternLoader
 
 log = logging.getLogger("firemix.lib.playlist")
 
@@ -99,7 +99,7 @@ class Playlist(JSONDict):
             print "Error loading %s" % self.filename
             return False
 
-        self._loader = PresetLoader(self)
+        self._loader = PatternLoader(self)
         self._preset_classes = self._loader.load()
         self._playlist_file_version = self.data.get("file-version", 1)  # Version 1 didn't have this key
         self._playlist_data = self.data.get('playlist', [])
@@ -118,7 +118,7 @@ class Playlist(JSONDict):
         return True
 
     def get_preset_from_json_data(self, data, slug):
-        inst = self._loader.all_presets()[data['classname']][1](self._app.mixer, slug)
+        inst = self._loader.all_patterns()[data['classname']][1](self._app.mixer, slug)
         inst._reset()
         return inst
 
@@ -150,7 +150,7 @@ class Playlist(JSONDict):
 
         for preset_slug in self._playlist_data:
             preset_data = self.load_preset_from_file(preset_slug)
-            if preset_data and preset_data['classname'] in self._loader.all_presets():
+            if preset_data and preset_data['classname'] in self._loader.all_patterns():
                 self._playlist.append(self.get_preset_from_json_data(preset_data, preset_slug))
 
         self.initialized = True
