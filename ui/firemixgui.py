@@ -201,6 +201,28 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                     if self.tbl_preset_parameters.item(i, 0).text() == ("watch(%s)" % name):
                         self.tbl_preset_parameters.item(i, 1).setText(str(val))
 
+        self.draw_fft()
+
+    def draw_fft(self):
+        fft_data = self.mixer._fft_data
+        if not fft_data:
+            fft_data = [1, 5, 3, 10, 3, 20, 3, 5, 6, 6, 6, 3, 1, 0]
+
+        scene = QtGui.QGraphicsScene(self.fft_graphics_view)
+
+        #scene.setBackgroundBrush(QtCore.Qt.white)
+
+        spacing = 10
+
+        x, y = (0, 0)
+        for point in fft_data:
+            scene.addLine(x, y, x + spacing, point)
+            y = point
+            x += spacing
+
+        self.fft_graphics_view.setScene(scene)
+        self.fft_graphics_view.show()
+
     def on_btn_playpause(self):
         if self.mixer.is_paused():
             self.mixer.cancel_scrub()

@@ -89,6 +89,7 @@ class Mixer(QtCore.QObject):
         self.last_time = time.time()
         self.transition_progress = 0.0
         self.audio = Audio(self)
+        self._fft_data = None
 
         if self._app.args.yappi and USE_YAPPI:
             print "yappi start"
