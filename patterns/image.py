@@ -50,6 +50,8 @@ class ImagePattern(Pattern):
         self.image = None
         self._buffer = None
 
+        super(ImagePattern, self).setup()
+
     def parameter_changed(self, parameter):
         if self.imagename != self.parameter('image-file').get():
             self.pixmap = QPixmap(self.parameter('image-file').get())

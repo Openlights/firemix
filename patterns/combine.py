@@ -31,6 +31,7 @@ class CombinePresets(Pattern):
         self.add_parameter(FloatParameter('transition-progress', 0.5))
         self.add_parameter(FloatParameter('audio-transition', 0.0))
         self.add_parameter(StringParameter('transition-mode', "Additive Blend"))
+        super(CombinePresets, self).setup()
 
     def parameter_changed(self, parameter):
         self._transition = self._mixer.get_transition_by_name(self.parameter('transition-mode').get())

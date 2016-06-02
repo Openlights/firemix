@@ -60,6 +60,8 @@ class SpiralGradient(Pattern):
 
         self.audio_twist = 0
 
+        super(SpiralGradient, self).setup()
+
     def parameter_changed(self, parameter):
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())
         self._fader = ColorFade(fade_colors, self._fader_steps)

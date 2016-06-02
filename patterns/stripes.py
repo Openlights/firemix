@@ -54,6 +54,8 @@ class StripeGradient(Pattern):
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
         self.pixel_angles = (math.pi + np.arctan2(y, x)) / (2 * math.pi)
         self.pixel_distances /= max(self.pixel_distances)
+
+        super(StripeGradient, self).setup()
             
     def parameter_changed(self, parameter):
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())

@@ -60,6 +60,8 @@ class SimplexNoise(Pattern):
         self.color_lookup = {}
         self._setup_pars()
 
+        super(SimplexNoise, self).setup()
+
     def parameter_changed(self, parameter):
         self._setup_pars()
 

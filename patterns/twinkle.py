@@ -60,6 +60,8 @@ class Twinkle(Pattern):
         self._current_time = 0
         self.birthByFFT = np.zeros(256)
 
+        super(Twinkle, self).setup()
+
     def parameter_changed(self, parameter):
         self._setup_colors()
         self.eq_centers = self._idle[:int(self.parameter('audio-eq-bands').get())]

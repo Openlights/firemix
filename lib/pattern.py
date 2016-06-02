@@ -101,9 +101,9 @@ class Pattern(JSONDict):
 
     def setup(self):
         """
-        Override this method to initialize your tickers.
+        Extend this method to initialize your pattern.
         """
-        pass
+        self.initialized = True
 
     def parameter_changed(self, parameter):
         """

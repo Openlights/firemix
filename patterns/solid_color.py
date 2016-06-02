@@ -35,7 +35,7 @@ class SolidColor(Pattern):
     def setup(self):
         self.add_parameter(HLSParameter('color', self._color))
         self._pixels = self.scene().get_all_pixels()
-        self.initialized = True #parameter_changed callback never calls unless this line present
+        super(SolidColor, self).setup()
 
     def parameter_changed(self, parameter):
         self._color = self.parameter('color').get()

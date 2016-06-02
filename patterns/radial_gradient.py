@@ -74,6 +74,8 @@ class RadialGradient(Pattern):
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
         self.pixel_angles = math.pi + np.arctan2(y, x)
         self.pixel_distances /= max(self.pixel_distances)
+
+        super(RadialGradient, self).setup()
         
     def parameter_changed(self, parameter):
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())

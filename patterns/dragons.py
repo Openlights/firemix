@@ -69,6 +69,7 @@ class Dragons(Pattern):
         self.add_parameter(HLSParameter('tail-color', self._tail_color))
         self.add_parameter(HLSParameter('explode-color', self._explode_color))
         self._setup_colors()
+        super(Dragons, self).setup()
 
     def _setup_colors(self):
         self._alive_color = self.parameter('alive-color').get()
