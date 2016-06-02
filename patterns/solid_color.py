@@ -22,8 +22,7 @@ from lib.buffer_utils import BufferUtils
 from lib.parameters import HLSParameter
 
 # Defaults
-DEFAULT_COLOR = (1.0, 1.0, 1.0)
-print('default color ' + str(DEFAULT_COLOR))
+DEFAULT_COLOR = (0.0, 0.5, 1.0)
 
 
 class SolidColor(Pattern):
@@ -36,9 +35,9 @@ class SolidColor(Pattern):
     def setup(self):
         self.add_parameter(HLSParameter('color', self._color))
         self._pixels = self.scene().get_all_pixels()
+        self.initialized = True #parameter_changed callback never calls unless this line present
 
     def parameter_changed(self, parameter):
-        print('parameter changed')
         self._color = self.parameter('color').get()
 
     def reset(self):
@@ -46,6 +45,5 @@ class SolidColor(Pattern):
         self.parameter_changed(None)
 
     def draw(self, dt):
-        print('colors: ' + str(self._color))
         self.setAllHLS(self._color[0], self._color[1], self._color[2])
 
