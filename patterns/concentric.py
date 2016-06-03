@@ -49,8 +49,6 @@ class Concentric(Pattern):
         cx = ((1 - x_offset) * xmin + (1 + x_offset) * xmax) / 2.0
         cy = ((1 - y_offset) * ymin + (1 + y_offset) * ymax) / 2.0
 
-        self.locations = self.scene().get_all_pixel_locations()
-
         x,y = np.copy(self.locations.T)
         x -= cx
         y -= cy
