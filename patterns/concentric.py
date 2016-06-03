@@ -41,17 +41,17 @@ class Concentric(Pattern):
 
         self.locations = self.scene().get_all_pixel_locations()
         self.update_center()
-        super(Concentric, self).setup()
 
-        
+
     def update_center(self):
         x_offset, y_offset = self.parameter('center').get()
         xmin, ymin, xmax, ymax = self.scene().get_fixture_bounding_box()
         cx = ((1 - x_offset) * xmin + (1 + x_offset) * xmax) / 2.0
         cy = ((1 - y_offset) * ymin + (1 + y_offset) * ymax) / 2.0
+
         self.locations = self.scene().get_all_pixel_locations()
 
-        x,y = self.locations.T
+        x,y = np.copy(self.locations.T)
         x -= cx
         y -= cy
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
