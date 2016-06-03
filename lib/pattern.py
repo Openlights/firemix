@@ -59,6 +59,8 @@ class Pattern(JSONDict):
         self.setup()
         self._reset()
         self.load_params_from_json(self.data.get('params', {}))
+        self.parameter_changed(None)
+        self.initialized = True
 
     def save(self):
         self.data["name"] = self._instance_name
@@ -103,7 +105,7 @@ class Pattern(JSONDict):
         """
         Extend this method to initialize your pattern.
         """
-        self.initialized = True
+        pass
 
     def parameter_changed(self, parameter):
         """
@@ -152,7 +154,6 @@ class Pattern(JSONDict):
                 self.parameter(k).set_from_str(str(v))
             except AttributeError:
                 log.warn("Parameter %s found in JSON data but not found in preset class.  Perhaps it was renamed?" % k)
-        self.parameter_changed(None)
 
     def add_watch(self, watch):
         self._watches[str(watch)] = watch

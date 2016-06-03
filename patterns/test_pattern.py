@@ -27,7 +27,6 @@ class TestPattern(Pattern):
         self._pixels = self.scene().get_all_pixels()
         self._hierarchy = self.scene().fixture_hierarchy()
         self._hue = 0.0
-        super(TestPattern, self).setup()
 
     def reset(self):
         pass

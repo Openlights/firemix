@@ -59,7 +59,7 @@ class Dragons(Pattern):
         self.init_pixels()
         random.seed()
         self._current_time = 0
-        self.add_parameter(FloatParameter('growth-time', 2.0))        
+        self.add_parameter(FloatParameter('growth-time', 2.0))
         self.add_parameter(FloatParameter('birth-rate', 0.4))
         self.add_parameter(FloatParameter('tail-persist', 0.5))
         self.add_parameter(FloatParameter('growth-rate', 1.0))
@@ -69,7 +69,6 @@ class Dragons(Pattern):
         self.add_parameter(HLSParameter('tail-color', self._tail_color))
         self.add_parameter(HLSParameter('explode-color', self._explode_color))
         self._setup_colors()
-        super(Dragons, self).setup()
 
     def _setup_colors(self):
         self._alive_color = self.parameter('alive-color').get()
@@ -86,7 +85,7 @@ class Dragons(Pattern):
     def draw(self, dt):
 
         self._current_time += dt
-        
+
         # Spontaneous birth: Rare after startup
         if (len(self._dragons) < self.parameter('pop-limit').get()) and random.random() < self.parameter('birth-rate').get():
             strand = random.randint(0, BufferUtils.num_strands - 1)
@@ -96,7 +95,7 @@ class Dragons(Pattern):
                 self._dragons.append(self.Dragon(address, 1, self._current_time))
 
         growth_rate = self.parameter('growth-rate').get()
-        
+
         # Dragon life cycle
         for dragon in self._dragons:
             # Fade in
@@ -122,7 +121,7 @@ class Dragons(Pattern):
 
                     if random.random() < dragon.growth:
                         dragon.growth -= 1
-                    
+
                         # At a vertex: optionally spawn new dragons
                         if dragon.moving and (p == 0 or p == (self.scene().fixture(s, f).pixels - 1)):
                             neighbors = self.scene().get_pixel_neighbors(dragon.loc)
@@ -133,7 +132,7 @@ class Dragons(Pattern):
                             dragon.moving = False
                             if dragon in self._dragons:
                                 self._dragons.remove(dragon)
-                                
+
                             # Iterate over candidate pixels that aren't on the current fixture
                             num_children = 0
                             for candidate in [n for n in neighbors if n[1] != f]:

@@ -503,7 +503,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         par = self.app.playlist.get_active_preset().parameter(key.text())
         try:
-            print par, item.text()
             par.set_from_str(item.text())
             item.setText(par.get_as_str())
         except ValueError:

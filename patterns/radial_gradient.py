@@ -34,7 +34,7 @@ class RadialGradient(Pattern):
     def setup(self):
         self.add_parameter(FloatParameter('speed', 0.1))
         self.add_parameter(FloatParameter('hue-width', 1.5))
-        self.add_parameter(FloatParameter('hue-step', 0.1))    
+        self.add_parameter(FloatParameter('hue-step', 0.1))
         self.add_parameter(FloatParameter('wave1-amplitude', 0.5))
         self.add_parameter(FloatParameter('wave1-period', 1.5))
         self.add_parameter(FloatParameter('wave1-speed', 0.05))
@@ -75,8 +75,6 @@ class RadialGradient(Pattern):
         self.pixel_angles = math.pi + np.arctan2(y, x)
         self.pixel_distances /= max(self.pixel_distances)
 
-        super(RadialGradient, self).setup()
-        
     def parameter_changed(self, parameter):
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())
         self._fader = ColorFade(fade_colors, self._fader_steps)

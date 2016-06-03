@@ -46,8 +46,8 @@ class Fungus(Pattern):
     _time = {}
     _population = 0
     _fader = None
-    
-    _growth_time = 0.6    
+
+    _growth_time = 0.6
     _life_time = 0.5
     _isolated_life_time = 1.0
     _death_time = 3.0
@@ -81,7 +81,6 @@ class Fungus(Pattern):
         self.add_parameter(HLSParameter('alive-color', self._alive_color))
         self.add_parameter(HLSParameter('dead-color', self._dead_color))
         self.add_parameter(HLSParameter('black-color', self._black_color))
-        super(Fungus, self).setup()
 
     def reset(self):
         self._current_time = 0
@@ -118,7 +117,7 @@ class Fungus(Pattern):
 
         self._current_time += dt
         self._mass_destruction_countdown -= dt
-    
+
         # Ensure that empty displays start up with some seeds
         p_birth = (1.0 - self._spontaneous_birth_probability) if self._population > 5 else 0.5
 

@@ -50,8 +50,6 @@ class ImagePattern(Pattern):
         self.image = None
         self._buffer = None
 
-        super(ImagePattern, self).setup()
-
     def parameter_changed(self, parameter):
         if self.imagename != self.parameter('image-file').get():
             self.pixmap = QPixmap(self.parameter('image-file').get())
@@ -65,9 +63,11 @@ class ImagePattern(Pattern):
                 self.image = np.asarray((self.image[2],self.image[1],self.image[0])).T
 
                 self.image = rgb_to_hls(self.image)
-                #print self.image
+                print self.image
 
                 #print "image", self.parameter('image-file').get(), "loaded:", self.image.shape
+            else:
+                print "No image!"
 
         self.lastFrame = None
 

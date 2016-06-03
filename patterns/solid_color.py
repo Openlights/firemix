@@ -35,7 +35,6 @@ class SolidColor(Pattern):
     def setup(self):
         self.add_parameter(HLSParameter('color', self._color))
         self._pixels = self.scene().get_all_pixels()
-        super(SolidColor, self).setup()
 
     def parameter_changed(self, parameter):
         self._color = self.parameter('color').get()

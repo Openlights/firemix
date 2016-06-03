@@ -33,7 +33,7 @@ class SimplexNoise(Pattern):
     """
 
     _luminance_steps = 256
-    
+
     def setup(self):
         self.add_parameter(FloatParameter('audio-brightness', 0.0))
         self.add_parameter(FloatParameter('hue-min', 0.0))
@@ -54,13 +54,12 @@ class SimplexNoise(Pattern):
         self._offset_x = 0
         self._offset_y = 0
         self._offset_z = 0
-        
+        self.rotMatrix = None
+
         self.pixel_locations = np.asarray(self.scene().get_all_pixel_locations())
 
         self.color_lookup = {}
         self._setup_pars()
-
-        super(SimplexNoise, self).setup()
 
     def parameter_changed(self, parameter):
         self._setup_pars()
@@ -75,13 +74,14 @@ class SimplexNoise(Pattern):
         self.scale = self.parameter('scale').get() / 100.0
         fade_colors = ast.literal_eval(self.parameter('luminance-map').get())
         self.lum_fader = ColorFade(fade_colors, self._luminance_steps)
+        angle = self.parameter('angle').get()
+        self.rotMatrix = np.array([(math.cos(angle), -math.sin(angle)), (math.sin(angle), math.cos(angle))])
 
     @profile
     def draw(self, dt):
         if self._mixer.is_onset():
             self._offset_z += self.parameter('beat-color-boost').get()
 
-        angle = self.parameter('angle').get()
         #self._offset_x += dt * self.parameter('speed').get() * math.cos(angle) * 2 * math.pi
         #self._offset_y += dt * self.parameter('speed').get() * math.sin(angle) * 2 * math.pi
         self._offset_x += dt * self.parameter('speed').get()
@@ -89,8 +89,7 @@ class SimplexNoise(Pattern):
         self._offset_z += dt * self._mixer.audio.getSmoothEnergy() * self.parameter('beat-color-boost').get()
         # posterization = self.parameter('resolution').get()
 
-        rotMatrix = np.array([(math.cos(angle), -math.sin(angle)), (math.sin(angle),  math.cos(angle))])
-        x,y = rotMatrix.T.dot(self.pixel_locations.T)
+        x,y = self.rotMatrix.T.dot(self.pixel_locations.T)
         x *= self.parameter('stretch').get()
         x += self._offset_x
         y += self._offset_y
@@ -105,4 +104,3 @@ class SimplexNoise(Pattern):
         hue_offset = self.parameter('hue-offset').get() + self._mixer.audio.getSmoothEnergy() * self.parameter('audio-hue-offset').get()
 
         self.setAllHLS(LS[0] + hue_offset, luminances, LS[2])
-

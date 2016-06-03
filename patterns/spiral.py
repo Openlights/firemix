@@ -27,10 +27,10 @@ from lib.color_fade import ColorFade
 
 class SpiralGradient(Pattern):
     """Spiral gradient that responds to onsets"""
-       
+
     _fader = None
     _fader_steps = 256
-    
+
     def setup(self):
         self.add_parameter(FloatParameter('audio-brightness', 0.0))
         self.add_parameter(FloatParameter('audio-twist', 0.0))
@@ -39,10 +39,10 @@ class SpiralGradient(Pattern):
         self.add_parameter(FloatParameter('speed', 0.3))
         self.add_parameter(FloatParameter('hue-speed', 0.3))
         self.add_parameter(FloatParameter('angle-hue-width', 2.0))
-        self.add_parameter(FloatParameter('radius-hue-width', 1.5))        
-        self.add_parameter(FloatParameter('wave-hue-width', 0.1))        
-        self.add_parameter(FloatParameter('wave-hue-period', 0.1))        
-        self.add_parameter(FloatParameter('wave-speed', 0.1))        
+        self.add_parameter(FloatParameter('radius-hue-width', 1.5))
+        self.add_parameter(FloatParameter('wave-hue-width', 0.1))
+        self.add_parameter(FloatParameter('wave-hue-period', 0.1))
+        self.add_parameter(FloatParameter('wave-speed', 0.1))
         self.add_parameter(FloatParameter('onset-speed-boost', 5.0))
         self.add_parameter(FloatParameter('onset-speed-decay', 1.0))
         self.add_parameter(StringParameter('color-gradient', "[(0,0,1), (0,1,1)]"))
@@ -59,8 +59,6 @@ class SpiralGradient(Pattern):
         self.onset_speed_boost = 1
 
         self.audio_twist = 0
-
-        super(SpiralGradient, self).setup()
 
     def parameter_changed(self, parameter):
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())
