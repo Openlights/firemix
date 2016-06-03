@@ -28,7 +28,7 @@ class DlgAddPreset(QtGui.QDialog, Ui_DlgAddPreset):
         self.setupUi(self)
 
         # Populate preset list
-        classes = self.playlist.get_available_presets()
+        classes = self.playlist.get_available_patterns()
         self.cb_preset_type.addItems(classes)
         self.cb_preset_type.currentIndexChanged.connect(self.populate_preset_name)
 

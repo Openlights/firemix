@@ -33,6 +33,9 @@ class PatternFileEventHandler(PatternMatchingEventHandler):
     ignore_directories = False
     callback = None
 
+    def on_created(self, event):
+        self.on_modified(event)
+
     def on_modified(self, event):
         if event.is_directory:
               files_in_dir = [event.src_path+"/"+f for f in os.listdir(event.src_path)]
@@ -90,8 +93,9 @@ class PatternLoader:
                 self._modules.append(module)
                 self._load_patterns_from_modules(module)
         log.info("Loaded %d patterns." % len(self._patterns))
-        self._patterns_dict = dict([(classname.__name__, (module, classname)) for module, classname in self._patterns])
-        return dict([(i[1].__name__, i[1]) for i in self._patterns])
+        self._patterns_dict = dict([(klass.__name__, (module, klass)) for module, klass in self._patterns])
+        #return dict([(i[1].__name__, i[1]) for i in self._patterns])
+        return self._patterns_dict
 
     def reload(self):
         """Reloads all pattern modules"""
@@ -99,16 +103,26 @@ class PatternLoader:
         for module in self._modules:
             reload(module)
             self._load_patterns_from_modules(module)
-        return dict([(i.__name__, i) for i in self._patterns])
+        #return dict([(i.__name__, i) for i in self._patterns])
+        return self._patterns_dict
 
     def reload_pattern_by_filename(self, filename):
-        log.info("Reloading %s", filename)
+        found = False
+        module_file_name = os.path.basename(filename).split('.')[0]
         for idx, module in enumerate(self._modules):
-            if module.__name__.split('.')[1] == os.path.basename(filename).split('.')[0]:
+            if module.__name__.split('.')[1] == module_file_name:
+                found = True
+                log.info("Reloading %s" % filename)
                 self._modules[idx] = reload(module)
                 self._patterns = [(m, o) for (m, o) in self._patterns if m != module]
                 self._load_patterns_from_modules(self._modules[idx])
                 self._parent.module_reloaded(module.__name__)
+
+        if not found:
+            log.info("Scanning %s for new pattern classes" % filename)
+            module = __import__("patterns." + module_file_name, fromlist=['dummy'])
+            self._modules.append(module)
+            self._load_patterns_from_modules(module)
 
     def _load_patterns_from_modules(self, module):
         for name, obj in inspect.getmembers(module, inspect.isclass):

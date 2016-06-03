@@ -100,7 +100,7 @@ class Playlist(JSONDict):
             return False
 
         self._loader = PatternLoader(self)
-        self._preset_classes = self._loader.load()
+        self.available_pattern_classes = self._loader.all_patterns()
         self._playlist_file_version = self.data.get("file-version", 1)  # Version 1 didn't have this key
         self._playlist_data = self.data.get('playlist', [])
         self._playlist = []
@@ -201,13 +201,14 @@ class Playlist(JSONDict):
             if self.last_active_preset is not None:
                 self.active_preset = self.get_preset_by_name(self.last_active_preset)
                 self.last_active_preset = None
+
+        if self.active_preset is None:
+            if len(self._playlist) > 0:
+                self.active_preset = self._playlist[0]
             else:
-                if len(self._playlist) > 0:
-                    self.active_preset = self._playlist[0]
-                else:
-                    # Nothing going on here!
-                    self.next_preset = None
-                    return
+                # Nothing going on here!
+                self.next_preset = None
+                return
 
         # Check if we just deleted the active preset
         if self.active_preset not in self._playlist:
@@ -277,7 +278,7 @@ class Playlist(JSONDict):
 
     def reload_presets(self):
         """Attempts to reload all preset classes in the playlist"""
-        self._preset_classes = self._loader.reload()
+        self.available_pattern_classes = self._loader.reload()
         while len(self._playlist) > 0:
             inst = self._playlist.pop(0)
             inst.clear_parameters()
@@ -395,8 +396,9 @@ class Playlist(JSONDict):
         self.playlist_mutated()
         self.changed()
 
-    def get_available_presets(self):
-        return self._preset_classes.keys()
+    def get_available_patterns(self):
+        self.available_pattern_classes = self._loader.all_patterns()
+        return sorted(self.available_pattern_classes.keys())
 
     def preset_name_exists(self, name):
         return True if name in [p.name() for p in self._playlist] else False
@@ -434,7 +436,7 @@ class Playlist(JSONDict):
         preset class.  Name must be unique.  If idx is specified, the preset will be inserted
         at the position idx, else it will be appended to the end of the playlist.
         """
-        if classname not in self._preset_classes:
+        if classname not in self.available_pattern_classes.keys():
             log.error("Tried to add nonexistent preset class %s" % classname)
             return False
 
@@ -442,7 +444,7 @@ class Playlist(JSONDict):
             log.error("Tried to add a preset that already exists: %s" % name)
             return False
 
-        inst = self._preset_classes[classname](self._app.mixer, slugify(name))
+        inst = self.available_pattern_classes[classname][1](self._app.mixer, slugify(name))
         inst.set_name(name)
         inst.save()
         inst._reset()
@@ -510,9 +512,9 @@ class Playlist(JSONDict):
         Wipes out the existing playlist and adds one instance of each preset
         """
         self.clear_playlist()
-        for cn in self._preset_classes:
+        for cn in self.available_pattern_classes.keys():
             name = cn + "-1"
-            inst = self._preset_classes[cn](self._app.mixer, name=name)
+            inst = self.available_pattern_classes[cn][1](self._app.mixer, name=name)
             inst.setup()
             self._playlist.append(inst)
         self.playlist_mutated()
