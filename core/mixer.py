@@ -89,7 +89,6 @@ class Mixer(QtCore.QObject):
         self.last_time = time.time()
         self.transition_progress = 0.0
         self.audio = Audio(self)
-        self._fft_data = None
 
         if self._app.args.yappi and USE_YAPPI:
             print "yappi start"
@@ -159,10 +158,6 @@ class Mixer(QtCore.QObject):
         if (t - self._last_onset_time) > self._onset_holdoff:
             self._last_onset_time = t
             self._onset = True
-
-    @QtCore.Slot(list)
-    def update_fft_data(self, data):
-        self._fft_data = data
 
     def get_transition_by_name(self, name):
         if not name or name == "Cut":

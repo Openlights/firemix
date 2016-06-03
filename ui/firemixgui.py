@@ -204,24 +204,18 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.draw_fft()
 
     def draw_fft(self):
-        fft_data = self.mixer._fft_data
-        if not fft_data:
-            fft_data = [1, 5, 3, 10, 3, 20, 3, 5, 6, 6, 6, 3, 1, 0]
-
+        fft_data = self.mixer.audio.fft[0]
         scene = QtGui.QGraphicsScene(self.fft_graphics_view)
 
-        #scene.setBackgroundBrush(QtCore.Qt.white)
-
-        spacing = 10
-
+        spacing = 1
         x, y = (0, 0)
         for point in fft_data:
-            scene.addLine(x, y, x + spacing, point)
+            scene.addLine(x, y, x + spacing, int(-200.0 * point))
             y = point
             x += spacing
 
         self.fft_graphics_view.setScene(scene)
-        self.fft_graphics_view.show()
+        #self.fft_graphics_view.show()
 
     def on_btn_playpause(self):
         if self.mixer.is_paused():
@@ -509,6 +503,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         par = self.app.playlist.get_active_preset().parameter(key.text())
         try:
+            print par, item.text()
             par.set_from_str(item.text())
             item.setText(par.get_as_str())
         except ValueError:
