@@ -105,6 +105,7 @@ class Playlist(JSONDict):
         self._playlist_data = self.data.get('playlist', [])
         self._playlist = []
 
+        self.last_active_preset = self._app.settings.get("last-preset", None)
         self.active_preset = None
         self.next_preset = None
         self._shuffle = self._app.settings['mixer']['shuffle']
@@ -197,12 +198,16 @@ class Playlist(JSONDict):
         """
 
         if self.active_preset is None:
-            if len(self._playlist) > 0:
-                self.active_preset = self._playlist[0]
+            if self.last_active_preset is not None:
+                self.active_preset = self.get_preset_by_name(self.last_active_preset)
+                self.last_active_preset = None
             else:
-                # Nothing going on here!
-                self.next_preset = None
-                return
+                if len(self._playlist) > 0:
+                    self.active_preset = self._playlist[0]
+                else:
+                    # Nothing going on here!
+                    self.next_preset = None
+                    return
 
         # Check if we just deleted the active preset
         if self.active_preset not in self._playlist:
