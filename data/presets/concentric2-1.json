@@ -1,0 +1,13 @@
+{
+    "classname": "Concentric2", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "Concentric2-1", 
+    "params": {
+        "allow-playback": "True", 
+        "center": "(0.0, 0.0)", 
+        "color-gradient": "[(0,0,1), (0,1,1)]", 
+        "spatial-freq": "1.5", 
+        "speed": "0.1"
+    }
+}

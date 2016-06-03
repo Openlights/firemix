@@ -1,0 +1,21 @@
+{
+    "classname": "RadialGradient", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "RadialGradient-1", 
+    "params": {
+        "blackout": "1.0", 
+        "hue-step": "0.05", 
+        "hue-width": "0.25", 
+        "luminance-scale": "1.0", 
+        "luminance-speed": "0.01", 
+        "speed": "0.1", 
+        "wave1-amplitude": "0.5", 
+        "wave1-period": "1.5", 
+        "wave1-speed": "0.15", 
+        "wave2-amplitude": "2.0", 
+        "wave2-period": "1.5", 
+        "wave2-speed": "0.25", 
+        "whiteout": "0.0"
+    }
+}

@@ -143,6 +143,32 @@ class Playlist(JSONDict):
             self._playlist = []
 
         if self._playlist_file_version != 2:
+            # Uncomment the block below to upgrade a legacy playlist
+
+            # log.error("Upgrading this playlist to version 2!")
+            #
+            # new_playlist_data = deepcopy(self.data)
+            # new_playlist_data["playlist"] = list()
+            # new_playlist_data["file-version"] = 2
+            #
+            # for entry in self._playlist_data:
+            #     if entry['classname'] in self._loader.all_patterns():
+            #         slug = slugify(entry['name'])
+            #         filepath = os.path.join(os.getcwd(), "data", "presets", "".join([slug, ".json"]))
+            #         if os.path.exists(filepath):
+            #             slug += "-1"
+            #             filepath = os.path.join(os.getcwd(), "data", "presets", "".join([slug, ".json"]))
+            #         with open(filepath, "w") as f:
+            #             entry["file-type"] = "preset"
+            #             entry["file-version"] = 1
+            #             json.dump(entry, f, indent=4, sort_keys=True)
+            #
+            #         new_playlist_data['playlist'].append(slug)
+            #
+            # # Uncomment the following to generate a version-2 playlist from a version-1 playlist
+            # filepath = os.path.join(os.getcwd(), "data", "playlists", "".join([self.name, "_separate_presets", ".json"]))
+            # with open(filepath, "w") as f:
+            #     json.dump(new_playlist_data, f, indent=4, sort_keys=True)
             log.error("Upgrade this playlist to version 2!")
             return
 

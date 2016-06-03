@@ -1,0 +1,19 @@
+{
+    "classname": "Twinkle", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "Twinkle", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-birth-rate": "0.0", 
+        "audio-peak-birth-rate": "0.0", 
+        "beat-births": "8000.0", 
+        "beat-color": "(1.0, 1.0, 1.0)", 
+        "birth-rate": "0.15", 
+        "color-gradient": "[(0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.1, 1.0, 1.0)]", 
+        "fade-down-time": "0.1", 
+        "fade-rate": "0.1", 
+        "fade-up-time": "0.5", 
+        "pie-peaks": "0.0"
+    }
+}

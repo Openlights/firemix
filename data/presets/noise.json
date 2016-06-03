@@ -1,0 +1,23 @@
+{
+    "classname": "SimplexNoise", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "Noise", 
+    "params": {
+        "allow-playback": "True", 
+        "angle": "0.125", 
+        "audio-brightness": "0.0", 
+        "beat-color-boost": "2.0", 
+        "beat-lum-boost": "0.05", 
+        "beat-lum-time": "0.1", 
+        "color-speed": "-1.0", 
+        "hue-max": "0.0", 
+        "hue-min": "0.0", 
+        "luminance-map": "[(0,-2,0), (0,1,0)]", 
+        "luminance-scale": "0.6", 
+        "resolution": "1", 
+        "scale": "7.0", 
+        "speed": "0.7", 
+        "stretch": "1.0"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "CombinePresets-1", 
+    "params": {
+        "first-preset": "Dragons-1", 
+        "second-preset": "SpiralGradient-1", 
+        "transition-mode": "Additive Blend", 
+        "transition-progress": "0.1"
+    }
+}

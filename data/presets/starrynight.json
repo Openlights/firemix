@@ -1,0 +1,16 @@
+{
+    "classname": "Twinkle", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "StarryNight", 
+    "params": {
+        "beat-births": "25.0", 
+        "beat-color": "(1.0, 1.0, 1.0)", 
+        "birth-rate": "0.9", 
+        "black-color": "(0.0, 0.0, 1.0)", 
+        "fade-down-time": "1.0", 
+        "fade-up-time": "2.0", 
+        "off-color": "[0.65, 0.0, 0.0]", 
+        "on-color": "[0.65, 0.5, 1.0]"
+    }
+}

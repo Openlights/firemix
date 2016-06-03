@@ -1,0 +1,21 @@
+{
+    "classname": "SimplexNoise", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "SimplexNoise-Rasta", 
+    "params": {
+        "angle": "0.125", 
+        "beat-color-boost": "0.0", 
+        "beat-lum-boost": "0.05", 
+        "beat-lum-time": "0.1", 
+        "color-speed": "0.0", 
+        "hue-max": "1.15", 
+        "hue-min": "0.5", 
+        "luminance-map": "[(0,0.5,1), (0,0.5,0.5), (0,0.5,1)]", 
+        "luminance-scale": "1.0", 
+        "resolution": "2", 
+        "scale": "1.5", 
+        "speed": "50.0", 
+        "stretch": "1.0"
+    }
+}

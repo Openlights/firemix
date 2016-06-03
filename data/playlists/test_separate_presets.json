@@ -1,0 +1,23 @@
+{
+    "file-type": "playlist", 
+    "file-version": 2,
+    "playlist": [
+        "fft-other", 
+        "radial", 
+        "radial-fft", 
+        "fft-rainbow", 
+        "noise-fft", 
+        "noise", 
+        "spiral-fft", 
+        "spiral", 
+        "testpattern-1-1", 
+        "twinkle", 
+        "fft-vocals", 
+        "fungus-1-1", 
+        "dragons-1-1", 
+        "spiralgradient-1-1", 
+        "radialgradient-1-1", 
+        "karen-wavy", 
+        "radial-wavy"
+    ]
+}
