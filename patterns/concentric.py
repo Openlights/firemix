@@ -34,7 +34,7 @@ class Concentric(Pattern):
         self.add_parameter(FloatTupleParameter('center', 2, (0.0, 0.0)))
         self.add_parameter(FloatParameter('speed', 0.1))
         self.add_parameter(StringParameter('color-gradient',
-                                           '[(0,0,1), (0,1,1)]'))
+                                           '[(0,0.5,1), (1,0.5,1)]'))
         self.add_parameter(FloatParameter('spatial-freq', 1.5))
 
         self.hue_inner = random.random()
@@ -68,7 +68,10 @@ class Concentric(Pattern):
 
         hues = self.pixel_distances
         hues = np.fmod(self.hue_inner + hues * self.parameter('spatial-freq').get(), 1.0)
-        luminances = [0.5] * (hues.size)
-        saturations = [1.0] * (hues.size)
+        hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
+        colors = self._fader.color_cache[hues]
+        #luminances = [0.5] * (hues.size)
+        #saturations = [1.0] * (hues.size)
 
-        self.setAllHLS(hues, luminances, saturations)
+        #self.setAllHLS(hues, luminances, saturations)
+        self._pixel_buffer = colors
