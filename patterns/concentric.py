@@ -29,10 +29,13 @@ from lib.color_fade import ColorFade
 class Concentric(Pattern):
     """Radial gradient that responds to onsets"""
     _fader_steps = 256
+    random_point = lambda self: np.array((random.uniform(-1, 1),
+                                          random.uniform(-1, 1)))
 
     def setup(self):
-        self.add_parameter(FloatTupleParameter('center', 2, (0.0, 0.0)))
-        self.add_parameter(FloatParameter('speed', 0.1))
+        #self.add_parameter(FloatTupleParameter('center', 2, (0.0, 0.0)))
+        self.add_parameter(FloatParameter('color-speed', 0.1))
+        self.add_parameter(FloatParameter('center-speed', 1.0))
         self.add_parameter(StringParameter('color-gradient',
                                            '[(0,0.5,1), (1,0.5,1)]'))
         self.add_parameter(FloatParameter('spatial-freq', 1.5))
@@ -40,11 +43,17 @@ class Concentric(Pattern):
         self.hue_inner = random.random()
 
         self.locations = self.scene().get_all_pixel_locations()
+
+        self.center = self.random_point()
+        self.target = self.random_point()
+        self.heading = self.target - self.center
+        self.heading /= np.linalg.norm(self.heading)
+
         self.update_center()
 
 
     def update_center(self):
-        x_offset, y_offset = self.parameter('center').get()
+        x_offset, y_offset = self.center
         xmin, ymin, xmax, ymax = self.scene().get_fixture_bounding_box()
         cx = ((1 - x_offset) * xmin + (1 + x_offset) * xmax) / 2.0
         cy = ((1 - y_offset) * ymin + (1 + y_offset) * ymax) / 2.0
@@ -56,7 +65,6 @@ class Concentric(Pattern):
         self.pixel_distances /= max(self.pixel_distances)
 
     def parameter_changed(self, parameter):
-        self.update_center()
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())
         self._fader = ColorFade(fade_colors, self._fader_steps)
 
@@ -64,14 +72,23 @@ class Concentric(Pattern):
         pass
 
     def draw(self, dt):
-        self.hue_inner += dt * self.parameter('speed').get()
+        self.walk(dt)
+        self.update_center()
 
+        self.hue_inner += dt * self.parameter('color-speed').get()
         hues = self.pixel_distances
         hues = np.fmod(self.hue_inner + hues * self.parameter('spatial-freq').get(), 1.0)
         hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
         colors = self._fader.color_cache[hues]
-        #luminances = [0.5] * (hues.size)
-        #saturations = [1.0] * (hues.size)
-
-        #self.setAllHLS(hues, luminances, saturations)
         self._pixel_buffer = colors
+
+    def at_target(self, epsilon):
+      return np.linalg.norm(self.center - self.target) < epsilon
+
+    def walk(self, dt):
+      step_size = dt * self.parameter('center-speed').get() / 10.0
+      if self.at_target(step_size):
+        self.target = self.random_point()
+        self.heading = self.target - self.center
+        self.heading /= np.linalg.norm(self.heading)
+      self.center += step_size * self.heading
