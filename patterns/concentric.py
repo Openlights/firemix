@@ -35,7 +35,8 @@ class Concentric(Pattern):
     def setup(self):
         #self.add_parameter(FloatTupleParameter('center', 2, (0.0, 0.0)))
         self.add_parameter(FloatParameter('color-speed', 0.1))
-        self.add_parameter(FloatParameter('center-speed', 1.0))
+        self.add_parameter(FloatParameter('max-speed', 1.0))
+        self.add_parameter(FloatParameter('deceleration', 0.01))
         self.add_parameter(StringParameter('color-gradient',
                                            '[(0,0.5,1), (1,0.5,1)]'))
         self.add_parameter(FloatParameter('spatial-freq', 1.5))
@@ -48,6 +49,7 @@ class Concentric(Pattern):
         self.target = self.random_point()
         self.heading = self.target - self.center
         self.heading /= np.linalg.norm(self.heading)
+        self.center_speed = self.parameter('max-speed').get() / 10.0
 
         self.update_center()
 
@@ -86,9 +88,11 @@ class Concentric(Pattern):
       return np.linalg.norm(self.center - self.target) < epsilon
 
     def walk(self, dt):
-      step_size = dt * self.parameter('center-speed').get() / 10.0
-      if self.at_target(step_size):
+      step_size = dt * self.center_speed
+      if self.at_target(step_size) or self.center_speed < dt:
+        self.center_speed = self.parameter('max-speed').get()
         self.target = self.random_point()
         self.heading = self.target - self.center
         self.heading /= np.linalg.norm(self.heading)
       self.center += step_size * self.heading
+      self.center_speed *= (1 - self.parameter('deceleration').get())
