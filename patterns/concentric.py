@@ -29,8 +29,8 @@ from lib.color_fade import ColorFade
 class Concentric(Pattern):
     """Radial gradient that responds to onsets"""
     _fader_steps = 256
-    random_point = lambda self: np.array((random.uniform(-1, 1),
-                                          random.uniform(-1, 1)))
+    random_point = lambda self: np.array((random.uniform(-0.85, 0.85),
+                                          random.uniform(-0.85, 0.85)))
 
     def setup(self):
         #self.add_parameter(FloatTupleParameter('center', 2, (0.0, 0.0)))
@@ -89,7 +89,7 @@ class Concentric(Pattern):
 
     def walk(self, dt):
       step_size = dt * self.center_speed
-      if self.at_target(step_size) or self.center_speed < dt:
+      if np.linalg.norm(self.center) > 1 or self.center_speed < dt:
         self.center_speed = self.parameter('max-speed').get()
         self.target = self.random_point()
         self.heading = self.target - self.center
