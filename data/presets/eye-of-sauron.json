@@ -1,0 +1,14 @@
+{
+    "classname": "Concentric", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "eye of sauron", 
+    "params": {
+        "allow-playback": "True", 
+        "color-gradient": "[(0.66,0,1), (0.6, 0.0, 1), (.66,0.5,1), (1.075,0.5,1), (.66,0.25,1), (.66,0.0,1)]", 
+        "color-speed": "0.0", 
+        "deceleration": "0.02", 
+        "max-speed": "1.2", 
+        "spatial-freq": "0.8"
+    }
+}
