@@ -44,6 +44,7 @@ class Concentric(Pattern):
         self.hue_inner = random.random()
 
         self.locations = self.scene().get_all_pixel_locations()
+        self.bounding_box = self.scene().get_fixture_bounding_box()
 
         self.center = self.random_point()
         self.target = self.random_point()
@@ -56,7 +57,7 @@ class Concentric(Pattern):
 
     def update_center(self):
         x_offset, y_offset = self.center
-        xmin, ymin, xmax, ymax = self.scene().get_fixture_bounding_box()
+        xmin, ymin, xmax, ymax = self.bounding_box
         cx = ((1 - x_offset) * xmin + (1 + x_offset) * xmax) / 2.0
         cy = ((1 - y_offset) * ymin + (1 + y_offset) * ymax) / 2.0
 
@@ -64,7 +65,7 @@ class Concentric(Pattern):
         x -= cx
         y -= cy
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-        self.pixel_distances /= max(self.pixel_distances)
+        self.pixel_distances /= ((xmax - xmin) / 2.0)
 
     def parameter_changed(self, parameter):
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())
