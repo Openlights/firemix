@@ -47,10 +47,18 @@ class FixtureStep(Transition):
         end[np.invert(self.mask)] = 0.0
 
         idx = int(progress * len(self.rand_index))
-        for i in range(self.last_idx, idx):
-            fix = self.fixtures[self.rand_index[i]]
-            pix_start, pix_end = BufferUtils.get_fixture_extents(fix.strand, fix.address)
-            self.mask[pix_start:pix_end][:] = True
+
+        if idx >= self.last_idx:
+            for i in range(self.last_idx, idx):
+                fix = self.fixtures[self.rand_index[i]]
+                pix_start, pix_end = BufferUtils.get_fixture_extents(fix.strand, fix.address)
+                self.mask[pix_start:pix_end][:] = True
+        else:
+            for i in range(idx, self.last_idx):
+                fix = self.fixtures[self.rand_index[i]]
+                pix_start, pix_end = BufferUtils.get_fixture_extents(fix.strand, fix.address)
+                self.mask[pix_start:pix_end][:] = False
+
         self.last_idx = idx
 
         return (start) + (end)
