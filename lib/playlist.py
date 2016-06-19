@@ -20,27 +20,15 @@ import gc
 import logging
 import random
 import json
-import re
 from copy import deepcopy
 
 from PySide import QtCore
 
 from lib.json_dict import JSONDict
 from lib.pattern_loader import PatternLoader
+from lib.util import slugify
 
 log = logging.getLogger("firemix.lib.playlist")
-
-
-def slugify(value):
-    """
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
-    """
-    import unicodedata
-    value = unicode(value)
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
-    return re.sub('[-\s]+', '-', value)
 
 
 # TODO: Metaclass hell when trying to subclass QObject here.  Maybe don't need to subclass JSONDict?
@@ -530,7 +518,9 @@ class Playlist(JSONDict):
         pl = [i for i, p in enumerate(self._playlist) if p.name() == old_name]
         if len(pl) != 1:
             return False
-        self._playlist[pl[0]].set_name(new_name)
+        inst = self._playlist[pl[0]]
+        inst.set_name(new_name)
+        inst.save()
         self.changed()
 
     def generate_default_playlist(self):

@@ -23,6 +23,7 @@ import colorsys
 from lib.json_dict import JSONDict
 from lib.buffer_utils import BufferUtils
 from lib.parameters import BoolParameter
+from lib.util import slugify
 
 log = logging.getLogger("firemix.lib.pattern")
 
@@ -76,6 +77,10 @@ class Pattern(JSONDict):
 
     def set_name(self, name):
         self._instance_name = name
+        self._instance_slug = slugify(name)
+        self.filename = os.path.join(os.getcwd(), "data", "presets",
+                                     "".join([self._instance_slug, ".json"]))
+        self.save()
 
     def name(self):
         return self._instance_name
