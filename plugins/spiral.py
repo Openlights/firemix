@@ -44,7 +44,6 @@ class Spiral(Transition):
         self.scene_center = (self.scene_bb[0] + (self.scene_bb[2] - self.scene_bb[0]) / 2, self.scene_bb[1] + (self.scene_bb[3] - self.scene_bb[1]) / 2)
         dx = self.scene_bb[2] - self.scene_center[0]
         dy = self.scene_bb[3] - self.scene_center[1]
-        self.scene_radius = sqrt(pow(dx,2) + pow(dy, 2))
 
         self.locations = self._app.scene.get_all_pixel_locations()
         self.angles = {}
@@ -55,6 +54,8 @@ class Spiral(Transition):
             angle = (atan2(dy, dx) + pi) / (2.0 * pi)
             self.radii[pixel] = sqrt(pow(dx,2) + pow(dy, 2))
             self.angles[pixel] = angle
+
+        self.scene_radius = max(self.radii)
 
         self.mask = np.tile(False, (self.buffer_size, 3))
         self.angle = 0.0
@@ -68,14 +69,16 @@ class Spiral(Transition):
         distance_cutoff = (1.0 / self.revolutions) * self.scene_radius * progress
 
         for pixel in xrange(len(self.active)):
-            if not self.active[pixel]:
-                continue
+            #if not self.active[pixel]:
+            #    continue
             angle = self.angles[pixel]
             distance = self.radii[pixel]
 
             if distance < distance_cutoff or (distance < distance_progress and angle < radius_progress):
                 self.mask[pixel][:] = True
-                self.active[pixel] = False
+                #self.active[pixel] = False
+            else:
+                self.mask[pixel][:] = False
 
         start[self.mask] = 0.0
         end[np.invert(self.mask)] = 0.0

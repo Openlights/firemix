@@ -77,7 +77,7 @@ class ImagePattern(Pattern):
     def draw(self, dt):
         if self.pixmap:
             lum_boost = self.parameter('beat-lum-boost').get()
-            if self._mixer.is_onset():
+            if self._app.mixer.is_onset():
                 self.lum_boost += lum_boost
 
             self.hue_offset += dt * self.parameter('speed-hue').get()

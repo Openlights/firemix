@@ -133,7 +133,7 @@ class Fungus(Pattern):
                 self._population += 1
 
         self._spread_boost *= self.parameter('audio-onset-spread-boost-echo').get()
-        if self._mixer.is_onset():
+        if self._app.mixer.is_onset():
             self._spread_boost += self.parameter('audio-onset-spread-boost').get()
 
         # Color growth

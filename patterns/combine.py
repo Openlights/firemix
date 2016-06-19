@@ -33,7 +33,7 @@ class CombinePresets(Pattern):
         self.add_parameter(StringParameter('transition-mode', "Additive Blend"))
 
     def parameter_changed(self, parameter):
-        self._transition = self._mixer.get_transition_by_name(self.parameter('transition-mode').get())
+        self._transition = self._app.mixer.get_transition_by_name(self.parameter('transition-mode').get())
         if self._transition:
             self._transition.reset()
 
@@ -42,8 +42,8 @@ class CombinePresets(Pattern):
 
     def draw(self, dt):
 
-        preset1 = self._mixer.playlist.get_preset_by_name(self.parameter('first-preset').get())
-        preset2 = self._mixer.playlist.get_preset_by_name(self.parameter('second-preset').get())
+        preset1 = self._app.mixer.playlist.get_preset_by_name(self.parameter('first-preset').get())
+        preset2 = self._app.mixer.playlist.get_preset_by_name(self.parameter('second-preset').get())
 
         if preset1 and preset2 and self._transition:
             # this is here because many transitions are set up to only play from start to end :(
@@ -59,7 +59,7 @@ class CombinePresets(Pattern):
             transition_amount = self.parameter('transition-progress').get()
 
             if self.parameter('audio-transition').get() > 0:
-                transition_amount += self.parameter('audio-transition').get() * self._mixer.audio.getEnergy()
+                transition_amount += self.parameter('audio-transition').get() * self._app.mixer.audio.getEnergy()
 
             self._pixel_buffer = self._transition.get(
                 preset1_buffer, preset2_buffer,

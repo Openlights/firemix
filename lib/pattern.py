@@ -30,8 +30,8 @@ log = logging.getLogger("firemix.lib.pattern")
 class Pattern(JSONDict):
     """Base Pattern.  Does nothing."""
 
-    def __init__(self, mixer, slug=""):
-        self._mixer = mixer
+    def __init__(self, app, slug=""):
+        self._app = app
         self._ticks = 0
         self._elapsed_time = 0
         self._parameters = {}
@@ -180,7 +180,7 @@ class Pattern(JSONDict):
 
     def tick_rate(self):
         # TODO: should have a different way of getting to the mixer settings
-        return self._mixer.get_tick_rate()
+        return self._app.mixer.get_tick_rate()
 
     def _convert_color(self, color):
         if (type(color[0]) == float) or (type(color[1]) == float) or (type(color[2]) == float) or (type(color[1]) ==np.float32):
@@ -189,7 +189,8 @@ class Pattern(JSONDict):
             return color
 
     def scene(self):
-        return self._mixer.scene()
+        # TODO: this api is bogus
+        return self._app.mixer.scene()
 
     def get_buffer(self):
         """

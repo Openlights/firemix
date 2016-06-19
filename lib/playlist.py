@@ -119,7 +119,7 @@ class Playlist(JSONDict):
         return True
 
     def get_preset_from_json_data(self, data, slug):
-        inst = self._loader.all_patterns()[data['classname']][1](self._app.mixer, slug)
+        inst = self._loader.all_patterns()[data['classname']][1](self._app, slug)
         inst._reset()
         return inst
 
@@ -470,7 +470,7 @@ class Playlist(JSONDict):
             log.error("Tried to add a preset that already exists: %s" % name)
             return False
 
-        inst = self.available_pattern_classes[classname][1](self._app.mixer, slugify(name))
+        inst = self.available_pattern_classes[classname][1](self._app, slugify(name))
         inst.set_name(name)
         inst.save()
         inst._reset()

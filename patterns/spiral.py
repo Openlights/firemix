@@ -68,11 +68,11 @@ class SpiralGradient(Pattern):
         self.locations = self.scene().get_all_pixel_locations()
 
     def draw(self, dt):
-        if self._mixer.is_onset():
+        if self._app.mixer.is_onset():
             self.onset_speed_boost = self.parameter('onset-speed-boost').get()
 
-        self.color_offset += dt * self._mixer.audio.getLowFrequency() * self.parameter('audio-speed-boost-bass').get()
-        self.color_offset += dt * self._mixer.audio.getHighFrequency() * self.parameter('audio-speed-boost-treble').get()
+        self.color_offset += dt * self._app.mixer.audio.getLowFrequency() * self.parameter('audio-speed-boost-bass').get()
+        self.color_offset += dt * self._app.mixer.audio.getHighFrequency() * self.parameter('audio-speed-boost-treble').get()
 
         self.center_offset_angle += dt * self.parameter('center-speed').get()
         self.hue_inner += dt * self.parameter('hue-speed').get() * self.onset_speed_boost
@@ -81,7 +81,7 @@ class SpiralGradient(Pattern):
 
         self.onset_speed_boost = max(1, self.onset_speed_boost - self.parameter('onset-speed-decay').get())
 
-        wave_hue_period = 2 * math.pi * self.parameter('wave-hue-period').get() + self.parameter('audio-wave-period-boost').get() * self._mixer.audio.getEnergy()
+        wave_hue_period = 2 * math.pi * self.parameter('wave-hue-period').get() + self.parameter('audio-wave-period-boost').get() * self._app.mixer.audio.getEnergy()
         wave_hue_width = self.parameter('wave-hue-width').get()
         radius_hue_width = self.parameter('radius-hue-width').get()
         angle_hue_width = self.parameter('angle-hue-width').get()
@@ -100,7 +100,7 @@ class SpiralGradient(Pattern):
             wave_amplitude *= np.max(wave_falloff - self.pixel_distances, 0)
 
         self.audio_twist *= 0.9
-        self.audio_twist += + self.parameter('audio-twist').get() * self._mixer.audio.getLowFrequency()
+        self.audio_twist += + self.parameter('audio-twist').get() * self._app.mixer.audio.getLowFrequency()
 
         angles = np.mod(1.0 - self.pixel_angles - np.sin(self.wave_offset + wave_amplitude * wave_hue_period) * (wave_hue_width + self.audio_twist), 1.0)
         hues = self.color_offset + (radius_hue_width * self.pixel_distances) + (2 * np.abs(angles - 0.5) * angle_hue_width)
@@ -108,7 +108,7 @@ class SpiralGradient(Pattern):
         colors = self._fader.color_cache[hues]
         colors = colors.T
         colors[0] = np.mod(colors[0] + self.hue_inner, 1.0)
-        colors[1] += self._mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
+        colors[1] += self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
         colors = colors.T
 
         self._pixel_buffer = colors

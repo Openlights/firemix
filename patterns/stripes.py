@@ -63,15 +63,15 @@ class StripeGradient(Pattern):
         pass
 
     def draw(self, dt):
-        if self._mixer.is_onset():
+        if self._app.mixer.is_onset():
             self.hue_inner = self.hue_inner + self.parameter('hue-step').get()
 
-        dt *= 1.0 + self.parameter('audio-speed').get() * self._mixer.audio.getLowFrequency()
+        dt *= 1.0 + self.parameter('audio-speed').get() * self._app.mixer.audio.getLowFrequency()
 
         self.hue_inner += dt * self.parameter('speed').get()
         self._center_rotation += dt * self.parameter('center-orbit-speed').get()
         self.stripe_angle += dt * self.parameter('angle-speed').get()
-        stripe_width = self.parameter('stripe-width').get() + self.parameter('audio-stripe-width').get() * self._mixer.audio.smoothEnergy
+        stripe_width = self.parameter('stripe-width').get() + self.parameter('audio-stripe-width').get() * self._app.mixer.audio.smoothEnergy
         cx, cy = self.scene().center_point()
         cx += math.cos(self._center_rotation) * self.parameter('center-orbit-distance').get()
         cy += math.sin(self._center_rotation) * self.parameter('center-orbit-distance').get()
@@ -90,6 +90,6 @@ class StripeGradient(Pattern):
         y = np.abs(y - sy)
         hues = np.int_(np.mod(x+y, 1.0) * posterization)
         colors = self._fader.color_cache[hues]
-        colors.T[1] += self._mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
+        colors.T[1] += self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
         colors.T[0] += self.hue_inner
         self._pixel_buffer = colors

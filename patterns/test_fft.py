@@ -72,7 +72,7 @@ class TestFFT(Pattern):
         self.color_angle += dt *  self.parameter('rotation').get()
 
         if False:
-        #if self._mixer.is_onset():
+        #if self._app.mixer.is_onset():
             self._onset_decay = 1.0
         elif self._onset_decay > 0.0:
             self._onset_decay -= 0.05
@@ -84,7 +84,7 @@ class TestFFT(Pattern):
         self.pixel_distances /= np.max(self.pixel_distances)
         self.pixel_amplitudes = self.pixel_distances
 
-        fft = self._mixer.audio.fft_data()
+        fft = self._app.mixer.audio.fft_data()
 
         if len(fft) == 0:
             return
@@ -94,7 +94,7 @@ class TestFFT(Pattern):
         self.pixel_amplitudes = np.zeros(pixel_count)
 
         noise_threshold = self.parameter('noise threshold').get()
-        smooth_fft = self._mixer.audio.getSmoothedFFT()
+        smooth_fft = self._app.mixer.audio.getSmoothedFFT()
 
         if len(smooth_fft):
             if self.parameter('fft smoothing').get():
@@ -105,7 +105,7 @@ class TestFFT(Pattern):
                 smooth_fft = np.convolve(smooth_fft, convolution, 'same')
 
         if self.parameter('fft-weight').get():
-            #time_to_graph = (len(fft) - 1) * (1 - self._mixer.audio.getEnergy() / 2) # pulse with total energy
+            #time_to_graph = (len(fft) - 1) * (1 - self._app.mixer.audio.getEnergy() / 2) # pulse with total energy
             frequency_min = self.parameter('frequency-min').get()
             frequency_max = self.parameter('frequency-max').get()
             frequency_range = frequency_max - frequency_min

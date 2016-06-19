@@ -87,11 +87,11 @@ class Twinkle(Pattern):
         self._current_time += dt
 
         # Birth
-        if self._mixer.is_onset():
+        if self._app.mixer.is_onset():
             self._nbirth += self.parameter('beat-births').get()
 
         # spawn FFT-colored stars
-        fft = self._mixer.audio.fft_data()[0]
+        fft = self._app.mixer.audio.fft_data()[0]
         noise_threshold = self.parameter('noise threshold').get()
         np.maximum(fft - noise_threshold, 0, fft)
         np.multiply(fft, 1.0 / (1.0 - noise_threshold), fft)
@@ -135,8 +135,8 @@ class Twinkle(Pattern):
                     color = self._fader.color_cache[self.ringColors[pixel]]
 
                     # if self.parameter('audio-ring-use-fft-brightness').get():
-                    #     # self._mixer.audio.getSmoothedFFT()[self.ringColors[pixel]]
-                    #     color[1] += self._mixer.audio.getEnergy() * self.parameter('audio-ring-use-fft-brightness').get()
+                    #     # self._app.mixer.audio.getSmoothedFFT()[self.ringColors[pixel]]
+                    #     color[1] += self._app.mixer.audio.getEnergy() * self.parameter('audio-ring-use-fft-brightness').get()
 
                     self._pixel_buffer.T[0][ring] = color[0]
                     self._pixel_buffer.T[1][ring] += color[1] * (1.0 - currentTimes[pixel] / ringLife)
@@ -146,7 +146,7 @@ class Twinkle(Pattern):
 
         # ring eq
         if len(fft):
-            smooth_fft = self._mixer.audio.getSmoothedFFT()
+            smooth_fft = self._app.mixer.audio.getSmoothedFFT()
             if len(smooth_fft):
                 eq_bands = self.parameter('audio-eq-bands').get()
                 if eq_bands:
@@ -187,7 +187,7 @@ class Twinkle(Pattern):
                 mask = (self.pixel_distances < 2 * fft[np.int_(self.pixel_angles * len(fft))])
                 self._pixel_buffer.T[1][mask] = self.parameter('pie-peaks').get()
 
-        # audioEnergy = self._mixer.audio.getEnergy() * self.parameter('audio-birth-rate').get() * dt
+        # audioEnergy = self._app.mixer.audio.getEnergy() * self.parameter('audio-birth-rate').get() * dt
         # self._nbirth += audioEnergy
 
         self._nbirth += self.parameter('birth-rate').get() * dt

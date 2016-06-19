@@ -94,12 +94,12 @@ class Mixer(QtCore.QObject):
             print "yappi start"
             yappi.start()
 
-        # Load transitions
-        self.set_transition_mode(self._app.settings.get('mixer')['transition'])
-
         log.info("Warming up BufferUtils cache...")
         BufferUtils.init()
         log.info("Completed BufferUtils cache warmup")
+
+        # Load transitions
+        self.set_transition_mode(self._app.settings.get('mixer')['transition'])
 
         log.info("Initializing preset rendering buffer")
         fh = self._scene.fixture_hierarchy()
@@ -176,8 +176,11 @@ class Mixer(QtCore.QObject):
             return None
 
     def set_transition_mode(self, name):
-        if not self._in_transition:
-            self._transition = self.get_transition_by_name(name)
+        #if not self._in_transition:
+        #    self._transition = self.get_transition_by_name(name)
+        self._transition = self.get_transition_by_name(name)
+        if self._transition is not None:
+            self._transition.reset()
         return True
 
     def build_random_transition_list(self):
