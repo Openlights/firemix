@@ -230,9 +230,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         for point in range(0, len(fft_data), spacing):
             if x > width - 1:
                 break
-            f = fft_data[point] * 24.0
+
+            # HACK! TODO: this scaling is arbitrary and should be done properly in the audio module
+            f = fft_data[point] * 8.0
             f = f * f * f
-            v = int(255.0 * f)
+            v = min(255, int(255.0 * f))
             self.fft_pixmap[height - 1][x] = (v / 2, v / 4, v, v)
             x += 1
 
