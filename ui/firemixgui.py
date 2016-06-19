@@ -17,6 +17,7 @@
 
 import time
 import os
+import numpy as np
 
 from PySide import QtGui, QtCore
 
@@ -101,8 +102,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.tbl_preset_parameters.setDisabled(True)
         self.app.playlist_changed.connect(self.on_playlist_changed)
 
+        self.fft_pixmap = None
+
         if self.app.aubio_connector is not None:
             self.app.aubio_connector.onset_detected.connect(self.onset_detected)
+            self.app.aubio_connector.fft_data.connect(self.draw_fft)
 
         # Mixer FPS update
         self._update_interval = 250
@@ -201,21 +205,42 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                     if self.tbl_preset_parameters.item(i, 0).text() == ("watch(%s)" % name):
                         self.tbl_preset_parameters.item(i, 1).setText(str(val))
 
-        self.draw_fft()
+        #self.draw_fft()
 
+    @QtCore.Slot()
     def draw_fft(self):
         fft_data = self.mixer.audio.fft[0]
         scene = QtGui.QGraphicsScene(self.fft_graphics_view)
 
-        spacing = 1
-        x, y = (0, 0)
-        for point in fft_data:
-            scene.addLine(x, y, x + spacing, int(-200.0 * point))
-            y = point
-            x += spacing
+        width = 128
+        height = 128
 
+        if self.fft_pixmap is None:
+            self.fft_pixmap = np.full([width, height, 4], 255, dtype=np.uint8)
+
+        x, y = (0, height - 1)
+
+        for row in range(height - 1):
+            self.fft_pixmap[row] = self.fft_pixmap[row + 1]
+
+        # TODO: fix that the upper few bins are always hot
+        fft_data = fft_data[:120]
+
+        spacing = max(1, len(fft_data) / width)
+        for point in range(0, len(fft_data), spacing):
+            if x > width - 1:
+                break
+            f = fft_data[point] * 24.0
+            f = f * f * f
+            v = int(255.0 * f)
+            self.fft_pixmap[height - 1][x] = (v / 2, v / 4, v, v)
+            x += 1
+
+        #print self.fft_pixmap
+        img = QtGui.QImage(self.fft_pixmap, width, height, QtGui.QImage.Format_ARGB32)
+        scene.addPixmap(QtGui.QPixmap.fromImage(img))
         self.fft_graphics_view.setScene(scene)
-        #self.fft_graphics_view.show()
+        self.fft_graphics_view.setSceneRect(0, 0, width, height)
 
     def on_btn_playpause(self):
         if self.mixer.is_paused():

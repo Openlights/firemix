@@ -301,8 +301,8 @@
            <widget class="QGroupBox" name="groupBox_4">
             <property name="minimumSize">
              <size>
-              <width>120</width>
-              <height>0</height>
+              <width>180</width>
+              <height>220</height>
              </size>
             </property>
             <property name="title">
@@ -313,11 +313,14 @@
               <rect>
                <x>10</x>
                <y>20</y>
-               <width>101</width>
-               <height>161</height>
+               <width>161</width>
+               <height>188</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_2">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetMinimumSize</enum>
+              </property>
               <item>
                <widget class="QCheckBox" name="cb_simulate_audio">
                 <property name="text">
@@ -344,16 +347,31 @@
               <item>
                <widget class="QGraphicsView" name="fft_graphics_view">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>128</width>
+                  <height>128</height>
+                 </size>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>150</height>
+                  <height>16777215</height>
                  </size>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Plain</enum>
+                </property>
+                <property name="verticalScrollBarPolicy">
+                 <enum>Qt::ScrollBarAlwaysOff</enum>
+                </property>
+                <property name="horizontalScrollBarPolicy">
+                 <enum>Qt::ScrollBarAlwaysOff</enum>
                 </property>
                 <property name="interactive">
                  <bool>false</bool>
@@ -362,8 +380,8 @@
                  <rectf>
                   <x>0.000000000000000</x>
                   <y>0.000000000000000</y>
-                  <width>64.000000000000000</width>
-                  <height>64.000000000000000</height>
+                  <width>128.000000000000000</width>
+                  <height>128.000000000000000</height>
                  </rectf>
                 </property>
                </widget>
