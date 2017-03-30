@@ -39,7 +39,9 @@ class _Dragon(object):
         ds = 'Fwd' if self.dir == 1 else 'Rev'
         return "Dragon %d %s: %0.2f" % (self.loc, ds, self.lifetime)
 
-    def draw(self, dt):
+    def draw(self, dt, to_add, to_remove, population):
+        pop_delta = 0
+
         # Fade in
         if self.growing:
             p = (self.pattern._current_time - self.lifetime) / self.pattern.parameter('growth-time').get()
@@ -55,7 +57,7 @@ class _Dragon(object):
 
         # Alive - can move or die
         if not self.alive:
-            return
+            return pop_delta
 
         self.growth += dt * self.pattern.parameter('growth-rate').get()
         for times in range(int(self.growth)):
@@ -69,11 +71,12 @@ class _Dragon(object):
                     or (self.dir == 1 and p == (self.pattern.scene().fixture(s, f).pixels - 1))):
                     # At a vertex: kill dragons that reach the end of a fixture
                     # and optionally spawn new dragons
-                    if self in self.pattern._dragons:
-                        self.pattern._dragons.remove(self)
-
-                    self._spawn(s, f)
-                    return
+                    to_remove.add(self)
+                    pop_delta -= 1
+                    spawned = self._spawn(s, f, population + pop_delta)
+                    to_add |= spawned
+                    pop_delta += len(spawned)
+                    return pop_delta
                 else:
                     # Move dragons along the fixture
                     self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._tail_fader))
@@ -82,45 +85,51 @@ class _Dragon(object):
                     self.pattern.setPixelHLS(new_address, self.pattern._alive_color)
 
             # Kill dragons that run into each other
-            if self in self.pattern._dragons:
-                colliding = [d for d in self.pattern._dragons if d != self and d.loc == self.loc]
+            if self not in to_remove:
+                others = (self.pattern._dragons | to_add) - to_remove
+                colliding = [d for d in others if d != self and d.loc == self.loc]
                 if len(colliding) > 0:
                     #print "collision between", self, "and", colliding[0]
-                    self.pattern._dragons.remove(self)
-                    self.pattern._dragons.remove(colliding[0])
+                    to_remove.add(self)
+                    pop_delta -= 1
+                    for other in colliding:
+                        to_remove.add(other)
+                        pop_delta -= 1
                     self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._explode_fader))
                     neighbors = self.pattern.scene().get_pixel_neighbors(self.loc)
                     for neighbor in neighbors:
                         self.pattern._tails.append((neighbor, self.pattern._current_time, self.pattern._explode_fader))
-                    return
 
-    def _spawn(self, current_strand, current_fixture):
+        return pop_delta
+
+    def _spawn(self, current_strand, current_fixture, population):
+        children = set()
         neighbors = self.pattern.scene().get_pixel_neighbors(self.loc)
         neighbors = [BufferUtils.index_to_logical(n) for n in neighbors]
         random.shuffle(neighbors)
 
         # Iterate over candidate pixels that aren't on the current fixture
-        num_children = 0
         candidates = [n for n in neighbors
                       if n[:2] != (current_strand, current_fixture)]
         for candidate in candidates:
             child_index = BufferUtils.logical_to_index(candidate)
-            if num_children == 0:
+            if len(children) == 0:
                 # Spawn at least one new dragon to replace the old one.  This first one skips the growth.
                 dir = 1 if candidate[2] == 0 else -1
                 child = _Dragon(self.pattern, child_index, dir, self.pattern._current_time)
                 child.growing = False
                 child.alive = True
-                self.pattern._dragons.append(child)
-                num_children += 1
-            elif (len(self.pattern._dragons) < self.pattern.parameter('pop-limit').get()):
+                children.add(child)
+                population += 1
+            elif (population < self.pattern.parameter('pop-limit').get()
+                  and random.random() < self.pattern.parameter('birth-rate').get()):
                 # Randomly spawn new dragons
-                if random.random() < self.pattern.parameter('birth-rate').get():
-                    dir = 1 if candidate[2] == 0 else -1
-                    child = _Dragon(self.pattern, child_index, dir, self.pattern._current_time)
+                dir = 1 if candidate[2] == 0 else -1
+                child = _Dragon(self.pattern, child_index, dir, self.pattern._current_time)
+                children.add(child)
+                population +=1
 
-                    self.pattern._dragons.append(child)
-                    num_children += 1
+        return children
 
 
 class Dragons(Pattern):
@@ -137,7 +146,7 @@ class Dragons(Pattern):
     _fader_steps = 256
 
     def setup(self):
-        self._dragons = []
+        self._dragons = set()
         self._tails = []
         self.init_pixels()
         random.seed()
@@ -175,18 +184,26 @@ class Dragons(Pattern):
             fixture = random.randint(0, BufferUtils.strand_num_fixtures(strand) - 1)
             address = BufferUtils.logical_to_index((strand, fixture, 0))
             if address not in [d.loc for d in self._dragons]:
-                self._dragons.append(_Dragon(self, address, 1, self._current_time))
+                self._dragons.add(_Dragon(self, address, 1, self._current_time))
 
         # Dragon life cycle
+        to_add = set()
+        to_remove = set()
+        population = len(self._dragons)
         for dragon in self._dragons:
-            dragon.draw(dt)
+            population += dragon.draw(dt, to_add, to_remove, population)
+
+        self._dragons = (self._dragons | to_add) - to_remove
 
         # Draw tails
+        tails_to_remove = []
         for loc, time, fader in self._tails:
             if (self._current_time - time) > self.parameter('tail-persist').get():
                 if (loc, time, fader) in self._tails:
-                    self._tails.remove((loc, time, fader))
+                    tails_to_remove.append((loc, time, fader))
                 self.setPixelHLS(loc, (0, 0, 0))
             else:
                 progress = (self._current_time - time) / self.parameter('tail-persist').get()
                 self.setPixelHLS(loc, fader.get_color(progress * self._fader_steps))
+        for tail in tails_to_remove:
+            self._tails.remove(tail)
