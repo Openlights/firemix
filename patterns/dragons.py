@@ -71,12 +71,13 @@ class _Dragon(object):
                     or (self.dir == 1 and p == (self.pattern.scene().fixture(s, f).pixels - 1))):
                     # At a vertex: kill dragons that reach the end of a fixture
                     # and optionally spawn new dragons
+                    self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._tail_fader))
                     to_remove.add(self)
                     pop_delta -= 1
                     spawned = self._spawn(s, f, population + pop_delta)
                     to_add |= spawned
                     pop_delta += len(spawned)
-                    return pop_delta
+                    break
                 else:
                     # Move dragons along the fixture
                     self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._tail_fader))
@@ -99,6 +100,7 @@ class _Dragon(object):
                     neighbors = self.pattern.scene().get_pixel_neighbors(self.loc)
                     for neighbor in neighbors:
                         self.pattern._tails.append((neighbor, self.pattern._current_time, self.pattern._explode_fader))
+                    break
 
         return pop_delta
 
