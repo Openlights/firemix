@@ -57,8 +57,7 @@ class _Dragon(object):
         # Alive - can move or die
         if self.alive:
 
-            growth_rate = self.pattern.parameter('growth-rate').get()
-            self.growth += dt * growth_rate
+            self.growth += dt * self.pattern.parameter('growth-rate').get()
             for times in range(int(self.growth)):
                 s, f, p = BufferUtils.index_to_logical(self.loc)
                 self.pattern.setPixelHLS(self.loc, (0, 0, 0))
@@ -66,40 +65,15 @@ class _Dragon(object):
                 if random.random() < self.growth:
                     self.growth -= 1
 
-                    # At a vertex: optionally spawn new dragons
                     if self.moving and (p == 0 or p == (self.pattern.scene().fixture(s, f).pixels - 1)):
-                        neighbors = self.pattern.scene().get_pixel_neighbors(self.loc)
-                        neighbors = [BufferUtils.index_to_logical(n) for n in neighbors]
-                        random.shuffle(neighbors)
-
-                        # Kill dragons that reach the end of a fixture
+                        # At a vertex: kill dragons that reach the end of a fixture
+                        # and optionally spawn new dragons
                         self.moving = False
                         if self in self.pattern._dragons:
                             self.pattern._dragons.remove(self)
 
-                        # Iterate over candidate pixels that aren't on the current fixture
-                        num_children = 0
-                        for candidate in [n for n in neighbors if n[1] != f]:
-                            child_index = BufferUtils.logical_to_index(candidate)
-                            if num_children == 0:
-                                # Spawn at least one new dragon to replace the old one.  This first one skips the growth.
-                                dir = 1 if candidate[2] == 0 else -1
-                                child = _Dragon(self.pattern, child_index, dir, self.pattern._current_time)
-                                child.growing = False
-                                child.alive = True
-                                child.moving = False
-                                self.pattern._dragons.append(child)
-                                num_children += 1
-                            elif (len(self.pattern._dragons) < self.pattern.parameter('pop-limit').get()):
-                                # Randomly spawn new dragons
-                                if random.random() < self.pattern.parameter('birth-rate').get():
-                                    dir = 1 if candidate[2] == 0 else -1
-                                    child = _Dragon(self.pattern, child_index, dir, self.pattern._current_time)
-                                    child.moving = False
-
-                                    self.pattern._dragons.append(child)
-                                    num_children += 1
-                        break;
+                        self._spawn(s, f)
+                        return
                     else:
                         # Move dragons along the fixture
                         self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._tail_fader))
@@ -120,6 +94,37 @@ class _Dragon(object):
                         for neighbor in neighbors:
                             self.pattern._tails.append((neighbor, self.pattern._current_time, self.pattern._explode_fader))
                         break
+
+    def _spawn(self, current_strand, current_fixture):
+        neighbors = self.pattern.scene().get_pixel_neighbors(self.loc)
+        neighbors = [BufferUtils.index_to_logical(n) for n in neighbors]
+        random.shuffle(neighbors)
+
+        # Iterate over candidate pixels that aren't on the current fixture
+        num_children = 0
+        candidates = [n for n in neighbors
+                      if n[:2] != (current_strand, current_fixture)]
+        print [current_strand, current_fixture], neighbors, candidates
+        for candidate in candidates:
+            child_index = BufferUtils.logical_to_index(candidate)
+            if num_children == 0:
+                # Spawn at least one new dragon to replace the old one.  This first one skips the growth.
+                dir = 1 if candidate[2] == 0 else -1
+                child = _Dragon(self.pattern, child_index, dir, self.pattern._current_time)
+                child.growing = False
+                child.alive = True
+                child.moving = False
+                self.pattern._dragons.append(child)
+                num_children += 1
+            elif (len(self.pattern._dragons) < self.pattern.parameter('pop-limit').get()):
+                # Randomly spawn new dragons
+                if random.random() < self.pattern.parameter('birth-rate').get():
+                    dir = 1 if candidate[2] == 0 else -1
+                    child = _Dragon(self.pattern, child_index, dir, self.pattern._current_time)
+                    child.moving = False
+
+                    self.pattern._dragons.append(child)
+                    num_children += 1
 
 
 class Dragons(Pattern):
