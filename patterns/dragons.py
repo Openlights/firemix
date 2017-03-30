@@ -55,45 +55,46 @@ class _Dragon(object):
             self.pattern.setPixelHLS(self.loc, color)
 
         # Alive - can move or die
-        if self.alive:
+        if not self.alive:
+            return
 
-            self.growth += dt * self.pattern.parameter('growth-rate').get()
-            for times in range(int(self.growth)):
-                s, f, p = BufferUtils.index_to_logical(self.loc)
-                self.pattern.setPixelHLS(self.loc, (0, 0, 0))
+        self.growth += dt * self.pattern.parameter('growth-rate').get()
+        for times in range(int(self.growth)):
+            s, f, p = BufferUtils.index_to_logical(self.loc)
+            self.pattern.setPixelHLS(self.loc, (0, 0, 0))
 
-                if random.random() < self.growth:
-                    self.growth -= 1
+            if random.random() < self.growth:
+                self.growth -= 1
 
-                    if self.moving and (p == 0 or p == (self.pattern.scene().fixture(s, f).pixels - 1)):
-                        # At a vertex: kill dragons that reach the end of a fixture
-                        # and optionally spawn new dragons
-                        self.moving = False
-                        if self in self.pattern._dragons:
-                            self.pattern._dragons.remove(self)
-
-                        self._spawn(s, f)
-                        return
-                    else:
-                        # Move dragons along the fixture
-                        self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._tail_fader))
-                        new_address = BufferUtils.logical_to_index((s, f, p + self.dir))
-                        self.loc = new_address
-                        self.moving = True
-                        self.pattern.setPixelHLS(new_address, self.pattern._alive_color)
-
-                # Kill dragons that run into each other
-                if self in self.pattern._dragons:
-                    colliding = [d for d in self.pattern._dragons if d != self and d.loc == self.loc]
-                    if len(colliding) > 0:
-                        #print "collision between", self, "and", colliding[0]
+                if self.moving and (p == 0 or p == (self.pattern.scene().fixture(s, f).pixels - 1)):
+                    # At a vertex: kill dragons that reach the end of a fixture
+                    # and optionally spawn new dragons
+                    self.moving = False
+                    if self in self.pattern._dragons:
                         self.pattern._dragons.remove(self)
-                        self.pattern._dragons.remove(colliding[0])
-                        self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._explode_fader))
-                        neighbors = self.pattern.scene().get_pixel_neighbors(self.loc)
-                        for neighbor in neighbors:
-                            self.pattern._tails.append((neighbor, self.pattern._current_time, self.pattern._explode_fader))
-                        break
+
+                    self._spawn(s, f)
+                    return
+                else:
+                    # Move dragons along the fixture
+                    self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._tail_fader))
+                    new_address = BufferUtils.logical_to_index((s, f, p + self.dir))
+                    self.loc = new_address
+                    self.moving = True
+                    self.pattern.setPixelHLS(new_address, self.pattern._alive_color)
+
+            # Kill dragons that run into each other
+            if self in self.pattern._dragons:
+                colliding = [d for d in self.pattern._dragons if d != self and d.loc == self.loc]
+                if len(colliding) > 0:
+                    #print "collision between", self, "and", colliding[0]
+                    self.pattern._dragons.remove(self)
+                    self.pattern._dragons.remove(colliding[0])
+                    self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._explode_fader))
+                    neighbors = self.pattern.scene().get_pixel_neighbors(self.loc)
+                    for neighbor in neighbors:
+                        self.pattern._tails.append((neighbor, self.pattern._current_time, self.pattern._explode_fader))
+                    return
 
     def _spawn(self, current_strand, current_fixture):
         neighbors = self.pattern.scene().get_pixel_neighbors(self.loc)
@@ -104,7 +105,6 @@ class _Dragon(object):
         num_children = 0
         candidates = [n for n in neighbors
                       if n[:2] != (current_strand, current_fixture)]
-        print [current_strand, current_fixture], neighbors, candidates
         for candidate in candidates:
             child_index = BufferUtils.logical_to_index(candidate)
             if num_children == 0:
