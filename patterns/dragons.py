@@ -25,6 +25,115 @@ from lib.color_fade import ColorFade
 from lib.parameters import FloatParameter, IntParameter, HLSParameter
 
 
+class _Dragon(object):
+    def __init__(self, pattern, loc, dir, lifetime):
+        self.pattern = pattern
+        self.loc = loc
+        self.dir = dir
+        self.lifetime = lifetime
+        self.growing = True
+        self.alive = False
+        self.growth = 0
+
+    def __repr__(self):
+        ds = 'Fwd' if self.dir == 1 else 'Rev'
+        return "Dragon %d %s: %0.2f" % (self.loc, ds, self.lifetime)
+
+    def draw(self, dt, to_add, to_remove, population):
+        pop_delta = 0
+
+        # Fade in
+        if self.growing:
+            p = (self.pattern._current_time - self.lifetime) / self.pattern.parameter('growth-time').get()
+            if (p > 1):
+                p = 1.0
+            color = self.pattern._growth_fader.get_color(p * self.pattern._fader_steps)
+            if p >= 1.0:
+                self.growing = False
+                self.alive = True
+                self.lifetime = self.pattern._current_time
+
+            self.pattern.setPixelHLS(self.loc, color)
+
+        # Alive - can move or die
+        if not self.alive:
+            return pop_delta
+
+        self.growth += dt * self.pattern.parameter('growth-rate').get()
+        for times in range(int(self.growth)):
+            s, f, p = BufferUtils.index_to_logical(self.loc)
+            self.pattern.setPixelHLS(self.loc, (0, 0, 0))
+
+            if random.random() < self.growth:
+                self.growth -= 1
+
+                if ((self.dir == -1 and p == 0)
+                    or (self.dir == 1 and p == (self.pattern.scene().fixture(s, f).pixels - 1))):
+                    # At a vertex: kill dragons that reach the end of a fixture
+                    # and optionally spawn new dragons
+                    self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._tail_fader))
+                    to_remove.add(self)
+                    pop_delta -= 1
+                    spawned = self._spawn(s, f, population + pop_delta)
+                    to_add |= spawned
+                    pop_delta += len(spawned)
+                    break
+                else:
+                    # Move dragons along the fixture
+                    self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._tail_fader))
+                    new_address = BufferUtils.logical_to_index((s, f, p + self.dir))
+                    self.loc = new_address
+                    self.pattern.setPixelHLS(new_address, self.pattern._alive_color)
+
+            # Kill dragons that run into each other
+            if self not in to_remove:
+                others = (self.pattern._dragons | to_add) - to_remove
+                colliding = [d for d in others if d != self and d.loc == self.loc]
+                if len(colliding) > 0:
+                    #print "collision between", self, "and", colliding[0]
+                    to_remove.add(self)
+                    pop_delta -= 1
+                    for other in colliding:
+                        to_remove.add(other)
+                        pop_delta -= 1
+                    self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._explode_fader))
+                    neighbors = self.pattern.scene().get_pixel_neighbors(self.loc)
+                    for neighbor in neighbors:
+                        self.pattern._tails.append((neighbor, self.pattern._current_time, self.pattern._explode_fader))
+                    break
+
+        return pop_delta
+
+    def _spawn(self, current_strand, current_fixture, population):
+        children = set()
+        neighbors = self.pattern.scene().get_pixel_neighbors(self.loc)
+        neighbors = [BufferUtils.index_to_logical(n) for n in neighbors]
+        random.shuffle(neighbors)
+
+        # Iterate over candidate pixels that aren't on the current fixture
+        candidates = [n for n in neighbors
+                      if n[:2] != (current_strand, current_fixture)]
+        for candidate in candidates:
+            child_index = BufferUtils.logical_to_index(candidate)
+            if len(children) == 0:
+                # Spawn at least one new dragon to replace the old one.  This first one skips the growth.
+                dir = 1 if candidate[2] == 0 else -1
+                child = _Dragon(self.pattern, child_index, dir, self.pattern._current_time)
+                child.growing = False
+                child.alive = True
+                children.add(child)
+                population += 1
+            elif (population < self.pattern.parameter('pop-limit').get()
+                  and random.random() < self.pattern.parameter('birth-rate').get()):
+                # Randomly spawn new dragons
+                dir = 1 if candidate[2] == 0 else -1
+                child = _Dragon(self.pattern, child_index, dir, self.pattern._current_time)
+                children.add(child)
+                population +=1
+
+        return children
+
+
 class Dragons(Pattern):
     """
     Dragons spawn randomly and travel.  At vertices, dragons can reproduce.
@@ -38,23 +147,8 @@ class Dragons(Pattern):
     _explode_color = (1.0, 1.0, 1.0)
     _fader_steps = 256
 
-    # Internal parameters
-    class Dragon:
-        def __init__(self, loc, dir, lifetime):
-            self.loc = loc
-            self.dir = dir
-            self.lifetime = lifetime
-            self.growing = True
-            self.alive = False
-            self.moving = False
-            self.growth = 0
-
-        def __repr__(self):
-            ds = 'Fwd' if self.dir == 1 else 'Rev'
-            return "Dragon (%d, %d, %d) %s: %0.2f" % (self.loc[0], self.loc[1], self.loc[2], ds, self.lifetime)
-
     def setup(self):
-        self._dragons = []
+        self._dragons = set()
         self._tails = []
         self.init_pixels()
         random.seed()
@@ -92,97 +186,26 @@ class Dragons(Pattern):
             fixture = random.randint(0, BufferUtils.strand_num_fixtures(strand) - 1)
             address = BufferUtils.logical_to_index((strand, fixture, 0))
             if address not in [d.loc for d in self._dragons]:
-                self._dragons.append(self.Dragon(address, 1, self._current_time))
-
-        growth_rate = self.parameter('growth-rate').get()
+                self._dragons.add(_Dragon(self, address, 1, self._current_time))
 
         # Dragon life cycle
+        to_add = set()
+        to_remove = set()
+        population = len(self._dragons)
         for dragon in self._dragons:
-            # Fade in
-            if dragon.growing:
-                p = (self._current_time - dragon.lifetime) / self.parameter('growth-time').get()
-                if (p > 1):
-                    p = 1.0
-                color = self._growth_fader.get_color(p * self._fader_steps)
-                if p >= 1.0:
-                    dragon.growing = False
-                    dragon.alive = True
-                    dragon.lifetime = self._current_time
+            population += dragon.draw(dt, to_add, to_remove, population)
 
-                self.setPixelHLS(dragon.loc, color)
-
-            # Alive - can move or die
-            if dragon.alive:
-
-                dragon.growth += dt * growth_rate
-                for times in range(int(dragon.growth)):
-                    s, f, p = BufferUtils.index_to_logical(dragon.loc)
-                    self.setPixelHLS(dragon.loc, (0, 0, 0))
-
-                    if random.random() < dragon.growth:
-                        dragon.growth -= 1
-
-                        # At a vertex: optionally spawn new dragons
-                        if dragon.moving and (p == 0 or p == (self.scene().fixture(s, f).pixels - 1)):
-                            neighbors = self.scene().get_pixel_neighbors(dragon.loc)
-                            neighbors = [BufferUtils.index_to_logical(n) for n in neighbors]
-                            random.shuffle(neighbors)
-
-                            # Kill dragons that reach the end of a fixture
-                            dragon.moving = False
-                            if dragon in self._dragons:
-                                self._dragons.remove(dragon)
-
-                            # Iterate over candidate pixels that aren't on the current fixture
-                            num_children = 0
-                            for candidate in [n for n in neighbors if n[1] != f]:
-                                child_index = BufferUtils.logical_to_index(candidate)
-                                if num_children == 0:
-                                    # Spawn at least one new dragon to replace the old one.  This first one skips the growth.
-                                    dir = 1 if candidate[2] == 0 else -1
-                                    child = self.Dragon(child_index, dir, self._current_time)
-                                    child.growing = False
-                                    child.alive = True
-                                    child.moving = False
-                                    self._dragons.append(child)
-                                    num_children += 1
-                                elif (len(self._dragons) < self.parameter('pop-limit').get()):
-                                    # Randomly spawn new dragons
-                                    if random.random() < self.parameter('birth-rate').get():
-                                        dir = 1 if candidate[2] == 0 else -1
-                                        child = self.Dragon(child_index, dir, self._current_time)
-                                        child.moving = False
-
-                                        self._dragons.append(child)
-                                        num_children += 1
-                            break;
-                        else:
-                            # Move dragons along the fixture
-                            self._tails.append((dragon.loc, self._current_time, self._tail_fader))
-                            new_address = BufferUtils.logical_to_index((s, f, p + dragon.dir))
-                            dragon.loc = new_address
-                            dragon.moving = True
-                            self.setPixelHLS(new_address, self._alive_color)
-
-                    # Kill dragons that run into each other
-                    if dragon in self._dragons:
-                        colliding = [d for d in self._dragons if d != dragon and d.loc == dragon.loc]
-                        if len(colliding) > 0:
-                            #print "collision between", dragon, "and", colliding[0]
-                            self._dragons.remove(dragon)
-                            self._dragons.remove(colliding[0])
-                            self._tails.append((dragon.loc, self._current_time, self._explode_fader))
-                            neighbors = self.scene().get_pixel_neighbors(dragon.loc)
-                            for neighbor in neighbors:
-                                self._tails.append((neighbor, self._current_time, self._explode_fader))
-                            break
+        self._dragons = (self._dragons | to_add) - to_remove
 
         # Draw tails
+        tails_to_remove = []
         for loc, time, fader in self._tails:
             if (self._current_time - time) > self.parameter('tail-persist').get():
                 if (loc, time, fader) in self._tails:
-                    self._tails.remove((loc, time, fader))
+                    tails_to_remove.append((loc, time, fader))
                 self.setPixelHLS(loc, (0, 0, 0))
             else:
                 progress = (self._current_time - time) / self.parameter('tail-persist').get()
                 self.setPixelHLS(loc, fader.get_color(progress * self._fader_steps))
+        for tail in tails_to_remove:
+            self._tails.remove(tail)

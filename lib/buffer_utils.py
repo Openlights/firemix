@@ -91,6 +91,9 @@ class BufferUtils:
 
             # (3) Add the offset along the fixture
             index += offset
+            if index < 0 or index >= cls._buffer_length:
+                raise ValueError("Logical address results in index out of range: "
+                                 "%s => %d" % (repr(logical_address), index,))
 
             cls._pixel_index_cache[logical_address] = index
             cls._pixel_logical_cache[index] = logical_address

@@ -27,11 +27,17 @@ from firemix_app import FireMixApp
 from ui.firemixgui import FireMixGUI
 
 
+def call_ignoring_exceptions(func):
+    try:
+        func()
+    except Exception as e:
+        logging.getLogger("firemix").exception("Ignoring exception during shutdown request")
+
 def sig_handler(app, sig, frame):
     logging.getLogger("firemix").info("Received signal %d.  Shutting down.", sig)
-    app.stop()
-    app.exit()
-    app.qt_app.exit()
+    call_ignoring_exceptions(app.stop)
+    call_ignoring_exceptions(app.exit)
+    call_ignoring_exceptions(app.qt_app.exit)
 
 def main():
     logging.basicConfig(level=logging.ERROR)
