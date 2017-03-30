@@ -33,7 +33,6 @@ class _Dragon(object):
         self.lifetime = lifetime
         self.growing = True
         self.alive = False
-        self.moving = False
         self.growth = 0
 
     def __repr__(self):
@@ -66,10 +65,10 @@ class _Dragon(object):
             if random.random() < self.growth:
                 self.growth -= 1
 
-                if self.moving and (p == 0 or p == (self.pattern.scene().fixture(s, f).pixels - 1)):
+                if ((self.dir == -1 and p == 0)
+                    or (self.dir == 1 and p == (self.pattern.scene().fixture(s, f).pixels - 1))):
                     # At a vertex: kill dragons that reach the end of a fixture
                     # and optionally spawn new dragons
-                    self.moving = False
                     if self in self.pattern._dragons:
                         self.pattern._dragons.remove(self)
 
@@ -80,7 +79,6 @@ class _Dragon(object):
                     self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._tail_fader))
                     new_address = BufferUtils.logical_to_index((s, f, p + self.dir))
                     self.loc = new_address
-                    self.moving = True
                     self.pattern.setPixelHLS(new_address, self.pattern._alive_color)
 
             # Kill dragons that run into each other
@@ -113,7 +111,6 @@ class _Dragon(object):
                 child = _Dragon(self.pattern, child_index, dir, self.pattern._current_time)
                 child.growing = False
                 child.alive = True
-                child.moving = False
                 self.pattern._dragons.append(child)
                 num_children += 1
             elif (len(self.pattern._dragons) < self.pattern.parameter('pop-limit').get()):
@@ -121,7 +118,6 @@ class _Dragon(object):
                 if random.random() < self.pattern.parameter('birth-rate').get():
                     dir = 1 if candidate[2] == 0 else -1
                     child = _Dragon(self.pattern, child_index, dir, self.pattern._current_time)
-                    child.moving = False
 
                     self.pattern._dragons.append(child)
                     num_children += 1
