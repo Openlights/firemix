@@ -51,13 +51,15 @@ def main():
     parser.add_argument("--nogui", dest='gui', action='store_false',
                         default=True, help="Disable GUI")
     parser.add_argument("--preset", type=str, help="Specify a preset name to run only that preset (useful for debugging)")
-    parser.add_argument("--verbose", action='store_const', const=True, default=False, help="Enable verbose log output")
+    parser.add_argument("--verbose", "-v", action='count', help="Enable verbose log output. Specify more than once for more output")
     parser.add_argument("--noaudio", action='store_const', const=True, default=False, help="Disable audio processing client")
 
     args = parser.parse_args()
 
-    if args.verbose:
+    if args.verbose >= 2:
         log.setLevel(logging.DEBUG)
+    elif args.verbose >= 1:
+        log.setLevel(logging.INFO)
 
     log.info("Booting FireMix...")
 
