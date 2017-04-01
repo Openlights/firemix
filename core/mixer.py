@@ -283,6 +283,8 @@ class Mixer(QtCore.QObject):
         self._start_transition = True
         self._elapsed = 0.0
         self.transition_starting.emit()
+        next_preset = self.playlist.get_next_preset()
+        log.info("Starting transition to pattern '%s'" % (next_preset.name()))
 
     def cancel_transition(self):
         self._start_transition = False
