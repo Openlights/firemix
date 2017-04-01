@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "rings rain", 
     "params": {
-        "allow-playback": "True", 
+        "allow-playback": "False", 
         "audio-transition": "0.0", 
         "first-preset": "noise rain 3", 
         "second-preset": "mask rings", 

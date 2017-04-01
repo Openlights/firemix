@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "twinkle rain", 
     "params": {
-        "allow-playback": "True", 
+        "allow-playback": "False", 
         "audio-transition": "0.0", 
         "first-preset": "noise rain 2", 
         "second-preset": "twinkle mask", 

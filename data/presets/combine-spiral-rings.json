@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "combine spiral rings", 
     "params": {
-        "allow-playback": "True", 
+        "allow-playback": "False", 
         "audio-transition": "0.0", 
         "first-preset": "spiral rings", 
         "second-preset": "mask noise small", 

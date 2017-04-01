@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "noise rain 3", 
     "params": {
-        "allow-playback": "True", 
+        "allow-playback": "False", 
         "angle": "[0,3,0.1]", 
         "audio-brightness": "0.0", 
         "audio-hue-offset": "0.0", 

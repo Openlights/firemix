@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "noise big", 
     "params": {
-        "allow-playback": "True", 
+        "allow-playback": "False", 
         "angle": "0.7", 
         "audio-brightness": "1.0", 
         "audio-hue-offset": "0.1", 

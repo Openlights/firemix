@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "mask noise rains", 
     "params": {
-        "allow-playback": "True", 
+        "allow-playback": "False", 
         "angle": "[1,6,0.1]", 
         "audio-brightness": "2.0", 
         "audio-hue-offset": "0.0", 

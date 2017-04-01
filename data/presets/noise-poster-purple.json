@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "noise poster purple", 
     "params": {
-        "allow-playback": "True", 
+        "allow-playback": "False", 
         "angle": "0.7", 
         "audio-brightness": "0.0", 
         "audio-hue-offset": "1.0", 

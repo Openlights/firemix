@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "noise poster red", 
     "params": {
-        "allow-playback": "True", 
+        "allow-playback": "False", 
         "angle": "[0,1,1]", 
         "audio-brightness": "0.0", 
         "audio-hue-offset": "0.0", 

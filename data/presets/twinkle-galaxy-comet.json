@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "twinkle galaxy comet", 
     "params": {
-        "allow-playback": "True", 
+        "allow-playback": "False", 
         "audio-transition": "0.0", 
         "first-preset": "twinkle stars", 
         "second-preset": "galaxy comet", 

@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "audio noise clone", 
     "params": {
-        "allow-playback": "True", 
+        "allow-playback": "False", 
         "audio-transition": "0.0", 
         "first-preset": "mask noise double", 
         "second-preset": "audio color", 
