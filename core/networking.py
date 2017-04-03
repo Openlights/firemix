@@ -130,7 +130,6 @@ class Networking:
             self.socket.sendto(array.array('B', [ord('B')]), (client["host"], client["port"]))
             for packet in (non_dimmed_packets if client.get("ignore-dimming", False) else packets):
                 self.socket.sendto(packet, (client["host"], client["port"]))
-                time.sleep(0.001)
             self.socket.sendto(array.array('B', [ord('E')]), (client["host"], client["port"]))
 
         for client in opc_clients:
