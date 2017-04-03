@@ -53,6 +53,7 @@ class Networking:
         self._app = app
         self.running = True
         self.open_socket()
+        # Maps client type to list of packet buffers
         self._packet_cache = {}
         self.port = 3020
         self.opc_port = 7890
@@ -101,6 +102,9 @@ class Networking:
     def _write_legacy(self, buf, strand_settings, clients):
         packets = []
 
+        if 'legacy' not in self._packet_cache:
+            self._packet_cache['legacy'] = [None] * len(strand_settings)
+
         for strand in xrange(len(strand_settings)):
             if not strand_settings[strand]["enabled"]:
                 continue
@@ -110,11 +114,10 @@ class Networking:
             packet_header_size = 4
             packet_size = (end-start) * 3 + packet_header_size
 
-            try:
-                packet = self._packet_cache[packet_size]
-            except KeyError:
+            packet = self._packet_cache['legacy'][strand]
+            if packet is None:
                 packet = [0,] * packet_size
-                self._packet_cache[packet_size] = packet
+                self._packet_cache['legacy'][strand] = packet
 
             length = packet_size - packet_header_size
 
