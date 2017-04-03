@@ -73,29 +73,33 @@ class Networking:
         have_non_dimmed = False
         for c in clients:
             clients_by_type[c.get("protocol", "Legacy")].append(c)
-            have_non_dimmed = c.get("ignore-dimming", False) if not have_non_dimmed else True
 
-        legacy_clients = clients_by_type["Legacy"]
+        dimmed_legacy_clients = [c for c in clients_by_type["Legacy"] if not c.get('ignore-dimming')]
+        undimmed_legacy_clients = [c for c in clients_by_type["Legacy"] if c.get('ignore-dimming')]
         opc_clients = clients_by_type["OPC"]
 
-        # Apply the global dimmer from the mixer.
-        # TODO: this is stupid.  Should just pass the global dimmer as metadata to the clients
-        if have_non_dimmed:
-            non_dimmed_buffer = deepcopy(buffer)
+        if undimmed_legacy_clients:
+            # Protect against presets or transitions that write float data.
+            buffer_rgb = np.int_(hls_to_rgb(buffer) * 255)
+            np.clip(buffer_rgb, 0, 255, buffer_rgb)
 
+            self._write_legacy(buffer_rgb, strand_settings, undimmed_legacy_clients)
+
+        # Now that we've written to clients that don't want dimmed data, apply
+        # the global dimmer from the mixer and re-convert to RGB
         if self._app.mixer.global_dimmer < 1.0:
             buffer.T[1] *= self._app.mixer.global_dimmer
-
-        # Protect against presets or transitions that write float data.
         buffer_rgb = np.int_(hls_to_rgb(buffer) * 255)
         np.clip(buffer_rgb, 0, 255, buffer_rgb)
 
-        if have_non_dimmed:
-            non_dimmed_buffer_rgb = np.int_(hls_to_rgb(non_dimmed_buffer) * 255)
-            np.clip(non_dimmed_buffer_rgb, 0, 255, non_dimmed_buffer_rgb)
+        if dimmed_legacy_clients:
+            self._write_legacy(buffer_rgb, strand_settings, dimmed_legacy_clients)
 
+        if opc_clients:
+            self._write_opc(buffer_rgb, strand_settings, opc_clients)
+
+    def _write_legacy(self, buf, strand_settings, clients):
         packets = []
-        non_dimmed_packets = []
 
         for strand in xrange(len(strand_settings)):
             if not strand_settings[strand]["enabled"]:
@@ -119,20 +123,18 @@ class Networking:
             packet[2] = length & 0x00FF
             packet[3] = (length & 0xFF00) >> 8
 
-            _fill_packet(buffer_rgb, start, end, packet_header_size, packet, False)
+            _fill_packet(buf, start, end, packet_header_size, packet, False)
             packets.append(array.array('B', packet))
 
-            if have_non_dimmed:
-                _fill_packet(non_dimmed_buffer_rgb, start, end, packet_header_size, packet, False)
-                non_dimmed_packets.append(array.array('B', packet))
-
-        for client in legacy_clients:
+        for client in clients:
             self.socket.sendto(array.array('B', [ord('B')]), (client["host"], client["port"]))
-            for packet in (non_dimmed_packets if client.get("ignore-dimming", False) else packets):
+            for packet in packets:
                 self.socket.sendto(packet, (client["host"], client["port"]))
             self.socket.sendto(array.array('B', [ord('E')]), (client["host"], client["port"]))
 
-        for client in opc_clients:
+    def _write_opc(self, buf, strand_settings, clients):
+        # XXX: FIXME: BROKEN
+        for client in clients:
             # TODO: This is hacky, but for now we re-write the packet for OPC here...
             # Fortunately, OPC happens to look a lot like our existing protocol...
             # Byte 0 is channel (aka strand).  0 is broadcast address, indexing starts at 1.
