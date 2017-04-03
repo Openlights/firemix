@@ -32,6 +32,19 @@ from lib.buffer_utils import BufferUtils
 USE_OPC = True
 
 
+def _fill_packet(intbuffer, start, end, offset, packet, swap_order=False):
+    for pixel_index, pixel in enumerate(intbuffer[start:end]):
+        buffer_index = offset + pixel_index * 3
+        if swap_order:
+            packet[buffer_index] = pixel[2]
+            packet[buffer_index + 1] = pixel[1]
+            packet[buffer_index + 2] = pixel[0]
+        else:
+            packet[buffer_index] = pixel[0]
+            packet[buffer_index + 1] = pixel[1]
+            packet[buffer_index + 2] = pixel[2]
+
+
 class Networking:
 
     def __init__(self, app):
@@ -81,18 +94,6 @@ class Networking:
             non_dimmed_buffer_rgb = np.int_(hls_to_rgb(non_dimmed_buffer) * 255)
             np.clip(non_dimmed_buffer_rgb, 0, 255, non_dimmed_buffer_rgb)
 
-        def fill_packet(intbuffer, start, end, offset, packet, swap_order=False):
-            for pixel_index, pixel in enumerate(intbuffer[start:end]):
-                buffer_index = offset + pixel_index * 3
-                if swap_order:
-                    packet[buffer_index] = pixel[2]
-                    packet[buffer_index + 1] = pixel[1]
-                    packet[buffer_index + 2] = pixel[0]
-                else:
-                    packet[buffer_index] = pixel[0]
-                    packet[buffer_index + 1] = pixel[1]
-                    packet[buffer_index + 2] = pixel[2]
-
         packets = []
         non_dimmed_packets = []
 
@@ -118,11 +119,11 @@ class Networking:
             packet[2] = length & 0x00FF
             packet[3] = (length & 0xFF00) >> 8
 
-            fill_packet(buffer_rgb, start, end, packet_header_size, packet, False)
+            _fill_packet(buffer_rgb, start, end, packet_header_size, packet, False)
             packets.append(array.array('B', packet))
 
             if have_non_dimmed:
-                fill_packet(non_dimmed_buffer_rgb, start, end, packet_header_size, packet, False)
+                _fill_packet(non_dimmed_buffer_rgb, start, end, packet_header_size, packet, False)
                 non_dimmed_packets.append(array.array('B', packet))
 
         for client in legacy_clients:
