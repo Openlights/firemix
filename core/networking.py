@@ -23,14 +23,12 @@ import array
 import struct
 from copy import deepcopy
 import time
-import zmq
 
 from collections import defaultdict
 
 from lib.colors import hls_to_rgb
 from lib.buffer_utils import BufferUtils
 
-USE_ZMQ = True
 USE_OPC = True
 
 
@@ -47,10 +45,6 @@ class Networking:
         self.opc_port = 7890
 
     def open_socket(self):
-        if USE_ZMQ:
-            self.context = zmq.Context()
-            self.zmq_socket = self.context.socket(zmq.PUB)
-            self.zmq_socket.bind("tcp://*:3020")
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
@@ -68,7 +62,6 @@ class Networking:
             clients_by_type[c.get("protocol", "Legacy")].append(c)
             have_non_dimmed = c.get("ignore-dimming", False) if not have_non_dimmed else True
 
-        have_zmq_clients = bool(clients_by_type.get("ZMQ", []))
         legacy_clients = clients_by_type["Legacy"]
         opc_clients = clients_by_type["OPC"]
 
@@ -131,10 +124,6 @@ class Networking:
             if have_non_dimmed:
                 fill_packet(non_dimmed_buffer_rgb, start, end, packet_header_size, packet, False)
                 non_dimmed_packets.append(array.array('B', packet))
-
-        if USE_ZMQ and have_zmq_clients:
-            frame = ["B"] + packets + ["E"]
-            self.socket.send_multipart(frame)
 
         for client in legacy_clients:
             self.socket.sendto(array.array('B', [ord('B')]), (client["host"], client["port"]))
