@@ -121,20 +121,28 @@ class Networking:
             self.socket.sendto(array.array('B', [ord('E')]), (client["host"], client["port"]))
 
     def _write_opc(self, buf, strand_settings, clients):
-        # XXX: FIXME: BROKEN
+        packet_data_len = len(buf) * 3
+        packet_size = packet_data_len + 4
+
+        if 'opc' not in self._packet_cache:
+            self._packet_cache['opc'] = [np.empty(packet_size, dtype=np.int8)]
+
+        packet = self._packet_cache['opc'][0]
+
+        # OPC happens to look a lot like our existing protocol.
+        # Byte 0 is channel (aka strand).  0 is broadcast address, indexing starts at 1.
+        # Byte 1 is command, always 0 for "set pixel colors"
+        # Bytes 2 and 3 are big-endian length of the data block.
+        #
+        # Both LEDScape and the OPC reference implementation actually seem to
+        # ignore the strand address and just assume that the data for all
+        # strands is sent in a single broadcast packet. So, we do that here.
+
+        packet[0] = 0
+        packet[1] = 0
+        packet[2] = (packet_data_len & 0xFF00) >> 8
+        packet[3] = (packet_data_len & 0xFF)
+        np.copyto(packet[4:], buf.flat)
+
         for client in clients:
-            # TODO: This is hacky, but for now we re-write the packet for OPC here...
-            # Fortunately, OPC happens to look a lot like our existing protocol...
-            # Byte 0 is channel (aka strand).  0 is broadcast address, indexing starts at 1.
-            # Byte 1 is command, always 0 for "set pixel colors"
-            # Bytes 2 and 3 are big-endian length of the data block.
-            # Note: LEDScape needs the strands all concatenated together which is annoying
-            packet[0] = packet[1] + 1
-            tpacket = [0x00, 0x00, 0x00, 0x00]
-            for packet in packets:
-                tpacket += packet[4:]
-            tlen = len(tpacket) - 4
-            tpacket[2] = (tlen & 0xFF00) >> 8
-            tpacket[3] = (tlen & 0xFF)
-            tpacket = array.array('B', tpacket)
-            self.socket.sendto(tpacket, (client["host"], client["port"]))
+            self.socket.sendto(packet, (client["host"], client["port"]))
