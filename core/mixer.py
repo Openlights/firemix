@@ -427,25 +427,31 @@ class Mixer(QtCore.QObject):
         """
 
         first_buffer = first_preset.get_buffer()
+
         if check_for_nan:
-            for item in first_buffer.flat:
-                if math.isnan(item):
-                    raise ValueError
+            nan_out_buf = np.empty(len(first_buffer.flat))
+
+        if check_for_nan:
+            np.isnan(first_buffer.flat, nan_out_buf)
+            if np.any(nan_out_buf):
+                raise ValueError
 
         if second_preset is not None:
             second_buffer = second_preset.get_buffer()
             if check_for_nan:
-                for item in second_buffer.flat:
-                    if math.isnan(item):
-                        raise ValueError
+                assert len(second_buffer.flat) == len(nan_out_buf)
+                np.isnan(second_buffer.flat, nan_out_buf)
+                if np.any(nan_out_buf):
+                    raise ValueError
 
             if in_transition and transition is not None:
                 first_buffer = transition.get(first_buffer, second_buffer,
                                               transition_progress)
                 if check_for_nan:
-                    for item in first_buffer.flat:
-                        if math.isnan(item):
-                            raise ValueError
+                    assert len(first_buffer.flat) == len(nan_out_buf)
+                    np.isnan(first_buffer.flat, nan_out_buf)
+                    if np.any(nan_out_buf):
+                        raise ValueError
 
         return first_buffer
 
