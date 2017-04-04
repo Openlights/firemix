@@ -32,19 +32,6 @@ from lib.buffer_utils import BufferUtils
 USE_OPC = True
 
 
-def _fill_packet(intbuffer, start, end, offset, packet, swap_order=False):
-    for pixel_index, pixel in enumerate(intbuffer[start:end]):
-        buffer_index = offset + pixel_index * 3
-        if swap_order:
-            packet[buffer_index] = pixel[2]
-            packet[buffer_index + 1] = pixel[1]
-            packet[buffer_index + 2] = pixel[0]
-        else:
-            packet[buffer_index] = pixel[0]
-            packet[buffer_index + 1] = pixel[1]
-            packet[buffer_index + 2] = pixel[2]
-
-
 class Networking:
 
     def __init__(self, app):
@@ -81,8 +68,7 @@ class Networking:
 
         if undimmed_legacy_clients:
             # Protect against presets or transitions that write float data.
-            buffer_rgb = np.int_(hls_to_rgb(buffer) * 255)
-            np.clip(buffer_rgb, 0, 255, buffer_rgb)
+            buffer_rgb = np.int8(hls_to_rgb(buffer) * 255)
 
             self._write_legacy(buffer_rgb, strand_settings, undimmed_legacy_clients)
 
@@ -90,8 +76,7 @@ class Networking:
         # the global dimmer from the mixer and re-convert to RGB
         if self._app.mixer.global_dimmer < 1.0:
             buffer.T[1] *= self._app.mixer.global_dimmer
-        buffer_rgb = np.int_(hls_to_rgb(buffer) * 255)
-        np.clip(buffer_rgb, 0, 255, buffer_rgb)
+        buffer_rgb = np.int8(hls_to_rgb(buffer) * 255)
 
         if dimmed_legacy_clients:
             self._write_legacy(buffer_rgb, strand_settings, dimmed_legacy_clients)
@@ -105,7 +90,7 @@ class Networking:
         if 'legacy' not in self._packet_cache:
             self._packet_cache['legacy'] = [None] * len(strand_settings)
 
-        for strand in xrange(len(strand_settings)):
+        for strand in range(len(strand_settings)):
             if not strand_settings[strand]["enabled"]:
                 continue
 
@@ -116,7 +101,7 @@ class Networking:
 
             packet = self._packet_cache['legacy'][strand]
             if packet is None:
-                packet = [0,] * packet_size
+                packet = np.zeros(packet_size, dtype=np.int8)
                 self._packet_cache['legacy'][strand] = packet
 
             length = packet_size - packet_header_size
@@ -126,8 +111,8 @@ class Networking:
             packet[2] = length & 0x00FF
             packet[3] = (length & 0xFF00) >> 8
 
-            _fill_packet(buf, start, end, packet_header_size, packet, False)
-            packets.append(array.array('B', packet))
+            np.copyto(packet[packet_header_size:], buf[start:end].flat)
+            packets.append(packet)
 
         for client in clients:
             self.socket.sendto(array.array('B', [ord('B')]), (client["host"], client["port"]))
