@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from noise import snoise3
+from noise import snoise3_vec
 import numpy as np
 import ast
 
@@ -90,11 +90,10 @@ class SimplexNoise(Pattern):
 
         luminance_scale = self.parameter('luminance-scale').get() / 100.0
 
-        stretch= self.parameter('stretch').get()
-        brights = np.asarray([snoise3(self._offset_x[i] * stretch * luminance_scale,
-                                      self._offset_y[i] * luminance_scale,
-                                      self._offset_z)
-                              for i in xrange(len(self._offset_x))])
+        stretch = self.parameter('stretch').get()
+        brights = snoise3_vec(self._offset_x * stretch * luminance_scale,
+                              self._offset_y * luminance_scale,
+                              self._offset_z)
         brights = (1.0 + brights) / 2
         brights *= self._luminance_steps
         LS = self.lum_fader.color_cache[np.int_(brights)].T
