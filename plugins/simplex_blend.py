@@ -17,7 +17,7 @@
 
 import numpy as np
 from math import fabs
-from noise import snoise3
+from vec_noise import snoise3
 
 from lib.transition import Transition
 from lib.buffer_utils import BufferUtils
@@ -37,12 +37,16 @@ class SimplexBlend(Transition):
     def reset(self):
         buffer_size = BufferUtils.get_buffer_size()
         self.frame = np.tile(0.0, (buffer_size, 3))
-        self.pixel_locations = self._app.scene.get_all_pixel_locations()
+        pixel_locations = np.asarray(self._app.scene.get_all_pixel_locations()).T
+        self.scaled_pixel_xs = 0.01 * pixel_locations[0]
+        self.scaled_pixel_ys = 0.01 * pixel_locations[1]
 
     def get(self, start, end, progress):
-        for pixel, loc in enumerate(self.pixel_locations):
-            blend = (1.0 + snoise3(0.01 * loc[0], 0.01 * loc[1], progress, 1, 0.5, 0.5)) / 2.0
-            self.frame[pixel] = blend * start[pixel] + ((1.0 - blend) * end[pixel])
+        blend = snoise3(self.scaled_pixel_xs, self.scaled_pixel_ys,
+                        progress, 1, 0.5, 0.5)
+        # Apply the blend to all three color components
+        blend3 = np.asarray([blend, blend, blend]).T
+        self.frame = blend3 * start + ((1.0 - blend3) * end)
 
         # Mix = 1.0 when progress = 0.5, 0.0 at either extreme
         mix = 1.0 - fabs(2.0 * (progress - 0.5))
