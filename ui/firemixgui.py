@@ -536,7 +536,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                                                         os.path.join(os.getcwd(), "data", "playlists"),
                                                         filter="Playlists (*.json)")
         self.app.playlist.create_new(filename)
-        self.app.mixer.run()
+        self.app.mixer.start()
         self.app.mixer.pause(paused)
 
     def on_file_open_playlist(self):
@@ -550,7 +550,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         if not self.app.playlist.open():
             self.app.playlist.set_filename(old_name)
             QtGui.QMessageBox.warning(self, "Error", "Could not open file")
-        self.app.mixer.run()
+        self.app.mixer.start()
         self.app.mixer.pause(paused)
 
     def on_file_save_playlist(self):

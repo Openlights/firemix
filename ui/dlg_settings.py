@@ -238,5 +238,5 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         self.app.settings.get("mixer")["tick-rate"] = tick_rate
 
         self.app.mixer.stop()
-        self.app.mixer.run()
+        self.app.mixer.start()
 

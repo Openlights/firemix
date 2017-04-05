@@ -73,7 +73,7 @@ class FireMixApp(QtCore.QThread):
 
     def run(self):
         self._running = True
-        self.mixer.run()
+        self.mixer.start()
 
     def stop(self):
         self._running = False

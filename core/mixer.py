@@ -60,7 +60,7 @@ class Mixer(QtCore.QObject):
         self._transition_scrubbing = False
         self._transition_duration = self._app.settings.get('mixer')['transition-duration']
         self._transition_slop = self._app.settings.get('mixer')['transition-slop']
-        self._tick_timer = None
+        self._render_thread = None
         self._duration = self._app.settings.get('mixer')['preset-duration']
         self._elapsed = 0.0
         self.running = False
@@ -112,22 +112,42 @@ class Mixer(QtCore.QObject):
         self._buffer_b = BufferUtils.create_buffer()
         self._max_pixels = maxp
 
-    def run(self):
-        if not self.running:
-            self._tick_rate = self._app.settings.get('mixer')['tick-rate']
-            self._last_tick_time = 1.0 / self._tick_rate
-            self._tick_timer = threading.Timer(1.0 / self._tick_rate, self.on_tick_timer)
-            self._tick_timer.start()
-            self.running = True
-            self._elapsed = 0.0
-            self._num_frames = 0
-            self._start_time = self._last_frame_time = time.time()
-            self.reset_output_buffer()
+    def start(self):
+        assert self._render_thread is None, "Cannot start render thread more than once"
+        self._tick_rate = self._app.settings.get('mixer')['tick-rate']
+        self._last_tick_time = 1.0 / self._tick_rate
+        self._elapsed = 0.0
+        self._num_frames = 0
+        self._start_time = self._last_frame_time = time.time()
+        self.reset_output_buffer()
+        self.running = True
+
+        self._render_thread = threading.Thread(target=self._render_loop,
+                                               name="Firemix-render-thread")
+        self._render_thread.start()
+
+    def _render_loop(self):
+        delay = 0.0
+        while self.running:
+            time.sleep(delay)
+            if self._frozen:
+                delay = 1.0 / self._tick_rate
+            else:
+                start = time.time()
+                self._render_in_progress = True
+                self.tick(self._last_tick_time)
+                self._render_in_progress = False
+                dt = (time.time() - start)
+                delay = max(0, (1.0 / self._tick_rate) - dt)
+                if not self._paused:
+                    self._elapsed += dt + delay
+            self.running = self._app._running
 
     def stop(self):
         self.running = False
-        self._tick_timer.cancel()
         self._stop_time = time.time()
+        self._render_thread.join()
+        self._render_thread = None
 
         if self._app.args.yappi and USE_YAPPI:
             yappi.get_func_stats().print_all()
@@ -220,23 +240,6 @@ class Mixer(QtCore.QObject):
 
     def get_transition_duration(self):
         return self._transition_duration
-
-    def on_tick_timer(self, force_tick=False):
-        if self._frozen and not force_tick:
-            delay = 1.0 / self._tick_rate
-        else:
-            start = time.time()
-            self._render_in_progress = True
-            self.tick(self._last_tick_time)
-            self._render_in_progress = False
-            dt = (time.time() - start)
-            delay = max(0, (1.0 / self._tick_rate) - dt)
-            if not self._paused:
-                self._elapsed += dt + delay
-        self.running = self._app._running
-        if self.running:
-            self._tick_timer = threading.Timer(delay, self.on_tick_timer)
-            self._tick_timer.start()
 
     def set_constant_preset(self, classname):
         self._app.playlist.clear_playlist()
