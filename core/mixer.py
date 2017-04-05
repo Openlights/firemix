@@ -154,7 +154,7 @@ class Mixer(QtCore.QObject):
 
     @QtCore.Slot()
     def onset_detected(self):
-        t = time.clock()
+        t = time.time()
         if (t - self._last_onset_time) > self._onset_holdoff:
             self._last_onset_time = t
             self._onset = True
@@ -225,11 +225,11 @@ class Mixer(QtCore.QObject):
         if self._frozen and not force_tick:
             delay = 1.0 / self._tick_rate
         else:
-            start = time.clock()
+            start = time.time()
             self._render_in_progress = True
             self.tick(self._last_tick_time)
             self._render_in_progress = False
-            dt = (time.clock() - start)
+            dt = (time.time() - start)
             delay = max(0, (1.0 / self._tick_rate) - dt)
             if not self._paused:
                 self._elapsed += dt + delay
