@@ -33,7 +33,7 @@ class DlgAddPreset(QtGui.QDialog, Ui_DlgAddPreset):
         self.cb_preset_type.currentIndexChanged.connect(self.populate_preset_name)
 
         # TODO: This functionality shouldn't be in playlist -- maybe a preset loader?
-        self.cb_existing_preset_name.addItems(self.playlist.get_all_preset_names())
+        self.cb_existing_preset_name.addItems(sorted(self.playlist.get_all_preset_names()))
 
         self.edit_preset_name.textChanged.connect(self.validate_preset_name)
         self.populate_preset_name()
