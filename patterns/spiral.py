@@ -80,8 +80,9 @@ class SpiralGradient(Pattern):
         self.color_offset += dt * self.parameter('speed').get() * self.onset_speed_boost
 
         self.onset_speed_boost = max(1, self.onset_speed_boost - self.parameter('onset-speed-decay').get())
-
-        wave_hue_period = 2 * math.pi * self.parameter('wave-hue-period').get() + self.parameter('audio-wave-period-boost').get() * self._app.mixer.audio.getEnergy()
+        audio_energy = self._app.mixer.audio.getEnergy()
+        wave_hue_period = (2 * math.pi * self.parameter('wave-hue-period').get()
+                           + self.parameter('audio-wave-period-boost').get() * audio_energy)
         wave_hue_width = self.parameter('wave-hue-width').get()
         radius_hue_width = self.parameter('radius-hue-width').get()
         angle_hue_width = self.parameter('angle-hue-width').get()
@@ -93,7 +94,7 @@ class SpiralGradient(Pattern):
                                   cy + math.sin(self.center_offset_angle) * center_distance)).T
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
         self.pixel_angles = np.arctan2(y, x) / (2.0 * math.pi)
-        self.pixel_distances /= max(self.pixel_distances)
+        self.pixel_distances /= np.max(self.pixel_distances)
         wave_amplitude = self.pixel_distances
         wave_falloff = self.parameter('wave-falloff').get()
         if wave_falloff !=0:
@@ -108,7 +109,7 @@ class SpiralGradient(Pattern):
         colors = self._fader.color_cache[hues]
         colors = colors.T
         colors[0] = np.mod(colors[0] + self.hue_inner, 1.0)
-        colors[1] += self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
+        colors[1] += audio_energy * self.parameter('audio-brightness').get()
         colors = colors.T
 
         self._pixel_buffer = colors

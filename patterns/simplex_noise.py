@@ -54,9 +54,6 @@ class SimplexNoise(Pattern):
         self._offset_x = 0
         self._offset_y = 0
         self._offset_z = 0
-        self.rotMatrix = None
-
-        self.pixel_locations = np.asarray(self.scene().get_all_pixel_locations())
 
         self.color_lookup = {}
         self._setup_pars()
@@ -75,7 +72,9 @@ class SimplexNoise(Pattern):
         fade_colors = ast.literal_eval(self.parameter('luminance-map').get())
         self.lum_fader = ColorFade(fade_colors, self._luminance_steps)
         angle = self.parameter('angle').get()
-        self.rotMatrix = np.array([(math.cos(angle), -math.sin(angle)), (math.sin(angle), math.cos(angle))])
+        rotMatrix = np.array([(math.cos(angle), -math.sin(angle)), (math.sin(angle), math.cos(angle))])
+        pixel_locations = np.asarray(self.scene().get_all_pixel_locations())
+        self._offset_x, self._offset_y = rotMatrix.T.dot(pixel_locations.T)
 
     @profile
     def draw(self, dt):
@@ -89,14 +88,13 @@ class SimplexNoise(Pattern):
         self._offset_z += dt * self._app.mixer.audio.getSmoothEnergy() * self.parameter('beat-color-boost').get()
         # posterization = self.parameter('resolution').get()
 
-        x,y = self.rotMatrix.T.dot(self.pixel_locations.T)
-        x *= self.parameter('stretch').get()
-        x += self._offset_x
-        y += self._offset_y
-        locations = np.asarray([x,y]).T
-
         luminance_scale = self.parameter('luminance-scale').get() / 100.0
-        brights = np.asarray([snoise3(luminance_scale * location[0], luminance_scale * location[1], self._offset_z, 1, 0.5, 0.5) for location in locations])
+
+        stretch= self.parameter('stretch').get()
+        brights = np.asarray([snoise3(self._offset_x[i] * stretch * luminance_scale,
+                                      self._offset_y[i] * luminance_scale,
+                                      self._offset_z)
+                              for i in xrange(len(self._offset_x))])
         brights = (1.0 + brights) / 2
         brights *= self._luminance_steps
         LS = self.lum_fader.color_cache[np.int_(brights)].T

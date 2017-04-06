@@ -24,7 +24,6 @@ import math
 import numpy as np
 
 from lib.color_fade import ColorFade
-from profilehooks import profile
 
 USE_YAPPI = True
 try:

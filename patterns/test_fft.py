@@ -122,7 +122,7 @@ class TestFFT(Pattern):
             np.minimum(self.pixel_distances, 1.0, self.pixel_distances)
             pd = np.int_((self.pixel_distances * 1.2 - 0.1) * (fft_size - 1))
             np.minimum(pd, fft_size - 1, pd)
-            np.maximum(pd, 0.0, pd)
+            np.maximum(pd, 0, pd)
             mask = (self.pixel_angles > (1.0 - fft[0][pd]))
             self.pixel_amplitudes[mask] += self.parameter('ring current').get()
 
@@ -134,21 +134,21 @@ class TestFFT(Pattern):
             if self.parameter('rings').get():
                 pd = np.int_(len(smooth_fft) * (1.2 * self.pixel_distances - 0.1))
                 np.minimum(pd, len(smooth_fft) - 1, pd)
-                np.maximum(pd, 0.0, pd)
+                np.maximum(pd, 0, pd)
                 self.pixel_amplitudes += smooth_fft[pd] * self.parameter('rings').get()
                 hues = pd
 
             if self.parameter('ring bars').get():
                 pd = np.int_(len(smooth_fft) * (1.2 * self.pixel_distances - 0.1))
                 np.minimum(pd, len(smooth_fft) - 1, pd)
-                np.maximum(pd, 0.0, pd)
+                np.maximum(pd, 0, pd)
                 mask = (self.pixel_angles < smooth_fft[pd])
                 self.pixel_amplitudes[mask] += self.parameter('ring bars').get()
 
             if self.parameter('ring peaks').get():
                 pd = np.int_(len(smooth_fft) * (1.1 * self.pixel_distances))
                 np.minimum(pd, len(smooth_fft) - 1, pd)
-                np.maximum(pd, 0.0, pd)
+                np.maximum(pd, 0, pd)
                 peak_width = self.parameter('ring peak width').get()
                 mask = (np.abs(self.pixel_angles - smooth_fft[pd]) < peak_width)
                 self.pixel_amplitudes[mask] += self.parameter('ring peaks').get()
@@ -160,7 +160,7 @@ class TestFFT(Pattern):
                 y /= np.max(y)
                 pd = np.int_(len(smooth_fft) * (x))
                 np.minimum(pd, len(smooth_fft) - 1, pd)
-                np.maximum(pd, 0.0, pd)
+                np.maximum(pd, 0, pd)
                 mask = (np.abs(y) < smooth_fft[pd] * self.parameter('linear-weight').get())
                 self.pixel_amplitudes[mask] += self.parameter('linear').get()
                 hues = pd

@@ -3,6 +3,5 @@ PySide>=1.1.2
 noise>=1.2.1
 yappi>=0.62
 profilehooks>=1.7
-pyzmq>=14.6.0
 watchdog>=0.7.1
 scipy>=0.14.0

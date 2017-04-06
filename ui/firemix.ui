@@ -601,16 +601,6 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QPushButton" name="btn_blackout">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>Blackout</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </item>
             </layout>

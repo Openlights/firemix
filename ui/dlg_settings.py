@@ -21,7 +21,7 @@ from ui.ui_dlg_settings import Ui_DlgSettings
 from lib import color_modes
 
 # TODO: This is a hack
-PROTOCOLS = ["Legacy", "ZMQ", "OPC"]
+PROTOCOLS = ["Legacy", "OPC"]
 
 
 class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
@@ -238,5 +238,5 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         self.app.settings.get("mixer")["tick-rate"] = tick_rate
 
         self.app.mixer.stop()
-        self.app.mixer.run()
+        self.app.mixer.start()
 

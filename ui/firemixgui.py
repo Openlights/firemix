@@ -42,7 +42,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.transition_in_progress = False
 
         # Control
-        self.btn_blackout.clicked.connect(self.on_btn_blackout)
         self.btn_runfreeze.clicked.connect(self.on_btn_runfreeze)
         self.btn_playpause.clicked.connect(self.on_btn_playpause)
         self.btn_next_preset.clicked.connect(self.on_btn_next_preset)
@@ -121,16 +120,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.transition_update_timer.timeout.connect(self.on_transition_update_timer)
         self.mixer.transition_starting.connect(self.transition_update_start)
 
-        self.btn_blackout.setDisabled(False)
-
         self.update_mixer_settings()
 
     def closeEvent(self, event):
         self.app.stop()
         event.accept()
-
-    def on_btn_blackout(self):
-        self.app.mixer.on_tick_timer(force_tick=True)
 
     @QtCore.Slot()
     def onset_detected(self):
@@ -542,7 +536,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                                                         os.path.join(os.getcwd(), "data", "playlists"),
                                                         filter="Playlists (*.json)")
         self.app.playlist.create_new(filename)
-        self.app.mixer.run()
+        self.app.mixer.start()
         self.app.mixer.pause(paused)
 
     def on_file_open_playlist(self):
@@ -556,7 +550,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         if not self.app.playlist.open():
             self.app.playlist.set_filename(old_name)
             QtGui.QMessageBox.warning(self, "Error", "Could not open file")
-        self.app.mixer.run()
+        self.app.mixer.start()
         self.app.mixer.pause(paused)
 
     def on_file_save_playlist(self):
