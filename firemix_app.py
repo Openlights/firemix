@@ -17,6 +17,8 @@
 
 
 import logging
+import threading
+import time
 
 from PySide import QtCore
 
@@ -34,14 +36,14 @@ from lib.buffer_utils import BufferUtils
 log = logging.getLogger("firemix")
 
 
-class FireMixApp(QtCore.QThread):
+class FireMixApp(QtCore.QObject):
     """
     Main logic of FireMix.  Operates the mixer tick loop.
     """
     playlist_changed = QtCore.Signal()
 
     def __init__(self, parent, args):
-        QtCore.QThread.__init__(self, parent)
+        super(FireMixApp, self).__init__()
         self._running = False
         self.args = args
         self.settings = Settings()
@@ -51,7 +53,12 @@ class FireMixApp(QtCore.QThread):
         self.plugins = PluginLoader()
         self.mixer = Mixer(self)
         self.playlist = Playlist(self)
-        self.qt_app = parent
+
+        # TODO: The tick rate probably shouldn't be a mixer setting any more
+        self._tick_rate = self.settings.get('mixer')['tick-rate']
+        self._last_tick_time = 0.0
+        self._render_thread = None
+        self._timer_thread = None
 
         self.scene.warmup()
 
@@ -71,14 +78,38 @@ class FireMixApp(QtCore.QThread):
             log.info("Setting constant preset %s" % args.preset)
             self.mixer.set_constant_preset(args.preset)
 
-    def run(self):
+    def start(self):
+        assert not self._running, "Cannot start FireMixApp more than once"
         self._running = True
         self.mixer.start()
 
+        self._last_tick_time = 1.0 / self._tick_rate
+        self._render_thread = threading.Thread(target=self._render_loop,
+                                               name="Firemix-render-thread")
+        self._render_thread.start()
+
     def stop(self):
         self._running = False
+
+        self._render_thread.join()
+        self._render_thread = None
+
         self.aubio_thread.quit()
         self.mixer.stop()
         self.playlist.save()
         self.settings["last-preset"] = self.playlist.active_preset.name()
         self.settings.save()
+
+    def _render_loop(self):
+        delay = 0.0
+        while self._running:
+            time.sleep(delay)
+            if self.mixer._frozen:
+                delay = 1.0 / self._tick_rate
+            else:
+                start = time.time()
+                self.mixer.tick(self._last_tick_time)
+                dt = (time.time() - start)
+                delay = max(0, (1.0 / self._tick_rate) - dt)
+                if not self.mixer._paused:
+                    self.mixer._elapsed += dt + delay

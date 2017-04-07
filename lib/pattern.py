@@ -183,10 +183,6 @@ class Pattern(JSONDict):
 
         self._ticks += 1
 
-    def tick_rate(self):
-        # TODO: should have a different way of getting to the mixer settings
-        return self._app.mixer.get_tick_rate()
-
     def _convert_color(self, color):
         if (type(color[0]) == float) or (type(color[1]) == float) or (type(color[2]) == float) or (type(color[1]) ==np.float32):
             return tuple([int(c*255) for c in color])

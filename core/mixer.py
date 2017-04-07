@@ -17,7 +17,6 @@
 
 
 import logging
-import threading
 import time
 import random
 import math
@@ -54,7 +53,6 @@ class Mixer(QtCore.QObject):
         self._net = app.net
         self.playlist = None
         self._scene = app.scene
-        self._tick_rate = self._app.settings.get('mixer')['tick-rate']
         self._in_transition = False
         self._start_transition = False
         self._transition_scrubbing = False
@@ -81,8 +79,6 @@ class Mixer(QtCore.QObject):
         self._reset_onset = False
         self.global_dimmer = 1.0
         self.global_speed = 1.0
-        self._render_in_progress = False
-        self._last_tick_time = 0.0
         self._fps_time = 0.0
         self._fps_frames = 0
         self._fps = 0.0
@@ -113,41 +109,15 @@ class Mixer(QtCore.QObject):
         self._max_pixels = maxp
 
     def start(self):
-        assert self._render_thread is None, "Cannot start render thread more than once"
-        self._tick_rate = self._app.settings.get('mixer')['tick-rate']
-        self._last_tick_time = 1.0 / self._tick_rate
         self._elapsed = 0.0
         self._num_frames = 0
         self._start_time = self._last_frame_time = time.time()
         self.reset_output_buffer()
         self.running = True
 
-        self._render_thread = threading.Thread(target=self._render_loop,
-                                               name="Firemix-render-thread")
-        self._render_thread.start()
-
-    def _render_loop(self):
-        delay = 0.0
-        while self.running:
-            time.sleep(delay)
-            if self._frozen:
-                delay = 1.0 / self._tick_rate
-            else:
-                start = time.time()
-                self._render_in_progress = True
-                self.tick(self._last_tick_time)
-                self._render_in_progress = False
-                dt = (time.time() - start)
-                delay = max(0, (1.0 / self._tick_rate) - dt)
-                if not self._paused:
-                    self._elapsed += dt + delay
-            self.running = self._app._running
-
     def stop(self):
         self.running = False
         self._stop_time = time.time()
-        self._render_thread.join()
-        self._render_thread = None
 
         if self._app.args.yappi and USE_YAPPI:
             yappi.get_func_stats().print_all()
@@ -251,9 +221,6 @@ class Mixer(QtCore.QObject):
         Assigns a Playlist object to the mixer
         """
         self.playlist = playlist
-
-    def get_tick_rate(self):
-        return self._tick_rate
 
     def is_onset(self):
         """
