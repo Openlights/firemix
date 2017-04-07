@@ -66,7 +66,7 @@ class Mixer(QtCore.QObject):
         self.running = False
         self._buffer_a = None
         self._max_pixels = 0
-        self._tick_time_data = dict()
+        self._tick_time_data = []
         self._num_frames = 0
         self._last_frame_time = 0.0
         self._start_time = 0.0
@@ -410,11 +410,19 @@ class Mixer(QtCore.QObject):
             self._reset_onset = False
 
         if self._enable_profiling:
-            tick_time = (time.time() - self._last_frame_time)
-            self._last_frame_time = time.time()
+            now = time.time()
+            tick_time = (now - self._last_frame_time)
+            self._last_frame_time = now
             if tick_time > 0.0:
-                index = int((1.0 / tick_time))
-                self._tick_time_data[index] = self._tick_time_data.get(index, 0) + 1
+                if len(self._tick_time_data) == (1000000 - 1):
+                    log.warn("Only keeping the last 1 million tick times")
+
+                if len(self._tick_time_data) >= 1000000:
+                    self._tick_time_data.pop()
+
+                self._tick_time_data.append(tick_time)
+            else:
+                log.warn("Calculated negative tick time: %0.3f", tick_time)
 
     def scene(self):
         return self._scene
