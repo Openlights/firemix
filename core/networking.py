@@ -23,6 +23,7 @@ import array
 import struct
 from copy import deepcopy
 import time
+import pdb
 
 from collections import defaultdict
 
@@ -65,6 +66,7 @@ class Networking:
         dimmed_legacy_clients = [c for c in clients_by_type["Legacy"] if not c.get('ignore-dimming')]
         undimmed_legacy_clients = [c for c in clients_by_type["Legacy"] if c.get('ignore-dimming')]
         opc_clients = clients_by_type["OPC"]
+        pixelpusher_clients = clients_by_type["Pixelpusher"]
 
         if undimmed_legacy_clients:
             # Protect against presets or transitions that write float data.
@@ -83,6 +85,23 @@ class Networking:
 
         if opc_clients:
             self._write_opc(buffer_rgb, strand_settings, opc_clients)
+
+        if pixelpusher_clients:
+            self._write_pixelpusher(buffer_rgb, strand_settings, pixelpusher_clients)
+
+    def _write_pixelpusher(self, buf, strand_settings, clients):
+        strand_count = len(strand_settings)             # I'm assuming they are all enabed
+        strand_length =  len(buf) / strand_count        # Assuming all same. Prob incorrect. Need to find where
+        client = clients[0]                             # How to handle multiple pixelpushers?
+        for index in range(0, strand_count):
+            strand_buf = buf[strand_length*index:strand_length*(index+1)]
+            enc_buf = [struct.pack('!BBB', np.fabs(x[0]), np.fabs(x[1]), np.fabs(x[2])) for x in strand_buf]
+            s = struct.pack('!xxxxB', index) + ''.join(enc_buf)
+            self._send_pixelpusher_strip(s, client)
+
+    def _send_pixelpusher_strip(self, strip, client):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.sendto(''.join(strip), (client['host'], client['port']))
 
     def _write_legacy(self, buf, strand_settings, clients):
         packets = []
