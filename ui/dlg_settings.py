@@ -21,7 +21,7 @@ from ui.ui_dlg_settings import Ui_DlgSettings
 from lib import color_modes
 
 # TODO: This is a hack
-PROTOCOLS = ["Legacy", "OPC"]
+PROTOCOLS = ["Legacy", "OPC", "Pixelpusher"]
 
 
 class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
