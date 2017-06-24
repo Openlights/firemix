@@ -15,7 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from vec_noise import snoise3
+try:
+    from vec_noise import snoise3
+    print "Using enhanced vector noise from Zev"
+except ImportError:
+    from noise import snoise3
 import numpy as np
 import ast
 

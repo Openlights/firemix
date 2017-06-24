@@ -214,5 +214,5 @@ class Twinkle(Pattern):
             finished = (progress >= self._fader_steps)
             if len(self._fading_up[finished]) > 0:
                 self._idle = np.append(self._idle, self._fading_up[finished])
+                self._time[self._fading_up[finished]] = self._current_time
                 self._fading_up = self._fading_up[np.logical_not(finished)]
-                self._time[finished] = self._current_time
