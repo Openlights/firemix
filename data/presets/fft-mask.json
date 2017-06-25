@@ -6,7 +6,7 @@
     "params": {
         "allow-playback": "False", 
         "color-gradient": "[(0.0,0.2,0), (0.0,0.2,0)]", 
-        "fft smoothing": "1.0", 
+        "fft smoothing": "1", 
         "fft-bias": "0.0", 
         "fft-gamma": "2.0", 
         "fft-weight": "40.0", 

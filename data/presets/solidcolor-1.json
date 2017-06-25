@@ -5,6 +5,6 @@
     "name": "SolidColor-1", 
     "params": {
         "allow-playback": "True", 
-        "color": "(0.35, 0.5, 0.9)"
+        "color": "(0.08, 0.1, 0.85)"
     }
 }

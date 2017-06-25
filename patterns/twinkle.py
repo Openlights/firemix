@@ -132,6 +132,7 @@ class Twinkle(Pattern):
                     ringWidth = self.parameter('audio-ring-width').get()
                     size_percent = currentTimes[np.int_(pixel)] / ringLife
                     ring = np.where(np.abs(self.parameter('audio-ring-diameter').get() * size_percent + self.parameter('audio-ring-start-radius').get() - self.scene().get_pixel_distances(np.int_(pixel))) < ringWidth)
+                    print self.ringColors[pixel]
                     color = self._fader.color_cache[self.ringColors[pixel]]
 
                     # if self.parameter('audio-ring-use-fft-brightness').get():

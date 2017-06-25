@@ -20,7 +20,7 @@ import math
 import ast
 
 from lib.pattern import Pattern
-from lib.parameters import FloatParameter, StringParameter
+from lib.parameters import FloatParameter, StringParameter, IntParameter
 from lib.watch import Watch
 from lib.color_fade import ColorFade
 from scipy import signal
@@ -51,7 +51,7 @@ class TestFFT(Pattern):
         self.add_parameter(FloatParameter('ring current', 0.0))
         self.add_parameter(FloatParameter('ghosting', 0.0))
         self.add_parameter(FloatParameter('noise threshold', 0.1))
-        self.add_parameter(FloatParameter('fft smoothing', 1.0))
+        self.add_parameter(IntParameter('fft smoothing', 1))
 
         self.color_angle = 0.0
         self.add_watch(Watch(self, 'color_angle'))
@@ -100,7 +100,7 @@ class TestFFT(Pattern):
             if self.parameter('fft smoothing').get():
                 np.maximum(smooth_fft - noise_threshold, 0, smooth_fft)
                 np.multiply(smooth_fft, 1.0 / (1.0 - noise_threshold), smooth_fft)
-                convolution = signal.gaussian(self.parameter('fft smoothing').get(), std=1.0)
+                convolution = signal.gaussian(int(self.parameter('fft smoothing').get()), std=1.0)
 
                 smooth_fft = np.convolve(smooth_fft, convolution, 'same')
 

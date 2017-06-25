@@ -53,6 +53,9 @@ class Playlist(JSONDict):
         self.next_preset = None
         self._playlist_data = None
 
+        self._loader = PatternLoader(self)
+        self.available_pattern_classes = self._loader.all_patterns()
+
         self.name = app.args.playlist
         if self.name is None:
             self.name = self._app.settings.get("mixer").get("last_playlist", None)
@@ -87,8 +90,6 @@ class Playlist(JSONDict):
             print "Error loading %s" % self.filename
             return False
 
-        self._loader = PatternLoader(self)
-        self.available_pattern_classes = self._loader.all_patterns()
         self._playlist_file_version = self.data.get("file-version", 1)  # Version 1 didn't have this key
         self._playlist_data = self.data.get('playlist', [])
         self._playlist = []
