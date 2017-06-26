@@ -42,7 +42,9 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         self.tbl_networking_clients.itemChanged.connect(self.validate_networking_client_table_item)
 
         self.port_validator = QtGui.QIntValidator(1, 65535, self)
-        host_regex = QtCore.QRegExp(r"(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+        ip_regex = QtCore.QRegExp(r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$")
+        host_regex = QtCore.QRegExp(r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$")
+        self.ip_validator = QtGui.QRegExpValidator(ip_regex, self)
         self.host_validator = QtGui.QRegExpValidator(host_regex, self)
 
         # Setup validation and acceptance methods for all panes
@@ -77,6 +79,8 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         valid = None
         if item.column() == 0:  # host address
             valid, _, _ = self.host_validator.validate(item.text(), 0)
+            if valid != QtGui.QValidator.Acceptable:
+                valid, _, _ = self.ip_validator.validate(item.text(), 0)
         elif item.column() == 1:  # Port
             valid, _, _ = self.port_validator.validate(item.text(), 0)
         else:

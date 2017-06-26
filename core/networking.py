@@ -115,10 +115,17 @@ class Networking:
             packets.append(packet)
 
         for client in clients:
-            self.socket.sendto(array.array('B', [ord('B')]), (client["host"], client["port"]))
-            for packet in packets:
-                self.socket.sendto(packet, (client["host"], client["port"]))
-            self.socket.sendto(array.array('B', [ord('E')]), (client["host"], client["port"]))
+            try:
+                self.socket.sendto(array.array('B', [ord('B')]), (client["host"], client["port"]))
+                for packet in packets:
+                    self.socket.sendto(packet, (client["host"], client["port"]))
+                self.socket.sendto(array.array('B', [ord('E')]), (client["host"], client["port"]))
+            except socket.gaierror:
+                print "Bad hostname: ", client["host"]
+                continue
+            except:
+                continue
+
 
     def _write_opc(self, buf, strand_settings, clients):
         packet_data_len = len(buf) * 3
