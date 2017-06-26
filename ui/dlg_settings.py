@@ -237,6 +237,4 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         self.app.settings.get("mixer")["onset-holdoff"] = onset_holdoff
         self.app.settings.get("mixer")["tick-rate"] = tick_rate
 
-        self.app.mixer.stop()
-        self.app.mixer.start()
-
+        QtCore.QMetaObject.invokeMethod(self.app.mixer, "restart")

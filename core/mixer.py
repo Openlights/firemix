@@ -112,6 +112,7 @@ class Mixer(QtCore.QObject):
         self._buffer_b = BufferUtils.create_buffer()
         self._max_pixels = maxp
 
+    @QtCore.Slot()
     def start(self):
         assert self._render_thread is None, "Cannot start render thread more than once"
         self._tick_rate = self._app.settings.get('mixer')['tick-rate']
@@ -141,8 +142,13 @@ class Mixer(QtCore.QObject):
                 delay = max(0, (1.0 / self._tick_rate) - dt)
                 if not self._paused:
                     self._elapsed += dt + delay
-            self.running = self._app._running
 
+    @QtCore.Slot()
+    def restart(self):
+        self.stop()
+        self.start()
+
+    @QtCore.Slot()
     def stop(self):
         self.running = False
         self._stop_time = time.time()
