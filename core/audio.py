@@ -64,7 +64,7 @@ class Audio(QtCore.QObject):
         self.smoothEnergy = 0.0
 
         self._simulate = False
-        self._auto_enable_simulate = False
+        self._auto_enable_simulate = True
         self._sim_timer = QtCore.QTimer(self)
         self._sim_timer.setInterval(10)
         self._time_since_last_data = 0
@@ -104,21 +104,21 @@ class Audio(QtCore.QObject):
             if self._sim_counter == 0:
                 # Kick
                 self._sim_energy = 0.25
-                hit = np.pad(hit, [0, 245], 'constant', constant_values=0)
+                hit = np.pad(hit, [0, 246], 'constant', constant_values=0)
                 self._sim_fft = hit * self._sim_energy
             elif self._sim_beat == 2 and sim_beat_boundary:
                 # Snare
                 self._sim_energy = 0.2
-                hit = np.pad(hit, [10, 235], 'constant', constant_values=0)
+                hit = np.pad(hit, [10, 236], 'constant', constant_values=0)
                 self._sim_fft = hit * self._sim_energy
             else:
                 self._sim_energy *= 0.9
                 if len(self._sim_fft) == 0:
-                    self._sim_fft = np.random.rand(255) * 0.05
+                    self._sim_fft = np.random.rand(256) * 0.05
                 self._sim_fft = self._sim_fft * self._sim_energy
 
             # Noise floor
-            self.update_fft_data(self._sim_fft + (np.random.rand(255) * 0.05))
+            self.update_fft_data(self._sim_fft + (np.random.rand(256) * 0.05))
 
         else:
             self._time_since_last_data += dt
