@@ -135,6 +135,13 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def clear_onset_detected(self):
         self.btn_onset_detected.setChecked(QtCore.Qt.Unchecked)
 
+    @QtCore.Slot(bool)
+    def audio_simulate_enabled(self, en):
+        self.cb_simulate_audio.setChecked(en)
+
+    def on_cb_simulate_audio(self):
+        self.mixer.audio.enable_simulation(self.cb_simulate_audio.ischecked())
+
     def on_btn_trigger_onset(self):
         self.app.mixer.onset_detected()
         self.onset_detected()

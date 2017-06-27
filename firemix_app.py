@@ -52,6 +52,7 @@ class FireMixApp(QtCore.QThread):
         self.mixer = Mixer(self)
         self.playlist = Playlist(self)
         self.qt_app = parent
+        self.gui = None
 
         self.scene.warmup()
 
@@ -61,7 +62,7 @@ class FireMixApp(QtCore.QThread):
             self.aubio_thread.start()
             self.aubio_connector = AubioConnector()
             self.aubio_connector.onset_detected.connect(self.mixer.onset_detected)
-            self.aubio_connector.fft_data.connect(self.mixer.audio.update_fft_data)
+            self.aubio_connector.fft_data.connect(self.mixer.audio.fft_data_from_network)
             self.aubio_connector.pitch_data.connect(self.mixer.audio.update_pitch_data)
             self.aubio_connector.moveToThread(self.aubio_thread)
 

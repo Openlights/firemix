@@ -72,6 +72,7 @@ def main():
 
     if args.gui:
         gui = FireMixGUI(app=app)
+        app.gui = gui
         gui.show()
     else:
         # When the UI isn't running, the Qt application spends all its time

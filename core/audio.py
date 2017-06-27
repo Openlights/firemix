@@ -17,11 +17,8 @@
 
 
 import logging
-import threading
-import time
-import random
-import math
 import numpy as np
+from scipy import signal
 
 from lib.color_fade import ColorFade
 
@@ -43,11 +40,16 @@ class Audio(QtCore.QObject):
     """
     transition_starting = QtCore.Signal()
     _fader_steps = 256
+    SIM_BEATS_PER_MINUTE = 120.0
+    SIM_AUTO_ENABLE_DELAY = 3000
 
     """
     todo zero these at start
     """
-    def __init__(self, app):
+    def __init__(self, mixer):
+        super(Audio, self).__init__()
+
+        self.mixer = mixer
         self.fft = [[0]]
         self.smoothed = []
         self.average = [[0]]
@@ -61,8 +63,73 @@ class Audio(QtCore.QObject):
 
         self.smoothEnergy = 0.0
 
+        self._simulate = False
+        self._auto_enable_simulate = False
+        self._sim_timer = QtCore.QTimer(self)
+        self._sim_timer.setInterval(10)
+        self._time_since_last_data = 0
+        self._sim_beat = 0
+        self._sim_counter = 0
+        self._sim_energy = 0.0
+        self._sim_fft = []
+
+        self._sim_timer.timeout.connect(self.on_sim_timer)
+        self._sim_timer.start()
+
     def fft_data(self):
         return np.multiply(self.fft, self.gain)
+
+    @QtCore.Slot()
+    def on_sim_timer(self):
+        dt = self._sim_timer.interval()
+        measure = (60000.0 / self.SIM_BEATS_PER_MINUTE)
+
+        if self._simulate:
+            if self._time_since_last_data < self.SIM_AUTO_ENABLE_DELAY:
+                self._simulate = False
+                return
+
+            self._sim_counter += dt
+            if self._sim_counter > measure:
+                self._sim_counter = 0
+                self._sim_beat = 0
+
+            sim_beat_boundary = self._sim_counter % (measure / 4) == 0
+
+            if sim_beat_boundary:
+                self._sim_beat += 1
+
+            hit = np.random.rand(10) * signal.gaussian(10, 3)
+
+            if self._sim_counter == 0:
+                # Kick
+                self._sim_energy = 0.25
+                hit = np.pad(hit, [0, 245], 'constant', constant_values=0)
+                self._sim_fft = hit * self._sim_energy
+            elif self._sim_beat == 2 and sim_beat_boundary:
+                # Snare
+                self._sim_energy = 0.2
+                hit = np.pad(hit, [10, 235], 'constant', constant_values=0)
+                self._sim_fft = hit * self._sim_energy
+            else:
+                self._sim_energy *= 0.9
+                if len(self._sim_fft) == 0:
+                    self._sim_fft = np.random.rand(255) * 0.05
+                self._sim_fft = self._sim_fft * self._sim_energy
+
+            # Noise floor
+            self.update_fft_data(self._sim_fft + (np.random.rand(255) * 0.05))
+
+        else:
+            self._time_since_last_data += dt
+            if (self._auto_enable_simulate and
+                self._time_since_last_data > self.SIM_AUTO_ENABLE_DELAY):
+                self._simulate = True
+                self.mixer._app.gui.audio_simulate_enabled(True)
+
+    @QtCore.Slot(bool)
+    def enable_simulation(self, en):
+        self._simulate = en
 
     @QtCore.Slot(float, float)
     def update_pitch_data(self, pitch, confidence):
@@ -71,13 +138,17 @@ class Audio(QtCore.QObject):
         #if confidence > 0.9:
         #    print "Pitch: %0.1f" % pitch
 
-    @QtCore.Slot(float, float)
+    @QtCore.Slot(list)
+    def fft_data_from_network(self, data):
+        self._time_since_last_data = 0
+        self.update_fft_data(data)
+
     def update_fft_data(self, latest_fft):
         if len(latest_fft) == 0:
             print "received no fft"
             return
 
-        #latest_fft = np.asarray(latest_fft)
+        latest_fft = np.asarray(latest_fft)
 
         # noise_threshold = 0.1
         # np.multiply(latest_fft, 1.0 + noise_threshold, latest_fft)
