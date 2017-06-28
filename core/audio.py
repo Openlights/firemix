@@ -64,7 +64,7 @@ class Audio(QtCore.QObject):
         self.smoothEnergy = 0.0
 
         self._simulate = False
-        self._auto_enable_simulate = True
+        self._auto_enable_simulate = False
         self._sim_timer = QtCore.QTimer(self)
         self._sim_timer.setInterval(10)
         self._time_since_last_data = 0
@@ -76,7 +76,10 @@ class Audio(QtCore.QObject):
         self._sim_timer.timeout.connect(self.on_sim_timer)
         self._sim_timer.start()
 
+        self._mutex = QtCore.QMutex()
+
     def fft_data(self):
+        locker = QtCore.QMutexLocker(self._mutex)
         return np.multiply(self.fft, self.gain)
 
     @QtCore.Slot()
@@ -103,13 +106,13 @@ class Audio(QtCore.QObject):
 
             if self._sim_counter == 0:
                 # Kick
-                self._sim_energy = 0.25
+                self._sim_energy = 0.3
                 hit = np.pad(hit, [0, 246], 'constant', constant_values=0)
                 self._sim_fft = hit * self._sim_energy
             elif self._sim_beat == 2 and sim_beat_boundary:
                 # Snare
                 self._sim_energy = 0.2
-                hit = np.pad(hit, [10, 236], 'constant', constant_values=0)
+                hit = np.pad(hit, [20, 226], 'constant', constant_values=0)
                 self._sim_fft = hit * self._sim_energy
             else:
                 self._sim_energy *= 0.9
@@ -118,7 +121,8 @@ class Audio(QtCore.QObject):
                 self._sim_fft = self._sim_fft * self._sim_energy
 
             # Noise floor
-            self.update_fft_data(self._sim_fft + (np.random.rand(256) * 0.05))
+            self.update_fft_data(self._sim_fft + (np.random.rand(256) * 0.08))
+            QtCore.QMetaObject.invokeMethod(self.mixer._app.gui, "draw_fft")
 
         else:
             self._time_since_last_data += dt
@@ -129,7 +133,7 @@ class Audio(QtCore.QObject):
 
     @QtCore.Slot(bool)
     def enable_simulation(self, en):
-        self._simulate = en
+        self._simulate = (en != 0)
 
     @QtCore.Slot(float, float)
     def update_pitch_data(self, pitch, confidence):
@@ -163,6 +167,8 @@ class Audio(QtCore.QObject):
             self.average[0] = self.getEnergy()
             #print "first fft"
             return
+
+        locker = QtCore.QMutexLocker(self._mutex)
 
         self.peak.insert(0, np.max(latest_fft))
         self.average.insert(0, self.getEnergy())

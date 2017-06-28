@@ -91,6 +91,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.edit_preset_duration.valueChanged.connect(self.on_preset_duration_changed)
         self.edit_transition_duration.valueChanged.connect(self.on_transition_duration_changed)
         self.cb_transition_mode.currentIndexChanged.connect(self.on_transition_mode_changed)
+        self.cb_simulate_audio.stateChanged.connect(self.app.mixer.audio.enable_simulation)
 
         # Pattern Parameters
         self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
@@ -138,9 +139,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     @QtCore.Slot(bool)
     def audio_simulate_enabled(self, en):
         self.cb_simulate_audio.setChecked(en)
-
-    def on_cb_simulate_audio(self):
-        self.mixer.audio.enable_simulation(self.cb_simulate_audio.ischecked())
 
     def on_btn_trigger_onset(self):
         self.app.mixer.onset_detected()
@@ -239,7 +237,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.fft_pixmap[height - 1][x] = (v / 2, v / 4, v, v)
             x += 1
 
-        #print self.fft_pixmap
         img = QtGui.QImage(self.fft_pixmap, width, height, QtGui.QImage.Format_ARGB32)
         scene.addPixmap(QtGui.QPixmap.fromImage(img))
         self.fft_graphics_view.setScene(scene)
