@@ -88,7 +88,7 @@ class Audio(QtCore.QObject):
         measure = (60000.0 / self.SIM_BEATS_PER_MINUTE)
 
         if self._simulate:
-            if self._time_since_last_data < self.SIM_AUTO_ENABLE_DELAY:
+            if self._auto_enable_simulate and self._time_since_last_data < self.SIM_AUTO_ENABLE_DELAY:
                 self._simulate = False
                 return
 
@@ -109,11 +109,13 @@ class Audio(QtCore.QObject):
                 self._sim_energy = 0.3
                 hit = np.pad(hit, [0, 246], 'constant', constant_values=0)
                 self._sim_fft = hit * self._sim_energy
+                QtCore.QMetaObject.invokeMethod(self.mixer, "onset_detected")
             elif self._sim_beat == 2 and sim_beat_boundary:
                 # Snare
                 self._sim_energy = 0.2
                 hit = np.pad(hit, [20, 226], 'constant', constant_values=0)
                 self._sim_fft = hit * self._sim_energy
+                QtCore.QMetaObject.invokeMethod(self.mixer, "onset_detected")
             else:
                 self._sim_energy *= 0.9
                 if len(self._sim_fft) == 0:
@@ -145,7 +147,8 @@ class Audio(QtCore.QObject):
     @QtCore.Slot(list)
     def fft_data_from_network(self, data):
         self._time_since_last_data = 0
-        self.update_fft_data(data)
+        if not self._simulate:
+            self.update_fft_data(data)
 
     def update_fft_data(self, latest_fft):
         if len(latest_fft) == 0:

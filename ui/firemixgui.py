@@ -18,12 +18,15 @@
 import time
 import os
 import numpy as np
+import math
 
 from PySide import QtGui, QtCore
 
 from ui.ui_firemix import Ui_FireMixMain
 from ui.dlg_add_preset import DlgAddPreset
 from ui.dlg_settings import DlgSettings
+
+from lib.colors import hsv_float_to_rgb_uint8
 
 class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
@@ -103,6 +106,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.app.playlist_changed.connect(self.on_playlist_changed)
 
         self.fft_pixmap = None
+        self.fft_max = []
 
         if self.app.aubio_connector is not None:
             self.app.aubio_connector.onset_detected.connect(self.onset_detected)
@@ -208,39 +212,44 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     @QtCore.Slot()
     def draw_fft(self):
+        """
+        This method is slow.
+        But, computers are fast.
+        """
         fft_data = self.mixer.audio.fft[0]
-        scene = QtGui.QGraphicsScene(self.fft_graphics_view)
+        self.fft_max.append(max(fft_data))
+        if len(self.fft_max) > 256:
+            self.fft_max.pop(0)
+        max_val = max(self.fft_max)
 
-        width = 128
-        height = 128
+        width = 256
+        height = 256
 
         if self.fft_pixmap is None:
-            self.fft_pixmap = np.full([width, height, 4], 255, dtype=np.uint8)
+            self.fft_pixmap = np.full([height, width * 4], 0, dtype=np.uint8)
 
         x, y = (0, height - 1)
 
         for row in range(height - 1):
             self.fft_pixmap[row] = self.fft_pixmap[row + 1]
 
-        # TODO: fix that the upper few bins are always hot
-        fft_data = fft_data[:120]
-
         spacing = max(1, len(fft_data) / width)
-        for point in range(0, len(fft_data), spacing):
-            if x > width - 1:
-                break
+        if max_val > 0:
+            for point in range(0, len(fft_data), spacing):
+                if x > width - 1:
+                    break
 
-            # HACK! TODO: this scaling is arbitrary and should be done properly in the audio module
-            f = fft_data[point] * 8.0
-            f = f * f * f
-            v = min(255, int(255.0 * f))
-            self.fft_pixmap[height - 1][x] = (v / 2, v / 4, v, v)
-            x += 1
+                f = fft_data[point] / max_val
+                f = math.sqrt(f)
 
-        img = QtGui.QImage(self.fft_pixmap, width, height, QtGui.QImage.Format_ARGB32)
-        scene.addPixmap(QtGui.QPixmap.fromImage(img))
-        self.fft_graphics_view.setScene(scene)
-        self.fft_graphics_view.setSceneRect(0, 0, width, height)
+                self.fft_pixmap[height - 1][x:x+4] = \
+                    ((255,) + hsv_float_to_rgb_uint8((x / float(width), 1.0, f)))
+
+                x += 4
+
+        pm = self.fft_pixmap.flatten()
+        img = QtGui.QImage(pm, width, height, QtGui.QImage.Format_ARGB32)
+        self.fft_graphics_view.setPixmap(QtGui.QPixmap.fromImage(img))
 
     def on_btn_playpause(self):
         if self.mixer.is_paused():
