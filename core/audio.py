@@ -66,7 +66,7 @@ class Audio(QtCore.QObject):
         self._simulate = False
         self._auto_enable_simulate = False
         self._sim_timer = QtCore.QTimer(self)
-        self._sim_timer.setInterval(10)
+        self._sim_timer.setInterval(50)
         self._time_since_last_data = 0
         self._sim_beat = 0
         self._sim_counter = 0

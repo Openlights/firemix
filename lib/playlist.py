@@ -56,6 +56,12 @@ class Playlist(JSONDict):
         self._loader = PatternLoader(self)
         self.available_pattern_classes = self._loader.all_patterns()
 
+        self.last_active_preset = self._app.settings.get("last-preset", None)
+        self.active_preset = None
+        self.next_preset = None
+        self._shuffle = self._app.settings['mixer']['shuffle']
+        self._shuffle_list = []
+
         self.name = app.args.playlist
         if self.name is None:
             self.name = self._app.settings.get("mixer").get("last_playlist", None)
@@ -93,12 +99,6 @@ class Playlist(JSONDict):
         self._playlist_file_version = self.data.get("file-version", 1)  # Version 1 didn't have this key
         self._playlist_data = self.data.get('playlist', [])
         self._playlist = []
-
-        self.last_active_preset = self._app.settings.get("last-preset", None)
-        self.active_preset = None
-        self.next_preset = None
-        self._shuffle = self._app.settings['mixer']['shuffle']
-        self._shuffle_list = []
 
         self.generate_playlist()
         self.initialized = True
@@ -323,6 +323,9 @@ class Playlist(JSONDict):
                 self.next_preset = new_inst
 
     def save(self, save_all_presets=True):
+        if not self.initialized:
+            return
+
         log.info("Saving playlist")
         playlist = []
         for preset in self._playlist:
@@ -333,6 +336,7 @@ class Playlist(JSONDict):
 
         # Superclass write to file
         self._app.settings.get("mixer")["last_playlist"] = self.name
+        self._app.settings["last-preset"] = self.active_preset.name()
         JSONDict.save(self)
 
     def get(self):

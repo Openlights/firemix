@@ -81,5 +81,4 @@ class FireMixApp(QtCore.QThread):
         self.aubio_thread.quit()
         self.mixer.stop()
         self.playlist.save()
-        self.settings["last-preset"] = self.playlist.active_preset.name()
         self.settings.save()

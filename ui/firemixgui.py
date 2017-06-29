@@ -368,6 +368,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         presets = self.app.playlist.get()
         current = self.app.playlist.get_active_preset()
         next = self.app.playlist.get_next_preset()
+        cur_item = None
         for preset in presets:
             item = QtGui.QListWidgetItem(preset.name())
 
@@ -377,6 +378,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                 item.setIcon(self.icon_disabled)
             else:
                 if preset == current:
+                    cur_item = item
                     item.setIcon(self.icon_playing)
                 elif preset == next:
                     item.setIcon(self.icon_next)
@@ -384,6 +386,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                     item.setIcon(self.icon_blank)
 
             self.lst_presets.addItem(item)
+
+        if cur_item:
+            self.lst_presets.scrollToItem(cur_item, QtGui.QAbstractItemView.PositionAtTop)
 
         if self.transition_in_progress and self.mixer.transition_progress >= 1.0:
             self.slider_transition.setStyleSheet("QSlider { background-color: rgba(0, 0, 0, 0);; }")
