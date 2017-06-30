@@ -69,7 +69,8 @@ def main():
     log.info("Booting FireMix...")
 
     qt_app = QtGui.QApplication(sys.argv, args.gui)
-    qt_app.setStyleSheet(qdarkstyle.load_stylesheet())
+    if qdarkstyle is not None:
+        qt_app.setStyleSheet(qdarkstyle.load_stylesheet())
     app = FireMixApp(qt_app, args)
 
     signal.signal(signal.SIGINT, functools.partial(sig_handler, app))

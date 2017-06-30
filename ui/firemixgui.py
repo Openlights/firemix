@@ -100,6 +100,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
         self.tbl_preset_parameters_item_changed_connected = True
 
+        self.just_clicked = False
+
         self.update_playlist()
         self.load_preset_parameters_table()
         self.tbl_preset_parameters.setDisabled(True)
@@ -197,10 +199,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
                         # TODO: For now, all wibblers are float values.  Maybe they should be allowed to be others?
                         if parameter._wibbler is not None:
                             self.tbl_preset_parameters.item(i, 2).setText("= %0.2f" % pval)
-                            self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(200, 255, 255))
+                            self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(0, 0, 200, 5))
                         else:
                             self.tbl_preset_parameters.item(i, 2).setText("")
-                            self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(255, 255, 255))
+                            self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(0, 0, 0, 0))
 
             for name, watch in self.app.playlist.get_active_preset().get_watches().iteritems():
                 val = watch.get()
@@ -392,8 +394,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
             self.lst_presets.addItem(item)
 
-        if cur_item:
+        if cur_item and not self.just_clicked:
             self.lst_presets.scrollToItem(cur_item, QtGui.QAbstractItemView.PositionAtTop)
+        elif self.just_clicked:
+            self.just_clicked = False
 
         if self.transition_in_progress and self.mixer.transition_progress >= 1.0:
             self.slider_transition.setStyleSheet("QSlider { background-color: rgba(0, 0, 0, 0) }")
@@ -455,6 +459,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         pass
 
     def on_preset_double_clicked(self, preset_item):
+        self.just_clicked = True
         self.app.mixer.cancel_transition()
         self.app.playlist.set_active_preset_by_name(preset_item.text())
 
