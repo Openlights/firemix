@@ -23,6 +23,11 @@ import sys
 
 from PySide import QtCore, QtGui
 
+try:
+    import qdarkstyle
+except ImportError:
+    qdarkstyle = None
+
 from firemix_app import FireMixApp
 from ui.firemixgui import FireMixGUI
 
@@ -64,6 +69,7 @@ def main():
     log.info("Booting FireMix...")
 
     qt_app = QtGui.QApplication(sys.argv, args.gui)
+    qt_app.setStyleSheet(qdarkstyle.load_stylesheet())
     app = FireMixApp(qt_app, args)
 
     signal.signal(signal.SIGINT, functools.partial(sig_handler, app))

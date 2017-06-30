@@ -39,6 +39,8 @@ class Audio(QtCore.QObject):
     Audio handles looking at sound data and setting it up for use in patterns
     """
     transition_starting = QtCore.Signal()
+    onset = QtCore.Signal()
+
     _fader_steps = 256
     SIM_BEATS_PER_MINUTE = 120.0
     SIM_AUTO_ENABLE_DELAY = 3000
@@ -83,6 +85,10 @@ class Audio(QtCore.QObject):
         return np.multiply(self.fft, self.gain)
 
     @QtCore.Slot()
+    def trigger_onset(self):
+        self.onset.emit()
+
+    @QtCore.Slot()
     def on_sim_timer(self):
         dt = self._sim_timer.interval()
         measure = (60000.0 / self.SIM_BEATS_PER_MINUTE)
@@ -106,16 +112,16 @@ class Audio(QtCore.QObject):
 
             if self._sim_counter == 0:
                 # Kick
-                self._sim_energy = 0.3
+                self._sim_energy = 0.5
                 hit = np.pad(hit, [0, 246], 'constant', constant_values=0)
                 self._sim_fft = hit * self._sim_energy
-                QtCore.QMetaObject.invokeMethod(self.mixer, "onset_detected")
+                self.onset.emit()
             elif self._sim_beat == 2 and sim_beat_boundary:
                 # Snare
-                self._sim_energy = 0.2
-                hit = np.pad(hit, [20, 226], 'constant', constant_values=0)
+                self._sim_energy = 0.4
+                hit = np.pad(hit, [40, 206], 'constant', constant_values=0)
                 self._sim_fft = hit * self._sim_energy
-                QtCore.QMetaObject.invokeMethod(self.mixer, "onset_detected")
+                self.onset.emit()
             else:
                 self._sim_energy *= 0.9
                 if len(self._sim_fft) == 0:
@@ -123,7 +129,7 @@ class Audio(QtCore.QObject):
                 self._sim_fft = self._sim_fft * self._sim_energy
 
             # Noise floor
-            self.update_fft_data(self._sim_fft + (np.random.rand(256) * 0.08))
+            self.update_fft_data(self._sim_fft + (np.random.rand(256) * 0.05))
             QtCore.QMetaObject.invokeMethod(self.mixer._app.gui, "draw_fft")
 
         else:

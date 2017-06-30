@@ -108,9 +108,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.fft_pixmap = None
         self.fft_max = []
 
-        if self.app.aubio_connector is not None:
-            self.app.aubio_connector.onset_detected.connect(self.onset_detected)
-            self.app.aubio_connector.fft_data.connect(self.draw_fft)
+        if self.mixer.aubio_connector is not None:
+            self.mixer.audio.onset.connect(self.onset_detected)
+            self.mixer.aubio_connector.fft_data.connect(self.draw_fft)
 
         # Mixer FPS update
         self._update_interval = 250
@@ -133,12 +133,12 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     @QtCore.Slot()
     def onset_detected(self):
-        self.btn_onset_detected.setChecked(QtCore.Qt.Checked)
-        QtCore.QTimer.singleShot(50, self.clear_onset_detected)
+        self.btn_receiving_audio.setStyleSheet("* { font: bold; color: black }")
+        QtCore.QTimer.singleShot(100, self.clear_onset_detected)
 
     @QtCore.Slot()
     def clear_onset_detected(self):
-        self.btn_onset_detected.setChecked(QtCore.Qt.Unchecked)
+        self.btn_receiving_audio.setStyleSheet("* { font: normal }")
 
     @QtCore.Slot(bool)
     def audio_simulate_enabled(self, en):
@@ -165,7 +165,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.slider_transition.setValue(100)
         else:
             self.slider_transition.setValue(0)
-        self.slider_transition.setStyleSheet("QSlider { background-color: rgba(100, 100, 255, 200); }")
+        self.slider_transition.setStyleSheet("QSlider { background-color: rgba(100, 100, 255, 50); }")
         self.transition_in_progress = True
         self.transition_update_timer.start()
 
@@ -176,7 +176,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.slider_transition.setStyleSheet("QSlider { background-color: rgba(0, 0, 0, 0); }")
             self.transition_update_toggle = False
         else:
-            self.slider_transition.setStyleSheet("QSlider { background-color: rgba(100, 100, 255, 200); }")
+            self.slider_transition.setStyleSheet("QSlider { background-color: rgba(100, 100, 255, 50); }")
             self.transition_update_toggle = True
 
         if p < 1.0:
@@ -216,40 +216,36 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         This method is slow.
         But, computers are fast.
         """
+        #start = time.clock()
+        if self.btn_receiving_audio.text() != "":
+            self.btn_receiving_audio.setText("FFT Data Streaming")
         fft_data = self.mixer.audio.fft[0]
         self.fft_max.append(max(fft_data))
-        if len(self.fft_max) > 256:
+        if len(self.fft_max) > 64:
             self.fft_max.pop(0)
         max_val = max(self.fft_max)
 
         width = 256
-        height = 256
+        height = 64
 
         if self.fft_pixmap is None:
             self.fft_pixmap = np.full([height, width * 4], 0, dtype=np.uint8)
 
-        x, y = (0, height - 1)
-
         for row in range(height - 1):
             self.fft_pixmap[row] = self.fft_pixmap[row + 1]
 
-        spacing = max(1, len(fft_data) / width)
         if max_val > 0:
-            for point in range(0, len(fft_data), spacing):
-                if x > width - 1:
-                    break
+            for x in range(0, width * 4, 4):
+                f = np.interp(x / 4, np.arange(len(fft_data)), fft_data)# / max_val
+                #f = math.sqrt(math.sqrt(f))
+                self.fft_pixmap[height - 1][x:x + 4] = \
+                    (hsv_float_to_rgb_uint8((x / (4.0 * width), 1.0, f)) + (255,))
 
-                f = fft_data[point] / max_val
-                f = math.sqrt(f)
-
-                self.fft_pixmap[height - 1][x:x+4] = \
-                    ((255,) + hsv_float_to_rgb_uint8((x / float(width), 1.0, f)))
-
-                x += 4
 
         pm = self.fft_pixmap.flatten()
         img = QtGui.QImage(pm, width, height, QtGui.QImage.Format_ARGB32)
         self.fft_graphics_view.setPixmap(QtGui.QPixmap.fromImage(img))
+        #print time.clock() - start
 
     def on_btn_playpause(self):
         if self.mixer.is_paused():
@@ -400,7 +396,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.lst_presets.scrollToItem(cur_item, QtGui.QAbstractItemView.PositionAtTop)
 
         if self.transition_in_progress and self.mixer.transition_progress >= 1.0:
-            self.slider_transition.setStyleSheet("QSlider { background-color: rgba(0, 0, 0, 0);; }")
+            self.slider_transition.setStyleSheet("QSlider { background-color: rgba(0, 0, 0, 0) }")
 
             if self.transition_right_to_left:
                 self.slider_transition.setValue(0)
@@ -521,16 +517,6 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
         self.tbl_preset_parameters_item_changed_connected = True
-
-    # Unused?
-    @QtCore.Slot()
-    def update_preset_parameters(self):
-        """
-        Called from main app when presets programmatically change parameter values
-        """
-        parameters = self.app.playlist.get_active_preset().get_parameters()
-        for item in self.tbl_preset_parameters.items():
-            print item
 
     def on_preset_parameter_changed(self, item):
         if item.column() != 1:

@@ -34,6 +34,7 @@ from PySide import QtCore
 from lib.pattern import Pattern
 from lib.buffer_utils import BufferUtils
 from core.audio import Audio
+from lib.aubio_connector import AubioConnector
 from lib.colors import clip
 
 
@@ -88,7 +89,19 @@ class Mixer(QtCore.QObject):
         self._fps = 0.0
         self.last_time = time.time()
         self.transition_progress = 0.0
+
+        # TODO: bring back noaudio
+        #if not self._app.args.noaudio:
+        # TODO: harmonize on threading.Thread
+        self._audio_thread = QtCore.QThread()
+        self._audio_thread.start()
+        self.aubio_connector = AubioConnector()
         self.audio = Audio(self)
+        self.audio.onset.connect(self.onset_detected)
+        self.aubio_connector.onset_detected.connect(self.audio.trigger_onset)
+        self.aubio_connector.fft_data.connect(self.audio.fft_data_from_network)
+        self.aubio_connector.pitch_data.connect(self.audio.update_pitch_data)
+        self.aubio_connector.moveToThread(self._audio_thread)
 
         if self._app.args.yappi and USE_YAPPI:
             print "yappi start"
@@ -154,6 +167,10 @@ class Mixer(QtCore.QObject):
         self._stop_time = time.time()
         self._render_thread.join()
         self._render_thread = None
+
+        # TODO: Should we restart the audio thread on mixer restart?
+        #self._audio_thread.quit()
+        #self._audio_thread = None
 
         if self._app.args.yappi and USE_YAPPI:
             yappi.get_func_stats().print_all()

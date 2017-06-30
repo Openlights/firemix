@@ -27,7 +27,6 @@ from lib.playlist import Playlist
 from lib.settings import Settings
 from lib.scene import Scene
 from lib.plugin_loader import PluginLoader
-from lib.aubio_connector import AubioConnector
 from lib.buffer_utils import BufferUtils
 
 
@@ -56,16 +55,6 @@ class FireMixApp(QtCore.QThread):
 
         self.scene.warmup()
 
-        self.aubio_connector = None
-        if not self.args.noaudio:
-            self.aubio_thread = QtCore.QThread()
-            self.aubio_thread.start()
-            self.aubio_connector = AubioConnector()
-            self.aubio_connector.onset_detected.connect(self.mixer.onset_detected)
-            self.aubio_connector.fft_data.connect(self.mixer.audio.fft_data_from_network)
-            self.aubio_connector.pitch_data.connect(self.mixer.audio.update_pitch_data)
-            self.aubio_connector.moveToThread(self.aubio_thread)
-
         self.mixer.set_playlist(self.playlist)
 
         if self.args.preset:
@@ -78,7 +67,6 @@ class FireMixApp(QtCore.QThread):
 
     def stop(self):
         self._running = False
-        self.aubio_thread.quit()
         self.mixer.stop()
         self.playlist.save()
         self.settings.save()
