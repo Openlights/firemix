@@ -99,6 +99,8 @@ class Playlist(JSONDict):
         self._playlist_file_version = self.data.get("file-version", 1)  # Version 1 didn't have this key
         self._playlist_data = self.data.get('playlist', [])
         self._playlist = []
+        self.active_preset = None
+        self.next_preset = None
 
         self.generate_playlist()
         self.initialized = True
@@ -333,6 +335,7 @@ class Playlist(JSONDict):
             if save_all_presets:
                 preset.save()
         self.data['playlist'] = playlist
+        self.data["file-version"] = 2
 
         # Superclass write to file
         self._app.settings.get("mixer")["last_playlist"] = self.name

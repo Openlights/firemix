@@ -91,7 +91,7 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         elif valid == QtGui.QValidator.Intermediate:
             item.setBackground(QtGui.QColor(255, 255, 190))
         else:
-            item.setBackground(QtGui.QColor(255, 255, 255))
+            item.setBackground(QtGui.QColor(0, 0, 0, 0))
 
         return (valid == QtGui.QValidator.Acceptable)
 

@@ -43,10 +43,10 @@ class DlgAddPreset(QtGui.QDialog, Ui_DlgAddPreset):
 
     def validate_preset_name(self):
         if self.playlist.preset_name_exists(self.edit_preset_name.text()):
-            self.edit_preset_name.setStyleSheet("QLineEdit{background: #fdd;}")
+            self.edit_preset_name.setStyleSheet("QLineEdit{background: rgba(0.2, 0.1, 0, 0.5);}")
             return False
         else:
-            self.edit_preset_name.setStyleSheet("QLineEdit{background: #fff;}")
+            self.edit_preset_name.setStyleSheet("QLineEdit{background: rgba(0, 0, 0, 0);}")
             return True
 
     def accept(self):

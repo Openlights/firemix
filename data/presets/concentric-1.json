@@ -5,9 +5,10 @@
     "name": "Concentric-1", 
     "params": {
         "allow-playback": "True", 
-        "center": "(0.0, 0.0)", 
         "color-gradient": "[(0,0,1), (0,1,1)]", 
-        "spatial-freq": "1.5", 
-        "speed": "0.1"
+        "color-speed": "0.1", 
+        "deceleration": "0.01", 
+        "max-speed": "1.0", 
+        "spatial-freq": "1.5"
     }
 }

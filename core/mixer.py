@@ -165,8 +165,9 @@ class Mixer(QtCore.QObject):
     def stop(self):
         self.running = False
         self._stop_time = time.time()
-        self._render_thread.join()
-        self._render_thread = None
+        if self._render_thread is not None:
+            self._render_thread.join()
+            self._render_thread = None
 
         # TODO: Should we restart the audio thread on mixer restart?
         #self._audio_thread.quit()

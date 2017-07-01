@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>345</width>
-    <height>144</height>
+    <width>400</width>
+    <height>180</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,18 +24,27 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>341</width>
-     <height>141</height>
+     <width>401</width>
+     <height>181</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="margin">
+    <property name="leftMargin">
+     <number>10</number>
+    </property>
+    <property name="topMargin">
+     <number>10</number>
+    </property>
+    <property name="rightMargin">
+     <number>10</number>
+    </property>
+    <property name="bottomMargin">
      <number>10</number>
     </property>
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabAddNew">
        <attribute name="title">
@@ -46,11 +55,14 @@
          <rect>
           <x>10</x>
           <y>10</y>
-          <width>301</width>
-          <height>51</height>
+          <width>351</width>
+          <height>81</height>
          </rect>
         </property>
         <layout class="QFormLayout" name="formLayout">
+         <property name="verticalSpacing">
+          <number>10</number>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="lbl_preset_type">
            <property name="text">
@@ -59,7 +71,14 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QComboBox" name="cb_preset_type"/>
+          <widget class="QComboBox" name="cb_preset_type">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="lbl_preset_name">
@@ -69,7 +88,14 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="edit_preset_name"/>
+          <widget class="QLineEdit" name="edit_preset_name">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -83,8 +109,8 @@
          <rect>
           <x>9</x>
           <y>9</y>
-          <width>301</width>
-          <height>22</height>
+          <width>351</width>
+          <height>32</height>
          </rect>
         </property>
         <layout class="QFormLayout" name="formLayout_2">
@@ -96,7 +122,14 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QComboBox" name="cb_existing_preset_name"/>
+          <widget class="QComboBox" name="cb_existing_preset_name">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
