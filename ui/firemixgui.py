@@ -99,6 +99,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         # Pattern Parameters
         self.tbl_preset_parameters.itemChanged.connect(self.on_preset_parameter_changed)
         self.tbl_preset_parameters_item_changed_connected = True
+        self.tbl_preset_parameters.cellDoubleClicked.connect(self.on_double_click_preset_parameter)
 
         self.just_clicked = False
 
@@ -537,6 +538,14 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             item.setText(par.get_as_str())
         except ValueError:
             item.setText(par.get_as_str())
+
+    def on_double_click_preset_parameter(self, row, column):
+        txt = self.tbl_preset_parameters.item(row, column).text()
+
+        #TODO: do this in a less silly hard-coded way
+        if column == 0 and (txt == "first-preset" or txt == "second-preset"):
+            pname = self.tbl_preset_parameters.item(row, 1).text()
+            self.app.playlist.set_active_preset_by_name(pname)
 
     def on_file_new_playlist(self):
         paused = self.app.mixer.is_paused()
