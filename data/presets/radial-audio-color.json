@@ -14,7 +14,7 @@
         "audio-radius-scale": "0.0", 
         "audio-scale": "0.0", 
         "audio-use-fader": "0.3", 
-        "color-gradient": "[(0,0.5,1), (0,0,1)]", 
+        "color-gradient": "[(0,0.5,1), (0,-0.5,1)]", 
         "hue-step": "4.0", 
         "hue-width": "0.3", 
         "luminance-scale": "3.0", 

@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "rainbow spokes", 
     "params": {
-        "allow-playback": "False", 
+        "allow-playback": "True", 
         "audio-amplitude": "1.0", 
         "audio-boost": "5.0", 
         "audio-brightness": "0.0", 
@@ -14,7 +14,7 @@
         "audio-radius-scale": "0.5", 
         "audio-scale": "0.0", 
         "audio-use-fader": "0.1", 
-        "color-gradient": "[(0,0.5,1), (1,0.5,1)]", 
+        "color-gradient": "[(0,-0.1,1), (1,0.3,1)]", 
         "hue-step": "0.1", 
         "hue-width": "0.4", 
         "luminance-scale": "0.5", 

@@ -1,0 +1,14 @@
+{
+    "classname": "CombinePresets", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "a post clash economy", 
+    "params": {
+        "allow-playback": "True", 
+        "audio-transition": "1.0", 
+        "first-preset": "fluid spirals", 
+        "second-preset": "twinkle rings large mask", 
+        "transition-mode": "Multiply Blend", 
+        "transition-progress": "0.5"
+    }
+}

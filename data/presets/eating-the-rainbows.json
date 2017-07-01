@@ -6,7 +6,7 @@
     "params": {
         "allow-playback": "True", 
         "audio-amplitude": "0.3", 
-        "audio-boost": "4.0", 
+        "audio-boost": "10.0", 
         "audio-brightness": "0.1", 
         "audio-energy-lum-strength": "0.0", 
         "audio-energy-lum-time": "0.0", 
@@ -28,7 +28,7 @@
         "wave1-amplitude": "0.0", 
         "wave1-period": "6.0", 
         "wave1-speed": "1.0", 
-        "wave2-amplitude": "0.0", 
+        "wave2-amplitude": "0.2", 
         "wave2-period": "1.5", 
         "wave2-speed": "0.1"
     }

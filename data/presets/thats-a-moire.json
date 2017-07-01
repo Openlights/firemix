@@ -15,8 +15,8 @@
         "hue-step": "0.1", 
         "posterization": "100", 
         "speed": "0.05", 
-        "stripe-width": "[125.0,200,1]", 
-        "stripe-x-center": "0.5", 
-        "stripe-y-center": "0.5"
+        "stripe-width": "[-50,200,100]", 
+        "stripe-x-center": "[0,1,1]", 
+        "stripe-y-center": "[0,1,1]"
     }
 }

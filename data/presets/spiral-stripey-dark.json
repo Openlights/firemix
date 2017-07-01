@@ -2,13 +2,13 @@
     "classname": "CombinePresets", 
     "file-type": "preset", 
     "file-version": 1, 
-    "name": "twinkle spiral", 
+    "name": "spiral stripey dark", 
     "params": {
         "allow-playback": "True", 
         "audio-transition": "0.0", 
-        "first-preset": "twinkle max rainbow", 
-        "second-preset": "spiral warp", 
+        "first-preset": "spiral stripey", 
+        "second-preset": "spiral dark", 
         "transition-mode": "Multiply Blend", 
-        "transition-progress": "[0,0.95,0.5]"
+        "transition-progress": "0.5"
     }
 }

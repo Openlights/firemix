@@ -8,7 +8,7 @@
         "audio-transition": "0.0", 
         "first-preset": "radial complement stars", 
         "second-preset": "high lum test", 
-        "transition-mode": "Additive Blend", 
+        "transition-mode": "Linear Blend", 
         "transition-progress": "0.5"
     }
 }

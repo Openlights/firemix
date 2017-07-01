@@ -2,25 +2,25 @@
     "classname": "Fungus", 
     "file-type": "preset", 
     "file-version": 1, 
-    "name": "fungi normal", 
+    "name": "fungi normal (2)", 
     "params": {
-        "alive-color": "[0.7, 0.3, 1.0]", 
+        "alive-color": "(1.0, 1.0, 1.0)", 
         "allow-playback": "True", 
         "audio-onset-birth-boost": "0.0", 
         "audio-onset-death-boost": "0.0", 
         "audio-onset-spread-boost": "0.0", 
         "audio-onset-spread-boost-echo": "0.5", 
-        "birth-rate": "0.3", 
-        "black-color": "[-0.5, -1.0, 1.0]", 
-        "dead-color": "[0.0, 0.3, 1.0]", 
+        "birth-rate": "0.05", 
+        "black-color": "(0.0, 0.0, 1.0)", 
+        "dead-color": "(0.0, 0.5, 1.0)", 
         "death-time": "3.0", 
         "fade-out-time": "2.0", 
-        "growth-time": "1.0", 
+        "growth-time": "0.6", 
         "isolated-life-time": "1.0", 
         "life-time": "0.5", 
-        "mass-destruction-threshold": "40", 
+        "mass-destruction-threshold": "150", 
         "mass-destruction-time": "2.0", 
         "pop-limit": "500", 
-        "spread-rate": "10.0"
+        "spread-rate": "0.25"
     }
 }

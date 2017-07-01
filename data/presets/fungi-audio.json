@@ -1,0 +1,26 @@
+{
+    "classname": "Fungus", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "fungi audio", 
+    "params": {
+        "alive-color": "[1.7, 0.3, 1.0]", 
+        "allow-playback": "True", 
+        "audio-onset-birth-boost": "1000.0", 
+        "audio-onset-death-boost": "1.0", 
+        "audio-onset-spread-boost": "1000.0", 
+        "audio-onset-spread-boost-echo": "0.1", 
+        "birth-rate": "0.0", 
+        "black-color": "[-0.5, -0.2, 1.0]", 
+        "dead-color": "[0.0, -0.2, 1.0]", 
+        "death-time": "3.0", 
+        "fade-out-time": "2.0", 
+        "growth-time": "1.0", 
+        "isolated-life-time": "0.01", 
+        "life-time": "0.5", 
+        "mass-destruction-threshold": "1000", 
+        "mass-destruction-time": "2.0", 
+        "pop-limit": "300", 
+        "spread-rate": "0.01"
+    }
+}

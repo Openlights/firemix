@@ -7,7 +7,7 @@
         "alive-color": "[0.0, 0.5, 1.0]", 
         "allow-playback": "True", 
         "birth-rate": "0.1", 
-        "dead-color": "[0.8, 0.5, 1.0]", 
+        "dead-color": "[0.6, 0.5, 1.0]", 
         "explode-color": "(0.5, 2.0, 1.0)", 
         "growth-rate": "20.0", 
         "growth-time": "0.5", 

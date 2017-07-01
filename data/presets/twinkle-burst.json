@@ -10,7 +10,7 @@
         "audio-peak-birth-rate": "0.0", 
         "audio-ring-birth-rate": "0.3", 
         "audio-ring-diameter": "70.0", 
-        "audio-ring-lifetime": "2.0", 
+        "audio-ring-lifetime": "1.0", 
         "audio-ring-start-radius": "5.0", 
         "audio-ring-use-fft-brightness": "0.0", 
         "audio-ring-width": "6.0", 

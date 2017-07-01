@@ -11,7 +11,7 @@
         "audio-stripe-width": "100.0", 
         "center-orbit-distance": "[-100,100,10]", 
         "center-orbit-speed": "[-0.1,0.1,0.01]", 
-        "color-gradient": "[(0,0,1), (0,0,1), (0,1,1), (0,1,1), (0,0,1)]", 
+        "color-gradient": "[(0,-1,1), (0,-1,1), (0.5,0.25,1), (0,0.6,1), (0,-1,1)]", 
         "hue-step": "0.1", 
         "posterization": "100", 
         "speed": "0.002", 

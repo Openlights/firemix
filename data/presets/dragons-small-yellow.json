@@ -4,7 +4,7 @@
     "file-version": 1, 
     "name": "dragons small yellow", 
     "params": {
-        "alive-color": "(0.0, 1.0, 1.0)", 
+        "alive-color": "(0.0, 0.2, 1.0)", 
         "allow-playback": "True", 
         "birth-rate": "0.4", 
         "dead-color": "(0.1, 0.0, 1.0)", 

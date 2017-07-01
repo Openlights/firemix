@@ -13,7 +13,7 @@
         "audio-wave-period-boost": "0.0", 
         "center-distance": "0.0", 
         "center-speed": "0.0", 
-        "color-gradient": "[(0.0, 0.5, 1.0), (1.0, 0.5, 1.0), (0.0, 0.5, 1.0)]", 
+        "color-gradient": "[(0.0, 0.5, 1.0), (1.0, -0.4, 1.0), (2.0, -0.4, 1.0), (0.0, 0.5, 1.0)]", 
         "hue-speed": "0.1", 
         "onset-speed-boost": "5.0", 
         "onset-speed-decay": "1.0", 

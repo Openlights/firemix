@@ -8,7 +8,7 @@
         "audio-transition": "0.0", 
         "first-preset": "twinkle splat", 
         "second-preset": "fft", 
-        "transition-mode": "Additive Blend", 
+        "transition-mode": "Linear Blend", 
         "transition-progress": "0.5"
     }
 }

@@ -1,0 +1,25 @@
+{
+    "classname": "SimplexNoise", 
+    "file-type": "preset", 
+    "file-version": 1, 
+    "name": "noise rain 2 (2)", 
+    "params": {
+        "allow-playback": "True", 
+        "angle": "0.125", 
+        "audio-brightness": "0.0", 
+        "audio-hue-offset": "0.0", 
+        "beat-color-boost": "0.0", 
+        "beat-lum-boost": "0.05", 
+        "beat-lum-time": "0.1", 
+        "color-speed": "0.2", 
+        "hue-max": "3.0", 
+        "hue-min": "0.0", 
+        "hue-offset": "0.0", 
+        "luminance-map": "[(0,0,1), (0,0,1), (0,1,1)]", 
+        "luminance-scale": "0.75", 
+        "resolution": "128", 
+        "scale": "0.25", 
+        "speed": "0.7", 
+        "stretch": "1.0"
+    }
+}
