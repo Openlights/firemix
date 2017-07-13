@@ -71,7 +71,7 @@ class AdditiveBlend(Transition):
 
         hues = np.mod((startHues * startPower * startWeight + endHues * endPower * endWeight) / totalWeight / totalPower * 2, 1.0)
 
-        # strongly opposing vibrant colors increase **luminance**
+        # strongly opposing vibrant colors increase **lightness**
         # so that color addition preserves continuous curves
         opposition = 2.0 * np.abs(useAlternatePath - hueDelta) # 0 to 1
         opposition = 1.0 - np.power(1.0 - opposition, 2.0) # 0 to 1 but closer to 1
