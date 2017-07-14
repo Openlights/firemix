@@ -42,7 +42,7 @@ class FixtureStep(Transition):
 
         self.last_idx = 0
 
-    def get(self, start, end, progress):
+    def render(self, start, end, progress, out):
         start[self.mask] = (0.0, 0.0, 0.0)
         end[np.invert(self.mask)] = (0.0, 0.0, 0.0)
 
@@ -61,7 +61,4 @@ class FixtureStep(Transition):
 
         self.last_idx = idx
 
-        out = np.empty_like(start)
         np.add(struct_flat(start), struct_flat(end), struct_flat(out))
-        return out
-

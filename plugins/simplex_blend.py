@@ -40,20 +40,18 @@ class SimplexBlend(Transition):
         self.scaled_pixel_xs = 0.01 * pixel_locations[0]
         self.scaled_pixel_ys = 0.01 * pixel_locations[1]
 
-    def get(self, start, end, progress):
+    def render(self, start, end, progress, out):
         blend = snoise3(self.scaled_pixel_xs, self.scaled_pixel_ys,
                         progress, 1, 0.5, 0.5)
         # Apply the blend to all three color components
         for comp in ('hue', 'light', 'sat'):
-            self.frame[comp] = blend * start[comp] + ((1.0 - blend) * end[comp])
+            out[comp] = blend * start[comp] + ((1.0 - blend) * end[comp])
 
         # Mix = 1.0 when progress = 0.5, 0.0 at either extreme
         mix = 1.0 - fabs(2.0 * (progress - 0.5))
 
-        flat_frame = struct_flat(self.frame)
+        flat_out = struct_flat(out)
         if progress < 0.5:
-            flat_frame = ((1.0 - mix) * struct_flat(start)) + (mix * flat_frame)
+            flat_out = ((1.0 - mix) * struct_flat(start)) + (mix * flat_out)
         else:
-            flat_frame = (mix * flat_frame) + ((1.0 - mix) * struct_flat(end))
-
-        return self.frame
+            flat_out = (mix * flat_out) + ((1.0 - mix) * struct_flat(end))

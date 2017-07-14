@@ -16,7 +16,7 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class Transition:
+class Transition(object):
     """
     Defines the interface for a transition.
 
@@ -44,8 +44,9 @@ class Transition:
         """
         pass
 
-    def get(self, start, end, progress):
+    def render(self, start, end, progress, out):
         """
-        This method will return a frame that is between start and end, according to progress
+        This method will render a frame to `out` that is between `start` and
+        `end`, according to `progress`
         """
         pass

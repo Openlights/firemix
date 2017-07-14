@@ -472,8 +472,10 @@ class Mixer(QtCore.QObject):
                     raise ValueError
 
             if in_transition and transition is not None:
-                first_buffer = transition.get(first_buffer, second_buffer,
-                                              transition_progress)
+                out = np.empty_like(first_buffer)
+                transition.render(first_buffer, second_buffer,
+                                  transition_progress, out)
+                first_buffer = out
                 if check_for_nan:
                     assert len(struct_flat(first_buffer)) == len(nan_out_buf)
                     np.isnan(struct_flat(first_buffer), nan_out_buf)

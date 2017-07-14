@@ -42,8 +42,7 @@ class Fuzz(Transition):
 
         self.last_idx = 0
 
-
-    def get(self, start, end, progress):
+    def render(self, start, end, progress, out):
 
         progress = clip(0.0, progress, 1.0)
         idx = int(progress * (len(self.rand_index) - 1))
@@ -60,6 +59,4 @@ class Fuzz(Transition):
 
         start[self.mask] = (0.0, 0.0, 0.0)
         end[np.invert(self.mask)] = (0.0, 0.0, 0.0)
-        out = np.empty_like(start)
         np.add(struct_flat(start), struct_flat(end), struct_flat(out))
-        return out

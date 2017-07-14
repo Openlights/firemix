@@ -61,6 +61,5 @@ class CombinePresets(Pattern):
             if self.parameter('audio-transition').get() > 0:
                 transition_amount += self.parameter('audio-transition').get() * self._app.mixer.audio.getEnergy()
 
-            self._pixel_buffer = self._transition.get(
-                preset1_buffer, preset2_buffer,
-                transition_amount)
+            self._transition.render(preset1_buffer, preset2_buffer,
+                                    transition_amount, self._pixel_buffer)
