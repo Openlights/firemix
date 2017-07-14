@@ -23,6 +23,8 @@ import random
 import math
 import numpy as np
 
+from profilehooks import profile
+
 USE_YAPPI = True
 try:
     import yappi
@@ -140,6 +142,7 @@ class Mixer(QtCore.QObject):
                                                name="Firemix-render-thread")
         self._render_thread.start()
 
+    @profile(filename='profile.out')
     def _render_loop(self):
         delay = 0.0
         while self.running:
