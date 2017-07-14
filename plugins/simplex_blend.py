@@ -20,7 +20,7 @@ from math import fabs
 from vec_noise import snoise3
 
 from lib.transition import Transition
-from lib.buffer_utils import BufferUtils
+from lib.buffer_utils import BufferUtils, struct_flat
 
 
 class SimplexBlend(Transition):
@@ -35,8 +35,7 @@ class SimplexBlend(Transition):
         return "Simplex Blend"
 
     def reset(self):
-        buffer_size = BufferUtils.get_buffer_size()
-        self.frame = np.tile(0.0, (buffer_size, 3))
+        self.frame = BufferUtils.create_buffer()
         pixel_locations = np.asarray(self._app.scene.get_all_pixel_locations()).T
         self.scaled_pixel_xs = 0.01 * pixel_locations[0]
         self.scaled_pixel_ys = 0.01 * pixel_locations[1]
@@ -45,13 +44,16 @@ class SimplexBlend(Transition):
         blend = snoise3(self.scaled_pixel_xs, self.scaled_pixel_ys,
                         progress, 1, 0.5, 0.5)
         # Apply the blend to all three color components
-        blend3 = np.asarray([blend, blend, blend]).T
-        self.frame = blend3 * start + ((1.0 - blend3) * end)
+        for comp in ('hue', 'light', 'sat'):
+            self.frame[comp] = blend * start[comp] + ((1.0 - blend) * end[comp])
 
         # Mix = 1.0 when progress = 0.5, 0.0 at either extreme
         mix = 1.0 - fabs(2.0 * (progress - 0.5))
 
+        flat_frame = struct_flat(self.frame)
         if progress < 0.5:
-            return ((1.0 - mix) * start) + (mix * self.frame)
+            flat_frame = ((1.0 - mix) * struct_flat(start)) + (mix * flat_frame)
         else:
-            return (mix * self.frame) + ((1.0 - mix) * end)
+            flat_frame = (mix * flat_frame) + ((1.0 - mix) * struct_flat(end))
+
+        return self.frame

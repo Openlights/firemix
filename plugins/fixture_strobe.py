@@ -18,7 +18,7 @@
 import numpy as np
 
 from lib.transition import Transition
-from lib.buffer_utils import BufferUtils
+from lib.buffer_utils import BufferUtils, struct_flat
 
 
 class FixtureStrobe(Transition):
@@ -38,7 +38,7 @@ class FixtureStrobe(Transition):
     def reset(self):
         self.fixtures = self._app.scene.fixtures()
         buffer_size = BufferUtils.get_buffer_size()
-        self.mask = np.tile(False, (buffer_size, 3))
+        self.mask = np.tile(False, buffer_size)
 
         np.random.seed()
         self.rand_index = np.arange(len(self.fixtures))
@@ -47,8 +47,8 @@ class FixtureStrobe(Transition):
         self.last_idx = 0
 
     def get(self, start, end, progress):
-        start[self.mask] = 0.0
-        end[np.invert(self.mask)] = 0.0
+        start[self.mask] = (0.0, 0.0, 0.0)
+        end[np.invert(self.mask)] = (0.0, 0.0, 0.0)
 
         idx = int(progress * len(self.rand_index))
 
@@ -64,16 +64,18 @@ class FixtureStrobe(Transition):
                 if fix in self._strobing:
                     self._strobing.remove(fix)
                 pix_start, pix_end = BufferUtils.get_fixture_extents(fix.strand, fix.address)
-                self.mask[pix_start:pix_end][:] = False
+                self.mask[pix_start:pix_end] = False
                 self._on[fix] = False
         self.last_idx = idx
 
         for fix in self._strobing:
             pix_start, pix_end = BufferUtils.get_fixture_extents(fix.strand, fix.address)
-            self.mask[pix_start:pix_end][:] = self._on[fix]
+            self.mask[pix_start:pix_end] = self._on[fix]
             self._on[fix] = not self._on[fix]
             if progress > self._time[fix] + self._duration:
                 self._strobing.remove(fix)
                 self.mask[pix_start:pix_end][:] = True
 
-        return (start) + (end)
+        out = np.empty_like(start)
+        np.add(struct_flat(start), struct_flat(end), struct_flat(out))
+        return out

@@ -47,8 +47,7 @@ class Wipe(Transition):
         self.dots /= maxDot - minDot
 
     def get(self, start, end, progress):
-        buffer = np.where(self.dots < progress, end.T, start.T)
-        buffer[2][np.abs(self.dots - progress) < 0.02] += 0.1 # we can apply effects to transition line here
-        buffer = buffer.T
+        buffer = np.where(self.dots < progress, end, start)
+        buffer['sat'][np.abs(self.dots - progress) < 0.02] += 0.1 # we can apply effects to transition line here
 
         return buffer

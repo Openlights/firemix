@@ -117,20 +117,20 @@ class RadialGradient(Pattern):
 
         if self.parameter('audio-energy-lum-strength').get():
             lums = np.mod(np.int_(hues * self.parameter('audio-energy-lum-time').get()), self._lightness_steps)
-            lums = self._app.mixer.audio.fader.color_cache.T[0][lums] * self.parameter('audio-energy-lum-strength').get()
+            lums = self._app.mixer.audio.fader.color_cache['hue'][lums] * self.parameter('audio-energy-lum-strength').get()
         else:
             lums = hues
 
         lightness_indices = np.mod(np.abs(np.int_((self.lightness_offset + lums * lightness_scale) * self._lightness_steps)), self._lightness_steps)
-        LS = self._fader.color_cache[lightness_indices].T
-        lightnesses = LS[1]
+        LS = self._fader.color_cache[lightness_indices]
+        lightnesses = LS['light']
         lightnesses += self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
 
         hues = np.fmod(self.hue_inner + hues * self.parameter('hue-width').get(), 1.0)
 
         if self.parameter('audio-use-fader').get():
-            #lightnesses *= self._app.mixer.audio.fader.color_cache.T[1][np.int_(lightness_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
-            #hues += self._app.mixer.audio.fader.color_cache.T[0][np.int_(hues * 255 * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
-            hues += self._app.mixer.audio.fader.color_cache.T[0][np.int_(lightness_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
+            #lightnesses *= self._app.mixer.audio.fader.color_cache['light'][np.int_(lightness_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
+            #hues += self._app.mixer.audio.fader.color_cache['hue'][np.int_(hues * 255 * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
+            hues += self._app.mixer.audio.fader.color_cache['hue'][np.int_(lightness_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
 
-        self.setAllHLS(hues, lightnesses, LS[2])
+        self.setAllHLS(hues, lightnesses, LS['sat'])

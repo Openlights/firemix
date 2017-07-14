@@ -226,6 +226,6 @@ class Pattern(JSONDict):
         """
         Sets the entire buffer, assuming an input list.
         """
-        self._pixel_buffer[:,0] = hues
-        self._pixel_buffer[:,1] = lightnesses
-        self._pixel_buffer[:,2] = saturations
+        self._pixel_buffer['hue'] = hues
+        self._pixel_buffer['light'] = lightnesses
+        self._pixel_buffer['sat'] = saturations

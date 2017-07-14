@@ -32,7 +32,7 @@ except ImportError:
 from PySide import QtCore
 
 from lib.pattern import Pattern
-from lib.buffer_utils import BufferUtils
+from lib.buffer_utils import BufferUtils, struct_flat
 from core.audio import Audio
 from lib.aubio_connector import AubioConnector
 from lib.colors import clip
@@ -404,9 +404,9 @@ class Mixer(QtCore.QObject):
 
             # Mod hue by 1 (to allow wrap-around) and clamp lightness and
             # saturation to [0, 1].
-            mixed_buffer.T[0] = np.mod(mixed_buffer.T[0], 1.0)
-            np.clip(mixed_buffer.T[1], 0.0, 1.0, mixed_buffer.T[1])
-            np.clip(mixed_buffer.T[2], 0.0, 1.0, mixed_buffer.T[2])
+            np.mod(mixed_buffer['hue'], 1.0, out=mixed_buffer['hue'])
+            np.clip(mixed_buffer['light'], 0.0, 1.0, out=mixed_buffer['light'])
+            np.clip(mixed_buffer['sat'], 0.0, 1.0, out=mixed_buffer['sat'])
 
             # Write this buffer to enabled clients.
             if self._net is not None:
@@ -456,18 +456,18 @@ class Mixer(QtCore.QObject):
         first_buffer = first_preset.get_buffer()
 
         if check_for_nan:
-            nan_out_buf = np.empty(len(first_buffer.flat))
+            nan_out_buf = np.empty(len(struct_flat(first_buffer)))
 
         if check_for_nan:
-            np.isnan(first_buffer.flat, nan_out_buf)
+            np.isnan(struct_flat(first_buffer), nan_out_buf)
             if np.any(nan_out_buf):
                 raise ValueError
 
         if second_preset is not None:
             second_buffer = second_preset.get_buffer()
             if check_for_nan:
-                assert len(second_buffer.flat) == len(nan_out_buf)
-                np.isnan(second_buffer.flat, nan_out_buf)
+                assert len(struct_flat(second_buffer)) == len(nan_out_buf)
+                np.isnan(struct_flat(second_buffer), nan_out_buf)
                 if np.any(nan_out_buf):
                     raise ValueError
 
@@ -475,8 +475,8 @@ class Mixer(QtCore.QObject):
                 first_buffer = transition.get(first_buffer, second_buffer,
                                               transition_progress)
                 if check_for_nan:
-                    assert len(first_buffer.flat) == len(nan_out_buf)
-                    np.isnan(first_buffer.flat, nan_out_buf)
+                    assert len(struct_flat(first_buffer)) == len(nan_out_buf)
+                    np.isnan(struct_flat(first_buffer), nan_out_buf)
                     if np.any(nan_out_buf):
                         raise ValueError
 
@@ -488,6 +488,3 @@ class Mixer(QtCore.QObject):
         """
         self._buffer_a = BufferUtils.create_buffer()
         self._buffer_b = BufferUtils.create_buffer()
-
-    def get_buffer_shape(self):
-        return self._buffer_a.shape

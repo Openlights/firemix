@@ -18,7 +18,7 @@
 import numpy as np
 
 from lib.transition import Transition
-from lib.buffer_utils import BufferUtils
+from lib.buffer_utils import BufferUtils, struct_flat
 from lib.colors import clip
 
 
@@ -34,11 +34,10 @@ class Fuzz(Transition):
 
     def reset(self):
         self.buffer_size = BufferUtils.get_buffer_size()
-        self.mask = np.tile(False, (self.buffer_size, 3))
+        self.mask = np.tile(False, self.buffer_size)
 
-        num_elements = np.ndarray.flatten(self.mask).size / 3
         np.random.seed()
-        self.rand_index = np.arange(num_elements)
+        self.rand_index = np.arange(self.buffer_size)
         np.random.shuffle(self.rand_index)
 
         self.last_idx = 0
@@ -51,19 +50,16 @@ class Fuzz(Transition):
 
         if idx >= self.last_idx:
             for i in range(self.last_idx, idx):
-                offset = self.rand_index[i] * 3
+                offset = self.rand_index[i]
                 self.mask.flat[offset] = True
-                self.mask.flat[offset + 1] = True
-                self.mask.flat[offset + 2] = True
         else:
             for i in range(idx, self.last_idx):
-                offset = self.rand_index[i] * 3
+                offset = self.rand_index[i]
                 self.mask.flat[offset] = False
-                self.mask.flat[offset + 1] = False
-                self.mask.flat[offset + 2] = False
         self.last_idx = idx
 
-        start[self.mask] = 0.0
-        end[np.invert(self.mask)] = 0.0
-
-        return (start) + (end)
+        start[self.mask] = (0.0, 0.0, 0.0)
+        end[np.invert(self.mask)] = (0.0, 0.0, 0.0)
+        out = np.empty_like(start)
+        np.add(struct_flat(start), struct_flat(end), struct_flat(out))
+        return out

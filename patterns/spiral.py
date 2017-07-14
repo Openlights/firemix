@@ -107,9 +107,6 @@ class SpiralGradient(Pattern):
         hues = self.color_offset + (radius_hue_width * self.pixel_distances) + (2 * np.abs(angles - 0.5) * angle_hue_width)
         hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
         colors = self._fader.color_cache[hues]
-        colors = colors.T
-        colors[0] = np.mod(colors[0] + self.hue_inner, 1.0)
-        colors[1] += audio_energy * self.parameter('audio-brightness').get()
-        colors = colors.T
-
+        colors['hue'] = np.mod(colors['hue'] + self.hue_inner, 1.0)
+        colors['light'] += audio_energy * self.parameter('audio-brightness').get()
         self._pixel_buffer = colors

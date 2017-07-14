@@ -100,8 +100,8 @@ class SimplexNoise(Pattern):
                           self._offset_z)
         brights = (1.0 + brights) / 2
         brights *= self._lightness_steps
-        LS = self.lum_fader.color_cache[np.int_(brights)].T
-        lightnesses = LS[1] + self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
+        LS = self.lum_fader.color_cache[np.int_(brights)]
+        lightnesses = LS['light'] + self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
         hue_offset = self.parameter('hue-offset').get() + self._app.mixer.audio.getSmoothEnergy() * self.parameter('audio-hue-offset').get()
 
-        self.setAllHLS(LS[0] + hue_offset, lightnesses, LS[2])
+        self.setAllHLS(LS['hue'] + hue_offset, lightnesses, LS['sat'])

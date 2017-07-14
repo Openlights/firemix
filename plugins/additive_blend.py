@@ -36,16 +36,12 @@ class AdditiveBlend(Transition):
         return "Additive Blend"
 
     def reset(self):
-        self.buffer_len = BufferUtils.get_buffer_size()
-        self.frame = np.tile(np.array([0.0], dtype=np.float), (self.buffer_len, 3))
+        self.frame = BufferUtils.create_buffer()
 
     def get(self, start, end, progress):
 
         fade_length = 0.25
         ease_power = 2.0
-        
-        start_transpose = start.T
-        end_transpose = end.T
         
         startPower = (1.0 - progress) / fade_length if progress >= (1 - fade_length) else 1.0
         startPower = 1.0 - pow(1.0 - startPower, ease_power)
@@ -53,20 +49,20 @@ class AdditiveBlend(Transition):
         endPower = (progress / fade_length) if progress <= fade_length else 1.0
         endPower = 1.0 - pow(1.0 - endPower, ease_power)
         
-        startLums = (start_transpose[1] * startPower).clip(0,1)
-        endLums = (end_transpose[1] * endPower).clip(0,1)
+        startLums = (start['light'] * startPower).clip(0,1)
+        endLums = (end['light'] * endPower).clip(0,1)
  
         totalPower = (startPower + endPower)
         
-        startHues = np.mod(start_transpose[0], 1.0)
-        endHues = np.mod(end_transpose[0], 1.0)
+        startHues = np.mod(start['hue'], 1.0)
+        endHues = np.mod(end['hue'], 1.0)
  
         hueDelta = np.abs(startHues - endHues)
         useAlternatePath = np.floor(hueDelta * 2) # path between two colors is 0.5 maximum
         startHues += useAlternatePath # if path too long, go the other way
 
-        startWeight = (1.0 - 2 * np.abs(0.5 - startLums)) * start_transpose[2] + 0.01
-        endWeight = (1.0 - 2 * np.abs(0.5 - endLums)) * end_transpose[2] + 0.01
+        startWeight = (1.0 - 2 * np.abs(0.5 - startLums)) * start['sat'] + 0.01
+        endWeight = (1.0 - 2 * np.abs(0.5 - endLums)) * end['sat'] + 0.01
         totalWeight = startWeight + endWeight
 
         hues = np.mod((startHues * startPower * startWeight + endHues * endPower * endWeight) / totalWeight / totalPower * 2, 1.0)
@@ -80,9 +76,11 @@ class AdditiveBlend(Transition):
         #opposition.clip(0, 1, opposition)
         lums = np.maximum(np.maximum(startLums,endLums), opposition)
 
-        sats = (start_transpose[2] * startWeight + end_transpose[2] * endWeight).clip(0,1)
+        sats = (start['sat'] * startWeight + end['sat'] * endWeight).clip(0,1)
 
-        self.frame = np.asarray([hues, lums, sats]).T
+        self.frame['hue'] = hues
+        self.frame['light'] = lums
+        self.frame['sat'] = sats
 
         """
         if np.random.random() > 0.95:

@@ -20,7 +20,7 @@ from math import fmod, fabs, sqrt, pow, tan, pi, atan2
 from copy import deepcopy
 
 from lib.transition import Transition
-from lib.buffer_utils import BufferUtils
+from lib.buffer_utils import BufferUtils, struct_flat
 
 
 class Spiral(Transition):
@@ -57,7 +57,7 @@ class Spiral(Transition):
 
         self.scene_radius = max(self.radii)
 
-        self.mask = np.tile(False, (self.buffer_size, 3))
+        self.mask = np.tile(False, self.buffer_size)
         self.angle = 0.0
         self.radius = 0.0
         self.active = [True,] * len(self.locations)
@@ -75,14 +75,16 @@ class Spiral(Transition):
             distance = self.radii[pixel]
 
             if distance < distance_cutoff or (distance < distance_progress and angle < radius_progress):
-                self.mask[pixel][:] = True
+                self.mask[pixel] = True
                 #self.active[pixel] = False
             else:
-                self.mask[pixel][:] = False
+                self.mask[pixel] = False
 
-        start[self.mask] = 0.0
-        end[np.invert(self.mask)] = 0.0
-        return start + end
+        start[self.mask] = (0.0, 0.0, 0.0)
+        end[np.invert(self.mask)] = (0.0, 0.0, 0.0)
+        out = np.zeros_like(start)
+        np.add(struct_flat(start), struct_flat(end), struct_flat(out))
+        return out
 
     def _is_point_inside_wipe(self, point, progress):
         return np.dot((point - self.wipe_point), self.wipe_vector) >= 0

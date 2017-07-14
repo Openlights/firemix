@@ -16,6 +16,10 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 import colorsys
+import dtypes
+
+from buffer_utils import struct_flat
+
 import numpy as np
 
 def float_to_uint8(float_color):
@@ -40,11 +44,8 @@ def clip(low, input, high):
     return min(max(input, low), high)
 
 def blend_to_buffer(source, destination, progress, mode):
-    h1,l1,s1 = source.T
-    h2,l2,s2 = destination.T
-
     if mode == 'overwrite':
-        not_dark = l1 > 0.0
+        not_dark = source['lum'] > 0.0
         destination[not_dark] = source[not_dark]
     else:
         raise NotImplementedError
@@ -52,7 +53,7 @@ def blend_to_buffer(source, destination, progress, mode):
     return destination
 
 
-def hls_blend(start, end, temporary_buffer, progress, mode, fade_length=1.0, ease_power=0.5):
+def hls_blend(start, end, out, progress, mode, fade_length=1.0, ease_power=0.5):
     p = abs(progress)
 
     startPower = (1.0 - p) / fade_length
@@ -63,32 +64,29 @@ def hls_blend(start, end, temporary_buffer, progress, mode, fade_length=1.0, eas
     endPower = clip(0.0, endPower, 1.0)
     endPower = pow(endPower, ease_power)
 
-    h1,l1,s1 = start.T
-    h2,l2,s2 = end.T
+    l1clipped = np.empty_like(start['light'])
+    l2clipped = np.empty_like(end['light'])
+    np.clip(start['light'],0,1,l1clipped)
+    np.clip(end['light'],0,1,l2clipped)
+    np.clip(start['sat'],0,1,start['sat'])
+    np.clip(end['sat'],0,1,end['sat'])
 
-    l1clipped = l1
-    l2clipped = l2
-    np.clip(l1,0,1,l1clipped)
-    np.clip(l2,0,1,l2clipped)
-    np.clip(s1,0,1,s1)
-    np.clip(s2,0,1,s2)
+    startWeight = (1.0 - 2 * np.abs(0.5 - l1clipped)) * start['sat']
+    endWeight = (1.0 - 2 * np.abs(0.5 - l2clipped)) * end['sat']
 
-    startWeight = (1.0 - 2 * np.abs(0.5 - l1clipped)) * s1
-    endWeight = (1.0 - 2 * np.abs(0.5 - l2clipped)) * s2
-
-    s = (s1 * startPower + s2 * endPower)
-    x1 = np.cos(2 * np.pi * h1) * startPower * startWeight
-    x2 = np.cos(2 * np.pi * h2) * endPower * endWeight
-    y1 = np.sin(2 * np.pi * h1) * startPower * startWeight
-    y2 = np.sin(2 * np.pi * h2) * endPower * endWeight
+    s = (start['sat'] * startPower + end['sat'] * endPower)
+    x1 = np.cos(2 * np.pi * start['hue']) * startPower * startWeight
+    x2 = np.cos(2 * np.pi * end['hue']) * endPower * endWeight
+    y1 = np.sin(2 * np.pi * start['hue']) * startPower * startWeight
+    y2 = np.sin(2 * np.pi * end['hue']) * endPower * endWeight
     x = x1 + x2
     y = y1 + y2
 
     if progress >= 0:
-        l = np.maximum(l1 * startPower, l2 * endPower)
+        l = np.maximum(start['light'] * startPower, end['light'] * endPower)
         opposition = np.sqrt(np.square((x1-x2)/2) + np.square((y1-y2)/2))
         if mode == 'multiply':
-            l = np.minimum(l1 * startPower, l2 * endPower)
+            l = np.minimum(start['light'] * startPower, end['light'] * endPower)
             #l -= opposition
         elif mode == 'add':
             l = np.maximum(l, opposition, l)
@@ -103,24 +101,26 @@ def hls_blend(start, end, temporary_buffer, progress, mode, fade_length=1.0, eas
 
     np.clip(l, 0, 1, l)
 
-    if temporary_buffer is not None:
-        frame = temporary_buffer
-        frame[:, 0] = h
-        frame[:, 1] = l
-        frame[:, 2] = s
-    else:
-        frame = np.asarray([h, l, s]).T
+    if out is None:
+        out = np.empty_like(start)
 
-    return frame
+    out['hue'] = h
+    out['light'] = l
+    out['sat'] = s
+
+    return out
 
 def rgb_to_hls(arr):
     """ fast rgb_to_hls using numpy array """
+    # XXX: arr is assumed to be an unstructured, multidimensional integer array
+    # rather than an array with dtype rgb_color. This is because the only user
+    # of this function is ImagePattern and I don't feel like fixing that.
 
     # adapted from Arnar Flatberg
     # http://www.mail-archive.com/numpy-discussion@scipy.org/msg06147.html
 
     arr = arr.astype("float32") / 255.0
-    out = np.empty_like(arr)
+    out = np.empty(arr.shape[0], dtype=dtypes.hls_color)
 
     arr_max = arr.max(-1)
     delta = arr.ptp(-1)
@@ -136,30 +136,31 @@ def rgb_to_hls(arr):
 
         # red is max
         idx = (arr[:,:,0] == arr_max)
-        out[idx, 0] = (arr[idx, 1] - arr[idx, 2]) / delta[idx]
+        out['hue'][idx] = (arr[idx, 1] - arr[idx, 2]) / delta[idx]
 
         # green is max
         idx = (arr[:,:,1] == arr_max)
-        out[idx, 0] = 2. + (arr[idx, 2] - arr[idx, 0] ) / delta[idx]
+        out['hue'][idx] = 2. + (arr[idx, 2] - arr[idx, 0] ) / delta[idx]
 
         # blue is max
         idx = (arr[:,:,2] == arr_max)
-        out[idx, 0] = 4. + (arr[idx, 0] - arr[idx, 1] ) / delta[idx]
+        out['hue'][idx] = 4. + (arr[idx, 0] - arr[idx, 1] ) / delta[idx]
 
-        out[:,:,0] = (out[:,:,0]/6.0) % 1.0
-        out[:,:,1] = l
-        out[:,:,2] = s
+        out['hue'] = (out['hue']/6.0) % 1.0
+        out['light'] = l
+        out['sat'] = s
 
         idx = (delta==0)
-        out[idx, 2] = 0.0
-        out[idx, 0] = 0.0
+        out['sat'][idx] = 0.0
+        out['hue'][idx] = 0.0
 
         # remove NaN
-        out[np.isnan(out)] = 0
+        flat = struct_flat(out)
+        flat[np.isnan(flat)] = 0
 
     return out
 
-def hls_to_rgb(hls):
+def hls_to_rgb(arr, out=None):
     """
     Converts HLS color array [[H,L,S]] to RGB array.
 
@@ -170,63 +171,53 @@ def hls_to_rgb(hls):
     Adapted from: http://stackoverflow.com/questions/4890373/detecting-thresholds-in-hsv-color-space-from-rgb-using-python-pil/4890878#4890878
     """
 
-    H = hls[:, 0]
-    L = hls[:, 1]
-    S = hls[:, 2]
+    C = (1 - np.absolute(2 * arr['light'] - 1)) * arr['sat']
 
-    C = (1 - np.absolute(2 * L - 1)) * S
-
-    Hp = H * 6.0
+    Hp = arr['hue'] * 6.0
     i = Hp.astype(np.int)
     #f = Hp - i  # |H' mod 2|  ?
 
     X = C * (1 - np.absolute(np.mod(Hp, 2) - 1))
     #X = C * (1 - f)
 
-    # initialize with zero
-    R = np.zeros(H.shape, float)
-    G = np.zeros(H.shape, float)
-    B = np.zeros(H.shape, float)
+    if out is None:
+        out = np.zeros_like(arr, dtype=dtypes.rgb_color)
 
     # handle each case:
 
     #mask = (Hp >= 0) == ( Hp < 1)
     mask = i % 6 == 0
-    R[mask] = C[mask]
-    G[mask] = X[mask]
+    out['r'][mask] = C[mask]
+    out['g'][mask] = X[mask]
 
     #mask = (Hp >= 1) == ( Hp < 2)
     mask = i == 1
-    R[mask] = X[mask]
-    G[mask] = C[mask]
+    out['r'][mask] = X[mask]
+    out['g'][mask] = C[mask]
 
     #mask = (Hp >= 2) == ( Hp < 3)
     mask = i == 2
-    G[mask] = C[mask]
-    B[mask] = X[mask]
+    out['g'][mask] = C[mask]
+    out['b'][mask] = X[mask]
 
     #mask = (Hp >= 3) == ( Hp < 4)
     mask = i == 3
-    G[mask] = X[mask]
-    B[mask] = C[mask]
+    out['g'][mask] = X[mask]
+    out['b'][mask] = C[mask]
 
     #mask = (Hp >= 4) == ( Hp < 5)
     mask = i == 4
-    R[mask] = X[mask]
-    B[mask] = C[mask]
+    out['r'][mask] = X[mask]
+    out['b'][mask] = C[mask]
 
     #mask = (Hp >= 5) == ( Hp < 6)
     mask = i == 5
-    R[mask] = C[mask]
-    B[mask] = X[mask]
+    out['r'][mask] = C[mask]
+    out['b'][mask] = X[mask]
 
-    m = L - 0.5*C
-    R += m
-    G += m
-    B += m
+    m = arr['light'] - 0.5*C
+    out['r'] += m
+    out['g'] += m
+    out['b'] += m
 
-    rgb = np.empty_like(hls)
-    rgb[:, 0] = R
-    rgb[:, 1] = G
-    rgb[:, 2] = B
-    return rgb
+    return out

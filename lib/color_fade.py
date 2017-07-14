@@ -19,6 +19,8 @@ import unittest
 import colorsys
 import numpy as np
 
+import lib.dtypes as dtypes
+
 from lib.colors import clip
 
 class ColorFade:
@@ -31,7 +33,7 @@ class ColorFade:
 
         self._steps = steps
         self.keyframes = keyframes
-        self.color_cache = np.zeros((steps + 1, 3), dtype=np.float32)
+        self.color_cache = np.zeros(steps + 1, dtype=dtypes.pixel_color)
 
         # Warmup the cache
         for i in xrange(steps + 1):
@@ -51,7 +53,7 @@ class ColorFade:
                 frame2_weight = stage_progress
 
                 color = tuple([c1 * frame1_weight + c2 * frame2_weight for c1, c2 in zip(frame1, frame2)])
-            self.color_cache[i] = color
+            self.color_cache[i] = tuple(color)
 #            print progress, self.color_cache[progress]
 
     def get_color(self, progress):
