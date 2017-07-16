@@ -21,7 +21,7 @@ import logging
 import signal
 import sys
 
-from PySide import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 try:
     import qdarkstyle
@@ -68,9 +68,9 @@ def main():
 
     log.info("Booting FireMix...")
 
-    qt_app = QtGui.QApplication(sys.argv, args.gui)
+    qt_app = QtWidgets.QApplication(sys.argv)
     if qdarkstyle is not None:
-        qt_app.setStyleSheet(qdarkstyle.load_stylesheet())
+        qt_app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     app = FireMixApp(qt_app, args)
 
     signal.signal(signal.SIGINT, functools.partial(sig_handler, app))

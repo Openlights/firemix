@@ -29,7 +29,7 @@ try:
 except ImportError:
     USE_YAPPI = False
 
-from PySide import QtCore
+from PyQt5 import QtCore
 
 from lib.pattern import Pattern
 from lib.buffer_utils import BufferUtils
@@ -47,7 +47,7 @@ class Mixer(QtCore.QObject):
     and the generation of the final command stream to send to the output
     device(s).
     """
-    transition_starting = QtCore.Signal()
+    transition_starting = QtCore.pyqtSignal()
 
     def __init__(self, app):
         super(Mixer, self).__init__()
@@ -125,7 +125,7 @@ class Mixer(QtCore.QObject):
         self._buffer_b = BufferUtils.create_buffer()
         self._max_pixels = maxp
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def start(self):
         assert self._render_thread is None, "Cannot start render thread more than once"
         self._tick_rate = self._app.settings.get('mixer')['tick-rate']
@@ -156,12 +156,12 @@ class Mixer(QtCore.QObject):
                 if not self._paused:
                     self._elapsed += dt + delay
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def restart(self):
         self.stop()
         self.start()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def stop(self):
         self.running = False
         self._stop_time = time.time()
@@ -196,7 +196,7 @@ class Mixer(QtCore.QObject):
             self._fps_time = time.time()
             return 0.0
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def onset_detected(self):
         t = time.time()
         if (t - self._last_onset_time) > self._onset_holdoff:

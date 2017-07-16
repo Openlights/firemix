@@ -28,7 +28,7 @@ try:
 except ImportError:
     USE_YAPPI = False
 
-from PySide import QtCore
+from PyQt5 import QtCore
 
 log = logging.getLogger("firemix.core.mixer")
 
@@ -38,8 +38,8 @@ class Audio(QtCore.QObject):
     """
     Audio handles looking at sound data and setting it up for use in patterns
     """
-    transition_starting = QtCore.Signal()
-    onset = QtCore.Signal()
+    transition_starting = QtCore.pyqtSignal()
+    onset = QtCore.pyqtSignal()
 
     _fader_steps = 256
     SIM_BEATS_PER_MINUTE = 120.0
@@ -84,11 +84,11 @@ class Audio(QtCore.QObject):
         locker = QtCore.QMutexLocker(self._mutex)
         return np.multiply(self.fft, self.gain)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def trigger_onset(self):
         self.onset.emit()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_sim_timer(self):
         dt = self._sim_timer.interval()
         measure = (60000.0 / self.SIM_BEATS_PER_MINUTE)
@@ -139,18 +139,18 @@ class Audio(QtCore.QObject):
                 self._simulate = True
                 self.mixer._app.gui.audio_simulate_enabled(True)
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(int)
     def enable_simulation(self, en):
         self._simulate = (en != 0)
 
-    @QtCore.Slot(float, float)
+    @QtCore.pyqtSlot(float, float)
     def update_pitch_data(self, pitch, confidence):
         self.pitch = pitch
         self.pitch_confidence = confidence
         #if confidence > 0.9:
         #    print "Pitch: %0.1f" % pitch
 
-    @QtCore.Slot(list)
+    @QtCore.pyqtSlot(list)
     def fft_data_from_network(self, data):
         self._time_since_last_data = 0
         if not self._simulate:

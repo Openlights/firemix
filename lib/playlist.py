@@ -22,7 +22,7 @@ import random
 import json
 from copy import deepcopy
 
-from PySide import QtCore
+from PyQt5 import QtCore
 
 from lib.json_dict import JSONDict
 from lib.pattern_loader import PatternLoader
@@ -206,7 +206,7 @@ class Playlist(JSONDict):
 
         return names
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def playlist_mutated(self):
         """
         This should get called when the playlist is mutated in some way

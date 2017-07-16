@@ -1,4 +1,15 @@
-pyside-uic ui/firemix.ui > ui/ui_firemix.py
-pyside-uic ui/dlg_add_preset.ui > ui/ui_dlg_add_preset.py
-pyside-uic ui/dlg_setup_networking.ui > ui/ui_dlg_setup_networking.py
-pyside-uic ui/dlg_settings.ui > ui/ui_dlg_settings.py
+#!/bin/bash
+
+if hash pyside-uic 2>/dev/null; then
+    uic=pyside-uic
+elif hash pyuic5 2>/dev/null; then
+    uic=pyuic5
+else
+    echo >&2 "Could not find pyside or pyqt uic!"
+    exit 1
+fi
+
+$uic ui/firemix.ui > ui/ui_firemix.py
+$uic ui/dlg_add_preset.ui > ui/ui_dlg_add_preset.py
+$uic ui/dlg_setup_networking.ui > ui/ui_dlg_setup_networking.py
+$uic ui/dlg_settings.ui > ui/ui_dlg_settings.py

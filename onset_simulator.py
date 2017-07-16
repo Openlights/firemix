@@ -16,7 +16,7 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PySide import QtCore, QtNetwork
+from PyQt5 import QtCore, QtNetwork
 import logging
 import sys
 import signal

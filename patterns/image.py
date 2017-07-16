@@ -19,7 +19,7 @@ import random
 import math
 import numpy as np
 from lib.colors import hls_blend
-from PySide.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap
 
 from lib.pattern import Pattern
 from lib.parameters import FloatParameter, StringParameter
