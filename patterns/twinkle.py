@@ -82,10 +82,13 @@ class Twinkle(Pattern):
         self.locations = self.scene().get_all_pixel_locations()
         self.birthByFFT = np.zeros(256)
 
-    def draw(self, dt):
+    def tick(self, dt):
+        super(Twinkle, self).tick(dt)
 
         self._current_time += dt
+        self._nbirth += self.parameter('birth-rate').get() * dt
 
+    def draw(self):
         # Birth
         if self._app.mixer.is_onset():
             self._nbirth += self.parameter('beat-births').get()
@@ -189,8 +192,6 @@ class Twinkle(Pattern):
 
         # audioEnergy = self._app.mixer.audio.getEnergy() * self.parameter('audio-birth-rate').get() * dt
         # self._nbirth += audioEnergy
-
-        self._nbirth += self.parameter('birth-rate').get() * dt
 
         #black = self.parameter('off-color').get()
         fade_rate = self.parameter('fade-rate').get()

@@ -80,16 +80,18 @@ class SimplexNoise(Pattern):
         pixel_locations = np.asarray(self.scene().get_all_pixel_locations())
         self._offset_x, self._offset_y = rotMatrix.T.dot(pixel_locations.T)
 
-    @profile
-    def draw(self, dt):
-        if self._app.mixer.is_onset():
-            self._offset_z += self.parameter('beat-color-boost').get()
+    def tick(self, dt):
+        super(SimplexNoise, self).tick(dt)
 
-        #self._offset_x += dt * self.parameter('speed').get() * math.cos(angle) * 2 * math.pi
-        #self._offset_y += dt * self.parameter('speed').get() * math.sin(angle) * 2 * math.pi
         self._offset_x += dt * self.parameter('speed').get()
         self._offset_z += dt * self.parameter('color-speed').get()
         self._offset_z += dt * self._app.mixer.audio.getSmoothEnergy() * self.parameter('beat-color-boost').get()
+
+    @profile
+    def draw(self):
+        if self._app.mixer.is_onset():
+            self._offset_z += self.parameter('beat-color-boost').get()
+
         # posterization = self.parameter('resolution').get()
 
         lightness_scale = self.parameter('lightness-scale').get() / 100.0

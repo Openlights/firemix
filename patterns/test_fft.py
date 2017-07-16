@@ -64,12 +64,14 @@ class TestFFT(Pattern):
         self.locations = self.scene().get_all_pixel_locations()
         self.color_angle = 0.0
 
-    def draw(self, dt):
+    def tick(self, dt):
+        super(TestFFT, self).tick(dt)
+        self.color_angle += dt *  self.parameter('rotation').get()
+
+    def draw(self):
 
         def rotate(l, n):
             return l[n:] + l[:n]
-
-        self.color_angle += dt *  self.parameter('rotation').get()
 
         if False:
         #if self._app.mixer.is_onset():

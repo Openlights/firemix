@@ -44,6 +44,6 @@ class SolidColor(Pattern):
         self._color = DEFAULT_COLOR
         self.parameter_changed(None)
 
-    def draw(self, dt):
+    def draw(self):
         self.setAllHLS(self._color[0], self._color[1], self._color[2])
 

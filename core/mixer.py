@@ -350,6 +350,7 @@ class Mixer(QtCore.QObject):
 
             try:
                 active_preset.tick(dt)
+                active_preset.draw()
             except:
                 log.error("Exception raised in preset %s" % active_preset.name())
                 self.playlist.disable_presets_by_class(active_preset.__class__.__name__)
@@ -376,6 +377,7 @@ class Mixer(QtCore.QObject):
                         self.transition_progress = 1.0
 
                 next_preset.tick(dt)
+                next_preset.draw()
 
             # If the scene tree is available, we can do efficient mixing of presets.
             # If not, a tree would need to be constructed on-the-fly.

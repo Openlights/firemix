@@ -74,66 +74,71 @@ class ImagePattern(Pattern):
     def reset(self):
         pass
 
-    def draw(self, dt):
-        if self.pixmap:
-            lum_boost = self.parameter('beat-lum-boost').get()
-            if self._app.mixer.is_onset():
-                self.lum_boost += lum_boost
+    def tick(self, dt):
+        super(ImagePattern, self).tick(dt)
+        self.hue_offset += dt * self.parameter('speed-hue').get()
+        self._center_rotation += dt * self.parameter('center-orbit-speed').get()
+        self.angle += dt * self.parameter('speed-rotation').get()
 
-            self.hue_offset += dt * self.parameter('speed-hue').get()
-            self._center_rotation += dt * self.parameter('center-orbit-speed').get()
-            self.angle += dt * self.parameter('speed-rotation').get()
-            orbitx = math.cos(self._center_rotation) * self.parameter('center-orbit-distance').get()
-            orbity = math.sin(self._center_rotation) * self.parameter('center-orbit-distance').get()
+        lum_boost = self.parameter('beat-lum-boost').get()
+        if self._app.mixer.is_onset():
+            self.lum_boost += lum_boost
 
-            locations = np.copy(self.pixel_locations.T)
-            cx, cy = self.scene().center_point()
-            locations[0] -= cx + orbitx
-            locations[1] -= cy + orbity
-            rotMatrix = np.array([(math.cos(self.angle), -math.sin(self.angle)), (math.sin(self.angle),  math.cos(self.angle))])
-            x,y = rotMatrix.T.dot(locations)
-            x /= self.parameter('scale').get()
-            y /= self.parameter('scale').get()
-            x += self.pixmap.width() / 2 + self.parameter('center-x').get()
-            y += self.pixmap.height() / 2 + self.parameter('center-y').get()
-            x = np.int_(x)
-            y = np.int_(y)
-
-            edge_mode = self.parameter('edge-mode').get()
-            if edge_mode == "clamp":
-                np.clip(x, 0, self.pixmap.width() - 1, x)
-                np.clip(y, 0, self.pixmap.height() - 1, y)
-            elif edge_mode == "tile":
-                np.mod(np.abs(x), self.pixmap.width(), x)
-                np.mod(np.abs(y), self.pixmap.height(), y)
-            elif edge_mode == "mirror":
-                np.mod(np.abs(x), self.pixmap.width() * 2 - 1, x)
-                np.mod(np.abs(y), self.pixmap.height() * 2 - 1, y)
-                np.abs(x - (self.pixmap.width() - 1), x)
-                np.abs(y - (self.pixmap.height() - 1), y)
+        lum_time = self.parameter('beat-lum-time').get()
+        if lum_time and self.lum_boost:
+            if self.lum_boost > 0:
+                self.lum_boost = max(0, self.lum_boost - lum_boost * dt / lum_time)
             else:
-                print "Unknown image preset edge mode (clamp, tile, or mirror)."
+                self.lum_boost = min(0, self.lum_boost - lum_boost * dt / lum_time)
 
-            locations = np.asarray([x,y]).T
+    def draw(self):
+        if not self.pixmap:
+            return
 
-            colors = self.image[locations.T[1], locations.T[0]]
+        orbitx = math.cos(self._center_rotation) * self.parameter('center-orbit-distance').get()
+        orbity = math.sin(self._center_rotation) * self.parameter('center-orbit-distance').get()
 
-            colors.T[0] += self.hue_offset
-            colors.T[1] += self.lum_boost
+        locations = np.copy(self.pixel_locations.T)
+        cx, cy = self.scene().center_point()
+        locations[0] -= cx + orbitx
+        locations[1] -= cy + orbity
+        rotMatrix = np.array([(math.cos(self.angle), -math.sin(self.angle)), (math.sin(self.angle),  math.cos(self.angle))])
+        x,y = rotMatrix.T.dot(locations)
+        x /= self.parameter('scale').get()
+        y /= self.parameter('scale').get()
+        x += self.pixmap.width() / 2 + self.parameter('center-x').get()
+        y += self.pixmap.height() / 2 + self.parameter('center-y').get()
+        x = np.int_(x)
+        y = np.int_(y)
 
-            ghost = self.parameter('ghost').get()
-            if abs(ghost) > 0:
-                if self.lastFrame != None:
-                    if self._buffer is None:
-                        self._buffer = np.empty_like(self.lastFrame)
-                    colors = hls_blend(colors, self.lastFrame, self._buffer, ghost, "add", 1.0, 0.1)
-                self.lastFrame = colors
+        edge_mode = self.parameter('edge-mode').get()
+        if edge_mode == "clamp":
+            np.clip(x, 0, self.pixmap.width() - 1, x)
+            np.clip(y, 0, self.pixmap.height() - 1, y)
+        elif edge_mode == "tile":
+            np.mod(np.abs(x), self.pixmap.width(), x)
+            np.mod(np.abs(y), self.pixmap.height(), y)
+        elif edge_mode == "mirror":
+            np.mod(np.abs(x), self.pixmap.width() * 2 - 1, x)
+            np.mod(np.abs(y), self.pixmap.height() * 2 - 1, y)
+            np.abs(x - (self.pixmap.width() - 1), x)
+            np.abs(y - (self.pixmap.height() - 1), y)
+        else:
+            print "Unknown image preset edge mode (clamp, tile, or mirror)."
 
-            lum_time = self.parameter('beat-lum-time').get()
-            if lum_time and self.lum_boost:
-                if self.lum_boost > 0:
-                    self.lum_boost = max(0, self.lum_boost - lum_boost * dt / lum_time)
-                else:
-                    self.lum_boost = min(0, self.lum_boost - lum_boost * dt / lum_time)
+        locations = np.asarray([x,y]).T
 
-            self._pixel_buffer = colors
+        colors = self.image[locations.T[1], locations.T[0]]
+
+        colors.T[0] += self.hue_offset
+        colors.T[1] += self.lum_boost
+
+        ghost = self.parameter('ghost').get()
+        if abs(ghost) > 0:
+            if self.lastFrame != None:
+                if self._buffer is None:
+                    self._buffer = np.empty_like(self.lastFrame)
+                colors = hls_blend(colors, self.lastFrame, self._buffer, ghost, "add", 1.0, 0.1)
+            self.lastFrame = colors
+
+        self._pixel_buffer = colors

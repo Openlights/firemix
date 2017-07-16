@@ -31,8 +31,11 @@ class TestPattern(Pattern):
     def reset(self):
         pass
 
-    def draw(self, dt):
+    def tick(self, dt):
+        super(TestPattern, self).tick(dt)
         self._hue = (self._hue + (dt * 0.1)) % 1.0
+
+    def draw(self):
         self.setAllHLS(self._hue, 0.2, 1.0)
         for strand in self._hierarchy:
             self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 0), scene=self.scene()), (0.33, 0.5, 1.0))

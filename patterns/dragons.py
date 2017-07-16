@@ -39,7 +39,10 @@ class _Dragon(object):
         ds = 'Fwd' if self.dir == 1 else 'Rev'
         return "Dragon %d %s: %0.2f" % (self.loc, ds, self.lifetime)
 
-    def draw(self, dt, to_add, to_remove, population):
+    def tick(self, dt):
+        self.growth += dt * self.pattern.parameter('growth-rate').get()
+
+    def draw(self, to_add, to_remove, population):
         pop_delta = 0
 
         # Fade in
@@ -59,7 +62,6 @@ class _Dragon(object):
         if not self.alive:
             return pop_delta
 
-        self.growth += dt * self.pattern.parameter('growth-rate').get()
         for times in range(int(self.growth)):
             s, f, p = BufferUtils.index_to_logical(self.loc)
             self.pattern.setPixelHLS(self.loc, (0, 0, 0))
@@ -176,10 +178,14 @@ class Dragons(Pattern):
     def parameter_changed(self, parameter):
         self._setup_colors()
 
-    def draw(self, dt):
-
+    def tick(self, dt):
+        super(Dragons, self).tick(dt)
         self._current_time += dt
 
+        for dragon in self._dragons:
+            dragon.tick(dt)
+
+    def draw(self):
         # Spontaneous birth: Rare after startup
         if (len(self._dragons) < self.parameter('pop-limit').get()) and random.random() < self.parameter('birth-rate').get():
             strand = random.randint(0, BufferUtils.num_strands - 1)
@@ -193,7 +199,7 @@ class Dragons(Pattern):
         to_remove = set()
         population = len(self._dragons)
         for dragon in self._dragons:
-            population += dragon.draw(dt, to_add, to_remove, population)
+            population += dragon.draw(to_add, to_remove, population)
 
         self._dragons = (self._dragons | to_add) - to_remove
 

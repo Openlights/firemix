@@ -179,8 +179,6 @@ class Pattern(JSONDict):
         for parameter in self._parameters.values():
             parameter.tick(dt)
 
-        self.draw(dt)
-
         self._ticks += 1
 
     def tick_rate(self):

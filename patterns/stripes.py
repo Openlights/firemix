@@ -62,15 +62,20 @@ class StripeGradient(Pattern):
     def reset(self):
         pass
 
-    def draw(self, dt):
-        if self._app.mixer.is_onset():
-            self.hue_inner = self.hue_inner + self.parameter('hue-step').get()
+    def tick(self, dt):
+        super(StripeGradient, self).tick(dt)
 
         dt *= 1.0 + self.parameter('audio-speed').get() * self._app.mixer.audio.getLowFrequency()
 
         self.hue_inner += dt * self.parameter('speed').get()
         self._center_rotation += dt * self.parameter('center-orbit-speed').get()
         self.stripe_angle += dt * self.parameter('angle-speed').get()
+
+
+    def draw(self):
+        if self._app.mixer.is_onset():
+            self.hue_inner = self.hue_inner + self.parameter('hue-step').get()
+
         stripe_width = self.parameter('stripe-width').get() + self.parameter('audio-stripe-width').get() * self._app.mixer.audio.smoothEnergy
         cx, cy = self.scene().center_point()
         cx += math.cos(self._center_rotation) * self.parameter('center-orbit-distance').get()
