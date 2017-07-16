@@ -203,13 +203,6 @@ class Pattern(JSONDict):
         """
         return self._pixel_buffer
 
-    def current_color(self, address):
-        """
-        Returns the current color of a pixel in RGB float
-        address is a tuple of (strand, fixture, pixel)
-        """
-        return self._pixel_buffer[address]
-
     def setPixelHLS(self, index, color):
         self._pixel_buffer[index] = color
 
