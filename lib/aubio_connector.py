@@ -17,16 +17,16 @@
 
 import logging
 import struct
-from PySide import QtCore, QtNetwork
+from PyQt5 import QtCore, QtNetwork
 
 log = logging.getLogger("firemix.lib.aubio_connector")
 
 
 class AubioConnector(QtCore.QObject):
 
-    onset_detected = QtCore.Signal()
-    fft_data = QtCore.Signal(list)
-    pitch_data = QtCore.Signal(float, float)
+    onset_detected = QtCore.pyqtSignal()
+    fft_data = QtCore.pyqtSignal(list)
+    pitch_data = QtCore.pyqtSignal(float, float)
 
     PACKET_FFT = 0x66
     PACKET_ONSET = 0x77
@@ -43,7 +43,7 @@ class AubioConnector(QtCore.QObject):
         self.socket.bind(3010, QtNetwork.QUdpSocket.ShareAddress | QtNetwork.QUdpSocket.ReuseAddressHint)
         log.info("Listening on UDP 3010")
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def read_datagrams(self):
         while self.socket.hasPendingDatagrams():
             datagram = QtCore.QByteArray()

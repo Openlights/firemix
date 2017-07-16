@@ -15,12 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from PySide import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets, QtWidgets
 
 from ui.ui_dlg_add_preset import Ui_DlgAddPreset
 
 
-class DlgAddPreset(QtGui.QDialog, Ui_DlgAddPreset):
+class DlgAddPreset(QtWidgets.QDialog, Ui_DlgAddPreset):
 
     def __init__(self, parent=None):
         super(DlgAddPreset, self).__init__(parent)
@@ -51,4 +51,4 @@ class DlgAddPreset(QtGui.QDialog, Ui_DlgAddPreset):
 
     def accept(self):
         if self.tabWidget.currentIndex() == 1 or self.validate_preset_name():
-            QtGui.QDialog.accept(self)
+            QtWidgets.QDialog.accept(self)

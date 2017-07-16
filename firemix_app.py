@@ -18,7 +18,7 @@
 
 import logging
 
-from PySide import QtCore
+from PyQt5 import QtCore
 
 from core.mixer import Mixer
 from core.networking import Networking
@@ -37,7 +37,7 @@ class FireMixApp(QtCore.QThread):
     """
     Main logic of FireMix.  Operates the mixer tick loop.
     """
-    playlist_changed = QtCore.Signal()
+    playlist_changed = QtCore.pyqtSignal()
 
     def __init__(self, parent, args):
         QtCore.QThread.__init__(self, parent)

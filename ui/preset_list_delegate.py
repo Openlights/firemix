@@ -15,20 +15,20 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from PySide import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 
-class PresetListDelegate(QtGui.QStyledItemDelegate):
+class PresetListDelegate(QtWidgets.QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         return QtCore.QSize(200, 20)
 
     def paint(self, painter, option, index):
         print option.state
-        font = QtGui.QFont("Sans", 11, QtGui.QFont.Normal)
-        if option.state == QtGui.QStyle.State_Selected:
+        font = QtWidgets.QFont("Sans", 11, QtWidgets.QFont.Normal)
+        if option.state == QtWidgets.QStyle.State_Selected:
             print "selected"
-            font.setStyle(QtGui.QFont.Bold)
+            font.setStyle(QtWidgets.QFont.Bold)
         r = option.rect
         align = QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft | QtCore.Qt.TextWordWrap
         painter.setFont(font)
