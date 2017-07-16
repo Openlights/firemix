@@ -35,35 +35,35 @@ class TestPattern(Pattern):
         super(TestPattern, self).tick(dt)
         self._hue = (self._hue + (dt * 0.1)) % 1.0
 
-    def draw(self):
-        self.setAllHLS(self._hue, 0.2, 1.0)
+    def render(self, out):
+        self.setAllHLS(out, self._hue, 0.2, 1.0)
         for strand in self._hierarchy:
-            self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 0), scene=self.scene()), (0.33, 0.5, 1.0))
+            self.setPixelHLS(out, BufferUtils.logical_to_index((strand, 0, 0), scene=self.scene()), (0.33, 0.5, 1.0))
 
             if (strand & 0x8):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.66, 0.9, 1.0))
+                self.setPixelHLS(out, BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.66, 0.9, 1.0))
             else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.0, 0.2, 0.0))
+                self.setPixelHLS(out, BufferUtils.logical_to_index((strand, 0, 1), scene=self.scene()), (0.0, 0.2, 0.0))
             if (strand & 0x4):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.66, 0.9, 1.0))
+                self.setPixelHLS(out, BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.66, 0.9, 1.0))
             else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.0, 0.2, 0.0))
+                self.setPixelHLS(out, BufferUtils.logical_to_index((strand, 0, 2), scene=self.scene()), (0.0, 0.2, 0.0))
             if (strand & 0x2):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.66, 0.9, 1.0))
+                self.setPixelHLS(out, BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.66, 0.9, 1.0))
             else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.0, 0.2, 0.0))
+                self.setPixelHLS(out, BufferUtils.logical_to_index((strand, 0, 3), scene=self.scene()), (0.0, 0.2, 0.0))
             if (strand & 0x1):
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.66, 0.9, 1.0))
+                self.setPixelHLS(out, BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.66, 0.9, 1.0))
             else:
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.0, 0.2, 0.0))
+                self.setPixelHLS(out, BufferUtils.logical_to_index((strand, 0, 4), scene=self.scene()), (0.0, 0.2, 0.0))
 
             for fixture in self._hierarchy[strand]:
                 last_fixture_pixel = self._hierarchy[strand][fixture].pixels - 1
-                self.setPixelHLS(BufferUtils.logical_to_index((strand, fixture, last_fixture_pixel), scene=self.scene()), (0.66, 0.5, 1.0))
+                self.setPixelHLS(out, BufferUtils.logical_to_index((strand, fixture, last_fixture_pixel), scene=self.scene()), (0.66, 0.5, 1.0))
                 if fixture > 0:
-                    self.setPixelHLS(BufferUtils.logical_to_index((strand, fixture, 0), scene=self.scene()), (0.15, 0.5, 1.0))
+                    self.setPixelHLS(out, BufferUtils.logical_to_index((strand, fixture, 0), scene=self.scene()), (0.15, 0.5, 1.0))
 
             last_fixture = len(self._hierarchy[strand].keys()) - 1
             last_pixel = self._hierarchy[strand][last_fixture].pixels - 1
 
-            self.setPixelHLS(BufferUtils.logical_to_index((strand, last_fixture, last_pixel), scene=self.scene()), (0.0, 0.5, 1.0))
+            self.setPixelHLS(out, BufferUtils.logical_to_index((strand, last_fixture, last_pixel), scene=self.scene()), (0.0, 0.5, 1.0))

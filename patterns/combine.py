@@ -42,6 +42,8 @@ class CombinePresets(Pattern):
 
     def reset(self):
         self.parameter_changed(None)
+        self._buffer1 = BufferUtils.create_buffer()
+        self._buffer2 = BufferUtils.create_buffer()
 
     def tick(self, dt):
         super(CombinePresets, self).tick(dt)
@@ -55,7 +57,7 @@ class CombinePresets(Pattern):
         self.preset1.tick(dt)
         self.preset2.tick(dt)
 
-    def draw(self):
+    def render(self, out):
         preset1 = self.preset1
         preset2 = self.preset2
 
@@ -64,16 +66,13 @@ class CombinePresets(Pattern):
             # Combine renders arbitrary transition frames
             self._transition.reset()
 
-            preset1.draw()
-            preset2.draw()
-
-            preset1_buffer = preset1.get_buffer()
-            preset2_buffer = preset2.get_buffer()
+            preset1.render(self._buffer1)
+            preset2.render(self._buffer2)
 
             transition_amount = self.parameter('transition-progress').get()
 
             if self.parameter('audio-transition').get() > 0:
                 transition_amount += self.parameter('audio-transition').get() * self._app.mixer.audio.getEnergy()
 
-            self._transition.render(preset1_buffer, preset2_buffer,
-                                    transition_amount, self._pixel_buffer)
+            self._transition.render(self._buffer1, self._buffer2,
+                                    transition_amount, out)

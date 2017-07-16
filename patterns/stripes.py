@@ -72,7 +72,7 @@ class StripeGradient(Pattern):
         self.stripe_angle += dt * self.parameter('angle-speed').get()
 
 
-    def draw(self):
+    def render(self, out):
         if self._app.mixer.is_onset():
             self.hue_inner = self.hue_inner + self.parameter('hue-step').get()
 
@@ -94,7 +94,7 @@ class StripeGradient(Pattern):
         x = np.abs(x - sx)
         y = np.abs(y - sy)
         hues = np.int_(np.mod(x+y, 1.0) * posterization)
-        colors = self._fader.color_cache[hues]
-        colors.T[1] += self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
-        colors.T[0] += self.hue_inner
-        self._pixel_buffer = colors
+
+        np.copyto(out, self._fader.color_cache[hues])
+        out['light'] += self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
+        out['hue'] += self.hue_inner

@@ -121,7 +121,7 @@ class Fungus(Pattern):
         # XXX: total hack
         self._last_dt = dt
 
-    def draw(self):
+    def render(self, out):
         # Ensure that empty displays start up with some seeds
         p_birth = (1.0 - self._spontaneous_birth_probability) if self._population > 5 else 0.5
 
@@ -148,7 +148,7 @@ class Fungus(Pattern):
                 self._growing.remove(address)
                 self._alive.append(address)
                 self._time[address] = self._current_time
-            self.setPixelHLS(address, color)
+            self.setPixelHLS(out, address, color)
 
             # Spread
             spread_rate = self._spread_rate + self._spread_boost
@@ -174,7 +174,7 @@ class Fungus(Pattern):
                 self._time[address] = self._current_time
                 self._population -= 1
 
-            self.setPixelHLS(address, self._alive_color)
+            self.setPixelHLS(out, address, self._alive_color)
 
             # Spread
             if (self._population < self._population_limit) and random.random() < self._birth_rate * self._last_dt:
@@ -191,14 +191,14 @@ class Fungus(Pattern):
                 self._dying.remove(address)
                 self._fading_out.append(address)
                 self._time[address] = self._current_time
-            self.setPixelHLS(address, color)
+            self.setPixelHLS(out, address, color)
 
         # Fade out
         for address in self._fading_out:
             p, color = self._get_next_color(address, self._fade_out_time, self._current_time + self.parameter('audio-onset-death-boost').get())
             if p >= 1.0:
                 self._fading_out.remove(address)
-            self.setPixelHLS(address, color)
+            self.setPixelHLS(out, address, color)
 
         # Mass destruction
         if (self._population == self._population_limit) or \

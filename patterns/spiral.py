@@ -78,7 +78,7 @@ class SpiralGradient(Pattern):
         self.wave_offset += dt * self.parameter('wave-speed').get() * self.onset_speed_boost
         self.color_offset += dt * self.parameter('speed').get() * self.onset_speed_boost
 
-    def draw(self):
+    def render(self, out):
         if self._app.mixer.is_onset():
             self.onset_speed_boost = self.parameter('onset-speed-boost').get()
 
@@ -109,7 +109,7 @@ class SpiralGradient(Pattern):
         angles = np.mod(1.0 - self.pixel_angles - np.sin(self.wave_offset + wave_amplitude * wave_hue_period) * (wave_hue_width + self.audio_twist), 1.0)
         hues = self.color_offset + (radius_hue_width * self.pixel_distances) + (2 * np.abs(angles - 0.5) * angle_hue_width)
         hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
-        colors = self._fader.color_cache[hues]
-        colors['hue'] = np.mod(colors['hue'] + self.hue_inner, 1.0)
-        colors['light'] += audio_energy * self.parameter('audio-brightness').get()
-        self._pixel_buffer = colors
+
+        np.copyto(out, self._fader.color_cache[hues])
+        out['hue'] = np.mod(out['hue'] + self.hue_inner, 1.0)
+        out['light'] += audio_energy * self.parameter('audio-brightness').get()

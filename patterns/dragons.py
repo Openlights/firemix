@@ -18,6 +18,8 @@
 import colorsys
 import random
 
+import numpy as np
+
 from lib.pattern import Pattern
 from lib.colors import uint8_to_float, float_to_uint8
 from lib.buffer_utils import BufferUtils
@@ -42,7 +44,7 @@ class _Dragon(object):
     def tick(self, dt):
         self.growth += dt * self.pattern.parameter('growth-rate').get()
 
-    def draw(self, to_add, to_remove, population):
+    def render(self, to_add, to_remove, population):
         pop_delta = 0
 
         # Fade in
@@ -56,7 +58,7 @@ class _Dragon(object):
                 self.alive = True
                 self.lifetime = self.pattern._current_time
 
-            self.pattern.setPixelHLS(self.loc, color)
+            self.pattern.setPixelHLS(self.pattern._buffer, self.loc, color)
 
         # Alive - can move or die
         if not self.alive:
@@ -64,7 +66,7 @@ class _Dragon(object):
 
         for times in range(int(self.growth)):
             s, f, p = BufferUtils.index_to_logical(self.loc)
-            self.pattern.setPixelHLS(self.loc, (0, 0, 0))
+            self.pattern.setPixelHLS(self.pattern._buffer, self.loc, (0, 0, 0))
 
             if random.random() < self.growth:
                 self.growth -= 1
@@ -85,7 +87,7 @@ class _Dragon(object):
                     self.pattern._tails.append((self.loc, self.pattern._current_time, self.pattern._tail_fader))
                     new_address = BufferUtils.logical_to_index((s, f, p + self.dir))
                     self.loc = new_address
-                    self.pattern.setPixelHLS(new_address, self.pattern._alive_color)
+                    self.pattern.setPixelHLS(self.pattern._buffer, new_address, self.pattern._alive_color)
 
             # Kill dragons that run into each other
             if self not in to_remove:
@@ -152,9 +154,11 @@ class Dragons(Pattern):
     def setup(self):
         self._dragons = set()
         self._tails = []
-        self.init_pixels()
         random.seed()
         self._current_time = 0
+        # Dragons uses a private buffer because it works by modifying individual
+        # pixels rather than redrawing the entire output buffer each frame
+        self._buffer = None
         self.add_parameter(FloatParameter('growth-time', 2.0))
         self.add_parameter(FloatParameter('birth-rate', 0.4))
         self.add_parameter(FloatParameter('tail-persist', 0.5))
@@ -178,6 +182,9 @@ class Dragons(Pattern):
     def parameter_changed(self, parameter):
         self._setup_colors()
 
+    def reset(self):
+        self._buffer = BufferUtils.create_buffer()        
+
     def tick(self, dt):
         super(Dragons, self).tick(dt)
         self._current_time += dt
@@ -185,7 +192,7 @@ class Dragons(Pattern):
         for dragon in self._dragons:
             dragon.tick(dt)
 
-    def draw(self):
+    def render(self, out):
         # Spontaneous birth: Rare after startup
         if (len(self._dragons) < self.parameter('pop-limit').get()) and random.random() < self.parameter('birth-rate').get():
             strand = random.randint(0, BufferUtils.num_strands - 1)
@@ -199,7 +206,7 @@ class Dragons(Pattern):
         to_remove = set()
         population = len(self._dragons)
         for dragon in self._dragons:
-            population += dragon.draw(to_add, to_remove, population)
+            population += dragon.render(to_add, to_remove, population)
 
         self._dragons = (self._dragons | to_add) - to_remove
 
@@ -209,9 +216,11 @@ class Dragons(Pattern):
             if (self._current_time - time) > self.parameter('tail-persist').get():
                 if (loc, time, fader) in self._tails:
                     tails_to_remove.append((loc, time, fader))
-                self.setPixelHLS(loc, (0, 0, 0))
+                self.setPixelHLS(self._buffer, loc, (0, 0, 0))
             else:
                 progress = (self._current_time - time) / self.parameter('tail-persist').get()
-                self.setPixelHLS(loc, fader.get_color(progress * self._fader_steps))
+                self.setPixelHLS(self._buffer, loc, fader.get_color(progress * self._fader_steps))
         for tail in tails_to_remove:
             self._tails.remove(tail)
+
+        np.copyto(out, self._buffer)

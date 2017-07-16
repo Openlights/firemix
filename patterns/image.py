@@ -91,7 +91,7 @@ class ImagePattern(Pattern):
             else:
                 self.lum_boost = min(0, self.lum_boost - lum_boost * dt / lum_time)
 
-    def draw(self):
+    def render(self, out):
         if not self.pixmap:
             return
 
@@ -141,4 +141,4 @@ class ImagePattern(Pattern):
                 colors = hls_blend(colors, self.lastFrame, self._buffer, ghost, "add", 1.0, 0.1)
             self.lastFrame = colors
 
-        self._pixel_buffer = colors
+        np.copyto(out, colors)

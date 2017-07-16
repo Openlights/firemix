@@ -87,8 +87,7 @@ class SimplexNoise(Pattern):
         self._offset_z += dt * self.parameter('color-speed').get()
         self._offset_z += dt * self._app.mixer.audio.getSmoothEnergy() * self.parameter('beat-color-boost').get()
 
-    @profile
-    def draw(self):
+    def render(self, out):
         if self._app.mixer.is_onset():
             self._offset_z += self.parameter('beat-color-boost').get()
 
@@ -106,4 +105,4 @@ class SimplexNoise(Pattern):
         lightnesses = LS['light'] + self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
         hue_offset = self.parameter('hue-offset').get() + self._app.mixer.audio.getSmoothEnergy() * self.parameter('audio-hue-offset').get()
 
-        self.setAllHLS(LS['hue'] + hue_offset, lightnesses, LS['sat'])
+        self.setAllHLS(out, LS['hue'] + hue_offset, lightnesses, LS['sat'])

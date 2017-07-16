@@ -92,7 +92,7 @@ class RadialGradient(Pattern):
         self.rwave_offset += self.parameter('rwave-speed').get() * dt
         self.lightness_offset += self.parameter('lightness-speed').get() * dt
 
-    def draw(self):
+    def render(self, out):
         if self._app.mixer.is_onset():
             self.hue_inner = math.fmod(self.hue_inner + self.parameter('hue-step').get(), 1.0)
             self.lightness_offset += self.parameter('hue-step').get()
@@ -136,4 +136,4 @@ class RadialGradient(Pattern):
             #hues += self._app.mixer.audio.fader.color_cache['hue'][np.int_(hues * 255 * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
             hues += self._app.mixer.audio.fader.color_cache['hue'][np.int_(lightness_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
 
-        self.setAllHLS(hues, lightnesses, LS['sat'])
+        self.setAllHLS(out, hues, lightnesses, LS['sat'])
