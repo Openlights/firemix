@@ -76,7 +76,7 @@ class Networking:
         # Now that we've written to clients that don't want dimmed data, apply
         # the global dimmer from the mixer and re-convert to RGB
         if self._app.mixer.global_dimmer < 1.0:
-            buffer['lum'] *= self._app.mixer.global_dimmer
+            buffer['light'] *= self._app.mixer.global_dimmer
         buffer_rgb = hls_to_rgb(buffer)
         buffer_rgb_int = np.int8(struct_flat(buffer_rgb) * 255)
 
