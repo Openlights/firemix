@@ -21,7 +21,7 @@ import numpy as np
 import math
 
 from PyQt5.QtCore import pyqtSlot, QTimer, Qt
-from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtGui import QColor, QIcon, QImage, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QAbstractItemView, QListWidgetItem, \
                             QTableWidgetItem
 
