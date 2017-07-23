@@ -1,3 +1,4 @@
+from __future__ import division
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -15,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from past.utils import old_div
 import numpy as np
 import math
 import ast
@@ -82,7 +84,7 @@ class TestFFT(Pattern):
         cx, cy = self.scene().center_point()
         x,y = (self.locations - (cx, cy)).T
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-        self.pixel_angles = np.mod((np.arctan2(y, x) + (self.color_angle * math.pi)) / (math.pi * 2) + 1, 1)
+        self.pixel_angles = np.mod(old_div((np.arctan2(y, x) + (self.color_angle * math.pi)), (math.pi * 2)) + 1, 1)
         self.pixel_distances /= np.max(self.pixel_distances)
         self.pixel_amplitudes = self.pixel_distances
 
@@ -101,7 +103,7 @@ class TestFFT(Pattern):
         if len(smooth_fft):
             if self.parameter('fft smoothing').get():
                 np.maximum(smooth_fft - noise_threshold, 0, smooth_fft)
-                np.multiply(smooth_fft, 1.0 / (1.0 - noise_threshold), smooth_fft)
+                np.multiply(smooth_fft, old_div(1.0, (1.0 - noise_threshold)), smooth_fft)
                 convolution = signal.gaussian(int(self.parameter('fft smoothing').get()), std=1.0)
 
                 smooth_fft = np.convolve(smooth_fft, convolution, 'same')

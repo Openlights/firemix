@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import range
+from builtins import object
 import numpy as np
 
 import lib.dtypes as dtypes
@@ -27,7 +29,7 @@ def struct_flat(arr):
     return arr.view(dtype=arr.dtype[0])
 
 
-class BufferUtils:
+class BufferUtils(object):
     """
     Utilities for working with frame buffers
     """
@@ -66,7 +68,7 @@ class BufferUtils:
         for strand in fh:
             cls._strand_num_fixtures[strand] = len(fh[strand])
             for fixture in fh[strand]:
-                for offset in xrange(cls._app.scene.fixture(strand, fixture).pixels):
+                for offset in range(cls._app.scene.fixture(strand, fixture).pixels):
                     cls.logical_to_index((strand, fixture, offset))
 
     @classmethod
@@ -87,11 +89,11 @@ class BufferUtils:
             index = 0
 
             # (1) Skip to the start of the strand
-            for i in xrange(strand):
+            for i in range(strand):
                 index += cls._strand_lengths[i]
 
             # (2) Skip to the fixture in question
-            for i in xrange(fixture):
+            for i in range(fixture):
                 index += scene.fixture(strand, i).pixels
 
             fixture_start = index

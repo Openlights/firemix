@@ -15,11 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import str
+from builtins import object
 import ast
 import numpy
 from lib.wibbler import Wibbler
 
-class Parameter:
+class Parameter(object):
     """
     Base class for a preset parameter
     """

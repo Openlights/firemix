@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import object
 import os
 import logging
 import inspect
@@ -23,7 +24,7 @@ log = logging.getLogger("firemix.lib.plugin_loader")
 
 
 #TODO: This and PatternLoader share a lot of code...
-class PluginLoader:
+class PluginLoader(object):
     """
     Scans the ./plugins/ directory and imports objects into lists based on base class
 

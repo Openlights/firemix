@@ -1,3 +1,4 @@
+from __future__ import division
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -15,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from past.utils import old_div
 import numpy as np
 import colorsys
 import random
@@ -96,7 +98,7 @@ class SpiralGradient(Pattern):
         x,y = (self.locations - (cx + math.cos(self.center_offset_angle) * center_distance,
                                   cy + math.sin(self.center_offset_angle) * center_distance)).T
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-        self.pixel_angles = np.arctan2(y, x) / (2.0 * math.pi)
+        self.pixel_angles = old_div(np.arctan2(y, x), (2.0 * math.pi))
         self.pixel_distances /= np.max(self.pixel_distances)
         wave_amplitude = self.pixel_distances
         wave_falloff = self.parameter('wave-falloff').get()

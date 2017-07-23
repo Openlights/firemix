@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import range
 import logging
 import struct
 from PyQt5 import QtCore, QtNetwork

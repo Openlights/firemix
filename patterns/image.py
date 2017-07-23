@@ -1,4 +1,3 @@
-from __future__ import print_function
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -16,15 +15,19 @@ from __future__ import print_function
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+from __future__ import division
+
+from past.utils import old_div
 import random
 import math
 import numpy as np
-from lib.colors import hls_blend
+
 from PyQt5.QtGui import QPixmap
 
 from lib.pattern import Pattern
 from lib.parameters import FloatParameter, StringParameter
-from lib.colors import rgb_to_hls
+from lib.colors import rgb_to_hls, hls_blend
 
 class ImagePattern(Pattern):
     def setup(self):
@@ -107,8 +110,8 @@ class ImagePattern(Pattern):
             x,y = rotMatrix.T.dot(locations)
             x /= self.parameter('scale').get()
             y /= self.parameter('scale').get()
-            x += self.pixmap.width() / 2 + self.parameter('center-x').get()
-            y += self.pixmap.height() / 2 + self.parameter('center-y').get()
+            x += old_div(self.pixmap.width(), 2) + self.parameter('center-x').get()
+            y += old_div(self.pixmap.height(), 2) + self.parameter('center-y').get()
             x = np.int_(x)
             y = np.int_(y)
 

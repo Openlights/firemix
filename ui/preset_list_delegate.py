@@ -1,4 +1,3 @@
-from __future__ import print_function
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -15,6 +14,9 @@ from __future__ import print_function
 #
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
+
+
+from __future__ import print_function
 
 from PyQt5 import QtCore, QtWidgets
 

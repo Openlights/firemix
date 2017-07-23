@@ -1,4 +1,3 @@
-from __future__ import print_function
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -16,6 +15,10 @@ from __future__ import print_function
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+from __future__ import division
+
+from past.utils import old_div
 try:
     from vec_noise import snoise3
     print("Using enhanced vector noise from Zev")

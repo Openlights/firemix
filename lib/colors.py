@@ -1,3 +1,4 @@
+from __future__ import division
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -15,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from past.utils import old_div
 import colorsys
 import dtypes
 
@@ -26,13 +28,13 @@ def float_to_uint8(float_color):
     """
     Converts a float color (0 to 1.0) to uint8 (0 to 255)
     """
-    return tuple(map(lambda x: int(255.0 * x), float_color))
+    return tuple([int(255.0 * x) for x in float_color])
 
 def uint8_to_float(uint8_color):
     """
     Converts a uint8 color (0 to 255) to float (0 to 1.0)
     """
-    return tuple(map(lambda x: float(x) / 255.0, uint8_color))
+    return tuple([old_div(float(x), 255.0) for x in uint8_color])
 
 def rgb_uint8_to_hsv_float(rgb_color):
     return colorsys.rgb_to_hsv(*uint8_to_float(rgb_color))
@@ -56,11 +58,11 @@ def blend_to_buffer(source, destination, progress, mode):
 def hls_blend(start, end, out, progress, mode, fade_length=1.0, ease_power=0.5):
     p = abs(progress)
 
-    startPower = (1.0 - p) / fade_length
+    startPower = old_div((1.0 - p), fade_length)
     startPower = clip(0.0, startPower, 1.0)
     startPower = pow(startPower, ease_power)
 
-    endPower = p / fade_length
+    endPower = old_div(p, fade_length)
     endPower = clip(0.0, endPower, 1.0)
     endPower = pow(endPower, ease_power)
 
@@ -84,16 +86,16 @@ def hls_blend(start, end, out, progress, mode, fade_length=1.0, ease_power=0.5):
 
     if progress >= 0:
         l = np.maximum(start['light'] * startPower, end['light'] * endPower)
-        opposition = np.sqrt(np.square((x1-x2)/2) + np.square((y1-y2)/2))
+        opposition = np.sqrt(np.square(old_div((x1-x2),2)) + np.square(old_div((y1-y2),2)))
         if mode == 'multiply':
             l = np.minimum(start['light'] * startPower, end['light'] * endPower)
             #l -= opposition
         elif mode == 'add':
             l = np.maximum(l, opposition, l)
     else: # hacky support for old blend
-        l = np.sqrt(np.square(x) + np.square(y)) / 2
+        l = old_div(np.sqrt(np.square(x) + np.square(y)), 2)
 
-    h = np.arctan2(y, x) / (2*np.pi)
+    h = old_div(np.arctan2(y, x), (2*np.pi))
 
     nocolor = (x * y == 0)
     np.where(nocolor, h, 0)
@@ -119,7 +121,7 @@ def rgb_to_hls(arr):
     # adapted from Arnar Flatberg
     # http://www.mail-archive.com/numpy-discussion@scipy.org/msg06147.html
 
-    arr = arr.astype("float32") / 255.0
+    arr = old_div(arr.astype("float32"), 255.0)
     out = np.empty(arr.shape[0], dtype=dtypes.hls_color)
 
     arr_max = arr.max(-1)
@@ -127,12 +129,12 @@ def rgb_to_hls(arr):
     arr_min = arr.min(-1)
     total = arr_max + arr_min
 
-    l = total / 2.0
+    l = old_div(total, 2.0)
 
     if total.all() > 0:
-        s = delta / total
+        s = old_div(delta, total)
         idx = (l > 0.5)
-        s[idx] = delta[idx] / (2.0 - total[idx])
+        s[idx] = old_div(delta[idx], (2.0 - total[idx]))
 
         # red is max
         idx = (arr[:,:,0] == arr_max)

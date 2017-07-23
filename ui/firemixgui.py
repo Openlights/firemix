@@ -1,3 +1,4 @@
+from __future__ import division
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -15,6 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import next
+from builtins import str
+from builtins import range
+from past.utils import old_div
 import time
 import os
 import numpy as np
@@ -158,7 +163,7 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
         if not self.mixer.is_paused():
             return
 
-        v = (self.slider_transition.value() / 100.0)
+        v = (old_div(self.slider_transition.value(), 100.0))
 
         if self.transition_right_to_left:
             self.mixer.scrub_transition(1.0 - v)
@@ -196,7 +201,7 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
         # Update wibblers
         # TODO (jon) this is kinda inefficient
         if self.app.playlist.get_active_preset() is not None:
-            for name, parameter in self.app.playlist.get_active_preset().get_parameters().iteritems():
+            for name, parameter in self.app.playlist.get_active_preset().get_parameters().items():
                 pval = parameter.get()
                 for i in range(self.tbl_preset_parameters.rowCount()):
                     if self.tbl_preset_parameters.item(i, 0).text() == name:
@@ -208,7 +213,7 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
                             self.tbl_preset_parameters.item(i, 2).setText("")
                             self.tbl_preset_parameters.item(i, 2).setBackground(QColor(0, 0, 0, 0))
 
-            for name, watch in self.app.playlist.get_active_preset().get_watches().iteritems():
+            for name, watch in self.app.playlist.get_active_preset().get_watches().items():
                 val = watch.get()
                 for i in range(self.tbl_preset_parameters.rowCount()):
                     if self.tbl_preset_parameters.item(i, 0).text() == ("watch(%s)" % name):
@@ -242,10 +247,10 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
 
         if max_val > 0:
             for x in range(0, width * 4, 4):
-                f = np.interp(x / 4, np.arange(len(fft_data)), fft_data)# / max_val
+                f = np.interp(old_div(x, 4), np.arange(len(fft_data)), fft_data)# / max_val
                 #f = math.sqrt(math.sqrt(f))
                 self.fft_pixmap[height - 1][x:x + 4] = \
-                    (hsv_float_to_rgb_uint8((x / (4.0 * width), 1.0, f)) + (255,))
+                    (hsv_float_to_rgb_uint8((old_div(x, (4.0 * width)), 1.0, f)) + (255,))
 
 
         pm = self.fft_pixmap.flatten()
@@ -361,12 +366,12 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
             self.lbl_preset_parameters.setTitle("")
 
     def on_slider_dimmer(self):
-        dval = self.slider_global_dimmer.value() / 100.0
+        dval = old_div(self.slider_global_dimmer.value(), 100.0)
         self.app.mixer.global_dimmer = dval
         self.lbl_dimmer.setText("Dimmer [%0.2f]" % dval)
 
     def on_slider_speed(self):
-        sval = round(self.slider_speed.value() / 1000.0, 2)
+        sval = round(old_div(self.slider_speed.value(), 1000.0), 2)
         self.app.mixer.global_speed = sval
         self.lbl_speed.setText("Speed [%0.2fx]" % sval)
 

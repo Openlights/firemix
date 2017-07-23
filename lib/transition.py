@@ -16,6 +16,7 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from builtins import object
 class Transition(object):
     """
     Defines the interface for a transition.

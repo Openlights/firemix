@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import object
 from collections import defaultdict
 import os
 import logging
@@ -49,7 +50,7 @@ class PatternFileEventHandler(PatternMatchingEventHandler):
             self.callback(modified_filename)
 
 
-class PatternLoader:
+class PatternLoader(object):
     """
     Scans the ./patterns/ directory and imports all the patterns objects.
 

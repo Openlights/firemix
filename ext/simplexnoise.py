@@ -37,10 +37,14 @@ noise value  at each frame. By adding a second parameter on the second
 dimension, you can ensure that each gets a unique noise value and they don't
 all look identical.
 """
+from __future__ import division
 
+from builtins import range
+from builtins import object
+from past.utils import old_div
 import math
 
-class SimplexNoiseTools:
+class SimplexNoiseTools(object):
     def octave_noise_2d(self, octaves, persistence, scale, x, y):
         """2D Multi-Octave Simplex noise.
 
@@ -62,7 +66,7 @@ class SimplexNoiseTools:
             maxAmplitude += amplitude;
             amplitude *= persistence
 
-        return total / maxAmplitude
+        return old_div(total, maxAmplitude)
 
     def octave_noise_3d(self, octaves, persistence, scale, x, y, z):
         """3D Multi-Octave Simplex noise.
@@ -87,7 +91,7 @@ class SimplexNoiseTools:
             maxAmplitude += amplitude;
             amplitude *= persistence
 
-        return total / maxAmplitude
+        return old_div(total, maxAmplitude)
 
     def octave_noise_4d(self, octaves, persistence, scale, x, y, z, w):
         """4D Multi-Octave Simplex noise.
@@ -113,7 +117,7 @@ class SimplexNoiseTools:
             maxAmplitude += amplitude;
             amplitude *= persistence
 
-        return total / maxAmplitude
+        return old_div(total, maxAmplitude)
 
     def scaled_octave_noise_2d(self, octaves, persistence, scale, loBound, hiBound, x, y):
         """2D Scaled Multi-Octave Simplex noise.
@@ -122,7 +126,7 @@ class SimplexNoiseTools:
         """
         return  (self.octave_noise_2d(octaves, persistence, scale, x, y) *
                 (hiBound - loBound) / 2 +
-                (hiBound + loBound) / 2)
+                old_div((hiBound + loBound), 2))
 
     def scaled_octave_noise_3d(self, octaves, persistence, scale, loBound, hiBound, x, y, z):
         """3D Scaled Multi-Octave Simplex noise.
@@ -131,7 +135,7 @@ class SimplexNoiseTools:
         """
         return  (self.octave_noise_3d(octaves, persistence, scale, x, y, z) *
                 (hiBound - loBound) / 2 +
-                (hiBound + loBound) / 2)
+                old_div((hiBound + loBound), 2))
 
     def scaled_octave_noise_4d(self, octaves, persistence, scale, loBound, hiBound, x, y, z, w):
         """4D Scaled Multi-Octave Simplex noise.
@@ -140,7 +144,7 @@ class SimplexNoiseTools:
         """
         return  (self.octave_noise_4d(octaves, persistence, scale, x, y, z, w) *
                 (hiBound - loBound) / 2 +
-                (hiBound + loBound) / 2)
+                old_div((hiBound + loBound), 2))
 
     def scaled_raw_noise_2d(self, loBound, hiBound, x, y):
         """2D Scaled Raw Simplex noise.
@@ -149,7 +153,7 @@ class SimplexNoiseTools:
         """
         return  (self.raw_noise_2d(x, y) *
                 (hiBound - loBound) / 2+
-                (hiBound + loBound) / 2)
+                old_div((hiBound + loBound), 2))
 
     def scaled_raw_noise_3d(self, loBound, hiBound, x, y, z):
         """3D Scaled Raw Simplex noise.
@@ -158,7 +162,7 @@ class SimplexNoiseTools:
         """
         return  (self.raw_noise_3d(x, y, z) *
                 (hiBound - loBound) / 2+
-                (hiBound + loBound) / 2)
+                old_div((hiBound + loBound), 2))
 
     def scaled_raw_noise_4d(self, loBound, hiBound, x, y, z, w):
         """4D Scaled Raw Simplex noise.
@@ -167,7 +171,7 @@ class SimplexNoiseTools:
         """
         return  (self.raw_noise_4d(x, y, z, w) *
                 (hiBound - loBound) / 2+
-                (hiBound + loBound) / 2)
+                old_div((hiBound + loBound), 2))
 
     def raw_noise_2d(self, x, y):
         """2D Raw Simplex noise."""
@@ -181,7 +185,7 @@ class SimplexNoiseTools:
         i = int(x + s)
         j = int(y + s)
 
-        G2 = (3.0 - math.sqrt(3.0)) / 6.0
+        G2 = old_div((3.0 - math.sqrt(3.0)), 6.0)
         t = float(i + j) * G2
         # Unskew the cell origin back to (x,y) space
         X0 = i - t
@@ -251,14 +255,14 @@ class SimplexNoiseTools:
         n0, n1, n2, n3 = 0.0, 0.0, 0.0, 0.0
 
         # Skew the input space to determine which simplex cell we're in
-        F3 = 1.0/3.0
+        F3 = old_div(1.0,3.0)
         # Very nice and simple skew factor for 3D
         s = (x+y+z) * F3
         i = int(x + s)
         j = int(y + s)
         k = int(z + s)
 
-        G3 = 1.0 / 6.0
+        G3 = old_div(1.0, 6.0)
         t = float(i+j+k) * G3
         # Unskew the cell origin back to (x,y,z) space
         X0 = i - t
@@ -381,7 +385,7 @@ class SimplexNoiseTools:
         n0, n1, n2, n3, n4 = 0.0, 0.0, 0.0, 0.0, 0.0
 
         # The skewing and unskewing factors are hairy again for the 4D case
-        F4 = (math.sqrt(5.0)-1.0) / 4.0
+        F4 = old_div((math.sqrt(5.0)-1.0), 4.0)
         # Skew the (x,y,z,w) space to determine which cell of 24 simplices we're in
         s = (x + y + z + w) * F4
         i = int(x + s)
@@ -389,7 +393,7 @@ class SimplexNoiseTools:
         k = int(z + s)
         l = int(w + s)
 
-        G4 = (5.0-math.sqrt(5.0)) / 20.0
+        G4 = old_div((5.0-math.sqrt(5.0)), 20.0)
         t = (i + j + k + l) * G4
         # Unskew the cell origin back to (x,y,z,w) space
         X0 = i - t

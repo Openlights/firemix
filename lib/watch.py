@@ -16,7 +16,9 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class Watch:
+from builtins import str
+from builtins import object
+class Watch(object):
     """
     Base class for a preset watch (basically a value you can display in the GUI)
     Name must be the name of a member of the preset (parent)

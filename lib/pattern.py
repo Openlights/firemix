@@ -1,4 +1,3 @@
-from __future__ import print_function
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -16,6 +15,9 @@ from __future__ import print_function
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+
+from builtins import str
 import numpy as np
 import os
 import logging
@@ -69,7 +71,7 @@ class Pattern(JSONDict):
         self.data["classname"] = self.__class__.__name__
         self.data["file-version"] = 1
         self.data["params"] = {}
-        for n, p in self._parameters.iteritems():
+        for n, p in self._parameters.items():
             self.data["params"][n] = p.get_as_str()
         JSONDict.save(self)
 
@@ -148,7 +150,7 @@ class Pattern(JSONDict):
             return False
 
     def load_params_from_json(self, json_data):
-        for k, v in json_data.iteritems():
+        for k, v in json_data.items():
             try:
                 self.parameter(k).set_from_str(str(v))
             except AttributeError:
@@ -170,7 +172,7 @@ class Pattern(JSONDict):
         if self.disabled:
             return
 
-        for parameter in self._parameters.values():
+        for parameter in list(self._parameters.values()):
             parameter.tick(dt)
 
         self._ticks += 1

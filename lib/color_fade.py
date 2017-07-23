@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import zip
+from builtins import range
+from builtins import object
 import unittest
 import colorsys
 import numpy as np
@@ -23,7 +26,7 @@ import lib.dtypes as dtypes
 
 from lib.colors import clip
 
-class ColorFade:
+class ColorFade(object):
     """Represents the fade of one color to another"""
 
     def __init__(self, keyframes, steps):
@@ -36,7 +39,7 @@ class ColorFade:
         self.color_cache = np.zeros(steps + 1, dtype=dtypes.pixel_color)
 
         # Warmup the cache
-        for i in xrange(steps + 1):
+        for i in range(steps + 1):
             overall_progress = float(i) * (len(self.keyframes) - 1) / self._steps
             stage = int(overall_progress)
             stage_progress = overall_progress - stage # 0 to 1 float

@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import str
+from builtins import range
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from ui.ui_dlg_settings import Ui_DlgSettings
