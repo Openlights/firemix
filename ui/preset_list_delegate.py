@@ -1,3 +1,4 @@
+from __future__ import print_function
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -24,10 +25,10 @@ class PresetListDelegate(QtWidgets.QStyledItemDelegate):
         return QtCore.QSize(200, 20)
 
     def paint(self, painter, option, index):
-        print option.state
+        print(option.state)
         font = QtWidgets.QFont("Sans", 11, QtWidgets.QFont.Normal)
         if option.state == QtWidgets.QStyle.State_Selected:
-            print "selected"
+            print("selected")
             font.setStyle(QtWidgets.QFont.Bold)
         r = option.rect
         align = QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft | QtCore.Qt.TextWordWrap

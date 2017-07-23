@@ -1,3 +1,4 @@
+from __future__ import print_function
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -158,7 +159,7 @@ class Audio(QtCore.QObject):
 
     def update_fft_data(self, latest_fft):
         if len(latest_fft) == 0:
-            print "received no fft"
+            print("received no fft")
             return
 
         latest_fft = np.asarray(latest_fft)

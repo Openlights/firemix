@@ -1,3 +1,4 @@
+from __future__ import print_function
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -103,7 +104,7 @@ class Mixer(QtCore.QObject):
         self.aubio_connector.moveToThread(self._audio_thread)
 
         if self._app.args.yappi and USE_YAPPI:
-            print "yappi start"
+            print("yappi start")
             yappi.start()
 
         log.info("Warming up BufferUtils cache...")

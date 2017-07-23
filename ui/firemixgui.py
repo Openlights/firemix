@@ -275,7 +275,7 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
 
     def on_btn_next_preset(self):
         self.mixer.cancel_scrub()
-        self.mixer.next()
+        next(self.mixer)
         self.update_playlist()
 
     def on_btn_reset_preset(self):

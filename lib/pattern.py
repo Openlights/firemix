@@ -1,3 +1,4 @@
+from __future__ import print_function
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -51,7 +52,7 @@ class Pattern(JSONDict):
         try:
             self.load(False)
         except ValueError:
-            print "Error loading %s" % self.filename
+            print("Error loading %s" % self.filename)
             return False
 
         self._instance_name = self.data.get('name', "")

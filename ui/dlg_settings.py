@@ -172,8 +172,8 @@ class DlgSettings(QtWidgets.QDialog, Ui_DlgSettings):
     def add_networking_client_row(self):
         row = self.tbl_networking_clients.rowCount()
         self.tbl_networking_clients.insertRow(row)
-        self.tbl_networking_clients.setItem(row, 0, QTableWidgetItem(""))
-        self.tbl_networking_clients.setItem(row, 1, QTableWidgetItem("3020"))
+        self.tbl_networking_clients.setItem(row, 0, QtWidgets.QTableWidgetItem(""))
+        self.tbl_networking_clients.setItem(row, 1, QtWidgets.QTableWidgetItem("3020"))
         self.tbl_networking_clients.setCellWidget(row, 2, QtWidgets.QCheckBox())
         item_color_mode = QtWidgets.QComboBox()
         for mode in color_modes.modes:
@@ -194,7 +194,7 @@ class DlgSettings(QtWidgets.QDialog, Ui_DlgSettings):
         self.tbl_strands_list.verticalHeader().setVisible(False)
         for i, strand in enumerate(strands):
             idx = QtWidgets.QTableWidgetItem(str(strand["id"]))
-            idx.setFlags(~QtCore.Qt.ItemIsEnabled)
+            idx.setFlags(QtCore.Qt.ItemFlags(idx.flags() & ~QtCore.Qt.ItemIsEnabled))
 
             enabled = QtWidgets.QCheckBox()
             if strand["enabled"]:

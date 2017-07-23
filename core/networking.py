@@ -1,3 +1,4 @@
+from __future__ import print_function
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
@@ -125,7 +126,7 @@ class Networking:
                     self.socket.sendto(packet, (client["host"], client["port"]))
                 self.socket.sendto(array.array('B', [ord('E')]), (client["host"], client["port"]))
             except socket.gaierror:
-                print "Bad hostname: ", client["host"]
+                print("Bad hostname: ", client["host"])
                 continue
             except:
                 continue
