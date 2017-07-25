@@ -28,7 +28,7 @@ log = logging.getLogger("firemix.rpc_server")
 
 
 class SettingsResource(object):
-    SUPPORTED_SETTINGS = ['dimmer', 'speed', 'intensity_mode', 'current_preset']
+    SUPPORTED_SETTINGS = ['dimmer', 'speed', 'current_preset']
 
     def __init__(self, firemix):
         self.firemix = firemix
@@ -38,7 +38,6 @@ class SettingsResource(object):
         settings = {
             "dimmer": self.firemix.mixer.global_dimmer,
             "speed": self.firemix.mixer.global_speed,
-            "intensity_mode": self.firemix.intensity_mode,
             "current_preset": self.firemix.playlist.active_preset.name(),
             "all_presets": [p.name() for p in self.firemix.playlist.get()]
         }
@@ -55,12 +54,7 @@ class SettingsResource(object):
                 )
 
         for key, val in req.params.items():
-            if key == 'intensity_mode':
-                try:
-                    self.firemix.set_intensity_mode(val.lower().strip())
-                except ValueError as e:
-                    raise falcon.HTTPBadRequest(*e.args)
-            elif key == 'dimmer':
+            if key == 'dimmer':
                 self.firemix.mixer.global_dimmer = val
             elif key == 'speed':
                 self.firemix.mixer.global_speed = val
