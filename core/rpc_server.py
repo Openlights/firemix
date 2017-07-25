@@ -91,8 +91,15 @@ class StaticRootSink(object):
         except IOError:
             raise falcon.HTTPNotFound()
 
-        # Let the browser figure out the content type
-        resp.set_header('content-type', '')
+        file_types = {
+            '.js': 'text/javascript',
+            '.css': 'text/css',
+            '.html': 'text/html',
+        }
+
+        _, ext = os.path.splitext(path)
+        content_type = file_types.get(ext, '')
+        resp.set_header('content-type', content_type)
 
 # TODO: Use something other than simple_server that works better with threading
 
