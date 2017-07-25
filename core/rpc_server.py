@@ -53,11 +53,12 @@ class SettingsResource(object):
                     "Supported settings: %s" % (self.SUPPORTED_SETTINGS,)
                 )
 
+        # TODO: update the non-web UI
         for key, val in req.params.items():
             if key == 'dimmer':
-                self.firemix.mixer.global_dimmer = val
+                self.firemix.mixer.global_dimmer = float(val)
             elif key == 'speed':
-                self.firemix.mixer.global_speed = val
+                self.firemix.mixer.global_speed = float(val)
             elif key == 'current_preset':
                 valid_presets = [p.name() for p in self.firemix.playlist.get()]
                 if val not in valid_presets:
@@ -103,6 +104,7 @@ class RPCServer(QtCore.QObject):
     def __init__(self, firemix, host='0.0.0.0', port=8000):
         QtCore.QObject.__init__(self)
         self.app = falcon.API()
+        self.app.req_options.auto_parse_form_urlencoded = True
         self.firemix = firemix
         self.host = host
         self.port = port
