@@ -21,7 +21,7 @@ import json
 import logging
 import os
 
-from PyQt5.QtCore import pyqtSlot
+from PyQt5 import QtCore
 from wsgiref import simple_server
 
 log = logging.getLogger("firemix.rpc_server")
@@ -103,8 +103,8 @@ class StaticRootSink(object):
 
 class RPCServer(QtCore.QObject):
 
-    start = QtCore.Signal()
-    stop = QtCore.Signal()
+    start = QtCore.pyqtSignal()
+    stop = QtCore.pyqtSignal()
 
     def __init__(self, firemix, host='0.0.0.0', port=8000):
         QtCore.QObject.__init__(self)
@@ -122,7 +122,7 @@ class RPCServer(QtCore.QObject):
         self.app.add_route('/settings', self.settings)
         self.app.add_sink(StaticRootSink("webui"))
 
-    @pyqtSlot()
+    @QtCore.pyqtSlot()
     def run(self):
         log.info("RPC server listening at %s:%d" % (self.host, self.port))
         self.server = simple_server.make_server(self.host, self.port, self.app)
@@ -133,7 +133,7 @@ class RPCServer(QtCore.QObject):
 
         self.server.shutdown()
 
-    @pyqtSlot()
+    @QtCore.pyqtSlot()
     def shutdown(self):
         self._running = False
         log.info("Shutting down RPC server")
