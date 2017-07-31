@@ -42,7 +42,7 @@ class RadialWipe(Transition):
         self.distances /= max(self.distances)
 
     def get(self, start, end, progress):
-        buffer = np.where(self.distances < progress, end.T, start.T)
-        buffer[1][np.abs(self.distances - progress) < 0.02] += 0.5 # we can apply effects to transition line here
+        buffer = np.where(self.distances < progress, end, start)
+        buffer['light'][np.abs(self.distances - progress) < 0.02] += 0.5 # we can apply effects to transition line here
 
-        return buffer.T
+        return buffer

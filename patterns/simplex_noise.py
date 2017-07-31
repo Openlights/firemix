@@ -36,7 +36,7 @@ class SimplexNoise(Pattern):
     Simplex noise hue map
     """
 
-    _luminance_steps = 256
+    _lightness_steps = 256
 
     def setup(self):
         self.add_parameter(FloatParameter('audio-brightness', 0.0))
@@ -50,8 +50,8 @@ class SimplexNoise(Pattern):
         self.add_parameter(IntParameter('resolution', 128))
         self.add_parameter(FloatParameter('scale', 0.25))
         self.add_parameter(FloatParameter('stretch', 1.0))
-        self.add_parameter(FloatParameter('luminance-scale', 0.75))
-        self.add_parameter(StringParameter('luminance-map', "[(0,0,1), (0,0,1), (0,1,1)]"))
+        self.add_parameter(FloatParameter('lightness-scale', 0.75))
+        self.add_parameter(StringParameter('lightness-map', "[(0,0,1), (0,0,1), (0,1,1)]"))
         self.add_parameter(FloatParameter('beat-lum-boost', 0.05))
         self.add_parameter(FloatParameter('beat-lum-time', 0.1))
         self.add_parameter(FloatParameter('beat-color-boost', 0.0))
@@ -73,8 +73,8 @@ class SimplexNoise(Pattern):
         self.hue_max = self.parameter('hue-max').get()
         self.color_speed = self.parameter('color-speed').get()
         self.scale = self.parameter('scale').get() / 100.0
-        fade_colors = ast.literal_eval(self.parameter('luminance-map').get())
-        self.lum_fader = ColorFade(fade_colors, self._luminance_steps)
+        fade_colors = ast.literal_eval(self.parameter('lightness-map').get())
+        self.lum_fader = ColorFade(fade_colors, self._lightness_steps)
         angle = self.parameter('angle').get()
         rotMatrix = np.array([(math.cos(angle), -math.sin(angle)), (math.sin(angle), math.cos(angle))])
         pixel_locations = np.asarray(self.scene().get_all_pixel_locations())
@@ -92,16 +92,16 @@ class SimplexNoise(Pattern):
         self._offset_z += dt * self._app.mixer.audio.getSmoothEnergy() * self.parameter('beat-color-boost').get()
         # posterization = self.parameter('resolution').get()
 
-        luminance_scale = self.parameter('luminance-scale').get() / 100.0
+        lightness_scale = self.parameter('lightness-scale').get() / 100.0
 
         stretch = self.parameter('stretch').get()
-        brights = snoise3(self._offset_x * stretch * luminance_scale,
-                          self._offset_y * luminance_scale,
+        brights = snoise3(self._offset_x * stretch * lightness_scale,
+                          self._offset_y * lightness_scale,
                           self._offset_z)
         brights = (1.0 + brights) / 2
-        brights *= self._luminance_steps
-        LS = self.lum_fader.color_cache[np.int_(brights)].T
-        luminances = LS[1] + self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
+        brights *= self._lightness_steps
+        LS = self.lum_fader.color_cache[np.int_(brights)]
+        lightnesses = LS['light'] + self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
         hue_offset = self.parameter('hue-offset').get() + self._app.mixer.audio.getSmoothEnergy() * self.parameter('audio-hue-offset').get()
 
-        self.setAllHLS(LS[0] + hue_offset, luminances, LS[2])
+        self.setAllHLS(LS['hue'] + hue_offset, lightnesses, LS['sat'])

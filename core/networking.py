@@ -27,7 +27,7 @@ import time
 from collections import defaultdict
 
 from lib.colors import hls_to_rgb
-from lib.buffer_utils import BufferUtils
+from lib.buffer_utils import BufferUtils, struct_flat
 
 USE_OPC = True
 
@@ -68,21 +68,23 @@ class Networking:
 
         if undimmed_legacy_clients:
             # Protect against presets or transitions that write float data.
-            buffer_rgb = np.int8(hls_to_rgb(buffer) * 255)
+            buffer_rgb = hls_to_rgb(buffer)
+            buffer_rgb_int = np.int8(struct_flat(buffer_rgb) * 255)
 
-            self._write_legacy(buffer_rgb, strand_settings, undimmed_legacy_clients)
+            self._write_legacy(buffer_rgb_int, strand_settings, undimmed_legacy_clients)
 
         # Now that we've written to clients that don't want dimmed data, apply
         # the global dimmer from the mixer and re-convert to RGB
         if self._app.mixer.global_dimmer < 1.0:
-            buffer.T[1] *= self._app.mixer.global_dimmer
-        buffer_rgb = np.int8(hls_to_rgb(buffer) * 255)
+            buffer['light'] *= self._app.mixer.global_dimmer
+        buffer_rgb = hls_to_rgb(buffer)
+        buffer_rgb_int = np.int8(struct_flat(buffer_rgb) * 255)
 
         if dimmed_legacy_clients:
-            self._write_legacy(buffer_rgb, strand_settings, dimmed_legacy_clients)
+            self._write_legacy(buffer_rgb_int, strand_settings, dimmed_legacy_clients)
 
         if opc_clients:
-            self._write_opc(buffer_rgb, strand_settings, opc_clients)
+            self._write_opc(buffer_rgb_int, strand_settings, opc_clients)
 
     def _write_legacy(self, buf, strand_settings, clients):
         packets = []
@@ -95,9 +97,11 @@ class Networking:
                 continue
 
             start, end = BufferUtils.get_strand_extents(strand)
+            start *= 3
+            end *= 3
 
             packet_header_size = 4
-            packet_size = (end-start) * 3 + packet_header_size
+            packet_size = (end-start) + packet_header_size
 
             packet = self._packet_cache['legacy'][strand]
             if packet is None:
@@ -111,7 +115,7 @@ class Networking:
             packet[2] = length & 0x00FF
             packet[3] = (length & 0xFF00) >> 8
 
-            np.copyto(packet[packet_header_size:], buf[start:end].flat)
+            np.copyto(packet[packet_header_size:], buf[start:end])
             packets.append(packet)
 
         for client in clients:
@@ -128,7 +132,7 @@ class Networking:
 
 
     def _write_opc(self, buf, strand_settings, clients):
-        packet_data_len = len(buf) * 3
+        packet_data_len = len(buf)
         packet_size = packet_data_len + 4
 
         if 'opc' not in self._packet_cache:
@@ -149,7 +153,7 @@ class Networking:
         packet[1] = 0
         packet[2] = (packet_data_len & 0xFF00) >> 8
         packet[3] = (packet_data_len & 0xFF)
-        np.copyto(packet[4:], buf.flat)
+        np.copyto(packet[4:], buf)
 
         for client in clients:
             self.socket.sendto(packet, (client["host"], client["port"]))

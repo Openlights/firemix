@@ -17,6 +17,15 @@
 
 import numpy as np
 
+import lib.dtypes as dtypes
+
+def struct_flat(arr):
+    """
+    Returns a flattened view of a structured array whose structure elements
+    are of a homogeneous type
+    """
+    return arr.view(dtype=arr.dtype[0])
+
 
 class BufferUtils:
     """
@@ -115,15 +124,12 @@ class BufferUtils:
     @classmethod
     def create_buffer(cls):
         """
-        Pixel buffers are 3D numpy arrays.  The axes are strand, pixel, and color.
-        The "y" axis (pixel) uses expanded pixel addressing, "flattening" the fixture addresses.
-        So, the address [1:2:0] (strand 1, fixture 2, pixel 0) is decoded to [1:64] assuming the
-        fixtures all have 32 pixels.
+        Pixel buffers are numpy arrays of pixel colors, indexed using linear pixel addressing.
 
         The reference to the app is required to lookup the required dimensions, in order
         to figure out the total y-axis length required.
         """
-        return np.zeros((cls._buffer_length, 3), dtype=np.float32)
+        return np.zeros(cls._buffer_length, dtype=dtypes.pixel_color)
 
     @classmethod
     def get_buffer_size(cls):

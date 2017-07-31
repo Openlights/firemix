@@ -4,6 +4,8 @@
     "file-version": 1, 
     "name": "CombinePresets-1", 
     "params": {
+        "allow-playback": "True", 
+        "audio-transition": "0.0", 
         "first-preset": "Dragons-1", 
         "second-preset": "SpiralGradient-1", 
         "transition-mode": "Additive Blend", 

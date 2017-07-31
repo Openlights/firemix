@@ -50,6 +50,7 @@ class Parameter:
 
     def set(self, value):
         if self.validate(value):
+            value = self.normalize(value)
             self._wibbler = None
             self._value = value
             self._valueString = str(value)
@@ -87,6 +88,12 @@ class Parameter:
         Override this in child classes to define how to cast a string into a value
         """
         pass
+
+    def normalize(self, value):
+        """
+        Override this in child classes to normalize parameter values
+        """
+        return value
 
     def validate(self, value):
         """
@@ -200,6 +207,9 @@ class RGBParameter(Parameter):
         Parameter.__init__(self, name)
         self.set(tuple(value))
 
+    def normalize(self, value):
+        return tuple(value)
+
     def validate(self, value):
         if (not isinstance(value, tuple)) and (not isinstance(value, list)):
             return False
@@ -228,6 +238,9 @@ class HSVParameter(Parameter):
         Parameter.__init__(self, name)
         self.set(tuple(value))
 
+    def normalize(self, value):
+        return tuple(value)
+
     def validate(self, value):
         if (not isinstance(value, tuple)) and (not isinstance(value, list)):
             return False
@@ -251,6 +264,9 @@ class HLSParameter(Parameter):
     def __init__(self, name, value=(0., 0., 0.)):
         Parameter.__init__(self, name)
         self.set(tuple(value))
+
+    def normalize(self, value):
+        return tuple(value)
 
     def validate(self, value):
         if (not isinstance(value, tuple)) and (not isinstance(value, list)):

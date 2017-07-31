@@ -167,7 +167,7 @@ class TestFFT(Pattern):
 
         colors = self._fader.color_cache[hues]
         np.minimum(self.pixel_amplitudes, 1, self.pixel_amplitudes)
-        colors.T[1] *= np.power(self.pixel_amplitudes - self.parameter('fft-bias').get(), self.parameter('fft-gamma').get())
-        colors.T[1] = self._pixel_buffer.T[1] * self.parameter('ghosting').get() + colors.T[1]
+        colors['light'] *= np.power(self.pixel_amplitudes - self.parameter('fft-bias').get(), self.parameter('fft-gamma').get())
+        colors['light'] = self._pixel_buffer['light'] * self.parameter('ghosting').get() + colors['light']
 
         self._pixel_buffer = colors

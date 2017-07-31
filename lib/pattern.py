@@ -222,10 +222,10 @@ class Pattern(JSONDict):
 
         self.setPixelHLS(index, hls)
 
-    def setAllHLS(self, hues, luminances, saturations):
+    def setAllHLS(self, hues, lightnesses, saturations):
         """
         Sets the entire buffer, assuming an input list.
         """
-        self._pixel_buffer[:,0] = hues
-        self._pixel_buffer[:,1] = luminances
-        self._pixel_buffer[:,2] = saturations
+        self._pixel_buffer['hue'] = hues
+        self._pixel_buffer['light'] = lightnesses
+        self._pixel_buffer['sat'] = saturations

@@ -28,7 +28,7 @@ from lib.color_fade import ColorFade
 
 class RadialGradient(Pattern):
     """Radial gradient that responds to onsets"""
-    _luminance_steps = 256
+    _lightness_steps = 256
     _fader_steps = 256
 
     def setup(self):
@@ -55,15 +55,15 @@ class RadialGradient(Pattern):
         self.add_parameter(FloatParameter('audio-energy-lum-time', 0.0))
         self.add_parameter(FloatParameter('audio-energy-lum-strength', 0.0))
         self.add_parameter(FloatParameter('audio-fader-percent', 1.0))
-        self.add_parameter(FloatParameter('luminance-speed', 0.01))
-        self.add_parameter(FloatParameter('luminance-scale', 1.0))
+        self.add_parameter(FloatParameter('lightness-speed', 0.01))
+        self.add_parameter(FloatParameter('lightness-scale', 1.0))
         self.add_parameter(StringParameter('color-gradient', "[(0,0,1), (0,1,1)]"))
 
         self.hue_inner = random.random()
         self.wave1_offset = 0 #andom.random()
         self.wave2_offset = random.random()
         self.rwave_offset = random.random()
-        self.luminance_offset = random.random()
+        self.lightness_offset = random.random()
 
         cx, cy = self.scene().center_point()
 
@@ -85,16 +85,16 @@ class RadialGradient(Pattern):
     def draw(self, dt):
         if self._app.mixer.is_onset():
             self.hue_inner = math.fmod(self.hue_inner + self.parameter('hue-step').get(), 1.0)
-            self.luminance_offset += self.parameter('hue-step').get()
+            self.lightness_offset += self.parameter('hue-step').get()
 
         dt *= 1.0 + self.parameter('audio-boost').get() * self._app.mixer.audio.getLowFrequency()
         self.hue_inner += dt * self.parameter('speed').get()
         self.wave1_offset += self.parameter('wave1-speed').get() * dt
         self.wave2_offset += self.parameter('wave2-speed').get() * dt
         self.rwave_offset += self.parameter('rwave-speed').get() * dt
-        self.luminance_offset += self.parameter('luminance-speed').get() * dt
+        self.lightness_offset += self.parameter('lightness-speed').get() * dt
 
-        luminance_scale = self.parameter('luminance-scale').get() + self._app.mixer.audio.smoothEnergy * self.parameter('audio-scale').get()
+        lightness_scale = self.parameter('lightness-scale').get() + self._app.mixer.audio.smoothEnergy * self.parameter('audio-scale').get()
         if self.parameter('rwave-standing').get():
             rwave = np.sin(self.pixel_distances * self.parameter('rwave-period').get()) * self.parameter('rwave-standing').get() * np.sin(self.rwave_offset)
             rwave += np.sin(self.rwave_offset + np.pi * 0.75) * self.parameter('rwave-standing').get()
@@ -116,21 +116,21 @@ class RadialGradient(Pattern):
             hues += wave_audio
 
         if self.parameter('audio-energy-lum-strength').get():
-            lums = np.mod(np.int_(hues * self.parameter('audio-energy-lum-time').get()), self._luminance_steps)
-            lums = self._app.mixer.audio.fader.color_cache.T[0][lums] * self.parameter('audio-energy-lum-strength').get()
+            lums = np.mod(np.int_(hues * self.parameter('audio-energy-lum-time').get()), self._lightness_steps)
+            lums = self._app.mixer.audio.fader.color_cache['hue'][lums] * self.parameter('audio-energy-lum-strength').get()
         else:
             lums = hues
 
-        luminance_indices = np.mod(np.abs(np.int_((self.luminance_offset + lums * luminance_scale) * self._luminance_steps)), self._luminance_steps)
-        LS = self._fader.color_cache[luminance_indices].T
-        luminances = LS[1]
-        luminances += self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
+        lightness_indices = np.mod(np.abs(np.int_((self.lightness_offset + lums * lightness_scale) * self._lightness_steps)), self._lightness_steps)
+        LS = self._fader.color_cache[lightness_indices]
+        lightnesses = LS['light']
+        lightnesses += self._app.mixer.audio.getEnergy() * self.parameter('audio-brightness').get()
 
         hues = np.fmod(self.hue_inner + hues * self.parameter('hue-width').get(), 1.0)
 
         if self.parameter('audio-use-fader').get():
-            #luminances *= self._app.mixer.audio.fader.color_cache.T[1][np.int_(luminance_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
-            #hues += self._app.mixer.audio.fader.color_cache.T[0][np.int_(hues * 255 * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
-            hues += self._app.mixer.audio.fader.color_cache.T[0][np.int_(luminance_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
+            #lightnesses *= self._app.mixer.audio.fader.color_cache['light'][np.int_(lightness_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
+            #hues += self._app.mixer.audio.fader.color_cache['hue'][np.int_(hues * 255 * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
+            hues += self._app.mixer.audio.fader.color_cache['hue'][np.int_(lightness_indices * self.parameter('audio-fader-percent').get())] * self.parameter('audio-use-fader').get()
 
-        self.setAllHLS(hues, luminances, LS[2])
+        self.setAllHLS(hues, lightnesses, LS['sat'])
