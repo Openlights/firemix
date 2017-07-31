@@ -82,10 +82,13 @@ class Twinkle(Pattern):
         self.locations = self.scene().get_all_pixel_locations()
         self.birthByFFT = np.zeros(256)
 
-    def draw(self, dt):
+    def tick(self, dt):
+        super(Twinkle, self).tick(dt)
 
         self._current_time += dt
+        self._nbirth += self.parameter('birth-rate').get() * dt
 
+    def render(self, out):
         # Birth
         if self._app.mixer.is_onset():
             self._nbirth += self.parameter('beat-births').get()
@@ -104,7 +107,7 @@ class Twinkle(Pattern):
             popped, self._idle = self._idle[:births], np.append(self._idle[births:], self._idle[:births])
             colors = np.repeat(self._fader.color_cache[:256], fft_pixels, axis=0)
 
-            self.setPixelHLS(popped, colors[:len(popped)])
+            self.setPixelHLS(out, popped, colors[:len(popped)])
 
         # spawn FFT-colored rings
         if len(fft):
@@ -138,11 +141,11 @@ class Twinkle(Pattern):
                     #     # self._app.mixer.audio.getSmoothedFFT()[self.ringColors[pixel]]
                     #     color['light'] += self._app.mixer.audio.getEnergy() * self.parameter('audio-ring-use-fft-brightness').get()
 
-                    self._pixel_buffer['hue'][ring] = color['hue']
-                    self._pixel_buffer['light'][ring] += color['light'] * (1.0 - currentTimes[pixel] / ringLife)
-                    self._pixel_buffer['sat'][ring] = color['sat']
+                    out['hue'][ring] = color['hue']
+                    out['light'][ring] += color['light'] * (1.0 - currentTimes[pixel] / ringLife)
+                    out['sat'][ring] = color['sat']
 
-                    #self.setPixelHLS(ring, color)
+                    #self.setPixelHLS(out, ring, color)
 
         # ring eq
         if len(fft):
@@ -161,9 +164,9 @@ class Twinkle(Pattern):
                         ringWidth = self.parameter('audio-ring-width').get()
                         size_percent = fft_amount
                         ring = np.where(np.abs(self.parameter('audio-ring-diameter').get() * size_percent + self.parameter('audio-ring-start-radius').get() - self.scene().get_pixel_distances(np.int_(pixel))) < ringWidth)
-                        self._pixel_buffer['hue'][ring] = color['hue']
-                        self._pixel_buffer['light'][ring] += color['light'] * fft_amount
-                        self._pixel_buffer['sat'][ring] = color['sat']
+                        out['hue'][ring] = color['hue']
+                        out['light'][ring] += color['light'] * fft_amount
+                        out['sat'][ring] = color['sat']
 
         # spawn FFT-colored stars  for max color only
         if len(fft):
@@ -173,7 +176,7 @@ class Twinkle(Pattern):
             if births:
                 popped = self._idle[:births]
                 self._idle = np.append(self._idle[births:], popped)
-                self.setPixelHLS(popped, self._fader.color_cache[max])
+                self.setPixelHLS(out, popped, self._fader.color_cache[max])
 
             # this doesn't belong here, just testing
             if self.parameter('pie-peaks').get():
@@ -185,18 +188,15 @@ class Twinkle(Pattern):
                 self.pixel_angles = np.mod((np.arctan2(y, x) + (self.color_angle * math.pi)) / (math.pi * 2) + 1, 1)
                 self.pixel_distances /= np.max(self.pixel_distances)
                 mask = (self.pixel_distances < 2 * fft[np.int_(self.pixel_angles * len(fft))])
-                self._pixel_buffer['light'][mask] = self.parameter('pie-peaks').get()
+                out['light'][mask] = self.parameter('pie-peaks').get()
 
         # audioEnergy = self._app.mixer.audio.getEnergy() * self.parameter('audio-birth-rate').get() * dt
         # self._nbirth += audioEnergy
 
-        self._nbirth += self.parameter('birth-rate').get() * dt
-
         #black = self.parameter('off-color').get()
         fade_rate = self.parameter('fade-rate').get()
 
-        self._pixel_buffer['light'] *= (1.0 - fade_rate)
-        #np.multiply(self._pixel_buffer, (1.0 - fade_rate), self._pixel_buffer)
+        out['light'] *= (1.0 - fade_rate)
 
         # birthing
         births = int(self._nbirth)
@@ -210,7 +210,7 @@ class Twinkle(Pattern):
         if len(self._fading_up):
             progress = np.atleast_1d(np.int_((self._current_time - self._time[self._fading_up]) / float(self.parameter('fade-up-time').get()) * self._fader_steps))
             colors = self._fader.color_cache[np.minimum(progress, self._fader_steps)]
-            self.setPixelHLS(self._fading_up, colors)
+            self.setPixelHLS(out, self._fading_up, colors)
             finished = (progress >= self._fader_steps)
             if len(self._fading_up[finished]) > 0:
                 self._idle = np.append(self._idle, self._fading_up[finished])

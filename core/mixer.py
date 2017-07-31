@@ -65,7 +65,6 @@ class Mixer(QtCore.QObject):
         self._duration = self._app.settings.get('mixer')['preset-duration']
         self._elapsed = 0.0
         self.running = False
-        self._buffer_a = None
         self._max_pixels = 0
         self._tick_time_data = dict()
         self._num_frames = 0
@@ -123,6 +122,7 @@ class Mixer(QtCore.QObject):
 
         self._buffer_a = BufferUtils.create_buffer()
         self._buffer_b = BufferUtils.create_buffer()
+        self._output_buffer = BufferUtils.create_buffer()
         self._max_pixels = maxp
 
     @QtCore.Slot()
@@ -133,7 +133,7 @@ class Mixer(QtCore.QObject):
         self._elapsed = 0.0
         self._num_frames = 0
         self._start_time = self._last_frame_time = time.time()
-        self.reset_output_buffer()
+        self.reset_output_buffers()
         self.running = True
 
         self._render_thread = threading.Thread(target=self._render_loop,
@@ -365,7 +365,6 @@ class Mixer(QtCore.QObject):
                     if self._transition:
                         self._transition.reset()
                     next_preset._reset()
-                    self._buffer_b = BufferUtils.create_buffer()
 
                 if self._transition_duration > 0.0 and self._transition is not None:
                     if not self._paused and not self._transition_scrubbing:
@@ -383,34 +382,24 @@ class Mixer(QtCore.QObject):
             # TODO: Support mixing without a scene tree available
 
             if self._in_transition:
-                mixed_buffer = self.render_presets(
-                    active_preset, self._buffer_a,
-                    next_preset, self._buffer_b,
-                    self._in_transition, self._transition,
-                    self.transition_progress,
-                    check_for_nan=self._enable_profiling)
+                self.render_presets(active_preset, next_preset,
+                                    self._transition,
+                                    self.transition_progress,
+                                    check_for_nan=self._enable_profiling)
             else:
-                mixed_buffer = self.render_presets(
-                    active_preset, self._buffer_a,
-                    check_for_nan=self._enable_profiling)
+                self.render_presets(active_preset,
+                                    check_for_nan=self._enable_profiling)
 
-            # render_presets writes all the desired pixels to
-            # self._main_buffer.
-
-            #else:
-                # Global gamma correction.
-                # TODO(jon): This should be a setting
-                #mixed_buffer.T[1] = np.power(mixed_buffer.T[1], 4)
 
             # Mod hue by 1 (to allow wrap-around) and clamp lightness and
             # saturation to [0, 1].
-            np.mod(mixed_buffer['hue'], 1.0, out=mixed_buffer['hue'])
-            np.clip(mixed_buffer['light'], 0.0, 1.0, out=mixed_buffer['light'])
-            np.clip(mixed_buffer['sat'], 0.0, 1.0, out=mixed_buffer['sat'])
+            np.mod(self._output_buffer['hue'], 1.0, self._output_buffer['hue'])
+            np.clip(self._output_buffer['light'], 0.0, 1.0, self._output_buffer['light'])
+            np.clip(self._output_buffer['sat'], 0.0, 1.0, self._output_buffer['sat'])
 
             # Write this buffer to enabled clients.
             if self._net is not None:
-                self._net.write_buffer(mixed_buffer)
+                self._net.write_buffer(self._output_buffer)
 
             if (not self._paused and (self._elapsed >= self._duration)
                 and active_preset.can_transition()
@@ -443,48 +432,42 @@ class Mixer(QtCore.QObject):
     def scene(self):
         return self._scene
 
-    def render_presets(self, first_preset, first_buffer,
-                       second_preset=None, second_buffer=None,
-                       in_transition=False, transition=None,
-                       transition_progress=0.0, check_for_nan=False):
+    def render_presets(self, first_preset, second_preset=None,
+                       transition=None, transition_progress=0.0,
+                       check_for_nan=False):
         """
-        Grabs the command output from a preset with the index given by first.
-        If a second preset index is given, render_preset will use a Transition class to generate the output
-        according to transition_progress (0.0 = 100% first, 1.0 = 100% second)
+        Generates the final output buffer from either a single preset or two
+        presets and a Transition.
         """
 
-        first_buffer = first_preset.get_buffer()
-
+        first_preset.render(self._buffer_a)
         if check_for_nan:
-            nan_out_buf = np.empty(len(struct_flat(first_buffer)))
+            self._validate_buffer(self._buffer_a)
 
+        if transition is None:
+            # Single preset
+            self._output_buffer = self._buffer_a
+            return
+
+        # Two presets
+        second_preset.render(self._buffer_b)
         if check_for_nan:
-            np.isnan(struct_flat(first_buffer), nan_out_buf)
-            if np.any(nan_out_buf):
-                raise ValueError
+            self._validate_buffer(self._buffer_b)
 
-        if second_preset is not None:
-            second_buffer = second_preset.get_buffer()
-            if check_for_nan:
-                assert len(struct_flat(second_buffer)) == len(nan_out_buf)
-                np.isnan(struct_flat(second_buffer), nan_out_buf)
-                if np.any(nan_out_buf):
-                    raise ValueError
+        transition.render(self._buffer_a, self._buffer_b,
+                          transition_progress, self._output_buffer)
+        if check_for_nan:
+            self._validate_buffer(self._output_buffer)
 
-            if in_transition and transition is not None:
-                first_buffer = transition.get(first_buffer, second_buffer,
-                                              transition_progress)
-                if check_for_nan:
-                    assert len(struct_flat(first_buffer)) == len(nan_out_buf)
-                    np.isnan(struct_flat(first_buffer), nan_out_buf)
-                    if np.any(nan_out_buf):
-                        raise ValueError
-
-        return first_buffer
-
-    def reset_output_buffer(self):
+    def reset_output_buffers(self):
         """
-        Clears the output buffer
+        Clears the output buffers
         """
         self._buffer_a = BufferUtils.create_buffer()
         self._buffer_b = BufferUtils.create_buffer()
+        self._output_buffer = BufferUtils.create_buffer()
+
+    def _validate_buffer(self, buf):
+        np.isnan(struct_flat(buf), self._nan_check_buf)
+        if np.any(self._nan_check_buf):
+            raise ValueError

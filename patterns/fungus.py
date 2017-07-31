@@ -91,6 +91,7 @@ class Fungus(Pattern):
         self._population = 0
         self._time = {}
         self._spread_boost = 0
+        self._last_dt = 0
         self.parameter_changed(None)
 
     def parameter_changed(self, parameter):
@@ -113,11 +114,14 @@ class Fungus(Pattern):
         fade_colors = [self._black_color, self._alive_color, self._dead_color, self._black_color]
         self._fader = ColorFade(fade_colors, self._fader_steps)
 
-    def draw(self, dt):
-
+    def tick(self, dt):
+        super(Fungus, self).tick(dt)
         self._current_time += dt
         self._mass_destruction_countdown -= dt
+        # XXX: total hack
+        self._last_dt = dt
 
+    def render(self, out):
         # Ensure that empty displays start up with some seeds
         p_birth = (1.0 - self._spontaneous_birth_probability) if self._population > 5 else 0.5
 
@@ -144,12 +148,12 @@ class Fungus(Pattern):
                 self._growing.remove(address)
                 self._alive.append(address)
                 self._time[address] = self._current_time
-            self.setPixelHLS(address, color)
+            self.setPixelHLS(out, address, color)
 
             # Spread
             spread_rate = self._spread_rate + self._spread_boost
 
-            if (self._population < self._population_limit) and (random.random() < spread_rate * dt):
+            if (self._population < self._population_limit) and (random.random() < spread_rate * self._last_dt):
                 for spread in neighbors:
                     if spread not in (self._growing + self._alive + self._dying + self._fading_out):
                         self._growing.append(spread)
@@ -170,10 +174,10 @@ class Fungus(Pattern):
                 self._time[address] = self._current_time
                 self._population -= 1
 
-            self.setPixelHLS(address, self._alive_color)
+            self.setPixelHLS(out, address, self._alive_color)
 
             # Spread
-            if (self._population < self._population_limit) and random.random() < self._birth_rate * dt:
+            if (self._population < self._population_limit) and random.random() < self._birth_rate * self._last_dt:
                 for spread in neighbors:
                     if spread not in (self._growing + self._alive + self._dying + self._fading_out):
                         self._growing.append(spread)
@@ -187,14 +191,14 @@ class Fungus(Pattern):
                 self._dying.remove(address)
                 self._fading_out.append(address)
                 self._time[address] = self._current_time
-            self.setPixelHLS(address, color)
+            self.setPixelHLS(out, address, color)
 
         # Fade out
         for address in self._fading_out:
             p, color = self._get_next_color(address, self._fade_out_time, self._current_time + self.parameter('audio-onset-death-boost').get())
             if p >= 1.0:
                 self._fading_out.remove(address)
-            self.setPixelHLS(address, color)
+            self.setPixelHLS(out, address, color)
 
         # Mass destruction
         if (self._population == self._population_limit) or \

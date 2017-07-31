@@ -62,7 +62,7 @@ class Spiral(Transition):
         self.radius = 0.0
         self.active = [True,] * len(self.locations)
 
-    def get(self, start, end, progress):
+    def render(self, start, end, progress, out):
 
         radius_progress = fmod(progress * self.revolutions, 1.0)
         distance_progress = self.scene_radius * progress
@@ -82,9 +82,7 @@ class Spiral(Transition):
 
         start[self.mask] = (0.0, 0.0, 0.0)
         end[np.invert(self.mask)] = (0.0, 0.0, 0.0)
-        out = np.zeros_like(start)
         np.add(struct_flat(start), struct_flat(end), struct_flat(out))
-        return out
 
     def _is_point_inside_wipe(self, point, progress):
         return np.dot((point - self.wipe_point), self.wipe_vector) >= 0

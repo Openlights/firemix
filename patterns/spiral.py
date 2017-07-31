@@ -67,9 +67,8 @@ class SpiralGradient(Pattern):
     def reset(self):
         self.locations = self.scene().get_all_pixel_locations()
 
-    def draw(self, dt):
-        if self._app.mixer.is_onset():
-            self.onset_speed_boost = self.parameter('onset-speed-boost').get()
+    def tick(self, dt):
+        super(SpiralGradient, self).tick(dt)
 
         self.color_offset += dt * self._app.mixer.audio.getLowFrequency() * self.parameter('audio-speed-boost-bass').get()
         self.color_offset += dt * self._app.mixer.audio.getHighFrequency() * self.parameter('audio-speed-boost-treble').get()
@@ -78,6 +77,10 @@ class SpiralGradient(Pattern):
         self.hue_inner += dt * self.parameter('hue-speed').get() * self.onset_speed_boost
         self.wave_offset += dt * self.parameter('wave-speed').get() * self.onset_speed_boost
         self.color_offset += dt * self.parameter('speed').get() * self.onset_speed_boost
+
+    def render(self, out):
+        if self._app.mixer.is_onset():
+            self.onset_speed_boost = self.parameter('onset-speed-boost').get()
 
         self.onset_speed_boost = max(1, self.onset_speed_boost - self.parameter('onset-speed-decay').get())
         audio_energy = self._app.mixer.audio.getEnergy()
@@ -106,7 +109,7 @@ class SpiralGradient(Pattern):
         angles = np.mod(1.0 - self.pixel_angles - np.sin(self.wave_offset + wave_amplitude * wave_hue_period) * (wave_hue_width + self.audio_twist), 1.0)
         hues = self.color_offset + (radius_hue_width * self.pixel_distances) + (2 * np.abs(angles - 0.5) * angle_hue_width)
         hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
-        colors = self._fader.color_cache[hues]
-        colors['hue'] = np.mod(colors['hue'] + self.hue_inner, 1.0)
-        colors['light'] += audio_energy * self.parameter('audio-brightness').get()
-        self._pixel_buffer = colors
+
+        np.copyto(out, self._fader.color_cache[hues])
+        out['hue'] = np.mod(out['hue'] + self.hue_inner, 1.0)
+        out['light'] += audio_energy * self.parameter('audio-brightness').get()

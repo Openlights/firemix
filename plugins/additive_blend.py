@@ -35,10 +35,7 @@ class AdditiveBlend(Transition):
     def __str__(self):
         return "Additive Blend"
 
-    def reset(self):
-        self.frame = BufferUtils.create_buffer()
-
-    def get(self, start, end, progress):
+    def render(self, start, end, progress, out):
 
         fade_length = 0.25
         ease_power = 2.0
@@ -78,14 +75,6 @@ class AdditiveBlend(Transition):
 
         sats = (start['sat'] * startWeight + end['sat'] * endWeight).clip(0,1)
 
-        self.frame['hue'] = hues
-        self.frame['light'] = lums
-        self.frame['sat'] = sats
-
-        """
-        if np.random.random() > 0.95:
-            print "progress %.2f," % progress, '%.2f' % start[0][0][0], '%.2f' % start[0][0][1], '%.2f' % start[0][0][2], "+", '%.2f' % end[0][0][0], '%.2f' % end[0][0][1], '%.2f' % end[0][0][2], "=", '%.2f' % self.frame[0][0][0], '%.2f' % self.frame[0][0][1], '%.2f' % self.frame[0][0][2]
-            print "    delta %.2f" % hueDelta[0][0], useAlternatePath[0][0], "oppo %.2f" % opposition[0][0], "sW %.2f" % startWeight[0][0], "eW %.2f" % endWeight[0][0], "sP %.2f" % startPower, "eP %.2f" % endPower
-        """
-
-        return self.frame
+        out['hue'] = hues
+        out['light'] = lums
+        out['sat'] = sats

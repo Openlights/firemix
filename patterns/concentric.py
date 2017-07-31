@@ -71,19 +71,17 @@ class Concentric(Pattern):
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())
         self._fader = ColorFade(fade_colors, self._fader_steps)
 
-    def reset(self):
-        pass
-
-    def draw(self, dt):
+    def tick(self, dt):
+        super(Concentric, self).tick(dt)
         self.walk(dt)
         self.update_center()
-
         self.hue_inner += dt * self.parameter('color-speed').get()
+
+    def render(self, out):
         hues = self.pixel_distances
         hues = np.fmod(self.hue_inner + hues * self.parameter('spatial-freq').get(), 1.0)
         hues = np.int_(np.mod(hues, 1.0) * self._fader_steps)
-        colors = self._fader.color_cache[hues]
-        self._pixel_buffer = colors
+        np.copyto(out, self._fader.color_cache[hues])
 
     def at_target(self, epsilon):
       return np.linalg.norm(self.center - self.target) < epsilon

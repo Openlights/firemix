@@ -33,34 +33,46 @@ class CombinePresets(Pattern):
         self.add_parameter(StringParameter('transition-mode', "Additive Blend"))
 
     def parameter_changed(self, parameter):
+        self._preset1_name = self.parameter('first-preset').get()
+        self._preset2_name = self.parameter('second-preset').get()
+
         self._transition = self._app.mixer.get_transition_by_name(self.parameter('transition-mode').get())
         if self._transition:
             self._transition.reset()
 
     def reset(self):
         self.parameter_changed(None)
+        self._buffer1 = BufferUtils.create_buffer()
+        self._buffer2 = BufferUtils.create_buffer()
 
-    def draw(self, dt):
+    def tick(self, dt):
+        super(CombinePresets, self).tick(dt)
 
-        preset1 = self._app.mixer.playlist.get_preset_by_name(self.parameter('first-preset').get())
-        preset2 = self._app.mixer.playlist.get_preset_by_name(self.parameter('second-preset').get())
+        # We do this fetching here because at the time the first
+        # `parameter_changed` call is made, the Playlist has not yet been
+        # completely created and is not yet assigned to mixer.playlist
+        self.preset1 = self._app.mixer.playlist.get_preset_by_name(self._preset1_name)
+        self.preset2 = self._app.mixer.playlist.get_preset_by_name(self._preset2_name)
+
+        self.preset1.tick(dt)
+        self.preset2.tick(dt)
+
+    def render(self, out):
+        preset1 = self.preset1
+        preset2 = self.preset2
 
         if preset1 and preset2 and self._transition:
             # this is here because many transitions are set up to only play from start to end :(
             # Combine renders arbitrary transition frames
             self._transition.reset()
 
-            preset1.tick(dt)
-            preset2.tick(dt)
-
-            preset1_buffer = preset1.get_buffer()
-            preset2_buffer = preset2.get_buffer()
+            preset1.render(self._buffer1)
+            preset2.render(self._buffer2)
 
             transition_amount = self.parameter('transition-progress').get()
 
             if self.parameter('audio-transition').get() > 0:
                 transition_amount += self.parameter('audio-transition').get() * self._app.mixer.audio.getEnergy()
 
-            self._pixel_buffer = self._transition.get(
-                preset1_buffer, preset2_buffer,
-                transition_amount)
+            self._transition.render(self._buffer1, self._buffer2,
+                                    transition_amount, out)

@@ -64,12 +64,14 @@ class TestFFT(Pattern):
         self.locations = self.scene().get_all_pixel_locations()
         self.color_angle = 0.0
 
-    def draw(self, dt):
+    def tick(self, dt):
+        super(TestFFT, self).tick(dt)
+        self.color_angle += dt *  self.parameter('rotation').get()
+
+    def render(self, out):
 
         def rotate(l, n):
             return l[n:] + l[:n]
-
-        self.color_angle += dt *  self.parameter('rotation').get()
 
         if False:
         #if self._app.mixer.is_onset():
@@ -165,9 +167,7 @@ class TestFFT(Pattern):
                 self.pixel_amplitudes[mask] += self.parameter('linear').get()
                 hues = pd
 
-        colors = self._fader.color_cache[hues]
         np.minimum(self.pixel_amplitudes, 1, self.pixel_amplitudes)
-        colors['light'] *= np.power(self.pixel_amplitudes - self.parameter('fft-bias').get(), self.parameter('fft-gamma').get())
-        colors['light'] = self._pixel_buffer['light'] * self.parameter('ghosting').get() + colors['light']
-
-        self._pixel_buffer = colors
+        np.copyto(out, self._fader.color_cache[hues])
+        out['light'] *= np.power(self.pixel_amplitudes - self.parameter('fft-bias').get(), self.parameter('fft-gamma').get())
+        out['light'] = out['light'] * self.parameter('ghosting').get() + out['light']

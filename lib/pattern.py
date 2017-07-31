@@ -97,14 +97,7 @@ class Pattern(JSONDict):
         pass
 
     def _reset(self):
-        self.init_pixels()
         self.reset()
-
-    def init_pixels(self):
-        """
-        Sets up the pixel array
-        """
-        self._pixel_buffer = BufferUtils.create_buffer()
 
     def setup(self):
         """
@@ -179,9 +172,10 @@ class Pattern(JSONDict):
         for parameter in self._parameters.values():
             parameter.tick(dt)
 
-        self.draw(dt)
-
         self._ticks += 1
+
+    def render(self, out):
+        raise NotImplementedError
 
     def tick_rate(self):
         # TODO: should have a different way of getting to the mixer settings
@@ -197,35 +191,22 @@ class Pattern(JSONDict):
         # TODO: this api is bogus
         return self._app.mixer.scene()
 
-    def get_buffer(self):
-        """
-        Used by Mixer to render output
-        """
-        return self._pixel_buffer
+    def setPixelHLS(self, buf, index, color):
+        buf[index] = color
 
-    def current_color(self, address):
-        """
-        Returns the current color of a pixel in RGB float
-        address is a tuple of (strand, fixture, pixel)
-        """
-        return self._pixel_buffer[address]
+    def setPixelRGB(self, buf, index, color):
+        self.setPixelHLS(buf, index, colorsys.rgb_to_hls(*color))
 
-    def setPixelHLS(self, index, color):
-        self._pixel_buffer[index] = color
-
-    def setPixelRGB(self, index, color):
-        self.setPixelHLS(index, colorsys.rgb_to_hls(*color))
-
-    def setPixelHSV(self, index, color):
+    def setPixelHSV(self, buf, index, color):
         # There's probably a more efficient way to do this:
         hls = colorsys.rgb_to_hls(*colorsys.hsv_to_rgb(*color))
 
-        self.setPixelHLS(index, hls)
+        self.setPixelHLS(buf, index, hls)
 
-    def setAllHLS(self, hues, lightnesses, saturations):
+    def setAllHLS(self, buf, hues, lightnesses, saturations):
         """
         Sets the entire buffer, assuming an input list.
         """
-        self._pixel_buffer['hue'] = hues
-        self._pixel_buffer['light'] = lightnesses
-        self._pixel_buffer['sat'] = saturations
+        buf['hue'] = hues
+        buf['light'] = lightnesses
+        buf['sat'] = saturations
