@@ -1,11 +1,9 @@
 #!/bin/bash
 
-if hash pyside-uic 2>/dev/null; then
-    uic=pyside-uic
-elif hash pyuic5 2>/dev/null; then
+if hash pyuic5 2>/dev/null; then
     uic=pyuic5
 else
-    echo >&2 "Could not find pyside or pyqt uic!"
+    echo >&2 "Could not find pyuic5!"
     exit 1
 fi
 

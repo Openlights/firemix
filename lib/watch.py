@@ -24,7 +24,7 @@ class Watch(object):
     Name must be the name of a member of the preset (parent)
     """
     def __init__(self, parent, name):
-        if not isinstance(name, str):
+        if not isinstance(name, (str, bytes)):
             raise ValueError("Watch name must be a string.")
         self._name = name
         self._parent = parent
