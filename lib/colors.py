@@ -18,9 +18,9 @@ from __future__ import division
 
 from past.utils import old_div
 import colorsys
-import dtypes
+import lib.dtypes
 
-from buffer_utils import struct_flat
+from lib.buffer_utils import struct_flat
 
 import numpy as np
 

@@ -55,11 +55,11 @@ class ImagePattern(Pattern):
         self._buffer = None
 
     def parameter_changed(self, parameter):
-        if self.imagename != self.parameter('image-file').get():
+        if self.imagename is not None and self.imagename != self.parameter('image-file').get():
             self.pixmap = QPixmap(self.parameter('image-file').get())
             self.imagename = self.parameter('image-file').get()
             image = self.pixmap.toImage()
-            if image:
+            if image is not None:
                 #image = image.convertToFormat(QImage.Format_ARGB32)
                 self.image = np.frombuffer(image.bits(), dtype=np.uint8)
                 self.image = self.image.reshape(self.pixmap.height(), self.pixmap.width(), 4).T
@@ -84,9 +84,9 @@ class ImagePattern(Pattern):
         self._center_rotation += dt * self.parameter('center-orbit-speed').get()
         self.angle += dt * self.parameter('speed-rotation').get()
 
-            lum_boost = self.parameter('beat-lum-boost').get()
-            if self._app.mixer.is_onset():
-                self.lum_boost += lum_boost
+        lum_boost = self.parameter('beat-lum-boost').get()
+        if self._app.mixer.is_onset():
+            self.lum_boost += lum_boost
 
         lum_time = self.parameter('beat-lum-time').get()
         if lum_time and self.lum_boost:
