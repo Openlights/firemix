@@ -28,7 +28,7 @@ import math
 from PyQt5.QtCore import pyqtSlot, QTimer, Qt
 from PyQt5.QtGui import QColor, QIcon, QImage, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QAbstractItemView, QListWidgetItem, \
-                            QTableWidgetItem
+                            QTableWidgetItem, QDialog
 
 from ui.ui_firemix import Ui_FireMixMain
 from ui.dlg_add_preset import DlgAddPreset
@@ -292,7 +292,7 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
     def on_btn_add_preset(self):
         dlg = DlgAddPreset(self)
         dlg.exec_()
-        if dlg.result() == QtWidgets.QDialog.Accepted:
+        if dlg.result() == QDialog.Accepted:
             if dlg.tabWidget.currentIndex() == 0:
                 classname = dlg.cb_preset_type.currentText()
                 name = dlg.edit_preset_name.text()
