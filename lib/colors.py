@@ -18,7 +18,7 @@ from __future__ import division
 
 from past.utils import old_div
 import colorsys
-import lib.dtypes
+from lib import dtypes
 
 from lib.buffer_utils import struct_flat
 
