@@ -1,7 +1,7 @@
 FireMix
 =======
 
-FireMix is a host for lighting pattern generators--small programs known as "presets".
+FireMix is procedural animation system for LED art installations.
 Use [FireSim](https://github.com/craftyjon/firesim) to see the output.
 
 [![Build Status](https://travis-ci.org/cdawzrd/firemix.png)](https://travis-ci.org/cdawzrd/firemix)
@@ -11,7 +11,8 @@ Installation / Development
 
 Setup instructions are now located on the wiki:
  - [Installation Guide - Windows](https://github.com/Openlights/firemix/wiki/Installation-Guide-(Windows))
- - [Installation Guide - Linux and Mac](https://github.com/Openlights/firemix/wiki/Installation-Guide-(Linux-and-Mac))
+ - [Installation Guide - Mac](https://github.com/Openlights/firemix/wiki/Installation-Guide-(Mac))
+ - [Installation Guide - Linux](https://github.com/Openlights/firemix/wiki/Installation-Guide-(Linux))
 
 General information and development tips are located on the wiki also,
 check out the [main page](https://github.com/craftyjon/firemix/wiki) to get started.
