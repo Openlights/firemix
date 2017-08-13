@@ -15,20 +15,20 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from PySide import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets, QtWidgets
 
 
-class DraggableListWidget(QtGui.QListWidget):
+class DraggableListWidget(QtWidgets.QListWidget):
     """
     This custom QListWidget implements a signal to notify when a drag/drop has
     reordered the list elements.
     """
 
-    layout_changed = QtCore.Signal()
+    layout_changed = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
-        QtGui.QListWidget.__init__(self, parent)
-        self.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
+        QtWidgets.QListWidget.__init__(self, parent)
+        self.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
         self.installEventFilter(self)
 
     def eventFilter(self, sender, event):

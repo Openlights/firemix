@@ -63,7 +63,7 @@ class TestPattern(Pattern):
                 if fixture > 0:
                     self.setPixelHLS(out, BufferUtils.logical_to_index((strand, fixture, 0), scene=self.scene()), (0.15, 0.5, 1.0))
 
-            last_fixture = len(self._hierarchy[strand].keys()) - 1
+            last_fixture = len(list(self._hierarchy[strand].keys())) - 1
             last_pixel = self._hierarchy[strand][last_fixture].pixels - 1
 
             self.setPixelHLS(out, BufferUtils.logical_to_index((strand, last_fixture, last_pixel), scene=self.scene()), (0.0, 0.5, 1.0))

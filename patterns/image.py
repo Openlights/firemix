@@ -15,15 +15,19 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+from __future__ import division
+
+from past.utils import old_div
 import random
 import math
 import numpy as np
-from lib.colors import hls_blend
-from PySide.QtGui import QPixmap
+
+from PyQt5.QtGui import QPixmap
 
 from lib.pattern import Pattern
 from lib.parameters import FloatParameter, StringParameter
-from lib.colors import rgb_to_hls
+from lib.colors import rgb_to_hls, hls_blend
 
 class ImagePattern(Pattern):
     def setup(self):
@@ -51,11 +55,11 @@ class ImagePattern(Pattern):
         self._buffer = None
 
     def parameter_changed(self, parameter):
-        if self.imagename != self.parameter('image-file').get():
+        if self.imagename is not None and self.imagename != self.parameter('image-file').get():
             self.pixmap = QPixmap(self.parameter('image-file').get())
             self.imagename = self.parameter('image-file').get()
             image = self.pixmap.toImage()
-            if image:
+            if image is not None:
                 #image = image.convertToFormat(QImage.Format_ARGB32)
                 self.image = np.frombuffer(image.bits(), dtype=np.uint8)
                 self.image = self.image.reshape(self.pixmap.height(), self.pixmap.width(), 4).T
@@ -63,11 +67,11 @@ class ImagePattern(Pattern):
                 self.image = np.asarray((self.image[2],self.image[1],self.image[0])).T
 
                 self.image = rgb_to_hls(self.image)
-                print self.image
+                print(self.image)
 
                 #print "image", self.parameter('image-file').get(), "loaded:", self.image.shape
             else:
-                print "No image!"
+                print("No image!")
 
         self.lastFrame = None
 
@@ -95,50 +99,50 @@ class ImagePattern(Pattern):
         if not self.pixmap:
             return
 
-        orbitx = math.cos(self._center_rotation) * self.parameter('center-orbit-distance').get()
-        orbity = math.sin(self._center_rotation) * self.parameter('center-orbit-distance').get()
+            orbitx = math.cos(self._center_rotation) * self.parameter('center-orbit-distance').get()
+            orbity = math.sin(self._center_rotation) * self.parameter('center-orbit-distance').get()
 
-        locations = np.copy(self.pixel_locations.T)
-        cx, cy = self.scene().center_point()
-        locations[0] -= cx + orbitx
-        locations[1] -= cy + orbity
-        rotMatrix = np.array([(math.cos(self.angle), -math.sin(self.angle)), (math.sin(self.angle),  math.cos(self.angle))])
-        x,y = rotMatrix.T.dot(locations)
-        x /= self.parameter('scale').get()
-        y /= self.parameter('scale').get()
-        x += self.pixmap.width() / 2 + self.parameter('center-x').get()
-        y += self.pixmap.height() / 2 + self.parameter('center-y').get()
-        x = np.int_(x)
-        y = np.int_(y)
+            locations = np.copy(self.pixel_locations.T)
+            cx, cy = self.scene().center_point()
+            locations[0] -= cx + orbitx
+            locations[1] -= cy + orbity
+            rotMatrix = np.array([(math.cos(self.angle), -math.sin(self.angle)), (math.sin(self.angle),  math.cos(self.angle))])
+            x,y = rotMatrix.T.dot(locations)
+            x /= self.parameter('scale').get()
+            y /= self.parameter('scale').get()
+            x += old_div(self.pixmap.width(), 2) + self.parameter('center-x').get()
+            y += old_div(self.pixmap.height(), 2) + self.parameter('center-y').get()
+            x = np.int_(x)
+            y = np.int_(y)
 
-        edge_mode = self.parameter('edge-mode').get()
-        if edge_mode == "clamp":
-            np.clip(x, 0, self.pixmap.width() - 1, x)
-            np.clip(y, 0, self.pixmap.height() - 1, y)
-        elif edge_mode == "tile":
-            np.mod(np.abs(x), self.pixmap.width(), x)
-            np.mod(np.abs(y), self.pixmap.height(), y)
-        elif edge_mode == "mirror":
-            np.mod(np.abs(x), self.pixmap.width() * 2 - 1, x)
-            np.mod(np.abs(y), self.pixmap.height() * 2 - 1, y)
-            np.abs(x - (self.pixmap.width() - 1), x)
-            np.abs(y - (self.pixmap.height() - 1), y)
-        else:
-            print "Unknown image preset edge mode (clamp, tile, or mirror)."
+            edge_mode = self.parameter('edge-mode').get()
+            if edge_mode == "clamp":
+                np.clip(x, 0, self.pixmap.width() - 1, x)
+                np.clip(y, 0, self.pixmap.height() - 1, y)
+            elif edge_mode == "tile":
+                np.mod(np.abs(x), self.pixmap.width(), x)
+                np.mod(np.abs(y), self.pixmap.height(), y)
+            elif edge_mode == "mirror":
+                np.mod(np.abs(x), self.pixmap.width() * 2 - 1, x)
+                np.mod(np.abs(y), self.pixmap.height() * 2 - 1, y)
+                np.abs(x - (self.pixmap.width() - 1), x)
+                np.abs(y - (self.pixmap.height() - 1), y)
+            else:
+                print("Unknown image preset edge mode (clamp, tile, or mirror).")
 
-        locations = np.asarray([x,y]).T
+            locations = np.asarray([x,y]).T
 
-        colors = self.image[locations.T[1], locations.T[0]]
+            colors = self.image[locations.T[1], locations.T[0]]
 
-        colors.T[0] += self.hue_offset
-        colors.T[1] += self.lum_boost
+            colors.T[0] += self.hue_offset
+            colors.T[1] += self.lum_boost
 
-        ghost = self.parameter('ghost').get()
-        if abs(ghost) > 0:
-            if self.lastFrame != None:
-                if self._buffer is None:
-                    self._buffer = np.empty_like(self.lastFrame)
-                colors = hls_blend(colors, self.lastFrame, self._buffer, ghost, "add", 1.0, 0.1)
-            self.lastFrame = colors
+            ghost = self.parameter('ghost').get()
+            if abs(ghost) > 0:
+                if self.lastFrame != None:
+                    if self._buffer is None:
+                        self._buffer = np.empty_like(self.lastFrame)
+                    colors = hls_blend(colors, self.lastFrame, self._buffer, ghost, "add", 1.0, 0.1)
+                self.lastFrame = colors
 
         np.copyto(out, colors)

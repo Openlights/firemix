@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import division
+
+from past.utils import old_div
 import colorsys
 import random
 import math
@@ -112,7 +115,7 @@ class RadialGradient(Pattern):
         audio_amplitude = self.parameter('audio-amplitude').get()
         fft = self._app.mixer.audio.getSmoothedFFT()
         if len(fft) > 0 and audio_amplitude:
-            audio_pixel_angles = np.mod(pixel_angles / (math.pi * 2) + 1, 1)
+            audio_pixel_angles = np.mod(old_div(pixel_angles, (math.pi * 2)) + 1, 1)
             fft_size = len(fft)
             bin_per_pixel = np.int_(audio_pixel_angles * fft_size)
             wave_audio = audio_amplitude * np.asarray(fft)[bin_per_pixel]

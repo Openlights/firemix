@@ -15,7 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+from __future__ import division
 
+from builtins import str
+from past.utils import old_div
 import logging
 import threading
 import time
@@ -29,7 +33,7 @@ try:
 except ImportError:
     USE_YAPPI = False
 
-from PySide import QtCore
+from PyQt5 import QtCore
 
 from lib.pattern import Pattern
 from lib.buffer_utils import BufferUtils, struct_flat
@@ -47,7 +51,7 @@ class Mixer(QtCore.QObject):
     and the generation of the final command stream to send to the output
     device(s).
     """
-    transition_starting = QtCore.Signal()
+    transition_starting = QtCore.pyqtSignal()
 
     def __init__(self, app):
         super(Mixer, self).__init__()
@@ -103,7 +107,7 @@ class Mixer(QtCore.QObject):
         self.aubio_connector.moveToThread(self._audio_thread)
 
         if self._app.args.yappi and USE_YAPPI:
-            print "yappi start"
+            print("yappi start")
             yappi.start()
 
         log.info("Warming up BufferUtils cache...")
@@ -125,11 +129,11 @@ class Mixer(QtCore.QObject):
         self._output_buffer = BufferUtils.create_buffer()
         self._max_pixels = maxp
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def start(self):
         assert self._render_thread is None, "Cannot start render thread more than once"
         self._tick_rate = self._app.settings.get('mixer')['tick-rate']
-        self._last_tick_time = 1.0 / self._tick_rate
+        self._last_tick_time = old_div(1.0, self._tick_rate)
         self._elapsed = 0.0
         self._num_frames = 0
         self._start_time = self._last_frame_time = time.time()
@@ -145,23 +149,23 @@ class Mixer(QtCore.QObject):
         while self.running:
             time.sleep(delay)
             if self._frozen:
-                delay = 1.0 / self._tick_rate
+                delay = old_div(1.0, self._tick_rate)
             else:
                 start = time.time()
                 self._render_in_progress = True
                 self.tick(self._last_tick_time)
                 self._render_in_progress = False
                 dt = (time.time() - start)
-                delay = max(0, (1.0 / self._tick_rate) - dt)
+                delay = max(0, (old_div(1.0, self._tick_rate)) - dt)
                 if not self._paused:
                     self._elapsed += dt + delay
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def restart(self):
         self.stop()
         self.start()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def stop(self):
         self.running = False
         self._stop_time = time.time()
@@ -187,7 +191,7 @@ class Mixer(QtCore.QObject):
         if self.running and self._num_frames > self._fps_frames:
             delta_t = time.time() - self._fps_time
             if delta_t > 1.0:
-                self._fps = (self._num_frames - self._fps_frames) / delta_t
+                self._fps = old_div((self._num_frames - self._fps_frames), delta_t)
                 self._fps_frames = self._num_frames
                 self._fps_time = time.time()
             return self._fps
@@ -196,7 +200,7 @@ class Mixer(QtCore.QObject):
             self._fps_time = time.time()
             return 0.0
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def onset_detected(self):
         t = time.time()
         if (t - self._last_onset_time) > self._onset_holdoff:
@@ -288,7 +292,7 @@ class Mixer(QtCore.QObject):
             return True
         return False
 
-    def next(self):
+    def __next__(self):
         #TODO: Fix this after the Playlist merge
         if len(self.playlist) == 0:
             return
@@ -369,7 +373,7 @@ class Mixer(QtCore.QObject):
                 if self._transition_duration > 0.0 and self._transition is not None:
                     if not self._paused and not self._transition_scrubbing:
                         self.transition_progress = clip(0.0,
-                                                        self._elapsed / self._transition_duration,
+                                                        old_div(self._elapsed, self._transition_duration),
                                                         1.0)
                 else:
                     if not self._transition_scrubbing:
@@ -426,7 +430,7 @@ class Mixer(QtCore.QObject):
             tick_time = (time.time() - self._last_frame_time)
             self._last_frame_time = time.time()
             if tick_time > 0.0:
-                index = int((1.0 / tick_time))
+                index = int((old_div(1.0, tick_time)))
                 self._tick_time_data[index] = self._tick_time_data.get(index, 0) + 1
 
     def scene(self):

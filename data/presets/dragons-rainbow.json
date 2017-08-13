@@ -1,18 +1,18 @@
 {
-    "classname": "Dragons", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "dragons rainbow", 
+    "classname": "Dragons",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "dragons rainbow",
     "params": {
-        "alive-color": "[0.0, 0.1, 1.0]", 
-        "allow-playback": "True", 
-        "birth-rate": "0.1", 
-        "dead-color": "[1.8, 0.05, 1.0]", 
-        "explode-color": "(7.5, 4.5, 1.0)", 
-        "growth-rate": "60.0", 
-        "growth-time": "0.1", 
-        "pop-limit": "20", 
-        "tail-color": "[2.2, 0.05, 1.0]", 
+        "alive-color": "(0.0, 0.1, 1.0)",
+        "allow-playback": "True",
+        "birth-rate": "0.1",
+        "dead-color": "(1.8, 0.05, 1.0)",
+        "explode-color": "(7.5, 4.5, 1.0)",
+        "growth-rate": "60.0",
+        "growth-time": "0.1",
+        "pop-limit": "20",
+        "tail-color": "(2.2, 0.05, 1.0)",
         "tail-persist": "1.0"
     }
 }

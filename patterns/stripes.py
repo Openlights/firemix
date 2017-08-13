@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import division
+
+from past.utils import old_div
 import colorsys
 import random
 import math
@@ -52,7 +55,7 @@ class StripeGradient(Pattern):
         x -= cx
         y -= cy
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-        self.pixel_angles = (math.pi + np.arctan2(y, x)) / (2 * math.pi)
+        self.pixel_angles = old_div((math.pi + np.arctan2(y, x)), (2 * math.pi))
         self.pixel_distances /= max(self.pixel_distances)
 
     def parameter_changed(self, parameter):
@@ -89,8 +92,8 @@ class StripeGradient(Pattern):
         dy = y - cy
         x = dx * math.cos(self.stripe_angle) - dy * math.sin(self.stripe_angle)
         y = dx * math.sin(self.stripe_angle) + dy * math.cos(self.stripe_angle)
-        x = (x / stripe_width) % 1.0
-        y = (y / stripe_width) % 1.0
+        x = (old_div(x, stripe_width)) % 1.0
+        y = (old_div(y, stripe_width)) % 1.0
         x = np.abs(x - sx)
         y = np.abs(y - sy)
         hues = np.int_(np.mod(x+y, 1.0) * posterization)

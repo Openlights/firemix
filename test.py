@@ -1,3 +1,4 @@
+from __future__ import print_function
 import unittest
 import string
 
@@ -15,14 +16,14 @@ divider = '------'
 class TestExample(unittest.TestCase):
 
     def setUp(self):
-        print divider
+        print(divider)
         print('Starting test: ' + self.id().split('.')[-2] + ' ' + self.id().split('.')[-1])
-        print divider
+        print(divider)
 
     def tearDown(self):
-        print divider
+        print(divider)
         print('Ending test: ' + self.id().split('.')[-2] + ' ' + self.id().split('.')[-1])
-        print divider
+        print(divider)
 
     def test_example(self):
         self.assertTrue(True)
@@ -30,14 +31,14 @@ class TestExample(unittest.TestCase):
 
 class TestScene(unittest.TestCase):
     def setUp(self):
-        print divider
+        print(divider)
         print('Starting test: ' + self.id().split('.')[-2] + ' ' + self.id().split('.')[-1])
-        print divider
+        print(divider)
 
     def tearDown(self):
-        print divider
+        print(divider)
         print('Ending test: ' + self.id().split('.')[-2] + ' ' + self.id().split('.')[-1])
-        print divider
+        print(divider)
 
     def test_extents(self):
         # TODO lib.scene.extents()
@@ -50,21 +51,21 @@ class TestScene(unittest.TestCase):
 
 class TestPlaylist(unittest.TestCase):
     def setUp(self):
-        print divider
+        print(divider)
         print('Starting test: ' + self.id().split('.')[-2] + ' ' + self.id().split('.')[-1])
-        print divider
+        print(divider)
 
     def tearDown(self):
-        print divider
+        print(divider)
         print('Ending test: ' + self.id().split('.')[-2] + ' ' + self.id().split('.')[-1])
-        print divider
+        print(divider)
 
     def test_slugify_changes_to_lowercase(self):
         test_chars = set([i for i in string.ascii_uppercase])
-        print 'test_chars: '
-        print test_chars
+        print('test_chars: ')
+        print(test_chars)
         test_string = lib.playlist.slugify('GHJK')
-        print 'test_string: ' + test_string
+        print('test_string: ' + test_string)
         self.assertFalse(string_contains_characters(test_string, test_chars))
         self.assertEqual(test_string, 'ghjk')
 
@@ -78,7 +79,7 @@ class TestPlaylist(unittest.TestCase):
 
     def test_slugify_removes_nonalpha(self):
         test_string = lib.playlist.slugify('~!@#$%^&*()+=')
-        print 'test_string: ' + test_string
+        print('test_string: ' + test_string)
         self.assertTrue(test_string.isalnum() or not test_string)
 
     #TODO test tabs and other whitespace handling

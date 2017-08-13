@@ -1,8 +1,8 @@
 {
-    "classname": "TestPattern", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "TestPattern-1", 
+    "classname": "TestPattern",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "TestPattern-1",
     "params": {
         "allow-playback": "False"
     }

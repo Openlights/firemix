@@ -15,7 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+from __future__ import division
 
+from past.utils import old_div
 import logging
 import numpy as np
 from scipy import signal
@@ -28,7 +31,7 @@ try:
 except ImportError:
     USE_YAPPI = False
 
-from PySide import QtCore
+from PyQt5 import QtCore
 
 log = logging.getLogger("firemix.core.mixer")
 
@@ -38,8 +41,8 @@ class Audio(QtCore.QObject):
     """
     Audio handles looking at sound data and setting it up for use in patterns
     """
-    transition_starting = QtCore.Signal()
-    onset = QtCore.Signal()
+    transition_starting = QtCore.pyqtSignal()
+    onset = QtCore.pyqtSignal()
 
     _fader_steps = 256
     SIM_BEATS_PER_MINUTE = 120.0
@@ -84,14 +87,14 @@ class Audio(QtCore.QObject):
         locker = QtCore.QMutexLocker(self._mutex)
         return np.multiply(self.fft, self.gain)
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def trigger_onset(self):
         self.onset.emit()
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def on_sim_timer(self):
         dt = self._sim_timer.interval()
-        measure = (60000.0 / self.SIM_BEATS_PER_MINUTE)
+        measure = (old_div(60000.0, self.SIM_BEATS_PER_MINUTE))
 
         if self._simulate:
             if self._auto_enable_simulate and self._time_since_last_data < self.SIM_AUTO_ENABLE_DELAY:
@@ -103,7 +106,7 @@ class Audio(QtCore.QObject):
                 self._sim_counter = 0
                 self._sim_beat = 0
 
-            sim_beat_boundary = self._sim_counter % (measure / 4) == 0
+            sim_beat_boundary = self._sim_counter % (old_div(measure, 4)) == 0
 
             if sim_beat_boundary:
                 self._sim_beat += 1
@@ -139,18 +142,18 @@ class Audio(QtCore.QObject):
                 self._simulate = True
                 self.mixer._app.gui.audio_simulate_enabled(True)
 
-    @QtCore.Slot(bool)
+    @QtCore.pyqtSlot(int)
     def enable_simulation(self, en):
         self._simulate = (en != 0)
 
-    @QtCore.Slot(float, float)
+    @QtCore.pyqtSlot(float, float)
     def update_pitch_data(self, pitch, confidence):
         self.pitch = pitch
         self.pitch_confidence = confidence
         #if confidence > 0.9:
         #    print "Pitch: %0.1f" % pitch
 
-    @QtCore.Slot(list)
+    @QtCore.pyqtSlot(list)
     def fft_data_from_network(self, data):
         self._time_since_last_data = 0
         if not self._simulate:
@@ -158,7 +161,7 @@ class Audio(QtCore.QObject):
 
     def update_fft_data(self, latest_fft):
         if len(latest_fft) == 0:
-            print "received no fft"
+            print("received no fft")
             return
 
         latest_fft = np.asarray(latest_fft)
@@ -185,8 +188,8 @@ class Audio(QtCore.QObject):
         self.peakFrequency.insert(0, np.argmax(latest_fft))
 
         maxPeak = np.max(self.peak)
-        if maxPeak > 1 / self.maxGain:
-            self.gain = 1 / maxPeak
+        if maxPeak > old_div(1, self.maxGain):
+            self.gain = old_div(1, maxPeak)
         else:
             self.gain = self.maxGain
 
@@ -198,7 +201,7 @@ class Audio(QtCore.QObject):
 
             colors = np.zeros((len(self.average), 3))
             colors[:,1] = self.average
-            colors[:,0] = np.multiply(self.peakFrequency, 1.0/255)
+            colors[:,0] = np.multiply(self.peakFrequency, old_div(1.0,255))
 
             self.fader = ColorFade(colors, self._fader_steps)
 

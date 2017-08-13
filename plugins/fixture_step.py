@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import range
 import numpy as np
 
 from lib.transition import Transition

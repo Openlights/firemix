@@ -15,13 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+from __future__ import division
+
+from past.utils import old_div
 import argparse
 import functools
 import logging
 import signal
 import sys
 
-from PySide import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 try:
     import qdarkstyle
@@ -56,7 +60,8 @@ def main():
     parser.add_argument("--nogui", dest='gui', action='store_false',
                         default=True, help="Disable GUI")
     parser.add_argument("--preset", type=str, help="Specify a preset name to run only that preset (useful for debugging)")
-    parser.add_argument("--verbose", "-v", action='count', help="Enable verbose log output. Specify more than once for more output")
+    parser.add_argument("--verbose", "-v", action='count', default=0,
+                        help="Enable verbose log output. Specify more than once for more output")
     parser.add_argument("--noaudio", action='store_const', const=True, default=False, help="Disable audio processing client")
 
     args = parser.parse_args()
@@ -68,9 +73,9 @@ def main():
 
     log.info("Booting FireMix...")
 
-    qt_app = QtGui.QApplication(sys.argv, args.gui)
+    qt_app = QtWidgets.QApplication(sys.argv)
     if qdarkstyle is not None:
-        qt_app.setStyleSheet(qdarkstyle.load_stylesheet())
+        qt_app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     app = FireMixApp(qt_app, args)
 
     signal.signal(signal.SIGINT, functools.partial(sig_handler, app))
@@ -94,11 +99,11 @@ def main():
     qt_app.exec_()
 
     if args.profile:
-        print   "------ TICK TIME HISTOGRAM ------"
+        print("------ TICK TIME HISTOGRAM ------")
         elapsed = (app.mixer._stop_time - app.mixer._start_time)
-        print "%d frames in %0.2f seconds (%0.2f FPS) " %  (app.mixer._num_frames, elapsed, app.mixer._num_frames / elapsed)
-        for c in sorted(app.mixer._tick_time_data.iterkeys()):
-            print "[%d fps]:\t%4d\t%0.2f%%" % (c, app.mixer._tick_time_data[c], (float(app.mixer._tick_time_data[c]) / app.mixer._num_frames) * 100.0)
+        print("%d frames in %0.2f seconds (%0.2f FPS) " %  (app.mixer._num_frames, elapsed, old_div(app.mixer._num_frames, elapsed)))
+        for c in sorted(app.mixer._tick_time_data.keys()):
+            print("[%d fps]:\t%4d\t%0.2f%%" % (c, app.mixer._tick_time_data[c], (old_div(float(app.mixer._tick_time_data[c]), app.mixer._num_frames)) * 100.0))
 
 if __name__ == "__main__":
     main()

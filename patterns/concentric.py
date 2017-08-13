@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import division
+
+from past.utils import old_div
 import colorsys
 import random
 import math
@@ -50,7 +53,7 @@ class Concentric(Pattern):
         self.target = self.random_point()
         self.heading = self.target - self.center
         self.heading /= np.linalg.norm(self.heading)
-        self.center_speed = self.parameter('max-speed').get() / 10.0
+        self.center_speed = old_div(self.parameter('max-speed').get(), 10.0)
 
         self.update_center()
 
@@ -58,14 +61,14 @@ class Concentric(Pattern):
     def update_center(self):
         x_offset, y_offset = self.center
         xmin, ymin, xmax, ymax = self.bounding_box
-        cx = ((1 - x_offset) * xmin + (1 + x_offset) * xmax) / 2.0
-        cy = ((1 - y_offset) * ymin + (1 + y_offset) * ymax) / 2.0
+        cx = old_div(((1 - x_offset) * xmin + (1 + x_offset) * xmax), 2.0)
+        cy = old_div(((1 - y_offset) * ymin + (1 + y_offset) * ymax), 2.0)
 
         x,y = np.copy(self.locations.T)
         x -= cx
         y -= cy
         self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-        self.pixel_distances /= ((xmax - xmin) / 2.0)
+        self.pixel_distances /= (old_div((xmax - xmin), 2.0))
 
     def parameter_changed(self, parameter):
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())

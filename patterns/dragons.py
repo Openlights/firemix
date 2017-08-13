@@ -15,6 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import division
+
+from builtins import range
+from builtins import object
+from past.utils import old_div
 import colorsys
 import random
 
@@ -183,7 +188,7 @@ class Dragons(Pattern):
         self._setup_colors()
 
     def reset(self):
-        self._buffer = BufferUtils.create_buffer()        
+        self._buffer = BufferUtils.create_buffer()
 
     def tick(self, dt):
         super(Dragons, self).tick(dt)

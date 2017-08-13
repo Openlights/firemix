@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "rainbow spiral clone clone", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "rainbow spiral clone clone",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.0", 
-        "first-preset": "spiral audio boost clone", 
-        "second-preset": "spiral ice", 
-        "transition-mode": "Multiply Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.0",
+        "first-preset": "spiral audio boost clone",
+        "second-preset": "spiral ice",
+        "transition-mode": "Multiply Blend",
         "transition-progress": "0.5"
     }
 }

@@ -15,21 +15,23 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import str
+from builtins import object
 import ast
 import numpy
 from lib.wibbler import Wibbler
 
-class Parameter:
+class Parameter(object):
     """
     Base class for a preset parameter
     """
     def __init__(self, name, parent=None):
-        if not isinstance(name, str):
-            raise ValueError("Parameter name must be a string.")
+        if not isinstance(name, (str, bytes)):
+            raise ValueError("Parameter name must be a string")
         self._name = name
         self._value = 0
         self._valueString = None
-        self._parent = parent        
+        self._parent = parent
         self._wibbler = None
 
     def tick(self, dt):

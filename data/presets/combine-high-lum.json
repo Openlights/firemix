@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "combine high lum", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "combine high lum",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.0", 
-        "first-preset": "radial complement stars", 
-        "second-preset": "high lum test", 
-        "transition-mode": "Linear Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.0",
+        "first-preset": "radial complement stars",
+        "second-preset": "high lum test",
+        "transition-mode": "Linear Blend",
         "transition-progress": "0.5"
     }
 }

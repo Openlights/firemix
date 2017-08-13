@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "galaxy comet", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "galaxy comet",
     "params": {
-        "allow-playback": "False", 
-        "audio-transition": "0.0", 
-        "first-preset": "dragons comet", 
-        "second-preset": "galaxy", 
-        "transition-mode": "Linear Blend", 
+        "allow-playback": "False",
+        "audio-transition": "0.0",
+        "first-preset": "dragons comet",
+        "second-preset": "galaxy",
+        "transition-mode": "Linear Blend",
         "transition-progress": "[0.1,1.0,0.1]"
     }
 }

@@ -15,7 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from PySide import QtCore, QtGui
+from builtins import str
+from builtins import range
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from ui.ui_dlg_settings import Ui_DlgSettings
 from lib import color_modes
@@ -24,7 +26,7 @@ from lib import color_modes
 PROTOCOLS = ["Legacy", "OPC"]
 
 
-class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
+class DlgSettings(QtWidgets.QDialog, Ui_DlgSettings):
 
     def __init__(self, parent=None):
         super(DlgSettings, self).__init__(parent)
@@ -100,9 +102,9 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             for acceptor in self.acceptors:
                 acceptor()
 
-            QtGui.QDialog.accept(self)
+            QtWidgets.QDialog.accept(self)
         else:
-            QtGui.QMessageBox(QtGui.QMessageBox.Warning, "FireMix", "Please correct all highlighted entries!").exec_()
+            QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, "FireMix", "Please correct all highlighted entries!").exec_()
 
     def accept_networking(self):
         clients = []
@@ -138,12 +140,12 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         clients = self.app.settings['networking']['clients']
         self.tbl_networking_clients.setRowCount(len(clients))
         for i, client in enumerate(clients):
-            item_host = QtGui.QTableWidgetItem(client["host"])
-            item_port = QtGui.QTableWidgetItem(str(client["port"]))
-            item_enabled = QtGui.QCheckBox()
-            item_ignore_dimming = QtGui.QCheckBox()
+            item_host = QtWidgets.QTableWidgetItem(client["host"])
+            item_port = QtWidgets.QTableWidgetItem(str(client["port"]))
+            item_enabled = QtWidgets.QCheckBox()
+            item_ignore_dimming = QtWidgets.QCheckBox()
 
-            item_color_mode = QtGui.QComboBox()
+            item_color_mode = QtWidgets.QComboBox()
             for mode in color_modes.modes:
                 item_color_mode.addItem(mode)
 
@@ -155,7 +157,7 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             if client.get("ignore-dimming", False):
                 item_ignore_dimming.setCheckState(QtCore.Qt.Checked)
 
-            item_protocol = QtGui.QComboBox()
+            item_protocol = QtWidgets.QComboBox()
             for proto in PROTOCOLS:
                 item_protocol.addItem(proto)
 
@@ -167,19 +169,19 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
             self.tbl_networking_clients.setCellWidget(i, 3, item_color_mode)
             self.tbl_networking_clients.setCellWidget(i, 4, item_protocol)
             self.tbl_networking_clients.setCellWidget(i, 5, item_ignore_dimming)
-        self.tbl_networking_clients.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
+        self.tbl_networking_clients.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
     def add_networking_client_row(self):
         row = self.tbl_networking_clients.rowCount()
         self.tbl_networking_clients.insertRow(row)
-        self.tbl_networking_clients.setItem(row, 0, QtGui.QTableWidgetItem(""))
-        self.tbl_networking_clients.setItem(row, 1, QtGui.QTableWidgetItem("3020"))
-        self.tbl_networking_clients.setCellWidget(row, 2, QtGui.QCheckBox())
-        item_color_mode = QtGui.QComboBox()
+        self.tbl_networking_clients.setItem(row, 0, QtWidgets.QTableWidgetItem(""))
+        self.tbl_networking_clients.setItem(row, 1, QtWidgets.QTableWidgetItem("3020"))
+        self.tbl_networking_clients.setCellWidget(row, 2, QtWidgets.QCheckBox())
+        item_color_mode = QtWidgets.QComboBox()
         for mode in color_modes.modes:
             item_color_mode.addItem(mode)
 
-        item_protocol = QtGui.QComboBox()
+        item_protocol = QtWidgets.QComboBox()
         for proto in PROTOCOLS:
             item_protocol.addItem(proto)
         self.tbl_networking_clients.setCellWidget(row, 3, item_color_mode)
@@ -193,21 +195,21 @@ class DlgSettings(QtGui.QDialog, Ui_DlgSettings):
         self.tbl_strands_list.setRowCount(len(strands))
         self.tbl_strands_list.verticalHeader().setVisible(False)
         for i, strand in enumerate(strands):
-            idx = QtGui.QTableWidgetItem(str(strand["id"]))
-            idx.setFlags(~QtCore.Qt.ItemIsEnabled)
+            idx = QtWidgets.QTableWidgetItem(str(strand["id"]))
+            idx.setFlags(QtCore.Qt.ItemFlags(idx.flags() & ~QtCore.Qt.ItemIsEnabled))
 
-            enabled = QtGui.QCheckBox()
+            enabled = QtWidgets.QCheckBox()
             if strand["enabled"]:
                 enabled.setCheckState(QtCore.Qt.Checked)
 
-            color_mode = QtGui.QComboBox()
+            color_mode = QtWidgets.QComboBox()
             for mode in color_modes.strand_modes:
                 color_mode.addItem(mode)
 
             color_mode.setCurrentIndex(color_modes.strand_modes.index(strand["color-mode"]))
 
-            w_enabled = QtGui.QWidget()
-            cb_layout = QtGui.QHBoxLayout()
+            w_enabled = QtWidgets.QWidget()
+            cb_layout = QtWidgets.QHBoxLayout()
             cb_layout.addWidget(enabled)
             cb_layout.setAlignment(QtCore.Qt.AlignCenter)
             cb_layout.setContentsMargins(0, 0, 0, 0)

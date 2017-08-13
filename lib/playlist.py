@@ -15,6 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+
+from builtins import str
+from builtins import range
 import os
 import gc
 import logging
@@ -22,7 +26,7 @@ import random
 import json
 from copy import deepcopy
 
-from PySide import QtCore
+from PyQt5 import QtCore
 
 from lib.json_dict import JSONDict
 from lib.pattern_loader import PatternLoader
@@ -93,7 +97,7 @@ class Playlist(JSONDict):
         try:
             self.load(False)
         except ValueError:
-            print "Error loading %s" % self.filename
+            print("Error loading %s" % self.filename)
             return False
 
         self._playlist_file_version = self.data.get("file-version", 1)  # Version 1 didn't have this key
@@ -206,7 +210,7 @@ class Playlist(JSONDict):
 
         return names
 
-    @QtCore.Slot()
+    @QtCore.pyqtSlot()
     def playlist_mutated(self):
         """
         This should get called when the playlist is mutated in some way
@@ -280,7 +284,7 @@ class Playlist(JSONDict):
         """
         Creates a shuffle list
         """
-        self._shuffle_list = range(len(self._playlist))
+        self._shuffle_list = list(range(len(self._playlist)))
 
         if len(self._shuffle_list) == 0:
             return
@@ -458,7 +462,7 @@ class Playlist(JSONDict):
         preset class.  Name must be unique.  If idx is specified, the preset will be inserted
         at the position idx, else it will be appended to the end of the playlist.
         """
-        if classname not in self.available_pattern_classes.keys():
+        if classname not in list(self.available_pattern_classes.keys()):
             log.error("Tried to add nonexistent preset class %s" % classname)
             return False
 
@@ -511,7 +515,7 @@ class Playlist(JSONDict):
         self.add_preset(classname, new_name, self._playlist.index(old) + 1)
         new = self.get_preset_by_name(new_name)
 
-        for name, param in old.get_parameters().iteritems():
+        for name, param in old.get_parameters().items():
             new.parameter(name).set_from_str(param.get_as_str())
 
         self.playlist_mutated()
@@ -536,7 +540,7 @@ class Playlist(JSONDict):
         Wipes out the existing playlist and adds one instance of each preset
         """
         self.clear_playlist()
-        for cn in self.available_pattern_classes.keys():
+        for cn in list(self.available_pattern_classes.keys()):
             name = cn + "-1"
             inst = self.available_pattern_classes[cn][1](self._app.mixer, name=name)
             inst.setup()

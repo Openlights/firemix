@@ -15,9 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import object
 import numpy
 
-class Wibbler:
+class Wibbler(object):
     """
     This manages a value that wanders chaotically within a range
     """

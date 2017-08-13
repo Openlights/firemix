@@ -15,6 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import division
+
+from builtins import range
+from past.utils import old_div
 import numpy as np
 
 from lib.transition import Transition

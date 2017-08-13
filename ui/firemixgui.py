@@ -15,12 +15,21 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import division
+
+from builtins import next
+from builtins import str
+from builtins import range
+from past.utils import old_div
 import time
 import os
 import numpy as np
 import math
 
-from PySide import QtGui, QtCore
+from PyQt5.QtCore import pyqtSlot, QTimer, Qt
+from PyQt5.QtGui import QColor, QIcon, QImage, QPixmap
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QAbstractItemView, QListWidgetItem, \
+                            QTableWidgetItem, QDialog
 
 from ui.ui_firemix import Ui_FireMixMain
 from ui.dlg_add_preset import DlgAddPreset
@@ -28,7 +37,7 @@ from ui.dlg_settings import DlgSettings
 
 from lib.colors import hsv_float_to_rgb_uint8
 
-class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
+class FireMixGUI(QMainWindow, Ui_FireMixMain):
 
     def __init__(self, parent=None, app=None):
         super(FireMixGUI, self).__init__(parent)
@@ -36,10 +45,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.mixer = app.mixer
         self.setupUi(self)
 
-        self.icon_blank = QtGui.QIcon("./res/icons/blank.png")
-        self.icon_disabled = QtGui.QIcon("./res/icons/ic_do_not_disturb_black_24dp_1x.png")
-        self.icon_playing = QtGui.QIcon("./res/icons/ic_play_circle_filled_black_24dp_1x.png")
-        self.icon_next = QtGui.QIcon("./res/icons/ic_play_circle_outline_black_24dp_1x.png")
+        self.icon_blank = QIcon("./res/icons/blank.png")
+        self.icon_disabled = QIcon("./res/icons/ic_do_not_disturb_black_24dp_1x.png")
+        self.icon_playing = QIcon("./res/icons/ic_play_circle_filled_black_24dp_1x.png")
+        self.icon_next = QIcon("./res/icons/ic_play_circle_outline_black_24dp_1x.png")
 
         self.transition_right_to_left = False
         self.transition_in_progress = False
@@ -86,9 +95,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.lst_presets.itemDoubleClicked.connect(self.on_preset_double_clicked)
         self.lst_presets.itemChanged.connect(self.on_preset_name_changed)
         self.lst_presets.layout_changed.connect(self.on_playlist_reorder)
-        self.lst_presets.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.lst_presets.setContextMenuPolicy(Qt.CustomContextMenu)
         self.lst_presets.customContextMenuRequested.connect(self.preset_list_context_menu)
-        self.lst_presets.setEditTriggers(QtGui.QAbstractItemView.EditKeyPressed | QtGui.QAbstractItemView.SelectedClicked)
+        self.lst_presets.setEditTriggers(QAbstractItemView.EditKeyPressed | QAbstractItemView.SelectedClicked)
 
         # Settings
         self.edit_preset_duration.valueChanged.connect(self.on_preset_duration_changed)
@@ -117,13 +126,13 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         # Mixer FPS update
         self._update_interval = 250
-        self.mixer_update_timer = QtCore.QTimer()
+        self.mixer_update_timer = QTimer()
         self.mixer_update_timer.setInterval(self._update_interval)
         self.mixer_update_timer.timeout.connect(self.update_mixer)
         self.mixer_update_timer.start()
 
         self.transition_update_toggle = False
-        self.transition_update_timer = QtCore.QTimer()
+        self.transition_update_timer = QTimer()
         self.transition_update_timer.setInterval(300)
         self.transition_update_timer.timeout.connect(self.on_transition_update_timer)
         self.mixer.transition_starting.connect(self.transition_update_start)
@@ -134,16 +143,16 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.app.stop()
         event.accept()
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def onset_detected(self):
         self.btn_receiving_audio.setStyleSheet("* { font: bold; color: black }")
-        QtCore.QTimer.singleShot(100, self.clear_onset_detected)
+        QTimer.singleShot(100, self.clear_onset_detected)
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def clear_onset_detected(self):
         self.btn_receiving_audio.setStyleSheet("* { font: normal }")
 
-    @QtCore.Slot(bool)
+    @pyqtSlot(bool)
     def audio_simulate_enabled(self, en):
         self.cb_simulate_audio.setChecked(en)
 
@@ -155,7 +164,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         if not self.mixer.is_paused():
             return
 
-        v = (self.slider_transition.value() / 100.0)
+        v = (old_div(self.slider_transition.value(), 100.0))
 
         if self.transition_right_to_left:
             self.mixer.scrub_transition(1.0 - v)
@@ -193,19 +202,19 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         # Update wibblers
         # TODO (jon) this is kinda inefficient
         if self.app.playlist.get_active_preset() is not None:
-            for name, parameter in self.app.playlist.get_active_preset().get_parameters().iteritems():
+            for name, parameter in self.app.playlist.get_active_preset().get_parameters().items():
                 pval = parameter.get()
                 for i in range(self.tbl_preset_parameters.rowCount()):
                     if self.tbl_preset_parameters.item(i, 0).text() == name:
                         # TODO: For now, all wibblers are float values.  Maybe they should be allowed to be others?
                         if parameter._wibbler is not None:
                             self.tbl_preset_parameters.item(i, 2).setText("= %0.2f" % pval)
-                            self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(0, 0, 200, 5))
+                            self.tbl_preset_parameters.item(i, 2).setBackground(QColor(0, 0, 200, 5))
                         else:
                             self.tbl_preset_parameters.item(i, 2).setText("")
-                            self.tbl_preset_parameters.item(i, 2).setBackground(QtGui.QColor(0, 0, 0, 0))
+                            self.tbl_preset_parameters.item(i, 2).setBackground(QColor(0, 0, 0, 0))
 
-            for name, watch in self.app.playlist.get_active_preset().get_watches().iteritems():
+            for name, watch in self.app.playlist.get_active_preset().get_watches().items():
                 val = watch.get()
                 for i in range(self.tbl_preset_parameters.rowCount()):
                     if self.tbl_preset_parameters.item(i, 0).text() == ("watch(%s)" % name):
@@ -213,7 +222,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         #self.draw_fft()
 
-    @QtCore.Slot()
+    @pyqtSlot()
     def draw_fft(self):
         """
         This method is slow.
@@ -239,15 +248,15 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         if max_val > 0:
             for x in range(0, width * 4, 4):
-                f = np.interp(x / 4, np.arange(len(fft_data)), fft_data)# / max_val
+                f = np.interp(old_div(x, 4), np.arange(len(fft_data)), fft_data)# / max_val
                 #f = math.sqrt(math.sqrt(f))
                 self.fft_pixmap[height - 1][x:x + 4] = \
-                    (hsv_float_to_rgb_uint8((x / (4.0 * width), 1.0, f)) + (255,))
+                    (hsv_float_to_rgb_uint8((old_div(x, (4.0 * width)), 1.0, f)) + (255,))
 
 
         pm = self.fft_pixmap.flatten()
-        img = QtGui.QImage(pm, width, height, QtGui.QImage.Format_ARGB32)
-        self.fft_graphics_view.setPixmap(QtGui.QPixmap.fromImage(img))
+        img = QImage(pm, width, height, QImage.Format_ARGB32)
+        self.fft_graphics_view.setPixmap(QPixmap.fromImage(img))
         #print time.clock() - start
 
     def on_btn_playpause(self):
@@ -272,7 +281,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
     def on_btn_next_preset(self):
         self.mixer.cancel_scrub()
-        self.mixer.next()
+        next(self.mixer)
         self.update_playlist()
 
     def on_btn_reset_preset(self):
@@ -284,7 +293,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_btn_add_preset(self):
         dlg = DlgAddPreset(self)
         dlg.exec_()
-        if dlg.result() == QtGui.QDialog.Accepted:
+        if dlg.result() == QDialog.Accepted:
             if dlg.tabWidget.currentIndex() == 0:
                 classname = dlg.cb_preset_type.currentText()
                 name = dlg.edit_preset_name.text()
@@ -308,14 +317,14 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.update_playlist()
 
     def on_btn_clear_playlist(self):
-        dlg = QtGui.QMessageBox()
+        dlg = QtWidgets.QMessageBox()
         dlg.setWindowTitle("FireMix - Clear Playlist")
         dlg.setText("Are you sure you want to clear the playlist?")
         dlg.setInformativeText("This action cannot be undone.")
-        dlg.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-        dlg.setDefaultButton(QtGui.QMessageBox.No)
+        dlg.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        dlg.setDefaultButton(QtWidgets.QMessageBox.No)
         ret = dlg.exec_()
-        if ret == QtGui.QMessageBox.Yes:
+        if ret == QtWidgets.QMessageBox.Yes:
             self.app.playlist.clear_playlist()
             self.update_playlist()
 
@@ -331,7 +340,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.cb_transition_mode.insertItems(0, transition_list)
         self.cb_transition_mode.setCurrentIndex(self.cb_transition_mode.findText(current_transition))
 
-        shuffle_state = QtCore.Qt.Checked if self.app.settings['mixer']['shuffle'] else QtCore.Qt.Unchecked
+        shuffle_state = Qt.Checked if self.app.settings['mixer']['shuffle'] else Qt.Unchecked
         self.btn_shuffle_playlist.setChecked(shuffle_state)
 
         preset = self.app.playlist.get_active_preset()
@@ -358,12 +367,12 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.lbl_preset_parameters.setTitle("")
 
     def on_slider_dimmer(self):
-        dval = self.slider_global_dimmer.value() / 100.0
+        dval = old_div(self.slider_global_dimmer.value(), 100.0)
         self.app.mixer.global_dimmer = dval
         self.lbl_dimmer.setText("Dimmer [%0.2f]" % dval)
 
     def on_slider_speed(self):
-        sval = round(self.slider_speed.value() / 1000.0, 2)
+        sval = round(old_div(self.slider_speed.value(), 1000.0), 2)
         self.app.mixer.global_speed = sval
         self.lbl_speed.setText("Speed [%0.2fx]" % sval)
 
@@ -378,10 +387,10 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         next = self.app.playlist.get_next_preset()
         cur_item = None
         for preset in presets:
-            item = QtGui.QListWidgetItem(preset.name())
+            item = QListWidgetItem(preset.name())
 
             #TODO: Enable renaming in the list when we have a real delegate
-            #item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+            #item.setFlags(item.flags() | Qt.ItemIsEditable)
             if not preset.parameter('allow-playback').get():
                 item.setIcon(self.icon_disabled)
             else:
@@ -396,7 +405,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
             self.lst_presets.addItem(item)
 
         if cur_item and not self.just_clicked:
-            self.lst_presets.scrollToItem(cur_item, QtGui.QAbstractItemView.PositionAtTop)
+            self.lst_presets.scrollToItem(cur_item, QAbstractItemView.PositionAtTop)
         elif self.just_clicked:
             self.just_clicked = False
 
@@ -441,8 +450,8 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.app.mixer.freeze(False)
 
     def preset_list_context_menu(self, point):
-        ctx = QtGui.QMenu("test")
-        action_rename = QtGui.QAction("Rename" ,self)
+        ctx = QtWidgets.QMenu("test")
+        action_rename = QtWidgets.QAction("Rename" ,self)
         action_rename.triggered.connect(self.start_rename)
         ctx.addAction(action_rename)
         ctx.exec_(self.lst_presets.mapToGlobal(point))
@@ -451,7 +460,7 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         #TODO: Enable renaming in the list when we have a real delegate
         #self.lst_presets.editItem(self.lst_presets.currentItem())
         old_name = self.lst_presets.currentItem().text()
-        new_name, ok = QtGui.QInputDialog.getText(self, 'Rename Pattern', 'New name', text=old_name)
+        new_name, ok = QtWidgets.QInputDialog.getText(self, 'Rename Pattern', 'New name', text=old_name)
         if ok and new_name:
             if not self.app.playlist.preset_name_exists(new_name):
                 self.app.playlist.rename_preset(old_name, new_name)
@@ -499,11 +508,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         i = 0
         for name in sorted(parameters, key=lambda x: x):
             parameter = parameters[name]
-            key_item = QtGui.QTableWidgetItem(name)
-            key_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            value_item = QtGui.QTableWidgetItem(parameter.get_as_str())
-            current_state_item = QtGui.QTableWidgetItem("")
-            current_state_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            key_item = QTableWidgetItem(name)
+            key_item.setFlags(Qt.ItemIsEnabled)
+            value_item = QTableWidgetItem(parameter.get_as_str())
+            current_state_item = QTableWidgetItem("")
+            current_state_item.setFlags(Qt.ItemIsEnabled)
             self.tbl_preset_parameters.setItem(i, 0, key_item)
             self.tbl_preset_parameters.setItem(i, 1, value_item)
             self.tbl_preset_parameters.setItem(i, 2, current_state_item)
@@ -511,11 +520,11 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
 
         for name in sorted(watches, key=lambda x: x):
             watch = watches[name]
-            key_item = QtGui.QTableWidgetItem("watch(%s)" % name)
-            key_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            value_item = QtGui.QTableWidgetItem(watch.get_as_str())
-            current_state_item = QtGui.QTableWidgetItem("")
-            current_state_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            key_item = QTableWidgetItem("watch(%s)" % name)
+            key_item.setFlags(Qt.ItemIsEnabled)
+            value_item = QTableWidgetItem(watch.get_as_str())
+            current_state_item = QTableWidgetItem("")
+            current_state_item.setFlags(Qt.ItemIsEnabled)
             self.tbl_preset_parameters.setItem(i, 0, key_item)
             self.tbl_preset_parameters.setItem(i, 1, value_item)
             self.tbl_preset_parameters.setItem(i, 2, current_state_item)
@@ -550,9 +559,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
     def on_file_new_playlist(self):
         paused = self.app.mixer.is_paused()
         self.app.mixer.stop()
-        filename, _ = QtGui.QFileDialog.getSaveFileName(self, 'Save new playlist file',
-                                                        os.path.join(os.getcwd(), "data", "playlists"),
-                                                        filter="Playlists (*.json)")
+        filename, _ = QFileDialog.getSaveFileName(self, 'Save new playlist file',
+                                                  os.path.join(os.getcwd(), "data", "playlists"),
+                                                  filter="Playlists (*.json)")
         self.app.playlist.create_new(filename)
         self.app.mixer.start()
         self.app.mixer.pause(paused)
@@ -561,13 +570,15 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         paused = self.app.mixer.is_paused()
         self.app.mixer.stop()
         old_name = self.app.playlist.filename
-        filename, _ = QtGui.QFileDialog.getOpenFileName(self, 'Open playlist file', os.path.join(os.getcwd(), "data", "playlists"), filter="Playlists (*.json)")
+        filename, _ = QFileDialog.getOpenFileName(self, 'Open playlist file',
+                                                  os.path.join(os.getcwd(), "data", "playlists"),
+                                                  filter="Playlists (*.json)")
         name = os.path.split(filename)[1].replace(".json", "")
 
         self.app.playlist.set_filename(filename)
         if not self.app.playlist.open():
             self.app.playlist.set_filename(old_name)
-            QtGui.QMessageBox.warning(self, "Error", "Could not open file")
+            QtWidgets.QMessageBox.warning(self, "Error", "Could not open file")
         self.app.mixer.start()
         self.app.mixer.pause(paused)
 
@@ -578,7 +589,9 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         paused = self.app.mixer.is_paused()
         self.app.mixer.pause()
         filename = self.app.playlist.filename
-        filename, _ = QtGui.QFileDialog.getSaveFileName(self, 'Save playlist file as', os.path.join(os.getcwd(), "data", "playlists"), filter="Playlists (*.json)")
+        filename, _ = QFileDialog.getSaveFileName(self, 'Save playlist file as',
+                                                  os.path.join(os.getcwd(), "data", "playlists"),
+                                                  filter="Playlists (*.json)")
 
         if len(filename) > 0:
             self.app.playlist.set_filename(filename)
@@ -586,14 +599,14 @@ class FireMixGUI(QtGui.QMainWindow, Ui_FireMixMain):
         self.app.mixer.pause(paused)
 
     def on_file_generate_default_playlist(self):
-        dlg = QtGui.QMessageBox()
+        dlg = QtWidgets.QMessageBox()
         dlg.setWindowTitle("FireMix - Generate Default Playlist")
         dlg.setText("Are you sure you want to generate the default playlist?")
         dlg.setInformativeText("All existing playlist entries will be removed.  This action cannot be undone.")
-        dlg.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-        dlg.setDefaultButton(QtGui.QMessageBox.No)
+        dlg.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        dlg.setDefaultButton(QtWidgets.QMessageBox.No)
         ret = dlg.exec_()
-        if ret == QtGui.QMessageBox.Yes:
+        if ret == QtWidgets.QMessageBox.Yes:
             self.app.playlist.generate_default_playlist()
             self.update_playlist()
 

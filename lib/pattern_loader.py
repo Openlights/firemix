@@ -15,10 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import object
 from collections import defaultdict
 import os
 import logging
 import inspect
+from imp import reload
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler, FileModifiedEvent, FileDeletedEvent
 
@@ -49,7 +51,7 @@ class PatternFileEventHandler(PatternMatchingEventHandler):
             self.callback(modified_filename)
 
 
-class PatternLoader:
+class PatternLoader(object):
     """
     Scans the ./patterns/ directory and imports all the patterns objects.
 

@@ -14,16 +14,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
+#
+from __future__ import print_function
 
-
+from builtins import range
+from builtins import object
 import sys
 import numpy as np
 import socket
 import array
 import struct
-from copy import deepcopy
 import time
 
+from copy import deepcopy
 from collections import defaultdict
 
 from lib.colors import hls_to_rgb
@@ -32,7 +35,7 @@ from lib.buffer_utils import BufferUtils, struct_flat
 USE_OPC = True
 
 
-class Networking:
+class Networking(object):
 
     def __init__(self, app):
         self.socket = None
@@ -125,7 +128,7 @@ class Networking:
                     self.socket.sendto(packet, (client["host"], client["port"]))
                 self.socket.sendto(array.array('B', [ord('E')]), (client["host"], client["port"]))
             except socket.gaierror:
-                print "Bad hostname: ", client["host"]
+                print("Bad hostname: ", client["host"])
                 continue
             except:
                 continue

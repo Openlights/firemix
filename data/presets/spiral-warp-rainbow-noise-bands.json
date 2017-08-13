@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "spiral warp rainbow noise bands", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "spiral warp rainbow noise bands",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "1.0", 
-        "first-preset": "spiral ice", 
-        "second-preset": "rainbow noise bands large", 
-        "transition-mode": "Linear Blend", 
+        "allow-playback": "True",
+        "audio-transition": "1.0",
+        "first-preset": "spiral ice",
+        "second-preset": "rainbow noise bands large",
+        "transition-mode": "Linear Blend",
         "transition-progress": "0.0"
     }
 }

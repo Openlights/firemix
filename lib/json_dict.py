@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
+from builtins import str
+from builtins import map
+from past.builtins import basestring
 import collections
 import json
 import os
@@ -72,8 +75,8 @@ class JSONDict(collections.MutableMapping):
         if isinstance(data, basestring):
             return str(data)
         elif isinstance(data, collections.Mapping):
-            return dict(map(self._unicode_to_str, data.iteritems()))
+            return dict(list(map(self._unicode_to_str, iter(data.items()))))
         elif isinstance(data, collections.Iterable):
-            return type(data)(map(self._unicode_to_str, data))
+            return type(data)(list(map(self._unicode_to_str, data)))
         else:
             return data

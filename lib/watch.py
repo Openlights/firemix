@@ -16,13 +16,15 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class Watch:
+from builtins import str
+from builtins import object
+class Watch(object):
     """
     Base class for a preset watch (basically a value you can display in the GUI)
     Name must be the name of a member of the preset (parent)
     """
     def __init__(self, parent, name):
-        if not isinstance(name, str):
+        if not isinstance(name, (str, bytes)):
             raise ValueError("Watch name must be a string.")
         self._name = name
         self._parent = parent

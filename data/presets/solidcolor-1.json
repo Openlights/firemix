@@ -1,10 +1,10 @@
 {
-    "classname": "SolidColor", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "SolidColor-1", 
+    "classname": "SolidColor",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "SolidColor-1",
     "params": {
-        "allow-playback": "True", 
+        "allow-playback": "True",
         "color": "(0.08, 0.1, 0.85)"
     }
 }

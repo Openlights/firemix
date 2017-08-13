@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "combine stripey", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "combine stripey",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.0", 
-        "first-preset": "spiral stripey", 
-        "second-preset": "stripe test", 
-        "transition-mode": "Multiply Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.0",
+        "first-preset": "spiral stripey",
+        "second-preset": "stripe test",
+        "transition-mode": "Multiply Blend",
         "transition-progress": "0.5"
     }
 }
