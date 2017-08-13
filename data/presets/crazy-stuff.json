@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "crazy stuff", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "crazy stuff",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.0", 
-        "first-preset": "linear fft twinkle", 
-        "second-preset": "spiral audio crazy", 
-        "transition-mode": "Multiply Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.0",
+        "first-preset": "linear fft twinkle",
+        "second-preset": "spiral audio crazy",
+        "transition-mode": "Multiply Blend",
         "transition-progress": "0.5"
     }
 }

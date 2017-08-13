@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "color blindness", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "color blindness",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.0", 
-        "first-preset": "twinkle yarn", 
-        "second-preset": "radial splotch", 
-        "transition-mode": "Additive Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.0",
+        "first-preset": "twinkle yarn",
+        "second-preset": "radial splotch",
+        "transition-mode": "Additive Blend",
         "transition-progress": "0.15"
     }
 }

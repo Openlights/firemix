@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "combine rain drops", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "combine rain drops",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.0", 
-        "first-preset": "mask noise rains", 
-        "second-preset": "ripple 1", 
-        "transition-mode": "Multiply Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.0",
+        "first-preset": "mask noise rains",
+        "second-preset": "ripple 1",
+        "transition-mode": "Multiply Blend",
         "transition-progress": "0.5"
     }
 }

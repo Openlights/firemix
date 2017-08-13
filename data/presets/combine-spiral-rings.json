@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "combine spiral rings", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "combine spiral rings",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.0", 
-        "first-preset": "spiral rings", 
-        "second-preset": "mask noise small", 
-        "transition-mode": "Multiply Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.0",
+        "first-preset": "spiral rings",
+        "second-preset": "mask noise small",
+        "transition-mode": "Multiply Blend",
         "transition-progress": "0.5"
     }
 }

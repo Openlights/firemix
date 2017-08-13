@@ -20,6 +20,7 @@ from collections import defaultdict
 import os
 import logging
 import inspect
+from imp import reload
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler, FileModifiedEvent, FileDeletedEvent
 

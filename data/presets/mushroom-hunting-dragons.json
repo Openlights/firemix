@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "mushroom hunting dragons", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "mushroom hunting dragons",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.0", 
-        "first-preset": "dragons small red", 
-        "second-preset": "fungi normal", 
-        "transition-mode": "Linear Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.0",
+        "first-preset": "dragons small red",
+        "second-preset": "fungi normal",
+        "transition-mode": "Linear Blend",
         "transition-progress": "0.5"
     }
 }

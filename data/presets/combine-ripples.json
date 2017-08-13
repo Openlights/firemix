@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "combine ripples", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "combine ripples",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.0", 
-        "first-preset": "ripple 1", 
-        "second-preset": "ripple 2", 
-        "transition-mode": "Linear Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.0",
+        "first-preset": "ripple 1",
+        "second-preset": "ripple 2",
+        "transition-mode": "Linear Blend",
         "transition-progress": "0.5"
     }
 }

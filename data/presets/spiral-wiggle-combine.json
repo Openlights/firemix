@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "spiral wiggle combine", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "spiral wiggle combine",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.0", 
-        "first-preset": "mask spiral wider", 
-        "second-preset": "spiral wiggle", 
-        "transition-mode": "Multiply Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.0",
+        "first-preset": "mask spiral wider",
+        "second-preset": "spiral wiggle",
+        "transition-mode": "Multiply Blend",
         "transition-progress": "0.5"
     }
 }

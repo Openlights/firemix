@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "color spiral rings", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "color spiral rings",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.5", 
-        "first-preset": "combine spiral rings", 
-        "second-preset": "twinkle burst", 
-        "transition-mode": "Multiply Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.5",
+        "first-preset": "combine spiral rings",
+        "second-preset": "twinkle burst",
+        "transition-mode": "Multiply Blend",
         "transition-progress": "0.5"
     }
 }

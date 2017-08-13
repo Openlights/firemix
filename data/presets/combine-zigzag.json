@@ -1,14 +1,14 @@
 {
-    "classname": "CombinePresets", 
-    "file-type": "preset", 
-    "file-version": 1, 
-    "name": "combine zigzag", 
+    "classname": "CombinePresets",
+    "file-type": "preset",
+    "file-version": 1,
+    "name": "combine zigzag",
     "params": {
-        "allow-playback": "True", 
-        "audio-transition": "0.0", 
-        "first-preset": "stripe new", 
-        "second-preset": "stripe rainbow boxes", 
-        "transition-mode": "Linear Blend", 
+        "allow-playback": "True",
+        "audio-transition": "0.0",
+        "first-preset": "stripe new",
+        "second-preset": "stripe rainbow boxes",
+        "transition-mode": "Linear Blend",
         "transition-progress": "0.5"
     }
 }
