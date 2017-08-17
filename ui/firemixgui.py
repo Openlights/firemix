@@ -26,7 +26,7 @@ import os
 import numpy as np
 import math
 
-from PyQt5.QtCore import pyqtSlot, QTimer, Qt
+from PyQt5.QtCore import pyqtSlot, QTimer, Qt, QRect
 from PyQt5.QtGui import QColor, QIcon, QImage, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QAbstractItemView, QListWidgetItem, \
                             QTableWidgetItem, QDialog
@@ -44,6 +44,10 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
         self.app = app
         self.mixer = app.mixer
         self.setupUi(self)
+
+        geom_str = self.app.settings.get("window-geometry", None)
+        if geom_str is not None:
+            self.setGeometry(QRect(*geom_str))
 
         self.icon_blank = QIcon("./res/icons/blank.png")
         self.icon_disabled = QIcon("./res/icons/ic_do_not_disturb_black_24dp_1x.png")
@@ -138,6 +142,15 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
         self.mixer.transition_starting.connect(self.transition_update_start)
 
         self.update_mixer_settings()
+
+        self.app.qt_app.aboutToQuit.connect(self.about_to_quit)
+
+    @pyqtSlot()
+    def about_to_quit(self):
+        rect = self.geometry()
+        self.app.settings["window-geometry"] = [rect.x(), rect.y(),
+                                                rect.width(), rect.height()]
+        self.app.settings.save()
 
     def closeEvent(self, event):
         self.app.stop()
