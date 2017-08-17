@@ -25,12 +25,6 @@ from scipy import signal
 
 from lib.color_fade import ColorFade
 
-USE_YAPPI = True
-try:
-    import yappi
-except ImportError:
-    USE_YAPPI = False
-
 from PyQt5 import QtCore
 
 log = logging.getLogger("firemix.core.mixer")

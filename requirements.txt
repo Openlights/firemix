@@ -2,7 +2,6 @@ future>=0.16.0
 numpy>=1.6.2
 scipy>=0.19.1
 vec_noise>=1.1.4
-yappi>=0.62
 profilehooks>=1.7
 watchdog>=0.8.3
 qdarkstyle>=2.3.1

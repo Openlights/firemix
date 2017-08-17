@@ -27,12 +27,6 @@ import random
 import math
 import numpy as np
 
-USE_YAPPI = True
-try:
-    import yappi
-except ImportError:
-    USE_YAPPI = False
-
 from PyQt5 import QtCore
 
 from lib.pattern import Pattern
@@ -106,10 +100,6 @@ class Mixer(QtCore.QObject):
         self.aubio_connector.pitch_data.connect(self.audio.update_pitch_data)
         self.aubio_connector.moveToThread(self._audio_thread)
 
-        if self._app.args.yappi and USE_YAPPI:
-            print("yappi start")
-            yappi.start()
-
         log.info("Warming up BufferUtils cache...")
         BufferUtils.init()
         log.info("Completed BufferUtils cache warmup")
@@ -176,9 +166,6 @@ class Mixer(QtCore.QObject):
         # TODO: Should we restart the audio thread on mixer restart?
         #self._audio_thread.quit()
         #self._audio_thread = None
-
-        if self._app.args.yappi and USE_YAPPI:
-            yappi.get_func_stats().print_all()
 
     def pause(self, pause=True):
         self._paused = pause
