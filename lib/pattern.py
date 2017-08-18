@@ -213,3 +213,6 @@ class Pattern(JSONDict):
         buf['hue'] = hues
         buf['light'] = lightnesses
         buf['sat'] = saturations
+
+    def clear(self, buf):
+        buf.fill(0)

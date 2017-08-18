@@ -125,6 +125,9 @@ class Fungus(Pattern):
         self._last_dt = dt
 
     def render(self, out):
+        # Clear output buffer
+        self.clear(out)
+
         # Ensure that empty displays start up with some seeds
         p_birth = (1.0 - self._spontaneous_birth_probability) if self._population > 5 else 0.5
 
