@@ -21,11 +21,12 @@ from __future__ import division
 from past.utils import old_div
 try:
     from vec_noise import snoise3
-    print("Using enhanced vector noise from Zev")
 except ImportError:
+    print("vec_noise not found; using noise instead")
     from noise import snoise3
 import numpy as np
 import ast
+import random
 
 from profilehooks import profile
 
