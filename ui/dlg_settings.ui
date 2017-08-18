@@ -23,12 +23,30 @@
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="margin">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
      <number>0</number>
     </property>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0">
-      <property name="margin">
+      <property name="leftMargin">
+       <number>3</number>
+      </property>
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="rightMargin">
+       <number>3</number>
+      </property>
+      <property name="bottomMargin">
        <number>3</number>
       </property>
       <item>
@@ -76,7 +94,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page_mixer">
          <widget class="QWidget" name="formLayoutWidget">
@@ -128,7 +146,7 @@
               <number>1</number>
              </property>
              <property name="maximum">
-              <number>120</number>
+              <number>1000000</number>
              </property>
              <property name="singleStep">
               <number>10</number>
@@ -147,7 +165,7 @@
            <rect>
             <x>0</x>
             <y>10</y>
-            <width>571</width>
+            <width>575</width>
             <height>311</height>
            </rect>
           </property>
@@ -158,12 +176,30 @@
               <string>Networking Clients</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
-              <property name="margin">
+              <property name="leftMargin">
+               <number>6</number>
+              </property>
+              <property name="topMargin">
+               <number>6</number>
+              </property>
+              <property name="rightMargin">
+               <number>6</number>
+              </property>
+              <property name="bottomMargin">
                <number>6</number>
               </property>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_2">
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
                  <number>0</number>
                 </property>
                 <item>
@@ -249,7 +285,16 @@
                 </item>
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_4">
-                  <property name="margin">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
                    <number>0</number>
                   </property>
                   <item>

@@ -54,8 +54,11 @@ class CombinePresets(Pattern):
         self.preset1 = self._app.mixer.playlist.get_preset_by_name(self._preset1_name)
         self.preset2 = self._app.mixer.playlist.get_preset_by_name(self._preset2_name)
 
-        self.preset1.tick(dt)
-        self.preset2.tick(dt)
+        if self.preset1 is not None:
+            self.preset1.tick(dt)
+
+        if self.preset2 is not None:
+            self.preset2.tick(dt)
 
     def render(self, out):
         preset1 = self.preset1

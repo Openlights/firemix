@@ -231,7 +231,7 @@ class DlgSettings(QtWidgets.QDialog, Ui_DlgSettings):
         if onset_holdoff < 0.001 or onset_holdoff > 10.0:
             return False
 
-        if tick_rate < 1 or tick_rate > 120:
+        if tick_rate < 1 or tick_rate > 999999:
             return False
 
         return True
