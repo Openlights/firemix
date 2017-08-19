@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # This file is part of Firemix.
 #
 # Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>

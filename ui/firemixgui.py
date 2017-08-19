@@ -28,8 +28,9 @@ import math
 
 from PyQt5.QtCore import pyqtSlot, QTimer, Qt, QRect
 from PyQt5.QtGui import QColor, QIcon, QImage, QPixmap
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QAbstractItemView, QListWidgetItem, \
-                            QTableWidgetItem, QDialog
+from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QAbstractItemView,
+                             QListWidgetItem, QTableWidgetItem, QDialog, QMenu,
+                             QAction, QInputDialog)
 
 from ui.ui_firemix import Ui_FireMixMain
 from ui.dlg_add_preset import DlgAddPreset
@@ -463,8 +464,8 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
         self.app.mixer.freeze(False)
 
     def preset_list_context_menu(self, point):
-        ctx = QtWidgets.QMenu("test")
-        action_rename = QtWidgets.QAction("Rename" ,self)
+        ctx = QMenu("test")
+        action_rename = QAction("Rename" ,self)
         action_rename.triggered.connect(self.start_rename)
         ctx.addAction(action_rename)
         ctx.exec_(self.lst_presets.mapToGlobal(point))
@@ -473,7 +474,7 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
         #TODO: Enable renaming in the list when we have a real delegate
         #self.lst_presets.editItem(self.lst_presets.currentItem())
         old_name = self.lst_presets.currentItem().text()
-        new_name, ok = QtWidgets.QInputDialog.getText(self, 'Rename Pattern', 'New name', text=old_name)
+        new_name, ok = QInputDialog.getText(self, 'Rename Pattern', 'New name', text=old_name)
         if ok and new_name:
             if not self.app.playlist.preset_name_exists(new_name):
                 self.app.playlist.rename_preset(old_name, new_name)
