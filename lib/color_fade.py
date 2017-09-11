@@ -24,7 +24,8 @@ import numpy as np
 
 import lib.dtypes as dtypes
 
-from lib.colors import clip
+def clip(low, input, high):
+    return min(max(input, low), high)
 
 class ColorFade(object):
     """Represents the fade of one color to another"""

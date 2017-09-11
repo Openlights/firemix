@@ -86,6 +86,7 @@ class Mixer(QtCore.QObject):
         self._fps = 0.0
         self.last_time = time.time()
         self.transition_progress = 0.0
+        self.useColorCorrections = True
 
         # TODO: bring back noaudio
         #if not self._app.args.noaudio:

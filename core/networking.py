@@ -30,6 +30,7 @@ from copy import deepcopy
 from collections import defaultdict
 
 from lib.colors import hls_to_rgb
+from lib.colors import hls_to_rgb_perceptual
 from lib.buffer_utils import BufferUtils, struct_flat
 
 USE_OPC = True
@@ -71,7 +72,7 @@ class Networking(object):
 
         if undimmed_legacy_clients:
             # Protect against presets or transitions that write float data.
-            buffer_rgb = hls_to_rgb(buffer)
+            buffer_rgb = hls_to_rgb_perceptual(buffer)
             buffer_rgb_int = np.int8(struct_flat(buffer_rgb) * 255)
 
             self._write_legacy(buffer_rgb_int, strand_settings, undimmed_legacy_clients)
@@ -80,7 +81,11 @@ class Networking(object):
         # the global dimmer from the mixer and re-convert to RGB
         if self._app.mixer.global_dimmer < 1.0:
             buffer['light'] *= self._app.mixer.global_dimmer
-        buffer_rgb = hls_to_rgb(buffer)
+        if self._app.mixer.useColorCorrections:
+            buffer_rgb = hls_to_rgb_perceptual(buffer)
+        else:
+            buffer_rgb = hls_to_rgb(buffer)
+
         buffer_rgb_int = np.int8(struct_flat(buffer_rgb) * 255)
 
         if dimmed_legacy_clients:

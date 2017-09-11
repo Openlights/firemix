@@ -72,6 +72,7 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
         self.slider_transition.valueChanged.connect(self.on_slider_transition)
         self.btn_shuffle_playlist.clicked.connect(self.on_btn_shuffle_playlist)
         self.btn_trigger_onset.clicked.connect(self.on_btn_trigger_onset)
+        self.useColorCorrections.clicked.connect(self.on_use_color_corrections)
 
         def slider_double_click_event(e):
             self.on_slider_speed_double_click()
@@ -173,6 +174,9 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
     def on_btn_trigger_onset(self):
         self.app.mixer.onset_detected()
         self.onset_detected()
+
+    def on_use_color_corrections(self):
+        self.mixer.useColorCorrections = self.useColorCorrections.isChecked()
 
     def on_slider_transition(self):
         if not self.mixer.is_paused():

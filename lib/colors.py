@@ -18,12 +18,14 @@
 from __future__ import division
 
 from past.utils import old_div
+from lib.color_fade import ColorFade
 import colorsys
 from lib import dtypes
 
 from lib.buffer_utils import struct_flat
 
 import numpy as np
+
 
 def float_to_uint8(float_color):
     """
@@ -163,6 +165,60 @@ def rgb_to_hls(arr):
 
     return out
 
+lookup_entries = 4096
+
+max_r = 0.9
+max_g = 0.7
+max_b = 1.0
+max_y = 0.9
+
+hue_lookup = ColorFade(
+    [
+        (max_r,     0,          0),
+        (max_r,     max_y/2,    0),
+        (max_r,     max_y,      0),
+        (0,         max_g,      0),
+        (0,         max_g,      max_b),
+        (0,         0,          max_b),
+        (max_r*0.5, 0,          max_b),
+        (max_r*0.7, 0,          max_b),
+        (max_r,     0,          0),
+    ], lookup_entries)
+
+def hls_to_rgb_perceptual(arr, out=None):
+
+    # uncorrected/spectral RGB values don't produce a nice color space
+    # this function attempts to produce something that has:
+    #   * even brightness across hues
+    #   * a hue curve closer to human concepts of rainbows
+
+    # use lookup table based on hue
+    hues = arr['hue']
+
+    lookup_index = ((hues - hues.astype(np.int)) * lookup_entries).astype(np.int)
+
+    out = hue_lookup.color_cache[lookup_index]
+    outview = out.view(np.float64).reshape(out.shape + (-1,))
+
+    # adjust L and S ...
+
+    luminances = np.clip(arr['light'], 0, 1).reshape((3600,1))
+    shades = np.clip(luminances * 2, 0, 1)
+    outview *= shades
+    pastels = np.clip(luminances * 2 - 1, 0, 1)
+    outview += pastels
+    grays = np.tile(np.clip(arr['light'], 0, 1),(3,1)).T
+    saturations = np.clip(arr['sat'], 0, 1).reshape((3600,1))
+    final = saturations*outview + (1-saturations)*grays
+
+    return final.view(dtypes.rgb_color).reshape(arr.shape)
+
+
+
+
+
+
+
 def hls_to_rgb(arr, out=None):
     """
     Converts HLS color array [[H,L,S]] to RGB array.
@@ -174,6 +230,11 @@ def hls_to_rgb(arr, out=None):
     Adapted from: http://stackoverflow.com/questions/4890373/detecting-thresholds-in-hsv-color-space-from-rgb-using-python-pil/4890878#4890878
     """
 
+    if out is None:
+        out = np.zeros_like(arr, dtype=dtypes.rgb_color)
+    else:
+        assert "I believe there is a bug here. if an array is passed in, it needs to get zeroed"
+
     C = (1 - np.absolute(2 * arr['light'] - 1)) * arr['sat']
 
     Hp = arr['hue'] * 6.0
@@ -182,9 +243,6 @@ def hls_to_rgb(arr, out=None):
 
     X = C * (1 - np.absolute(np.mod(Hp, 2) - 1))
     #X = C * (1 - f)
-
-    if out is None:
-        out = np.zeros_like(arr, dtype=dtypes.rgb_color)
 
     # handle each case:
 
@@ -222,5 +280,7 @@ def hls_to_rgb(arr, out=None):
     out['r'] += m
     out['g'] += m
     out['b'] += m
+
+    Gscale = 0
 
     return out
