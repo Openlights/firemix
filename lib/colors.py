@@ -281,6 +281,4 @@ def hls_to_rgb(arr, out=None):
     out['g'] += m
     out['b'] += m
 
-    Gscale = 0
-
     return out
