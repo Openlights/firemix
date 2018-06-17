@@ -1,0 +1,316 @@
+{
+    "backdrop-enable": false,
+    "backdrop-filename": "",
+    "bounding-box": [
+        1100,
+        200
+    ],
+    "center": [
+        550,
+        100
+    ],
+    "extents": [
+        1100,
+        200
+    ],
+    "file-type": "scene",
+    "fixtures": [
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                50
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                50
+            ],
+            "strand": 0,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                56.66666667
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                56.66666667
+            ],
+            "strand": 1,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                63.33333333
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                63.33333333
+            ],
+            "strand": 2,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                70
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                70
+            ],
+            "strand": 3,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                76.66666667
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                76.66666667
+            ],
+            "strand": 4,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                83.33333333
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                83.33333333
+            ],
+            "strand": 5,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                90
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                90
+            ],
+            "strand": 6,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                96.66666667
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                96.66666667
+            ],
+            "strand": 7,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                103.3333333
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                103.3333333
+            ],
+            "strand": 8,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                110
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                110
+            ],
+            "strand": 9,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                116.6666667
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                116.6666667
+            ],
+            "strand": 10,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                123.3333333
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                123.3333333
+            ],
+            "strand": 11,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                130
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                130
+            ],
+            "strand": 12,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                136.6666667
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                136.6666667
+            ],
+            "strand": 13,
+            "type": "linear"
+        },
+        {
+            "pixels": 240,
+            "pos2": [
+                1000,
+                143.3333333
+            ],
+            "address": 0,
+            "pos1": [
+                100,
+                143.3333333
+            ],
+            "strand": 14,
+            "type": "linear"
+        }
+    ],
+    "scene-name": "Universe Cafe",
+    "strand-settings": [
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 0,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 1,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 2,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 3,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 4,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 5,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 6,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 8,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 9,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 10,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 11,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 12,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 13,
+            "length": 240
+        },
+        {
+            "color-mode": "BGR8",
+            "enabled": true,
+            "id": 14,
+            "length": 240
+        }
+    ]
+}
