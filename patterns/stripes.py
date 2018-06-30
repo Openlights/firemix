@@ -49,14 +49,8 @@ class StripeGradient(Pattern):
         self._center_rotation = random.random()
         self.stripe_angle = random.random()
 
-        cx, cy = self.scene().center_point()
         self.locations = self.scene().get_all_pixel_locations()
-        x,y = self.locations.T
-        x -= cx
-        y -= cy
-        self.pixel_distances = np.sqrt(np.square(x) + np.square(y))
-        self.pixel_angles = old_div((math.pi + np.arctan2(y, x)), (2 * math.pi))
-        self.pixel_distances /= max(self.pixel_distances)
+
 
     def parameter_changed(self, parameter):
         fade_colors = ast.literal_eval(self.parameter('color-gradient').get())

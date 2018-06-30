@@ -4,7 +4,7 @@
     "file-version": 1,
     "name": "like a big soccer ball",
     "params": {
-        "allow-playback": "False",
+        "allow-playback": "True",
         "angle-speed": "[-0.1,0.1,0.01]",
         "audio-brightness": "1.0",
         "audio-speed": "0.0",
