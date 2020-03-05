@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2020 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,10 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import division
-
 from builtins import range
-from past.utils import old_div
 import random
 import numpy as np
 import ast
@@ -101,7 +98,7 @@ class Twinkle(Pattern):
         fft = self._app.mixer.audio.fft_data()[0]
         noise_threshold = self.parameter('noise threshold').get()
         np.maximum(fft - noise_threshold, 0, fft)
-        np.multiply(fft, old_div(1.0, (1.0 - noise_threshold)), fft)
+        np.multiply(fft, 1.0 / (1.0 - noise_threshold), fft)
 
         if len(fft):
             self.birthByFFT += np.multiply(fft, self.parameter('audio-birth-rate').get())
@@ -137,7 +134,7 @@ class Twinkle(Pattern):
                 if self.ringTimes[pixel] > 0:
                     #print pixel
                     ringWidth = self.parameter('audio-ring-width').get()
-                    size_percent = old_div(currentTimes[np.int_(pixel)], ringLife)
+                    size_percent = currentTimes[np.int_(pixel)] / ringLife
                     ring = np.where(np.abs(self.parameter('audio-ring-diameter').get() * size_percent + self.parameter('audio-ring-start-radius').get() - self.scene().get_pixel_distances(np.int_(pixel))) < ringWidth)
                     color = self._fader.color_cache[int(self.ringColors[pixel])]
 
@@ -157,13 +154,13 @@ class Twinkle(Pattern):
             if len(smooth_fft):
                 eq_bands = self.parameter('audio-eq-bands').get()
                 if eq_bands:
-                    band_size = np.int_(old_div(len(smooth_fft), eq_bands))
+                    band_size = np.int_(len(smooth_fft) / eq_bands)
                     for band in range(np.int_(eq_bands)):
                         neighbors = self.scene().get_pixel_neighbors(self.eq_centers[band])
                         self.eq_centers[band] = neighbors[np.int_(np.random.random() * len(neighbors))]
-                        fft_amount = old_div(np.sum(smooth_fft[band * band_size : (band + 1) * band_size]), band_size)
+                        fft_amount = np.sum(smooth_fft[band * band_size : (band + 1) * band_size]) / band_size
                         pixel = self.eq_centers[band]
-                        color_band_size = np.int_(old_div(len(self._fader.color_cache), eq_bands))
+                        color_band_size = np.int_(len(self._fader.color_cache) / eq_bands)
                         color = self._fader.color_cache[np.int_((band + 0.5) * color_band_size)]
                         ringWidth = self.parameter('audio-ring-width').get()
                         size_percent = fft_amount

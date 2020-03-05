@@ -1,7 +1,6 @@
-from __future__ import division
 # This file is part of Firemix.
 #
-# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2020 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +16,6 @@ from __future__ import division
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 from builtins import object
-from past.utils import old_div
 import unittest
 
 
@@ -43,7 +41,7 @@ class Fixture(object):
         """
         p1 = self.pos1
         p2 = self.pos2
-        return (old_div((p1[0] + p2[0]), 2), old_div((p1[1] + p2[1]), 2))
+        return (p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2
 
     def pixel_neighbors(self, pixel):
         """

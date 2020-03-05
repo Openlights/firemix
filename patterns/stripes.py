@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2020 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import division
-
-from past.utils import old_div
 import colorsys
 import random
 import math
@@ -86,8 +83,8 @@ class StripeGradient(Pattern):
         dy = y - cy
         x = dx * math.cos(self.stripe_angle) - dy * math.sin(self.stripe_angle)
         y = dx * math.sin(self.stripe_angle) + dy * math.cos(self.stripe_angle)
-        x = (old_div(x, stripe_width)) % 1.0
-        y = (old_div(y, stripe_width)) % 1.0
+        x = (x / stripe_width) % 1.0
+        y = (y / stripe_width) % 1.0
         x = np.abs(x - sx)
         y = np.abs(y - sy)
         hues = np.int_(np.mod(x+y, 1.0) * posterization)

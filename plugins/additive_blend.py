@@ -1,7 +1,6 @@
-from __future__ import division
 # This file is part of Firemix.
 #
-# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2020 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +15,6 @@ from __future__ import division
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from past.utils import old_div
 import numpy as np
 import math
 
@@ -41,21 +39,21 @@ class AdditiveBlend(Transition):
 
         fade_length = 0.25
         ease_power = 2.0
-        
+
         startPower = (1.0 - progress) / fade_length if progress >= (1 - fade_length) else 1.0
         startPower = 1.0 - pow(1.0 - startPower, ease_power)
 
         endPower = (progress / fade_length) if progress <= fade_length else 1.0
         endPower = 1.0 - pow(1.0 - endPower, ease_power)
-        
+
         startLums = (start['light'] * startPower).clip(0,1)
         endLums = (end['light'] * endPower).clip(0,1)
- 
+
         totalPower = (startPower + endPower)
-        
+
         startHues = np.mod(start['hue'], 1.0)
         endHues = np.mod(end['hue'], 1.0)
- 
+
         hueDelta = np.abs(startHues - endHues)
         useAlternatePath = np.floor(hueDelta * 2) # path between two colors is 0.5 maximum
         startHues += useAlternatePath # if path too long, go the other way

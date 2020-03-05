@@ -2,7 +2,7 @@
 
 # This file is part of Firemix.
 #
-# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2020 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,10 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-from __future__ import division
 
-from past.utils import old_div
 import argparse
 import functools
 import logging
@@ -102,9 +99,9 @@ def main():
     if args.profile:
         print("------ TICK TIME HISTOGRAM ------")
         elapsed = (app.mixer._stop_time - app.mixer._start_time)
-        print("%d frames in %0.2f seconds (%0.2f FPS) " %  (app.mixer._num_frames, elapsed, old_div(app.mixer._num_frames, elapsed)))
+        print("%d frames in %0.2f seconds (%0.2f FPS) " %  (app.mixer._num_frames, elapsed, app.mixer._num_frames / elapsed))
         for c in sorted(app.mixer._tick_time_data.keys()):
-            print("[%d fps]:\t%4d\t%0.2f%%" % (c, app.mixer._tick_time_data[c], (old_div(float(app.mixer._tick_time_data[c]), app.mixer._num_frames)) * 100.0))
+            print("[%d fps]:\t%4d\t%0.2f%%" % (c, app.mixer._tick_time_data[c], (float(app.mixer._tick_time_data[c]) / app.mixer._num_frames) * 100.0))
 
 if __name__ == "__main__":
     main()

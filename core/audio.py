@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2020 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,10 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-from __future__ import division
-
-from past.utils import old_div
 import logging
 import numpy as np
 from scipy import signal
@@ -88,7 +84,7 @@ class Audio(QtCore.QObject):
     @QtCore.pyqtSlot()
     def on_sim_timer(self):
         dt = self._sim_timer.interval()
-        measure = (old_div(60000.0, self.SIM_BEATS_PER_MINUTE))
+        measure = (60000.0 / self.SIM_BEATS_PER_MINUTE)
 
         if self._simulate:
             if self._auto_enable_simulate and self._time_since_last_data < self.SIM_AUTO_ENABLE_DELAY:
@@ -100,7 +96,7 @@ class Audio(QtCore.QObject):
                 self._sim_counter = 0
                 self._sim_beat = 0
 
-            sim_beat_boundary = self._sim_counter % (old_div(measure, 4)) == 0
+            sim_beat_boundary = self._sim_counter % (measure / 4) == 0
 
             if sim_beat_boundary:
                 self._sim_beat += 1
@@ -182,8 +178,8 @@ class Audio(QtCore.QObject):
         self.peakFrequency.insert(0, np.argmax(latest_fft))
 
         maxPeak = np.max(self.peak)
-        if maxPeak > old_div(1, self.maxGain):
-            self.gain = old_div(1, maxPeak)
+        if maxPeak > 1 / self.maxGain:
+            self.gain = 1 / maxPeak
         else:
             self.gain = self.maxGain
 
@@ -195,7 +191,7 @@ class Audio(QtCore.QObject):
 
             colors = np.zeros((len(self.average), 3))
             colors[:,1] = self.average
-            colors[:,0] = np.multiply(self.peakFrequency, old_div(1.0,255))
+            colors[:,0] = np.multiply(self.peakFrequency, 1.0 / 255)
 
             self.fader = ColorFade(colors, self._fader_steps)
 

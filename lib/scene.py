@@ -1,7 +1,6 @@
-from __future__ import division
 # This file is part of Firemix.
 #
-# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2020 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +16,6 @@ from __future__ import division
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 from builtins import range
-from past.utils import old_div
 import os
 import math
 import logging
@@ -100,7 +98,7 @@ class Scene(JSONDict):
         center = self.data.get("center", None)
         if center is None:
             bb = self.get_fixture_bounding_box()
-            center = (old_div((bb[0] + bb[2]), 2.0), old_div((bb[1] + bb[3]), 2.0))
+            center = (bb[0] + bb[2]) / 2.0, (bb[1] + bb[3]) / 2.0
         else:
             center = tuple(center)
         return center
@@ -242,7 +240,7 @@ class Scene(JSONDict):
             else:
                 x1, y1 = f.pos1
                 x2, y2 = f.pos2
-                scale = old_div(float(pixel), f.pixels)
+                scale = float(pixel) / f.pixels
                 relx, rely = ((x2 - x1) * scale, (y2 - y1) * scale)
                 loc = (x1 + relx, y1 + rely)
 
@@ -373,7 +371,7 @@ class Scene(JSONDict):
                 for point in group:
                     tx += point[0]
                     ty += point[1]
-                centroids.append((old_div(tx, num_points), old_div(ty, num_points)))
+                centroids.append((tx / num_points, ty / num_points))
             self._intersection_points = centroids
 
         return self._intersection_points

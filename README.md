@@ -9,7 +9,7 @@ Use [FireSim](https://github.com/craftyjon/firesim) to see the output.
 Installation / Development
 --------------------------
 
-Setup instructions are now located on the wiki:
+Installation and setup instructions are now located on the wiki:
  - [Installation Guide - Windows](https://github.com/Openlights/firemix/wiki/Installation-Guide-(Windows))
  - [Installation Guide - Mac](https://github.com/Openlights/firemix/wiki/Installation-Guide-(Mac))
  - [Installation Guide - Linux](https://github.com/Openlights/firemix/wiki/Installation-Guide-(Linux))
@@ -21,7 +21,7 @@ check out the [main page](https://github.com/craftyjon/firemix/wiki) to get star
 Usage
 -----
 
-    python firemix.py demo [--profile] [--playlist listname] [--preset ClassName] [--nogui]
+    ./firemix.py demo [--profile] [--playlist listname] [--preset ClassName] [--nogui]
 
 This will start FireMix with the `demo` scene and the default playlist.  The program will
 look in the `data/scenes` directory for a file called `demo.json`.

@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2020 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,10 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import division
-
 from builtins import range
-from past.utils import old_div
 import numpy as np
 from math import fmod, fabs, sqrt, pow, tan, pi, atan2
 from copy import deepcopy
@@ -45,7 +42,8 @@ class Spiral(Transition):
         self.buffer_size = BufferUtils.get_buffer_size()
 
         self.scene_bb = self._app.scene.get_fixture_bounding_box()
-        self.scene_center = (self.scene_bb[0] + old_div((self.scene_bb[2] - self.scene_bb[0]), 2), self.scene_bb[1] + old_div((self.scene_bb[3] - self.scene_bb[1]), 2))
+        self.scene_center = (self.scene_bb[0] + (self.scene_bb[2] - self.scene_bb[0]) / 2,
+                             self.scene_bb[1] + (self.scene_bb[3] - self.scene_bb[1]) / 2)
         dx = self.scene_bb[2] - self.scene_center[0]
         dy = self.scene_bb[3] - self.scene_center[1]
 
@@ -55,7 +53,7 @@ class Spiral(Transition):
         for pixel, location in enumerate(self.locations):
             dy = location[1] - self.scene_center[1]
             dx = location[0] - self.scene_center[0]
-            angle = old_div((atan2(dy, dx) + pi), (2.0 * pi))
+            angle = (atan2(dy, dx) + pi) / (2.0 * pi)
             self.radii[pixel] = sqrt(pow(dx,2) + pow(dy, 2))
             self.angles[pixel] = angle
 
@@ -70,7 +68,7 @@ class Spiral(Transition):
 
         radius_progress = fmod(progress * self.revolutions, 1.0)
         distance_progress = self.scene_radius * progress
-        distance_cutoff = (old_div(1.0, self.revolutions)) * self.scene_radius * progress
+        distance_cutoff = (1.0 / self.revolutions) * self.scene_radius * progress
 
         for pixel in range(len(self.active)):
             #if not self.active[pixel]:

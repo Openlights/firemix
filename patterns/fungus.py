@@ -1,6 +1,6 @@
 # This file is part of Firemix.
 #
-# Copyright 2013-2016 Jonathan Evans <jon@craftyjon.com>
+# Copyright 2013-2020 Jonathan Evans <jon@craftyjon.com>
 #
 # Firemix is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import division
-
-from past.utils import old_div
 import colorsys
 import random
 
@@ -174,7 +171,7 @@ class Fungus(Pattern):
             if len(neighbors) < 2:
                 lt = self._isolated_life_time
 
-            if len(live_neighbors) < 3 and (old_div((self._current_time - self._time[address]), lt)) >= 1.0:
+            if len(live_neighbors) < 3 and ((self._current_time - self._time[address]) / lt) >= 1.0:
                 self._alive.remove(address)
                 self._dying.append(address)
                 self._time[address] = self._current_time
@@ -225,17 +222,17 @@ class Fungus(Pattern):
         """
         Returns the next color for a pixel, given the pixel's current state
         """
-        progress = old_div((current_time - self._time[address]), time_target)
+        progress = (current_time - self._time[address]) / time_target
 
         if progress > 1.0:
             progress = 1.0
         elif current_time == self._time[address]:
             progress = 0.0
 
-        idx = old_div(progress, 3.0)
+        idx = progress / 3.0
         if time_target == self._death_time:
-            idx += (old_div(1.0, 3.0))
+            idx += (1.0 / 3.0)
         elif time_target == self._fade_out_time:
-            idx += (old_div(2.0, 3.0))
+            idx += (2.0 / 3.0)
 
         return (progress, self._fader.get_color(idx * self._fader_steps))

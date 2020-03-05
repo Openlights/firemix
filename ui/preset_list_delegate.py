@@ -16,7 +16,6 @@
 # along with Firemix.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from __future__ import print_function
 
 from PyQt5 import QtCore, QtWidgets
 
