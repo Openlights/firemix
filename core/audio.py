@@ -155,6 +155,7 @@ class Audio(QtCore.QObject):
             return
 
         latest_fft = np.asarray(latest_fft)
+        np.minimum(latest_fft, 0.0, latest_fft)
 
         # noise_threshold = 0.1
         # np.multiply(latest_fft, 1.0 + noise_threshold, latest_fft)

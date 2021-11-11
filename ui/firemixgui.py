@@ -24,7 +24,7 @@ from PyQt5.QtCore import pyqtSlot, QTimer, Qt, QRect
 from PyQt5.QtGui import QColor, QIcon, QImage, QPixmap
 from PyQt5.QtWidgets import (QMainWindow, QFileDialog, QAbstractItemView,
                              QListWidgetItem, QTableWidgetItem, QDialog, QMenu,
-                             QAction, QInputDialog)
+                             QAction, QInputDialog, QMessageBox)
 
 from ui.ui_firemix import Ui_FireMixMain
 from ui.dlg_add_preset import DlgAddPreset
@@ -260,11 +260,15 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
 
         if max_val > 0:
             for x in range(0, width * 4, 4):
-                f = np.interp(x, 4), np.arange(len(fft_data)) / fft_data# / max_val
+                f = np.interp(x / 4, np.arange(len(fft_data)), fft_data) / max_val
                 #f = math.sqrt(math.sqrt(f))
-                self.fft_pixmap[height - 1][x:x + 4] = \
-                    (hsv_float_to_rgb_uint8((x, (4.0 * width)), 1.0 / f)) + (255,)
+                if np.isnan(f):
+                    f = 0
+                else:
+                    f = max(0, min(f, 1.0))
 
+                self.fft_pixmap[height - 1][x:x + 4] = \
+                    (hsv_float_to_rgb_uint8((x / (4.0 * width), 1.0, f)) + (255,))
 
         pm = self.fft_pixmap.flatten()
         img = QImage(pm, width, height, QImage.Format_ARGB32)
@@ -329,14 +333,14 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
         self.update_playlist()
 
     def on_btn_clear_playlist(self):
-        dlg = QtWidgets.QMessageBox()
+        dlg = QMessageBox()
         dlg.setWindowTitle("FireMix - Clear Playlist")
         dlg.setText("Are you sure you want to clear the playlist?")
         dlg.setInformativeText("This action cannot be undone.")
-        dlg.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        dlg.setDefaultButton(QtWidgets.QMessageBox.No)
+        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        dlg.setDefaultButton(QMessageBox.No)
         ret = dlg.exec_()
-        if ret == QtWidgets.QMessageBox.Yes:
+        if ret == QMessageBox.Yes:
             self.app.playlist.clear_playlist()
             self.update_playlist()
 
@@ -590,7 +594,7 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
         self.app.playlist.set_filename(filename)
         if not self.app.playlist.open():
             self.app.playlist.set_filename(old_name)
-            QtWidgets.QMessageBox.warning(self, "Error", "Could not open file")
+            QMessageBox.warning(self, "Error", "Could not open file")
         self.app.mixer.start()
         self.app.mixer.pause(paused)
 
@@ -611,14 +615,14 @@ class FireMixGUI(QMainWindow, Ui_FireMixMain):
         self.app.mixer.pause(paused)
 
     def on_file_generate_default_playlist(self):
-        dlg = QtWidgets.QMessageBox()
+        dlg = QMessageBox()
         dlg.setWindowTitle("FireMix - Generate Default Playlist")
         dlg.setText("Are you sure you want to generate the default playlist?")
         dlg.setInformativeText("All existing playlist entries will be removed.  This action cannot be undone.")
-        dlg.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        dlg.setDefaultButton(QtWidgets.QMessageBox.No)
+        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        dlg.setDefaultButton(QMessageBox.No)
         ret = dlg.exec_()
-        if ret == QtWidgets.QMessageBox.Yes:
+        if ret == QMessageBox.Yes:
             self.app.playlist.generate_default_playlist()
             self.update_playlist()
 

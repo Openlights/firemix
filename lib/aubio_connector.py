@@ -50,17 +50,17 @@ class AubioConnector(QtCore.QObject):
             datagram = QtCore.QByteArray()
             datagram.resize(self.socket.pendingDatagramSize())
             (datagram, sender, sport) = self.socket.readDatagram(datagram.size())
-            if datagram.size() > 0:
-                if ord(datagram[0]) == self.PACKET_ONSET:
+            if len(datagram) > 0:
+                if datagram[0] == self.PACKET_ONSET:
                     self.onset_detected.emit()
-                elif ord(datagram[0]) == self.PACKET_FFT:
-                    fft_size = ord(datagram[1]) + (ord(datagram[2]) << 8)
+                elif datagram[0] == self.PACKET_FFT:
+                    fft_size = datagram[1] + (datagram[2] << 8)
                     fft = []
                     for i in range(fft_size):
                         fft.append(struct.unpack("<f", datagram[3+(i*4):3+(i*4)+4])[0])
 
                     self.fft_data.emit(fft)
-                elif ord(datagram[0]) == self.PACKET_PITCH:
+                elif datagram[0] == self.PACKET_PITCH:
                     pitch = struct.unpack("<f", datagram[1:5])[0]
                     confidence = struct.unpack("<f", datagram[5:9])[0]
                     self.pitch_data.emit(pitch, confidence)

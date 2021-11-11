@@ -18,12 +18,13 @@
 from builtins import str
 from builtins import map
 from past.builtins import basestring
+from collections.abc import MutableMapping
 import collections
 import json
 import os
 
 
-class JSONDict(collections.MutableMapping):
+class JSONDict(MutableMapping):
     """
     Represents a dictionary backed by a JSON file.  The dictionary must contain
     at least one entry, with the key 'file-type' and the value a string passed to __init__().
@@ -74,9 +75,9 @@ class JSONDict(collections.MutableMapping):
     def _unicode_to_str(self, data):
         if isinstance(data, basestring):
             return str(data)
-        elif isinstance(data, collections.Mapping):
+        elif isinstance(data, collections.abc.Mapping):
             return dict(list(map(self._unicode_to_str, iter(data.items()))))
-        elif isinstance(data, collections.Iterable):
+        elif isinstance(data, collections.abc.Iterable):
             return type(data)(list(map(self._unicode_to_str, data)))
         else:
             return data
